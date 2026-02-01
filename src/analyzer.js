@@ -1,12 +1,23 @@
 /**
  * analyzer.js — Text analysis engine.
  *
- * Scans text for all 24 AI writing patterns and produces a scored report.
+ * Combines pattern detection with statistical analysis to produce a
+ * comprehensive AI writing score. The score uses three signal types:
+ *
+ *   1. Pattern matches — vocabulary, phrases, structural patterns (24 detectors)
+ *   2. Text statistics — burstiness, sentence variation, type-token ratio
+ *   3. Category breadth — how many different AI signal types are present
+ *
+ * Based on research from:
+ *   - Wikipedia:Signs of AI writing
+ *   - Copyleaks stylistic fingerprint analysis (arxiv 2503.01659v1)
+ *   - StyloAI 31-feature stylometric analysis
  */
 
-const { patterns, wordCount } = require('./patterns');
+const { patterns, registry, wordCount } = require('./patterns');
+const { computeStats, computeUniformityScore } = require('./stats');
 
-// ─── Category weights for scoring ───────────────────────
+// ─── Category Labels ────────────────────────────────────
 
 const CATEGORY_LABELS = {
   content: 'Content patterns',
@@ -19,42 +30,52 @@ const CATEGORY_LABELS = {
 // ─── Analysis Engine ─────────────────────────────────────
 
 /**
- * Analyze text for AI writing patterns.
+ * Analyze text for AI writing patterns and compute statistics.
  *
- * @param {string} text  – The text to analyze
- * @param {object} opts  – Options: { verbose: bool, patternsToCheck: number[] }
- * @returns {object}     – Full analysis result
+ * @param {string} text  — The text to analyze
+ * @param {object} opts  — Options:
+ *   - verbose {boolean}     Show all matches (not just top 5 per pattern)
+ *   - patternsToCheck {number[]}  Only run specific pattern IDs
+ *   - includeStats {boolean}  Include full text statistics (default: true)
+ *   - config {object}       Custom config overrides
+ * @returns {object}     — Full analysis result
  */
 function analyze(text, opts = {}) {
-  const { verbose = false, patternsToCheck = null } = opts;
+  const {
+    verbose = false,
+    patternsToCheck = null,
+    includeStats = true,
+    config = {},
+  } = opts;
 
   if (!text || typeof text !== 'string') {
-    return {
-      score: 0,
-      totalMatches: 0,
-      wordCount: 0,
-      categories: {},
-      findings: [],
-      summary: 'No text provided.',
-    };
+    return emptyResult();
   }
 
-  const words = wordCount(text);
+  const trimmed = text.trim();
+  if (trimmed.length === 0) return emptyResult();
+
+  const words = wordCount(trimmed);
+
+  // ── Compute text statistics ────────────────────────
+  const stats = includeStats ? computeStats(trimmed) : null;
+  // Only compute uniformity for text with enough structure to be meaningful
+  const uniformityScore = (stats && stats.wordCount >= 20 && stats.sentenceCount >= 3)
+    ? computeUniformityScore(stats) : 0;
+
+  // ── Run pattern detectors ──────────────────────────
   const findings = [];
   const categoryScores = {};
-
-  // Initialize category accumulators
   for (const cat of Object.keys(CATEGORY_LABELS)) {
     categoryScores[cat] = { matches: 0, weightedScore: 0, patterns: [] };
   }
 
-  // Run each pattern detector
-  for (const pattern of patterns) {
-    // Allow filtering to specific patterns
-    if (patternsToCheck && !patternsToCheck.includes(pattern.id)) continue;
+  const activePatterns = patternsToCheck
+    ? patterns.filter(p => patternsToCheck.includes(p.id))
+    : patterns;
 
-    const matches = pattern.detect(text);
-
+  for (const pattern of activePatterns) {
+    const matches = pattern.detect(trimmed);
     if (matches.length > 0) {
       const finding = {
         patternId: pattern.id,
@@ -63,7 +84,7 @@ function analyze(text, opts = {}) {
         description: pattern.description,
         weight: pattern.weight,
         matchCount: matches.length,
-        matches: verbose ? matches : matches.slice(0, 5), // Limit in non-verbose mode
+        matches: verbose ? matches : matches.slice(0, 5),
         truncated: !verbose && matches.length > 5,
       };
 
@@ -74,10 +95,11 @@ function analyze(text, opts = {}) {
     }
   }
 
-  // Calculate total score (0-100)
-  const score = calculateScore(findings, words);
+  // ── Calculate composite score ──────────────────────
+  const patternScore = calculatePatternScore(findings, words);
+  const compositeScore = calculateCompositeScore(patternScore, uniformityScore, findings);
 
-  // Build category summary
+  // ── Build category summary ─────────────────────────
   const categories = {};
   for (const [cat, label] of Object.entries(CATEGORY_LABELS)) {
     const data = categoryScores[cat];
@@ -92,56 +114,70 @@ function analyze(text, opts = {}) {
   const totalMatches = findings.reduce((sum, f) => sum + f.matchCount, 0);
 
   return {
-    score,
+    score: compositeScore,
+    patternScore,
+    uniformityScore,
     totalMatches,
     wordCount: words,
+    stats,
     categories,
     findings,
-    summary: buildSummary(score, totalMatches, findings, words),
+    summary: buildSummary(compositeScore, totalMatches, findings, words, stats),
   };
 }
 
+// ─── Scoring ─────────────────────────────────────────────
+
 /**
- * Calculate an AI score from 0-100.
- *
- * The score uses a density-based approach: more matches per word = higher score.
- * Pattern weights amplify high-signal patterns (chatbot artifacts, AI vocab).
- * The formula uses a logarithmic curve so scores don't just scale linearly.
+ * Pattern-based score component (0-100).
+ * Uses density, breadth, and category diversity.
  */
-function calculateScore(findings, words) {
+function calculatePatternScore(findings, words) {
   if (words === 0 || findings.length === 0) return 0;
 
-  // Sum all weighted hits
   let weightedTotal = 0;
   for (const f of findings) {
     weightedTotal += f.matchCount * f.weight;
   }
 
-  // Density: weighted hits per 100 words
+  // Density: weighted hits per 100 words (log scale)
   const density = (weightedTotal / words) * 100;
-
-  // Unique pattern count bonus (breadth of AI signals)
-  const uniquePatterns = findings.length;
-  const breadthBonus = Math.min(uniquePatterns * 2, 20); // up to 20 points for pattern variety
-
-  // Category diversity bonus
-  const categoriesHit = new Set(findings.map(f => f.category)).size;
-  const categoryBonus = Math.min(categoriesHit * 3, 15); // up to 15 points for cross-category hits
-
-  // Base score from density (logarithmic to avoid runaway scores)
-  // density of 5 → ~30, density of 15 → ~50, density of 30 → ~65
   const densityScore = Math.min(Math.log2(density + 1) * 13, 65);
 
-  const raw = densityScore + breadthBonus + categoryBonus;
-  return Math.min(Math.round(raw), 100);
+  // Breadth: unique pattern types (max 20)
+  const breadthBonus = Math.min(findings.length * 2, 20);
+
+  // Category diversity (max 15)
+  const categoriesHit = new Set(findings.map(f => f.category)).size;
+  const categoryBonus = Math.min(categoriesHit * 3, 15);
+
+  return Math.min(Math.round(densityScore + breadthBonus + categoryBonus), 100);
 }
 
 /**
- * Build a human-readable summary string.
+ * Composite score combining pattern detection and statistical analysis.
+ *
+ * Pattern score is the primary signal (70% weight).
+ * Uniformity score adds statistical evidence (30% weight).
+ * But only when both are present — stats alone aren't enough.
  */
-function buildSummary(score, totalMatches, findings, words) {
-  if (totalMatches === 0) {
-    return 'No AI writing patterns detected. The text looks human-written.';
+function calculateCompositeScore(patternScore, uniformityScore, findings) {
+  if (patternScore === 0 && uniformityScore === 0) return 0;
+
+  // If no patterns detected, uniformity alone isn't enough to accuse
+  if (findings.length === 0) return Math.min(Math.round(uniformityScore * 0.15), 15);
+
+  // Weighted blend: patterns dominate, stats supplement
+  const blended = (patternScore * 0.7) + (uniformityScore * 0.3);
+  return Math.min(Math.round(blended), 100);
+}
+
+/**
+ * Build human-readable summary.
+ */
+function buildSummary(score, totalMatches, findings, words, stats) {
+  if (totalMatches === 0 && score < 10) {
+    return 'No significant AI writing patterns detected. The text looks human-written.';
   }
 
   const level = score >= 70 ? 'heavily AI-generated'
@@ -149,40 +185,78 @@ function buildSummary(score, totalMatches, findings, words) {
     : score >= 20 ? 'lightly AI-touched'
     : 'mostly human-sounding';
 
-  const uniquePatterns = findings.length;
   const topPatterns = findings
     .sort((a, b) => (b.matchCount * b.weight) - (a.matchCount * a.weight))
     .slice(0, 3)
     .map(f => f.patternName);
 
-  return `Score: ${score}/100 (${level}). Found ${totalMatches} matches across ${uniquePatterns} pattern types in ${words} words. Top issues: ${topPatterns.join(', ')}.`;
+  let summary = `Score: ${score}/100 (${level}). Found ${totalMatches} matches across ${findings.length} pattern types in ${words} words.`;
+
+  if (topPatterns.length > 0) {
+    summary += ` Top issues: ${topPatterns.join(', ')}.`;
+  }
+
+  if (stats && stats.sentenceCount > 3) {
+    if (stats.burstiness < 0.25) {
+      summary += ' Sentence rhythm is very uniform (low burstiness) — typical of AI text.';
+    }
+    if (stats.typeTokenRatio < 0.4 && words > 100) {
+      summary += ' Vocabulary diversity is low.';
+    }
+  }
+
+  return summary;
+}
+
+// ─── Quick Score ─────────────────────────────────────────
+
+/**
+ * Quick score — returns just the number (0-100).
+ */
+function score(text) {
+  return analyze(text).score;
 }
 
 // ─── Formatting ──────────────────────────────────────────
 
 /**
- * Format analysis results as a human-readable report.
+ * Format analysis as human-readable terminal report.
  */
 function formatReport(result) {
   const lines = [];
 
-  lines.push('╔══════════════════════════════════════════════╗');
-  lines.push('║        AI WRITING PATTERN ANALYSIS           ║');
-  lines.push('╚══════════════════════════════════════════════╝');
+  lines.push('');
+  lines.push('╔══════════════════════════════════════════════════╗');
+  lines.push('║          AI WRITING PATTERN ANALYSIS             ║');
+  lines.push('╚══════════════════════════════════════════════════╝');
   lines.push('');
 
   // Score bar
   const filled = Math.round(result.score / 5);
   const bar = '█'.repeat(filled) + '░'.repeat(20 - filled);
   lines.push(`  Score: ${result.score}/100  [${bar}]`);
-  lines.push(`  Words: ${result.wordCount}  |  Matches: ${result.totalMatches}`);
+  lines.push(`  Words: ${result.wordCount}  |  Matches: ${result.totalMatches}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`);
   lines.push('');
   lines.push(`  ${result.summary}`);
   lines.push('');
 
+  // Stats section
+  if (result.stats) {
+    const s = result.stats;
+    lines.push('── Text Statistics ─────────────────────────────────');
+    lines.push(`  Sentences: ${s.sentenceCount}  |  Paragraphs: ${s.paragraphCount}`);
+    lines.push(`  Avg sentence length: ${s.avgSentenceLength} words (σ ${s.sentenceLengthStdDev})`);
+    lines.push(`  Burstiness: ${s.burstiness} ${burstinessLabel(s.burstiness)}`);
+    lines.push(`  Vocabulary diversity (TTR): ${s.typeTokenRatio} ${ttrLabel(s.typeTokenRatio, s.wordCount)}`);
+    lines.push(`  Function word ratio: ${s.functionWordRatio}`);
+    lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
+    lines.push(`  Readability (FK grade): ${s.fleschKincaid}`);
+    lines.push('');
+  }
+
   // Category breakdown
-  lines.push('── Categories ──────────────────────────────────');
-  for (const [cat, data] of Object.entries(result.categories)) {
+  lines.push('── Categories ──────────────────────────────────────');
+  for (const [, data] of Object.entries(result.categories)) {
     if (data.matches > 0) {
       lines.push(`  ${data.label}: ${data.matches} matches (${data.patternsDetected.join(', ')})`);
     }
@@ -191,17 +265,18 @@ function formatReport(result) {
 
   // Findings detail
   if (result.findings.length > 0) {
-    lines.push('── Findings ────────────────────────────────────');
+    lines.push('── Findings ────────────────────────────────────────');
     for (const finding of result.findings) {
       lines.push('');
       lines.push(`  [${finding.patternId}] ${finding.patternName} (×${finding.matchCount}, weight: ${finding.weight})`);
       lines.push(`      ${finding.description}`);
       for (const match of finding.matches) {
-        const loc = match.line ? `L${match.line}` : '';
+        const loc = match.line ? `L${match.line}:${match.column || ''}` : '';
         const preview = typeof match.match === 'string'
           ? match.match.substring(0, 80) + (match.match.length > 80 ? '...' : '')
           : '';
-        lines.push(`      ${loc}: "${preview}"`);
+        const conf = match.confidence ? ` [${match.confidence}]` : '';
+        lines.push(`      ${loc}: "${preview}"${conf}`);
         if (match.suggestion) {
           lines.push(`            → ${match.suggestion}`);
         }
@@ -213,25 +288,101 @@ function formatReport(result) {
   }
 
   lines.push('');
-  lines.push('────────────────────────────────────────────────');
+  lines.push('════════════════════════════════════════════════════');
   return lines.join('\n');
 }
 
 /**
- * Format analysis results as JSON.
+ * Format analysis as markdown report.
+ */
+function formatMarkdown(result) {
+  const lines = [];
+
+  lines.push('# AI writing pattern analysis');
+  lines.push('');
+  lines.push(`**Score: ${result.score}/100** — ${scoreLabel(result.score)}`);
+  lines.push('');
+  lines.push(`Words: ${result.wordCount} | Matches: ${result.totalMatches} | Pattern score: ${result.patternScore} | Uniformity score: ${result.uniformityScore}`);
+  lines.push('');
+  lines.push(result.summary);
+  lines.push('');
+
+  if (result.stats) {
+    const s = result.stats;
+    lines.push('## Text statistics');
+    lines.push('');
+    lines.push(`| Metric | Value | Assessment |`);
+    lines.push(`|--------|-------|------------|`);
+    lines.push(`| Avg sentence length | ${s.avgSentenceLength} words | ${s.avgSentenceLength > 25 ? 'Long' : s.avgSentenceLength < 12 ? 'Short' : 'Normal'} |`);
+    lines.push(`| Sentence variation | σ ${s.sentenceLengthStdDev} | ${s.sentenceLengthStdDev > 8 ? 'High (human-like)' : s.sentenceLengthStdDev < 4 ? 'Low (AI-like)' : 'Moderate'} |`);
+    lines.push(`| Burstiness | ${s.burstiness} | ${burstinessLabel(s.burstiness)} |`);
+    lines.push(`| Vocabulary diversity | ${s.typeTokenRatio} | ${ttrLabel(s.typeTokenRatio, s.wordCount)} |`);
+    lines.push(`| Trigram repetition | ${s.trigramRepetition} | ${s.trigramRepetition > 0.1 ? 'High (AI-like)' : 'Normal'} |`);
+    lines.push(`| Readability | FK grade ${s.fleschKincaid} | ${s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`);
+    lines.push('');
+  }
+
+  if (result.findings.length > 0) {
+    lines.push('## Findings');
+    lines.push('');
+    for (const finding of result.findings) {
+      lines.push(`### ${finding.patternId}. ${finding.patternName} (×${finding.matchCount})`);
+      lines.push(`*${finding.description}*`);
+      lines.push('');
+      for (const match of finding.matches) {
+        const loc = match.line ? `Line ${match.line}` : '';
+        lines.push(`- ${loc}: \`${typeof match.match === 'string' ? match.match.substring(0, 80) : ''}\``);
+        if (match.suggestion) lines.push(`  - ${match.suggestion}`);
+      }
+      lines.push('');
+    }
+  }
+
+  return lines.join('\n');
+}
+
+/**
+ * Format analysis as JSON.
  */
 function formatJSON(result) {
   return JSON.stringify(result, null, 2);
 }
 
-// ─── Quick Score ─────────────────────────────────────────
+// ─── Label Helpers ───────────────────────────────────────
 
-/**
- * Quick score — just returns the number.
- */
-function score(text) {
-  const result = analyze(text);
-  return result.score;
+function scoreLabel(score) {
+  if (score >= 70) return 'Heavily AI-generated';
+  if (score >= 45) return 'Moderately AI-influenced';
+  if (score >= 20) return 'Lightly AI-touched';
+  return 'Mostly human-sounding';
+}
+
+function burstinessLabel(b) {
+  if (b >= 0.7) return '(high — human-like)';
+  if (b >= 0.45) return '(moderate)';
+  if (b >= 0.25) return '(low — somewhat uniform)';
+  return '(very low — AI-like uniformity)';
+}
+
+function ttrLabel(ttr, wordCount) {
+  if (wordCount < 100) return '(too short to assess)';
+  if (ttr >= 0.6) return '(high — diverse vocabulary)';
+  if (ttr >= 0.45) return '(moderate)';
+  return '(low — repetitive vocabulary)';
+}
+
+function emptyResult() {
+  return {
+    score: 0,
+    patternScore: 0,
+    uniformityScore: 0,
+    totalMatches: 0,
+    wordCount: 0,
+    stats: null,
+    categories: {},
+    findings: [],
+    summary: 'No text provided.',
+  };
 }
 
 // ─── Exports ─────────────────────────────────────────────
@@ -239,8 +390,10 @@ function score(text) {
 module.exports = {
   analyze,
   score,
-  calculateScore,
+  calculatePatternScore,
+  calculateCompositeScore,
   formatReport,
+  formatMarkdown,
   formatJSON,
   CATEGORY_LABELS,
 };

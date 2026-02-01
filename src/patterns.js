@@ -1,28 +1,38 @@
 /**
- * patterns.js — All 24 AI writing pattern definitions with detection rules.
+ * patterns.js — AI writing pattern detection engine.
  *
- * Each pattern has:
- *   id          – Numeric id (1-24)
- *   name        – Short human-readable name
- *   category    – One of: content, language, style, communication, filler
- *   description – What the pattern is and why it matters
- *   detect(text)– Returns an array of { match, index, line, suggestion }
- *   weight      – How much this pattern contributes to the overall AI score (1-5)
+ * 24 pattern detectors organized into 5 categories, with a registry
+ * that supports dynamic add/remove and custom word lists.
+ *
+ * Architecture:
+ *   - Each pattern is an object with id, name, category, description,
+ *     weight (1-5), and a detect(text) function
+ *   - detect() returns [{ match, index, line, column, suggestion, confidence }]
+ *   - The registry holds all patterns and provides query methods
+ *   - Vocabulary is sourced from vocabulary.js (500+ words/phrases)
  */
+
+const {
+  TIER_1, TIER_2, TIER_3,
+  AI_PHRASES,
+} = require('./vocabulary');
+const { tokenize } = require('./stats');
 
 // ─── Helpers ─────────────────────────────────────────────
 
-/** Find all regex matches with line numbers. */
-function findMatches(text, regex, suggestion) {
+/**
+ * Find all regex matches with line numbers and columns.
+ * Returns [{ match, index, line, column, suggestion, confidence }]
+ */
+function findMatches(text, regex, suggestion, confidence = 'high') {
   const results = [];
   const lines = text.split('\n');
   let offset = 0;
 
   for (let lineNum = 0; lineNum < lines.length; lineNum++) {
     const line = lines[lineNum];
-    let m;
-    // Reset regex state for each line
     const lineRegex = new RegExp(regex.source, regex.flags.includes('g') ? regex.flags : regex.flags + 'g');
+    let m;
     while ((m = lineRegex.exec(line)) !== null) {
       results.push({
         match: m[0],
@@ -30,50 +40,72 @@ function findMatches(text, regex, suggestion) {
         line: lineNum + 1,
         column: m.index + 1,
         suggestion: typeof suggestion === 'function' ? suggestion(m[0]) : suggestion,
+        confidence,
       });
     }
-    offset += line.length + 1; // +1 for newline
+    offset += line.length + 1;
   }
   return results;
 }
 
-/** Count occurrences of a regex in text. */
+/** Count regex occurrences. */
 function countMatches(text, regex) {
-  const matches = text.match(regex);
-  return matches ? matches.length : 0;
+  const m = text.match(regex);
+  return m ? m.length : 0;
 }
 
-/** Word count of text. */
+/** Word count. */
 function wordCount(text) {
-  const words = text.trim().split(/\s+/).filter(Boolean);
-  return words.length;
+  return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-// ─── AI Vocabulary Lists ─────────────────────────────────
+// ─── Vocabulary Detection Helpers ────────────────────────
 
-const AI_VOCAB_HIGH = [
-  'additionally', 'delve', 'tapestry', 'testament', 'underscore',
-  'pivotal', 'landscape', 'intricate', 'intricacies', 'showcasing',
-  'showcase', 'fostering', 'foster', 'garner', 'garnered',
-  'interplay', 'enduring', 'vibrant', 'crucial', 'enhance',
-  'enhanced', 'enhancing',
-];
+/**
+ * Build a case-insensitive word-boundary regex for a word.
+ * Escapes special regex chars in the word.
+ */
+function wordRegex(word) {
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // For multi-word phrases, don't use word boundaries on internal spaces
+  if (word.includes(' ')) {
+    return new RegExp(`\\b${escaped}\\b`, 'gi');
+  }
+  return new RegExp(`\\b${escaped}\\b`, 'gi');
+}
 
-const AI_VOCAB_MEDIUM = [
-  'furthermore', 'moreover', 'notably', 'comprehensive', 'multifaceted',
-  'nuanced', 'paradigm', 'transformative', 'leveraging', 'leverage',
-  'synergy', 'holistic', 'robust', 'streamline', 'streamlined',
-  'utilize', 'utilizing', 'utilization', 'facilitate', 'facilitated',
-  'facilitating', 'elucidate', 'illuminate', 'illuminate',
-  'encompasses', 'encompassing', 'spearhead', 'spearheading',
-  'underscores', 'underscoring', 'highlights', 'highlighting',
-  'invaluable', 'groundbreaking', 'cutting-edge', 'innovative',
-  'bolster', 'bolstering', 'catalyze', 'catalyst', 'cornerstone',
-  'reimagine', 'reimagining', 'empower', 'empowering', 'empowerment',
-  'harness', 'harnessing', 'navigate', 'navigating',
-  'aligns', 'aligning', 'alignment', 'align with',
-  'realm', 'poised', 'myriad',
-];
+/**
+ * Scan text for words from a tier list. Returns matches with word-specific suggestions.
+ */
+function scanWordList(text, wordList, suggestionPrefix, confidence = 'high') {
+  const results = [];
+  for (const word of wordList) {
+    const regex = wordRegex(word);
+    const matches = findMatches(text, regex,
+      `${suggestionPrefix}: "${word}". Use a simpler, more specific alternative.`,
+      confidence);
+    results.push(...matches);
+  }
+  return results;
+}
+
+/**
+ * Scan text for AI phrases. Returns matches with phrase-specific fixes.
+ */
+function scanPhrases(text, phrases, tierFilter = null) {
+  const results = [];
+  for (const { pattern, tier, fix } of phrases) {
+    if (tierFilter !== null && tier !== tierFilter) continue;
+    const matches = findMatches(text, pattern,
+      fix.startsWith('(') ? fix : `Replace with: ${fix}`,
+      tier === 1 ? 'high' : tier === 2 ? 'medium' : 'low');
+    results.push(...matches);
+  }
+  return results;
+}
+
+// ─── Significance / Promotional Phrase Lists ─────────────
+// (Kept here for patterns that need inline regex arrays)
 
 const SIGNIFICANCE_PHRASES = [
   /marking a pivotal/gi, /pivotal moment/gi, /pivotal role/gi,
@@ -88,22 +120,28 @@ const SIGNIFICANCE_PHRASES = [
   /contributing to the/gi, /underscores the importance/gi,
   /highlights the significance/gi, /represents a shift/gi,
   /shaping the future/gi, /the evolution of/gi,
+  /rich tapestry/gi, /rich heritage/gi,
+  /stands as a beacon/gi, /marks a milestone/gi,
+  /paving the way/gi, /charting a course/gi,
 ];
 
 const PROMOTIONAL_WORDS = [
   /\bnestled\b/gi, /\bin the heart of\b/gi, /\bbreathtaking\b/gi,
   /\bmust-visit\b/gi, /\bstunning\b/gi, /\brenowned\b/gi,
-  /\bgroundbreaking\b/gi, /\bnatural beauty\b/gi,
+  /\bnatural beauty\b/gi,
   /\brich cultural heritage\b/gi, /\brich history\b/gi,
   /\bcommitment to\b/gi, /\bexemplifies\b/gi,
   /\bworld-class\b/gi, /\bstate-of-the-art\b/gi,
-  /\bseamless\b/gi, /\bgame-changing\b/gi, /\bgame changer\b/gi,
+  /\bgame-changing\b/gi, /\bgame changer\b/gi,
   /\bunparalleled\b/gi, /\bprofound\b/gi,
+  /\bbest-in-class\b/gi, /\btrailblazing\b/gi,
+  /\bvisionary\b/gi, /\bcutting-edge\b/gi,
+  /\bworldwide recognition\b/gi,
 ];
 
 const VAGUE_ATTRIBUTION_PHRASES = [
-  /\bexperts (believe|argue|say|suggest|note|agree|contend)\b/gi,
-  /\bindustry (reports|observers|experts|analysts|leaders)\b/gi,
+  /\bexperts (believe|argue|say|suggest|note|agree|contend|have noted)\b/gi,
+  /\bindustry (reports|observers|experts|analysts|leaders|insiders)\b/gi,
   /\bobservers have (cited|noted|pointed out)\b/gi,
   /\bsome critics argue\b/gi, /\bsome experts (say|believe|suggest)\b/gi,
   /\bseveral sources\b/gi, /\baccording to reports\b/gi,
@@ -112,15 +150,18 @@ const VAGUE_ATTRIBUTION_PHRASES = [
   /\bmany (experts|scholars|researchers|analysts) (believe|argue|suggest)\b/gi,
   /\bstudies (show|suggest|indicate|have shown)\b/gi,
   /\bresearch (shows|suggests|indicates|has shown)\b/gi,
+  /\bsources close to\b/gi, /\bpeople familiar with\b/gi,
 ];
 
 const CHALLENGES_PHRASES = [
-  /despite (its|these|the|their) (challenges|setbacks|obstacles|difficulties)/gi,
+  /despite (its|these|the|their) (challenges|setbacks|obstacles|difficulties|limitations)/gi,
   /faces (several|many|numerous|various) challenges/gi,
   /continues to thrive/gi, /continues to grow/gi,
   /future (outlook|prospects) (remain|look|appear)/gi,
   /challenges and (future|legacy|opportunities)/gi,
   /despite these (challenges|hurdles|obstacles)/gi,
+  /overcoming (obstacles|challenges|adversity)/gi,
+  /weather(ing|ed) the storm/gi,
 ];
 
 const COPULA_AVOIDANCE = [
@@ -129,82 +170,6 @@ const COPULA_AVOIDANCE = [
   /\bboasts (a|an|over|more)\b/gi, /\bfeatures (a|an|over|more)\b/gi,
   /\boffers (a|an)\b/gi, /\bfunctions as\b/gi,
   /\bacts as( a)?\b/gi, /\boperates as( a)?\b/gi,
-];
-
-const CHATBOT_ARTIFACTS = [
-  /\bI hope this helps\b/gi, /\blet me know if\b/gi,
-  /\bwould you like me to\b/gi, /\bfeel free to\b/gi,
-  /\bdon't hesitate to\b/gi, /\bhappy to help\b/gi,
-  /\bhere is (a |an |the )?(overview|summary|breakdown|list|guide)/gi,
-  /\bOf course!/gi, /\bCertainly!/gi, /\bAbsolutely!/gi,
-  /\bI'd be happy to\b/gi, /\bIs there anything else\b/gi,
-];
-
-const SYCOPHANTIC_PHRASES = [
-  /\bgreat question\b/gi, /\bexcellent (question|point)\b/gi,
-  /\bthat's a (great|excellent|wonderful|fantastic|good) (question|point)\b/gi,
-  /\byou're absolutely right\b/gi, /\byou raise a (great|good|excellent|valid) point\b/gi,
-  /\bthat's an insightful\b/gi, /\byou've hit (on|upon)\b/gi,
-  /\bwhat a (great|wonderful|fantastic)\b/gi,
-];
-
-const CUTOFF_DISCLAIMERS = [
-  /\bas of (my|this) (last|latest)\b/gi,
-  /\bas of \d{4}\b/gi,
-  /\bup to my (last )?training\b/gi,
-  /\bwhile (specific )?details are (limited|scarce)\b/gi,
-  /\bbased on available information\b/gi,
-  /\bbased on (my|current) (knowledge|information|understanding)\b/gi,
-  /\bI (don't|do not) have (access to|information about) (real-time|current)\b/gi,
-];
-
-const FILLER_PHRASES = [
-  { pattern: /\bin order to\b/gi, fix: 'to' },
-  { pattern: /\bdue to the fact that\b/gi, fix: 'because' },
-  { pattern: /\bat this point in time\b/gi, fix: 'now' },
-  { pattern: /\bin the event that\b/gi, fix: 'if' },
-  { pattern: /\bhas the ability to\b/gi, fix: 'can' },
-  { pattern: /\bit is important to note that\b/gi, fix: '(remove — just state the fact)' },
-  { pattern: /\bit is worth noting that\b/gi, fix: '(remove — just state the fact)' },
-  { pattern: /\bit should be noted that\b/gi, fix: '(remove — just state the fact)' },
-  { pattern: /\bin today's (rapidly )?(evolving|changing)\b/gi, fix: '(remove or be specific about what changed)' },
-  { pattern: /\bin today's world\b/gi, fix: '(remove or be specific)' },
-  { pattern: /\bat the end of the day\b/gi, fix: '(remove or replace with specific conclusion)' },
-  { pattern: /\bwhen it comes to\b/gi, fix: 'for' },
-  { pattern: /\bthe fact of the matter is\b/gi, fix: '(remove — just state it)' },
-  { pattern: /\bin terms of\b/gi, fix: 'for / about / regarding' },
-  { pattern: /\bfor the purpose of\b/gi, fix: 'to / for' },
-  { pattern: /\bin light of the fact that\b/gi, fix: 'because / since' },
-  { pattern: /\bin the realm of\b/gi, fix: 'in' },
-  { pattern: /\bat its core\b/gi, fix: '(remove or be specific)' },
-  { pattern: /\bfirst and foremost\b/gi, fix: 'first' },
-  { pattern: /\blast but not least\b/gi, fix: 'finally' },
-];
-
-const HEDGING_WORDS = [
-  /\bcould potentially\b/gi, /\bmight possibly\b/gi,
-  /\bcould possibly\b/gi, /\bpotentially could\b/gi,
-  /\bit could be argued\b/gi, /\bone could argue\b/gi,
-  /\bsomewhat arguably\b/gi, /\bperhaps potentially\b/gi,
-  /\bmay potentially\b/gi, /\bcould conceivably\b/gi,
-  /\bone might suggest\b/gi, /\bit is possible that\b/gi,
-  /\bthere is a possibility\b/gi, /\bthere is potential for\b/gi,
-];
-
-const GENERIC_CONCLUSIONS = [
-  /\bthe future (looks|is) bright\b/gi,
-  /\bexciting times (lie|lay) ahead\b/gi,
-  /\bcontinue (this|their|our) journey\b/gi,
-  /\bjourney toward(s)? excellence\b/gi,
-  /\ba (major|significant|important) step (in|toward)/gi,
-  /\bstep in the right direction\b/gi,
-  /\bonly time will tell\b/gi,
-  /\bremains to be seen\b/gi,
-  /\bthe possibilities are (endless|limitless)\b/gi,
-  /\bpoised for (growth|success|greatness)\b/gi,
-  /\bthe sky('s| is) the limit\b/gi,
-  /\bwatch this space\b/gi,
-  /\bstay tuned\b/gi,
 ];
 
 // ─── Pattern Definitions ─────────────────────────────────
@@ -221,7 +186,8 @@ const patterns = [
     detect(text) {
       const results = [];
       for (const regex of SIGNIFICANCE_PHRASES) {
-        results.push(...findMatches(text, regex, 'Remove inflated significance claim. State concrete facts instead.'));
+        results.push(...findMatches(text, regex,
+          'Remove inflated significance claim. State concrete facts instead.', 'high'));
       }
       return results;
     },
@@ -234,13 +200,15 @@ const patterns = [
     description: 'Listing media outlets or sources to claim notability without providing context or specific claims.',
     weight: 3,
     detect(text) {
-      // Detect comma-separated lists of media outlets
-      const mediaList = /\b(cited|featured|covered|mentioned|reported|published) (in|by) .{0,20}(The New York Times|BBC|CNN|The Washington Post|The Guardian|Wired|Forbes|Reuters|Bloomberg|Financial Times|The Verge|TechCrunch|The Hindu|Al Jazeera).{0,100}(,\s*(and\s+)?(The New York Times|BBC|CNN|The Washington Post|The Guardian|Wired|Forbes|Reuters|Bloomberg|Financial Times|The Verge|TechCrunch|The Hindu|Al Jazeera))+/gi;
-      const results = findMatches(text, mediaList, 'Instead of listing outlets, cite one specific claim from one source.');
-
-      // "active social media presence"
-      results.push(...findMatches(text, /\bactive social media presence\b/gi, 'Remove — not meaningful without specific context.'));
-      results.push(...findMatches(text, /\bwritten by a leading expert\b/gi, 'Name the expert and their specific credential.'));
+      const mediaList = /\b(cited|featured|covered|mentioned|reported|published|recognized|highlighted) (in|by) .{0,20}(The New York Times|BBC|CNN|The Washington Post|The Guardian|Wired|Forbes|Reuters|Bloomberg|Financial Times|The Verge|TechCrunch|The Hindu|Al Jazeera|Time|Newsweek|The Economist|Nature|Science).{0,100}(,\s*(and\s+)?(The New York Times|BBC|CNN|The Washington Post|The Guardian|Wired|Forbes|Reuters|Bloomberg|Financial Times|The Verge|TechCrunch|The Hindu|Al Jazeera|Time|Newsweek|The Economist|Nature|Science))+/gi;
+      const results = findMatches(text, mediaList,
+        'Instead of listing outlets, cite one specific claim from one source.', 'high');
+      results.push(...findMatches(text, /\bactive social media presence\b/gi,
+        'Remove — not meaningful without specific context.', 'high'));
+      results.push(...findMatches(text, /\bwritten by a leading expert\b/gi,
+        'Name the expert and their specific credential.', 'medium'));
+      results.push(...findMatches(text, /\bhas been (featured|recognized|acknowledged) (by|in)\b/gi,
+        'Cite the specific feature with a concrete claim.', 'medium'));
       return results;
     },
   },
@@ -249,12 +217,12 @@ const patterns = [
     id: 3,
     name: 'Superficial -ing analyses',
     category: 'content',
-    description: 'Tacking "-ing" participial phrases onto sentences to fake depth (highlighting, showcasing, reflecting...).',
+    description: 'Tacking "-ing" participial phrases onto sentences to fake depth.',
     weight: 4,
     detect(text) {
-      // Detect trailing -ing phrases used as superficial analysis
-      const ingPhrases = /,\s*(highlighting|underscoring|emphasizing|ensuring|reflecting|symbolizing|contributing to|cultivating|fostering|encompassing|showcasing|demonstrating|illustrating|representing|signaling|indicating|solidifying|reinforcing|cementing)\b[^.]{5,}/gi;
-      return findMatches(text, ingPhrases, 'Remove trailing -ing phrase. If the point matters, give it its own sentence with specifics.');
+      const ingPhrases = /,\s*(highlighting|underscoring|emphasizing|ensuring|reflecting|symbolizing|contributing to|cultivating|fostering|encompassing|showcasing|demonstrating|illustrating|representing|signaling|indicating|solidifying|reinforcing|cementing|underscoring|bolstering|reaffirming|illuminating|epitomizing)\b[^.]{5,}/gi;
+      return findMatches(text, ingPhrases,
+        'Remove trailing -ing phrase. If the point matters, give it its own sentence with specifics.', 'high');
     },
   },
 
@@ -267,7 +235,8 @@ const patterns = [
     detect(text) {
       const results = [];
       for (const regex of PROMOTIONAL_WORDS) {
-        results.push(...findMatches(text, regex, 'Replace promotional language with neutral, factual description.'));
+        results.push(...findMatches(text, regex,
+          'Replace promotional language with neutral, factual description.', 'high'));
       }
       return results;
     },
@@ -282,7 +251,8 @@ const patterns = [
     detect(text) {
       const results = [];
       for (const regex of VAGUE_ATTRIBUTION_PHRASES) {
-        results.push(...findMatches(text, regex, 'Name the specific source, study, or person. If you can\'t, remove the claim.'));
+        results.push(...findMatches(text, regex,
+          'Name the specific source, study, or person. If you can\'t, remove the claim.', 'high'));
       }
       return results;
     },
@@ -297,7 +267,8 @@ const patterns = [
     detect(text) {
       const results = [];
       for (const regex of CHALLENGES_PHRASES) {
-        results.push(...findMatches(text, regex, 'Replace with specific challenges and concrete outcomes.'));
+        results.push(...findMatches(text, regex,
+          'Replace with specific challenges and concrete outcomes.', 'high'));
       }
       return results;
     },
@@ -309,35 +280,38 @@ const patterns = [
     id: 7,
     name: 'AI vocabulary',
     category: 'language',
-    description: 'Words and phrases that appear far more in AI-generated text than human writing.',
+    description: 'Words and phrases that appear far more frequently in AI-generated text. 500+ words tracked across 3 tiers.',
     weight: 5,
     detect(text) {
       const results = [];
-      const lower = text.toLowerCase();
+      const words = wordCount(text);
 
-      for (const word of AI_VOCAB_HIGH) {
-        const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        const matches = findMatches(text, regex, `"${word}" is a high-frequency AI word. Use a simpler/more specific alternative.`);
-        results.push(...matches);
+      // Tier 1: always flag
+      results.push(...scanWordList(text, TIER_1, 'Tier 1 AI word', 'high'));
+
+      // Tier 2: flag if 2+ tier-2 words appear
+      const tier2Matches = scanWordList(text, TIER_2, 'Tier 2 AI word', 'medium');
+      if (tier2Matches.length >= 2) {
+        results.push(...tier2Matches);
       }
 
-      // Only flag medium-frequency words if there are several (density check)
-      const mediumCount = AI_VOCAB_MEDIUM.reduce((count, word) => {
-        const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        return count + countMatches(text, regex);
-      }, 0);
-
-      const words = wordCount(text);
-      const density = words > 0 ? mediumCount / words : 0;
-
-      // Flag individual medium words only if density is high (>2%)
-      if (density > 0.02) {
-        for (const word of AI_VOCAB_MEDIUM) {
-          const regex = new RegExp(`\\b${word}\\b`, 'gi');
-          const matches = findMatches(text, regex, `"${word}" is common in AI text. Consider a simpler word.`);
-          results.push(...matches);
+      // Tier 3: flag only at high density (>3% of words are tier-3)
+      if (words > 50) {
+        const tier3Count = TIER_3.reduce((count, word) => {
+          const regex = wordRegex(word);
+          return count + countMatches(text, regex);
+        }, 0);
+        const density = tier3Count / words;
+        if (density > 0.03) {
+          results.push(...scanWordList(text, TIER_3, 'Tier 3 AI word (high density)', 'low'));
         }
       }
+
+      // AI phrases (from vocabulary.js)
+      results.push(...scanPhrases(text, AI_PHRASES.filter(p =>
+        p.fix && !p.fix.startsWith('(remove') &&
+        !['to', 'because', 'now', 'if', 'can', 'first', 'finally'].includes(p.fix)
+      )));
 
       return results;
     },
@@ -352,7 +326,8 @@ const patterns = [
     detect(text) {
       const results = [];
       for (const regex of COPULA_AVOIDANCE) {
-        results.push(...findMatches(text, regex, 'Use simple "is", "are", or "has" instead.'));
+        results.push(...findMatches(text, regex,
+          'Use simple "is", "are", or "has" instead.', 'high'));
       }
       return results;
     },
@@ -368,8 +343,10 @@ const patterns = [
       const negParallel = /\b(it'?s|this is) not (just|merely|only|simply) .{3,60}(,|;|—)\s*(it'?s|this is|but)\b/gi;
       const notOnly = /\bnot only .{3,60} but (also )?\b/gi;
       return [
-        ...findMatches(text, negParallel, 'Rewrite directly. State what the thing IS, not what it "isn\'t just".'),
-        ...findMatches(text, notOnly, 'Simplify. Remove the "not only...but also" frame.'),
+        ...findMatches(text, negParallel,
+          'Rewrite directly. State what the thing IS, not what it "isn\'t just".', 'high'),
+        ...findMatches(text, notOnly,
+          'Simplify. Remove the "not only...but also" frame.', 'medium'),
       ];
     },
   },
@@ -381,14 +358,22 @@ const patterns = [
     description: 'Forcing ideas into groups of three. LLMs love triads that sound "comprehensive".',
     weight: 2,
     detect(text) {
-      // Match three comma-separated items followed by "and" — the classic triad
-      // This looks for abstract/buzzy triads, not just any list of three things
+      // Abstract noun triads
       const buzzyTriad = /\b(\w+tion|\w+ity|\w+ment|\w+ness|\w+ance|\w+ence),\s+(\w+tion|\w+ity|\w+ment|\w+ness|\w+ance|\w+ence),\s+and\s+(\w+tion|\w+ity|\w+ment|\w+ness|\w+ance|\w+ence)\b/gi;
-      const results = findMatches(text, buzzyTriad, 'Rule of three with abstract nouns. Pick the one or two that actually matter.');
+      const results = findMatches(text, buzzyTriad,
+        'Rule of three with abstract nouns. Pick the one or two that actually matter.', 'medium');
 
-      // Also check for triads of adjectives
-      const adjTriad = /\b(seamless|intuitive|powerful|innovative|dynamic|robust|comprehensive|cutting-edge|scalable|agile|efficient|effective|engaging|impactful|meaningful),\s+(seamless|intuitive|powerful|innovative|dynamic|robust|comprehensive|cutting-edge|scalable|agile|efficient|effective|engaging|impactful|meaningful),\s+and\s+(seamless|intuitive|powerful|innovative|dynamic|robust|comprehensive|cutting-edge|scalable|agile|efficient|effective|engaging|impactful|meaningful)/gi;
-      results.push(...findMatches(text, adjTriad, 'Buzzy adjective triad. Pick one and make it specific.'));
+      // Buzzy adjective triads
+      const buzzAdj = [
+        'seamless', 'intuitive', 'powerful', 'innovative', 'dynamic', 'robust',
+        'comprehensive', 'cutting-edge', 'scalable', 'agile', 'efficient',
+        'effective', 'engaging', 'impactful', 'meaningful', 'transformative',
+        'sustainable', 'resilient', 'inclusive', 'accessible',
+      ];
+      const adjPattern = buzzAdj.join('|');
+      const adjTriad = new RegExp(`\\b(${adjPattern}),\\s+(${adjPattern}),\\s+and\\s+(${adjPattern})\\b`, 'gi');
+      results.push(...findMatches(text, adjTriad,
+        'Buzzy adjective triad. Pick one and make it specific.', 'medium'));
 
       return results;
     },
@@ -401,13 +386,15 @@ const patterns = [
     description: 'Referring to the same thing by different names in consecutive sentences to avoid repetition.',
     weight: 2,
     detect(text) {
-      // Check for common synonym cycles
       const synonymSets = [
-        ['protagonist', 'main character', 'central figure', 'hero', 'lead character'],
-        ['company', 'firm', 'organization', 'enterprise', 'corporation', 'establishment'],
-        ['city', 'metropolis', 'urban center', 'municipality', 'locale'],
-        ['building', 'structure', 'edifice', 'facility', 'complex'],
-        ['tool', 'instrument', 'mechanism', 'apparatus', 'device'],
+        ['protagonist', 'main character', 'central figure', 'hero', 'lead character', 'lead'],
+        ['company', 'firm', 'organization', 'enterprise', 'corporation', 'establishment', 'entity'],
+        ['city', 'metropolis', 'urban center', 'municipality', 'locale', 'township'],
+        ['building', 'structure', 'edifice', 'facility', 'complex', 'establishment'],
+        ['tool', 'instrument', 'mechanism', 'apparatus', 'device', 'utility'],
+        ['country', 'nation', 'state', 'republic', 'sovereign state'],
+        ['problem', 'challenge', 'issue', 'obstacle', 'hurdle', 'difficulty'],
+        ['solution', 'approach', 'methodology', 'framework', 'strategy', 'paradigm'],
       ];
 
       const results = [];
@@ -431,8 +418,9 @@ const patterns = [
               line: text.substring(0, text.indexOf(sentences[i])).split('\n').length,
               column: 1,
               suggestion: `Pick one term and stick with it. Found "${found.join('", "')}" used as synonyms in nearby sentences.`,
+              confidence: 'medium',
             });
-            break; // Don't double-report the same set
+            break;
           }
         }
       }
@@ -447,13 +435,13 @@ const patterns = [
     description: '"From X to Y" where X and Y aren\'t on a meaningful scale.',
     weight: 2,
     detect(text) {
-      // Detect "from X to Y, from A to B" double-range patterns
       const doubleRange = /\bfrom .{3,40} to .{3,40},\s*from .{3,40} to .{3,40}/gi;
-      const results = findMatches(text, doubleRange, 'False range — X and Y probably aren\'t on a meaningful scale. Just list the topics.');
+      const results = findMatches(text, doubleRange,
+        'False range — X and Y probably aren\'t on a meaningful scale. Just list the topics.', 'high');
 
-      // Single false ranges with abstract nouns
-      const abstractRange = /\bfrom (the )?(dawn|birth|inception|beginning|advent|emergence|rise) .{3,60} to (the )?(modern|current|present|contemporary|latest|cutting-edge|digital)/gi;
-      results.push(...findMatches(text, abstractRange, 'Unnecessarily broad range. Be specific about what you\'re actually covering.'));
+      const abstractRange = /\bfrom (the )?(dawn|birth|inception|beginning|advent|emergence|rise|earliest) .{3,60} to (the )?(modern|current|present|contemporary|latest|cutting-edge|digital|future)/gi;
+      results.push(...findMatches(text, abstractRange,
+        'Unnecessarily broad range. Be specific about what you\'re actually covering.', 'medium'));
 
       return results;
     },
@@ -471,18 +459,13 @@ const patterns = [
       const emDashes = text.match(/—/g) || [];
       const words = wordCount(text);
       const ratio = words > 0 ? emDashes.length / (words / 100) : 0;
-      const results = [];
 
-      // More than 1 em dash per 100 words is suspicious
       if (ratio > 1.0 && emDashes.length >= 2) {
-        // Find each em dash
-        const emDashRegex = /—/g;
-        const matches = findMatches(text, emDashRegex,
-          `High em dash density (${emDashes.length} in ${words} words). Replace most with commas, periods, or parentheses.`);
-        results.push(...matches);
+        return findMatches(text, /—/g,
+          `High em dash density (${emDashes.length} in ${words} words). Replace most with commas, periods, or parentheses.`,
+          'medium');
       }
-
-      return results;
+      return [];
     },
   },
 
@@ -496,7 +479,7 @@ const patterns = [
       const boldMatches = text.match(/\*\*[^*]+\*\*/g) || [];
       if (boldMatches.length >= 3) {
         return findMatches(text, /\*\*[^*]+\*\*/g,
-          'Excessive boldface. Remove emphasis — let the writing carry the weight.');
+          'Excessive boldface. Remove emphasis — let the writing carry the weight.', 'medium');
       }
       return [];
     },
@@ -506,14 +489,14 @@ const patterns = [
     id: 15,
     name: 'Inline-header lists',
     category: 'style',
-    description: 'Lists where each item starts with a bolded header followed by a colon, repeating the header word.',
+    description: 'Lists where each item starts with a bolded header followed by a colon.',
     weight: 3,
     detect(text) {
       const inlineHeaders = /^[*\-]\s+\*\*[^*]+:\*\*\s/gm;
       const matches = text.match(inlineHeaders) || [];
       if (matches.length >= 2) {
         return findMatches(text, inlineHeaders,
-          'Inline-header list pattern. Convert to a paragraph or use a simpler list.');
+          'Inline-header list pattern. Convert to a paragraph or use a simpler list.', 'high');
       }
       return [];
     },
@@ -526,7 +509,6 @@ const patterns = [
     description: 'Capitalizing Every Main Word In Headings. AI chatbots default to this.',
     weight: 1,
     detect(text) {
-      // Match markdown headings with title case (3+ capitalized words)
       const headingRegex = /^#{1,6}\s+(.+)$/gm;
       const results = [];
       let m;
@@ -534,9 +516,9 @@ const patterns = [
         const heading = m[1].trim();
         const words = heading.split(/\s+/);
         if (words.length >= 3) {
-          const capitalizedCount = words.filter(w => /^[A-Z]/.test(w) && !/^(I|AI|API|CLI|URL|HTML|CSS|JS|TS|NPM|NYC|USA|UK|EU)\b/.test(w)).length;
-          const ratio = capitalizedCount / words.length;
-          if (ratio > 0.7) {
+          const skipWords = /^(I|AI|API|CLI|URL|HTML|CSS|JS|TS|NPM|NYC|USA|UK|EU|LLM|GPT|SaaS|IoT|CEO|CTO|VP|PR|HR|IT|UI|UX)\b/;
+          const capitalizedCount = words.filter(w => /^[A-Z]/.test(w) && !skipWords.test(w)).length;
+          if (capitalizedCount / words.length > 0.7) {
             const lineNum = text.substring(0, m.index).split('\n').length;
             results.push({
               match: m[0],
@@ -544,6 +526,7 @@ const patterns = [
               line: lineNum,
               column: 1,
               suggestion: 'Use sentence case for headings (only capitalize first word and proper nouns).',
+              confidence: 'medium',
             });
           }
         }
@@ -559,13 +542,10 @@ const patterns = [
     description: 'Decorating headings or bullet points with emojis in professional/technical text.',
     weight: 2,
     detect(text) {
-      // Match emojis at the start of lines, headings, or before bold text
-      const emojiDecorations = /^[\s#*-]*[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2934}-\u{2935}\u{25AA}-\u{25FE}\u{FE00}-\u{FEFF}]/gmu;
       const emojiCount = countMatches(text, /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}]/gu);
-
       if (emojiCount >= 3) {
         return findMatches(text, /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}]/gu,
-          'Remove emoji decoration from professional text.');
+          'Remove emoji decoration from professional text.', 'high');
       }
       return [];
     },
@@ -578,8 +558,8 @@ const patterns = [
     description: 'ChatGPT uses Unicode curly quotes (\u201C\u201D\u2018\u2019) instead of straight quotes.',
     weight: 1,
     detect(text) {
-      const curlyQuotes = /[\u201C\u201D\u2018\u2019]/g;
-      return findMatches(text, curlyQuotes, 'Replace curly quotes with straight quotes.');
+      return findMatches(text, /[\u201C\u201D\u2018\u2019]/g,
+        'Replace curly quotes with straight quotes.', 'high');
     },
   },
 
@@ -592,11 +572,10 @@ const patterns = [
     description: 'Leftover chatbot phrases: "I hope this helps!", "Let me know if...", "Here is an overview".',
     weight: 5,
     detect(text) {
-      const results = [];
-      for (const regex of CHATBOT_ARTIFACTS) {
-        results.push(...findMatches(text, regex, 'Remove chatbot artifact — this is conversational filler, not content.'));
-      }
-      return results;
+      // Use the phrase-level detection from vocabulary.js
+      return scanPhrases(text, AI_PHRASES.filter(p =>
+        p.fix === '(remove)' || p.fix === '(remove — start with the content)'
+      ));
     },
   },
 
@@ -604,14 +583,16 @@ const patterns = [
     id: 20,
     name: 'Cutoff disclaimers',
     category: 'communication',
-    description: 'AI knowledge-cutoff disclaimers left in text: "As of my last training...", "While details are limited...".',
+    description: 'AI knowledge-cutoff disclaimers left in text.',
     weight: 4,
     detect(text) {
-      const results = [];
-      for (const regex of CUTOFF_DISCLAIMERS) {
-        results.push(...findMatches(text, regex, 'Remove knowledge-cutoff disclaimer. Either find the info or omit the claim.'));
-      }
-      return results;
+      return scanPhrases(text, AI_PHRASES.filter(p =>
+        p.fix === '(remove)' && (
+          p.pattern.source.includes('training') ||
+          p.pattern.source.includes('details are') ||
+          p.pattern.source.includes('available')
+        )
+      ));
     },
   },
 
@@ -622,11 +603,16 @@ const patterns = [
     description: 'Overly positive, people-pleasing language: "Great question!", "You\'re absolutely right!".',
     weight: 4,
     detect(text) {
-      const results = [];
-      for (const regex of SYCOPHANTIC_PHRASES) {
-        results.push(...findMatches(text, regex, 'Remove sycophantic filler. Just address the substance.'));
-      }
-      return results;
+      return scanPhrases(text, AI_PHRASES.filter(p =>
+        p.fix && (
+          p.fix.includes('(remove)') || p.fix.includes('address the substance')
+        ) && (
+          p.pattern.source.includes('question') ||
+          p.pattern.source.includes('point') ||
+          p.pattern.source.includes('right') ||
+          p.pattern.source.includes('observation')
+        )
+      ));
     },
   },
 
@@ -639,11 +625,11 @@ const patterns = [
     description: 'Wordy filler that can be shortened: "in order to" → "to", "due to the fact that" → "because".',
     weight: 3,
     detect(text) {
-      const results = [];
-      for (const { pattern, fix } of FILLER_PHRASES) {
-        results.push(...findMatches(text, pattern, `Replace with "${fix}".`));
-      }
-      return results;
+      return scanPhrases(text, AI_PHRASES.filter(p =>
+        p.fix && !p.fix.startsWith('(') &&
+        ['to', 'because', 'now', 'if', 'can', 'to / for', 'first', 'finally',
+         'for / regarding', 'because / since'].includes(p.fix)
+      ));
     },
   },
 
@@ -654,11 +640,12 @@ const patterns = [
     description: 'Stacking qualifiers: "could potentially possibly", "might arguably perhaps".',
     weight: 3,
     detect(text) {
-      const results = [];
-      for (const regex of HEDGING_WORDS) {
-        results.push(...findMatches(text, regex, 'Remove stacked hedging. One qualifier is enough — or commit to the claim.'));
-      }
-      return results;
+      return scanPhrases(text, AI_PHRASES.filter(p =>
+        p.fix && (
+          p.fix.includes('could') || p.fix.includes('might') ||
+          p.fix.includes('may') || p.fix.includes('perhaps') || p.fix.includes('maybe')
+        )
+      ));
     },
   },
 
@@ -669,33 +656,92 @@ const patterns = [
     description: 'Vague upbeat endings: "The future looks bright", "Exciting times lie ahead".',
     weight: 3,
     detect(text) {
-      const results = [];
-      for (const regex of GENERIC_CONCLUSIONS) {
-        results.push(...findMatches(text, regex, 'Replace with a specific forward-looking statement or just end.'));
-      }
-      return results;
+      return scanPhrases(text, AI_PHRASES.filter(p =>
+        p.fix && (
+          p.fix.includes('specific fact') || p.fix.includes('concrete') ||
+          p.fix.includes('cite evidence') || p.fix.includes('what you do know') ||
+          p.fix.includes('what happens next')
+        )
+      ));
     },
   },
 ];
+
+// ─── Pattern Registry ────────────────────────────────────
+
+class PatternRegistry {
+  constructor() {
+    this._patterns = [...patterns];
+    this._customWords = { tier1: [], tier2: [], tier3: [] };
+  }
+
+  /** Get all patterns. */
+  all() { return this._patterns; }
+
+  /** Get pattern by ID. */
+  get(id) { return this._patterns.find(p => p.id === id); }
+
+  /** Get patterns by category. */
+  byCategory(category) { return this._patterns.filter(p => p.category === category); }
+
+  /** Add a custom pattern. */
+  add(pattern) {
+    if (!pattern.id || !pattern.name || !pattern.detect) {
+      throw new Error('Pattern must have id, name, and detect function');
+    }
+    this._patterns.push(pattern);
+  }
+
+  /** Remove a pattern by ID. */
+  remove(id) {
+    this._patterns = this._patterns.filter(p => p.id !== id);
+  }
+
+  /** Add custom words to a tier. */
+  addWords(tier, words) {
+    const key = `tier${tier}`;
+    if (!this._customWords[key]) throw new Error(`Invalid tier: ${tier}`);
+    this._customWords[key].push(...words);
+  }
+
+  /** Get full vocabulary for a tier (built-in + custom). */
+  getVocabulary(tier) {
+    const builtIn = tier === 1 ? TIER_1 : tier === 2 ? TIER_2 : TIER_3;
+    return [...builtIn, ...(this._customWords[`tier${tier}`] || [])];
+  }
+
+  /** List all pattern IDs and names. */
+  list() {
+    return this._patterns.map(p => ({
+      id: p.id, name: p.name, category: p.category, weight: p.weight,
+    }));
+  }
+
+  /** Get categories. */
+  categories() {
+    return [...new Set(this._patterns.map(p => p.category))];
+  }
+}
+
+// Singleton registry
+const registry = new PatternRegistry();
 
 // ─── Exports ─────────────────────────────────────────────
 
 module.exports = {
   patterns,
-  AI_VOCAB_HIGH,
-  AI_VOCAB_MEDIUM,
+  registry,
+  PatternRegistry,
+  findMatches,
+  countMatches,
+  wordCount,
+  scanWordList,
+  scanPhrases,
+  // Re-export vocabulary for backward compat
+  TIER_1, TIER_2, TIER_3, AI_PHRASES,
   SIGNIFICANCE_PHRASES,
   PROMOTIONAL_WORDS,
   VAGUE_ATTRIBUTION_PHRASES,
   CHALLENGES_PHRASES,
   COPULA_AVOIDANCE,
-  CHATBOT_ARTIFACTS,
-  SYCOPHANTIC_PHRASES,
-  CUTOFF_DISCLAIMERS,
-  FILLER_PHRASES,
-  HEDGING_WORDS,
-  GENERIC_CONCLUSIONS,
-  findMatches,
-  countMatches,
-  wordCount,
 };
