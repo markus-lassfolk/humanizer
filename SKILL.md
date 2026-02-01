@@ -127,6 +127,17 @@ node src/cli.js humanize --autofix -f article.txt
 node src/cli.js analyze --json < input.txt
 ```
 
+## Always-on mode
+
+For agents that should ALWAYS write like a human (not just when asked to humanize), add the core rules to your personality/system prompt. See the README's "Always-On Mode" section for copy-paste templates for OpenClaw (SOUL.md), Claude, and ChatGPT.
+
+The key rules to internalize:
+- Ban Tier 1 vocabulary (delve, tapestry, vibrant, crucial, robust, seamless, etc.)
+- Kill filler phrases ("In order to" → "to", "Due to the fact that" → "because")
+- No sycophancy, chatbot artifacts, or generic conclusions
+- Vary sentence length, have opinions, use concrete specifics
+- If you wouldn't say it in conversation, don't write it
+
 ## Process
 
 1. Read the input text
