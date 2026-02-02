@@ -60,13 +60,13 @@ describe('autoFix', () => {
   it('removes chatbot opening artifacts', () => {
     const { text, fixes } = autoFix('Great question! Here is the answer to your question.');
     expect(text).not.toContain('Great question!');
-    expect(fixes.some(f => f.includes('chatbot'))).toBe(true);
+    expect(fixes.some((f) => f.includes('chatbot'))).toBe(true);
   });
 
   it('removes chatbot closing artifacts', () => {
     const { text, fixes } = autoFix('The answer is 42. I hope this helps!');
     expect(text).not.toContain('I hope this helps');
-    expect(fixes.some(f => f.includes('chatbot'))).toBe(true);
+    expect(fixes.some((f) => f.includes('chatbot'))).toBe(true);
   });
 
   it('handles text with no fixable issues', () => {
@@ -76,7 +76,8 @@ describe('autoFix', () => {
   });
 
   it('applies multiple fixes in one pass', () => {
-    const input = 'Great question! In order to help, due to the fact that you asked, here\u2019s the answer. I hope this helps!';
+    const input =
+      'Great question! In order to help, due to the fact that you asked, here\u2019s the answer. I hope this helps!';
     const { text, fixes } = autoFix(input);
     expect(fixes.length).toBeGreaterThanOrEqual(3);
     expect(text).not.toContain('In order to');
@@ -109,7 +110,7 @@ describe('humanize', () => {
     const text = loadFixture('ai-sample-1.txt');
     const result = humanize(text);
     expect(result.guidance.length).toBeGreaterThan(0);
-    expect(result.guidance.some(g => typeof g === 'string' && g.length > 10)).toBe(true);
+    expect(result.guidance.some((g) => typeof g === 'string' && g.length > 10)).toBe(true);
   });
 
   it('returns autofix results when requested', () => {

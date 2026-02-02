@@ -25,13 +25,13 @@ function splitSentences(text) {
   // Handle common abbreviations that shouldn't split
   const cleaned = text
     .replace(/\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|etc|vs|approx|dept|est|vol)\./gi, '$1\u2024') // temp replace
-    .replace(/\b([A-Z])\./g, '$1\u2024')        // initials: "J. K. Rowling"
-    .replace(/\b(\d+)\./g, '$1\u2024');           // numbered lists
+    .replace(/\b([A-Z])\./g, '$1\u2024') // initials: "J. K. Rowling"
+    .replace(/\b(\d+)\./g, '$1\u2024'); // numbered lists
 
   const sentences = cleaned
     .split(/(?<=[.!?])\s+(?=[A-Z"'\u201C])|(?<=[.!?])$/)
-    .map(s => s.replace(/\u2024/g, '.').trim())
-    .filter(s => s.length > 0);
+    .map((s) => s.replace(/\u2024/g, '.').trim())
+    .filter((s) => s.length > 0);
 
   return sentences;
 }
@@ -46,7 +46,7 @@ function tokenize(text) {
     .toLowerCase()
     .replace(/[^\w\s'-]/g, ' ')
     .split(/\s+/)
-    .filter(w => w.length > 0);
+    .filter((w) => w.length > 0);
 }
 
 /**
@@ -62,7 +62,7 @@ function computeStats(text) {
 
   const words = tokenize(text);
   const sentences = splitSentences(text);
-  const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+  const paragraphs = text.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
 
   if (words.length === 0) return emptyStats();
 
@@ -75,7 +75,7 @@ function computeStats(text) {
   const avgWordLength = words.reduce((sum, w) => sum + w.length, 0) / wordCount;
 
   // ── Sentence-level stats ────────────────────────────
-  const sentenceLengths = sentences.map(s => tokenize(s).length).filter(n => n > 0);
+  const sentenceLengths = sentences.map((s) => tokenize(s).length).filter((n) => n > 0);
   const sentenceCount = sentenceLengths.length;
 
   let avgSentenceLength = 0;
@@ -87,14 +87,13 @@ function computeStats(text) {
     avgSentenceLength = sentenceLengths.reduce((a, b) => a + b, 0) / sentenceCount;
 
     // Standard deviation
-    const variance = sentenceLengths.reduce((sum, len) =>
-      sum + Math.pow(len - avgSentenceLength, 2), 0) / sentenceCount;
+    const variance =
+      sentenceLengths.reduce((sum, len) => sum + Math.pow(len - avgSentenceLength, 2), 0) /
+      sentenceCount;
     sentenceLengthStdDev = Math.sqrt(variance);
 
     // Coefficient of variation (std dev / mean) — our burstiness proxy
-    sentenceLengthVariation = avgSentenceLength > 0
-      ? sentenceLengthStdDev / avgSentenceLength
-      : 0;
+    sentenceLengthVariation = avgSentenceLength > 0 ? sentenceLengthStdDev / avgSentenceLength : 0;
 
     // Burstiness: based on consecutive sentence length differences
     // High burstiness = human (lots of variation between consecutive sentences)
@@ -104,17 +103,14 @@ function computeStats(text) {
       consecutiveDiffSum += Math.abs(sentenceLengths[i] - sentenceLengths[i - 1]);
     }
     const avgConsecutiveDiff = consecutiveDiffSum / (sentenceLengths.length - 1);
-    burstiness = avgSentenceLength > 0
-      ? avgConsecutiveDiff / avgSentenceLength
-      : 0;
-
+    burstiness = avgSentenceLength > 0 ? avgConsecutiveDiff / avgSentenceLength : 0;
   } else if (sentenceCount === 1) {
     avgSentenceLength = sentenceLengths[0];
   }
 
   // ── Function word ratio ─────────────────────────────
   const functionWordSet = new Set(FUNCTION_WORDS);
-  const functionWordCount = words.filter(w => functionWordSet.has(w)).length;
+  const functionWordCount = words.filter((w) => functionWordSet.has(w)).length;
   const functionWordRatio = functionWordCount / wordCount;
 
   // ── N-gram repetition ───────────────────────────────
@@ -122,15 +118,17 @@ function computeStats(text) {
 
   // ── Paragraph stats ─────────────────────────────────
   const paragraphCount = paragraphs.length;
-  const avgParagraphLength = paragraphCount > 0
-    ? paragraphs.reduce((sum, p) => sum + tokenize(p).length, 0) / paragraphCount
-    : 0;
+  const avgParagraphLength =
+    paragraphCount > 0
+      ? paragraphs.reduce((sum, p) => sum + tokenize(p).length, 0) / paragraphCount
+      : 0;
 
   // ── Readability (Flesch-Kincaid Grade Level approximation) ──
   const syllableCount = words.reduce((sum, w) => sum + estimateSyllables(w), 0);
-  const fleschKincaid = sentenceCount > 0
-    ? 0.39 * (wordCount / sentenceCount) + 11.8 * (syllableCount / wordCount) - 15.59
-    : 0;
+  const fleschKincaid =
+    sentenceCount > 0
+      ? 0.39 * (wordCount / sentenceCount) + 11.8 * (syllableCount / wordCount) - 15.59
+      : 0;
 
   return {
     wordCount,
@@ -168,7 +166,7 @@ function computeNgramRepetition(words, n) {
   const totalNgrams = Object.keys(ngrams).length;
   if (totalNgrams === 0) return 0;
 
-  const repeated = Object.values(ngrams).filter(c => c > 1).length;
+  const repeated = Object.values(ngrams).filter((c) => c > 1).length;
   return repeated / totalNgrams;
 }
 
@@ -225,15 +223,14 @@ function computeUniformityScore(stats) {
 
   // High trigram repetition = more AI-like (max 15 points)
   if (stats.trigramRepetition > 0.15) score += 15;
-  else if (stats.trigramRepetition > 0.10) score += 10;
+  else if (stats.trigramRepetition > 0.1) score += 10;
   else if (stats.trigramRepetition > 0.05) score += 5;
 
   // Abnormally uniform paragraph lengths (max 15 points)
   // Only check if we have multiple paragraphs
   if (stats.paragraphCount >= 3 && stats.sentenceCount > 5) {
     // Check if all paragraphs are similar length
-    const paraLengths = [];
-    // Re-derive paragraph lengths... we'll use a simpler proxy
+    // Use sentence length uniformity as a proxy for paragraph uniformity
     if (stats.sentenceLengthStdDev < 3 && stats.avgSentenceLength > 10) {
       score += 15; // Very uniform sentence lengths with moderate length = AI
     }

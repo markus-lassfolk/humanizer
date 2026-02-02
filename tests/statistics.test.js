@@ -143,7 +143,8 @@ describe('computeStats', () => {
     const uniformStats = computeStats(uniform);
 
     // Very varied sentences → higher burstiness
-    const varied = 'Hi. This is a much longer sentence with many more words in it that goes on and on for a while. OK.';
+    const varied =
+      'Hi. This is a much longer sentence with many more words in it that goes on and on for a while. OK.';
     const variedStats = computeStats(varied);
 
     expect(variedStats.burstiness).toBeGreaterThan(uniformStats.burstiness);
@@ -201,12 +202,14 @@ describe('computeUniformityScore', () => {
 
   it('returns higher score for uniform text', () => {
     // Uniform sentences — should score higher (more AI-like)
-    const uniform = 'This is a sentence. Here is another one. And there is one more. Plus yet another sentence. One final sentence too.';
+    const uniform =
+      'This is a sentence. Here is another one. And there is one more. Plus yet another sentence. One final sentence too.';
     const uniformStats = computeStats(uniform);
     const uniformScore = computeUniformityScore(uniformStats);
 
     // Varied sentences — should score lower (more human-like)
-    const varied = 'Short. This is a much much longer sentence that really goes on for a while with many more words. Medium one here. Yes. And then this one wraps up with a moderate number of words.';
+    const varied =
+      'Short. This is a much much longer sentence that really goes on for a while with many more words. Medium one here. Yes. And then this one wraps up with a moderate number of words.';
     const variedStats = computeStats(varied);
     const variedScore = computeUniformityScore(variedStats);
 

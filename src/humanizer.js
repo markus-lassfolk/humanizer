@@ -42,13 +42,21 @@ function autoFix(text) {
   // Filler phrase replacements (unambiguous)
   const safeFills = [
     { from: /\bin order to\b/gi, to: 'to', label: '"in order to" → "to"' },
-    { from: /\bdue to the fact that\b/gi, to: 'because', label: '"due to the fact that" → "because"' },
+    {
+      from: /\bdue to the fact that\b/gi,
+      to: 'because',
+      label: '"due to the fact that" → "because"',
+    },
     { from: /\bat this point in time\b/gi, to: 'now', label: '"at this point in time" → "now"' },
     { from: /\bin the event that\b/gi, to: 'if', label: '"in the event that" → "if"' },
     { from: /\bhas the ability to\b/gi, to: 'can', label: '"has the ability to" → "can"' },
     { from: /\bfor the purpose of\b/gi, to: 'to', label: '"for the purpose of" → "to"' },
     { from: /\bfirst and foremost\b/gi, to: 'first', label: '"first and foremost" → "first"' },
-    { from: /\bin light of the fact that\b/gi, to: 'because', label: '"in light of the fact that" → "because"' },
+    {
+      from: /\bin light of the fact that\b/gi,
+      to: 'because',
+      label: '"in light of the fact that" → "because"',
+    },
     { from: /\bin the realm of\b/gi, to: 'in', label: '"in the realm of" → "in"' },
     { from: /\butilize\b/gi, to: 'use', label: '"utilize" → "use"' },
     { from: /\butilizing\b/gi, to: 'using', label: '"utilizing" → "using"' },
@@ -104,17 +112,17 @@ function autoFix(text) {
  * @returns {object}       — Suggestions report
  */
 function humanize(text, opts = {}) {
-  const { autofix = false, verbose = false, includeStats = true } = opts;
+  const { autofix = false, includeStats = true } = opts;
 
   const analysis = analyze(text, { verbose: true, includeStats });
 
   // Group by priority
-  const critical = [];  // weight 4-5: dead giveaways
+  const critical = []; // weight 4-5: dead giveaways
   const important = []; // weight 2-3: noticeable
-  const minor = [];     // weight 1: subtle
+  const minor = []; // weight 1: subtle
 
   for (const finding of analysis.findings) {
-    const suggestions = finding.matches.map(m => ({
+    const suggestions = finding.matches.map((m) => ({
       pattern: finding.patternName,
       patternId: finding.patternId,
       category: finding.category,
@@ -142,8 +150,7 @@ function humanize(text, opts = {}) {
 
   // Build guidance (pattern-based + statistical)
   const guidance = buildGuidance(analysis);
-  const styleTips = includeStats && analysis.stats
-    ? buildStyleTips(analysis.stats) : [];
+  const styleTips = includeStats && analysis.stats ? buildStyleTips(analysis.stats) : [];
 
   return {
     score: analysis.score,
@@ -166,41 +173,71 @@ function humanize(text, opts = {}) {
  */
 function buildGuidance(analysis) {
   const tips = [];
-  const ids = new Set(analysis.findings.map(f => f.patternId));
+  const ids = new Set(analysis.findings.map((f) => f.patternId));
 
-  if (ids.has(1) || ids.has(4))
-    tips.push('Replace inflated/promotional language with concrete facts. What specifically happened? Give dates, numbers, names.');
-  if (ids.has(3))
-    tips.push('Cut trailing -ing phrases. If the point matters enough to mention, give it its own sentence.');
-  if (ids.has(5))
+  if (ids.has(1) || ids.has(4)) {
+    tips.push(
+      'Replace inflated/promotional language with concrete facts. What specifically happened? Give dates, numbers, names.',
+    );
+  }
+  if (ids.has(3)) {
+    tips.push(
+      'Cut trailing -ing phrases. If the point matters enough to mention, give it its own sentence.',
+    );
+  }
+  if (ids.has(5)) {
     tips.push('Name your sources. "Experts say" means nothing — who said it, when, and where?');
-  if (ids.has(6))
-    tips.push('Replace formulaic "despite challenges" sections with specific problems and concrete outcomes.');
-  if (ids.has(7))
-    tips.push('Swap AI vocabulary for plainer words. "Delve" → "look at". "Tapestry" → (be specific). "Showcase" → "show".');
-  if (ids.has(8))
+  }
+  if (ids.has(6)) {
+    tips.push(
+      'Replace formulaic "despite challenges" sections with specific problems and concrete outcomes.',
+    );
+  }
+  if (ids.has(7)) {
+    tips.push(
+      'Swap AI vocabulary for plainer words. "Delve" → "look at". "Tapestry" → (be specific). "Showcase" → "show".',
+    );
+  }
+  if (ids.has(8)) {
     tips.push('Use "is" and "has" freely. "Serves as" and "boasts" are needlessly fancy.');
-  if (ids.has(9))
+  }
+  if (ids.has(9)) {
     tips.push('Drop "not just X, it\'s Y" frames. Just say what the thing is.');
-  if (ids.has(10))
-    tips.push('Break up triads. You don\'t always need three of everything.');
-  if (ids.has(13))
+  }
+  if (ids.has(10)) {
+    tips.push("Break up triads. You don't always need three of everything.");
+  }
+  if (ids.has(13)) {
     tips.push('Ease up on em dashes. Use commas, periods, or parentheses for variety.');
-  if (ids.has(14) || ids.has(15))
+  }
+  if (ids.has(14) || ids.has(15)) {
     tips.push('Strip mechanical bold formatting and inline-header lists. Let prose do the work.');
-  if (ids.has(17))
+  }
+  if (ids.has(17)) {
     tips.push('Remove emojis from professional text. They signal chatbot output.');
-  if (ids.has(19) || ids.has(21))
-    tips.push('Remove chatbot filler ("I hope this helps!", "Great question!"). Just deliver the content.');
-  if (ids.has(20))
+  }
+  if (ids.has(19) || ids.has(21)) {
+    tips.push(
+      'Remove chatbot filler ("I hope this helps!", "Great question!"). Just deliver the content.',
+    );
+  }
+  if (ids.has(20)) {
     tips.push('Delete knowledge-cutoff disclaimers. Either research it or leave it out.');
-  if (ids.has(22) || ids.has(23))
+  }
+  if (ids.has(22) || ids.has(23)) {
     tips.push('Trim filler and hedging. "In order to" → "to". One qualifier per claim is enough.');
-  if (ids.has(24))
-    tips.push('Cut generic conclusions. End with a specific fact instead of "the future looks bright".');
+  }
+  if (ids.has(24)) {
+    tips.push(
+      'Cut generic conclusions. End with a specific fact instead of "the future looks bright".',
+    );
+  }
 
-  if (analysis.score >= 50)
-    tips.push('Consider rewriting from scratch. When AI patterns are this dense, patching individual phrases isn\'t enough — the structure itself needs rethinking.');
+  if (analysis.score >= 50) {
+    tips.push(
+      "Consider rewriting from scratch. When AI patterns are this dense, patching individual phrases isn't enough — the structure itself needs rethinking.",
+    );
+  }
 
   return tips;
 }
@@ -244,7 +281,7 @@ function buildStyleTips(stats) {
     tips.push({
       metric: 'typeTokenRatio',
       value: stats.typeTokenRatio,
-      tip: 'Vocabulary is repetitive. Try using more varied word choices — but don\'t synonym-cycle (that\'s also an AI tell).',
+      tip: "Vocabulary is repetitive. Try using more varied word choices — but don't synonym-cycle (that's also an AI tell).",
     });
   }
 
@@ -262,7 +299,7 @@ function buildStyleTips(stats) {
     tips.push({
       metric: 'general',
       value: null,
-      tip: 'Try the read-aloud test: read the text out loud. If it sounds weird or robotic, rewrite those parts until they sound like something you\'d actually say.',
+      tip: "Try the read-aloud test: read the text out loud. If it sounds weird or robotic, rewrite those parts until they sound like something you'd actually say.",
     });
     tips.push({
       metric: 'general',
@@ -291,7 +328,9 @@ function formatSuggestions(result) {
   const filled = Math.round(result.score / 5);
   const bar = '█'.repeat(filled) + '░'.repeat(20 - filled);
   lines.push(`  AI Score: ${result.score}/100  [${bar}]`);
-  lines.push(`  Issues: ${result.totalIssues}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`);
+  lines.push(
+    `  Issues: ${result.totalIssues}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
+  );
   lines.push('');
 
   if (result.critical.length > 0) {
@@ -358,7 +397,7 @@ function formatSuggestions(result) {
 
 function truncate(str, len) {
   if (typeof str !== 'string') return '';
-  return str.length > len ? str.substring(0, len) + '...' : str;
+  return str.length > len ? `${str.substring(0, len)}...` : str;
 }
 
 // ─── Exports ─────────────────────────────────────────────

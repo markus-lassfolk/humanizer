@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { analyze, score } from '../src/analyzer.js';
+import { score } from '../src/analyzer.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -133,7 +133,8 @@ describe('relative scoring', () => {
 
   it('more AI patterns → higher score', () => {
     const light = 'The project has been interesting in scope. We worked hard on it last year.';
-    const heavy = `Additionally, this groundbreaking project serves as a testament to innovation. In today's rapidly evolving landscape, it showcases the vibrant tapestry of modern technology, fostering seamless synergy. I hope this helps!`;
+    const heavy =
+      "Additionally, this groundbreaking project serves as a testament to innovation. In today's rapidly evolving landscape, it showcases the vibrant tapestry of modern technology, fostering seamless synergy. I hope this helps!";
 
     expect(score(heavy)).toBeGreaterThan(score(light));
   });

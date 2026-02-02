@@ -152,13 +152,15 @@ describe('malformed input', () => {
   });
 
   it('handles markdown-heavy text', () => {
-    const text = '# Heading\n\n**bold** _italic_ ~~strike~~ `code`\n\n- item 1\n- item 2\n- item 3\n\n> blockquote\n\n```\ncode block\n```';
+    const text =
+      '# Heading\n\n**bold** _italic_ ~~strike~~ `code`\n\n- item 1\n- item 2\n- item 3\n\n> blockquote\n\n```\ncode block\n```';
     const result = analyze(text);
     expect(result.score).toBeGreaterThanOrEqual(0);
   });
 
   it('handles text with URLs', () => {
-    const text = 'Check out https://example.com and http://test.org/path?query=1&foo=bar for more info.';
+    const text =
+      'Check out https://example.com and http://test.org/path?query=1&foo=bar for more info.';
     const result = analyze(text);
     expect(result.score).toBeGreaterThanOrEqual(0);
   });

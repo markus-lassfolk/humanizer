@@ -13,12 +13,12 @@ import { computeStats } from '../src/stats.js';
  */
 function generateLargeText(targetWords) {
   const paragraphs = [
-    'The project serves as a testament to innovation and transformative technology. In today\'s rapidly evolving landscape, these groundbreaking tools are reshaping how organizations navigate complexities.',
+    "The project serves as a testament to innovation and transformative technology. In today's rapidly evolving landscape, these groundbreaking tools are reshaping how organizations navigate complexities.",
     'I tried three different approaches last week. The first one worked but was slow. The second broke in production. Third time was the charm — simple solution, no fancy tricks.',
     'Additionally, the comprehensive framework showcases seamless integration with cutting-edge platforms. Experts believe this plays a crucial role in fostering synergy across multifaceted teams.',
     'Found the bug at 2am. It was a race condition in the connection pool. Added a mutex, wrote a test, went to bed. PR got merged the next morning.',
     'It is worth noting that the landscape of modern software continues to evolve at a breathtaking pace. Despite challenges, the future looks bright as exciting times lie ahead.',
-    'The API returns JSON. You POST to /users with a name and email. It gives you back an ID. That\'s it. No magic, just a REST endpoint.',
+    "The API returns JSON. You POST to /users with a name and email. It gives you back an ID. That's it. No magic, just a REST endpoint.",
   ];
 
   let text = '';
@@ -70,8 +70,9 @@ describe('performance', () => {
   });
 
   it('many short analyses complete quickly (batch)', () => {
-    const texts = Array.from({ length: 100 }, (_, i) =>
-      `This is test text number ${i}. It has a few sentences. Nothing special here.`
+    const texts = Array.from(
+      { length: 100 },
+      (_, i) => `This is test text number ${i}. It has a few sentences. Nothing special here.`,
     );
 
     const start = performance.now();

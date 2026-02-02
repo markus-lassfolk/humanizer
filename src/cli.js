@@ -18,7 +18,7 @@
  */
 
 const fs = require('fs');
-const { analyze, score, formatReport, formatMarkdown, formatJSON } = require('./analyzer');
+const { analyze, score, formatMarkdown, formatJSON } = require('./analyzer');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
 
@@ -34,23 +34,23 @@ const supportsColor = process.stdout.isTTY && !process.env.NO_COLOR;
 
 const color = {
   /** @param {string} s */
-  red: (s) => supportsColor ? `\x1b[31m${s}\x1b[0m` : s,
+  red: (s) => (supportsColor ? `\x1b[31m${s}\x1b[0m` : s),
   /** @param {string} s */
-  green: (s) => supportsColor ? `\x1b[32m${s}\x1b[0m` : s,
+  green: (s) => (supportsColor ? `\x1b[32m${s}\x1b[0m` : s),
   /** @param {string} s */
-  yellow: (s) => supportsColor ? `\x1b[33m${s}\x1b[0m` : s,
+  yellow: (s) => (supportsColor ? `\x1b[33m${s}\x1b[0m` : s),
   /** @param {string} s */
-  blue: (s) => supportsColor ? `\x1b[34m${s}\x1b[0m` : s,
+  blue: (s) => (supportsColor ? `\x1b[34m${s}\x1b[0m` : s),
   /** @param {string} s */
-  magenta: (s) => supportsColor ? `\x1b[35m${s}\x1b[0m` : s,
+  magenta: (s) => (supportsColor ? `\x1b[35m${s}\x1b[0m` : s),
   /** @param {string} s */
-  cyan: (s) => supportsColor ? `\x1b[36m${s}\x1b[0m` : s,
+  cyan: (s) => (supportsColor ? `\x1b[36m${s}\x1b[0m` : s),
   /** @param {string} s */
-  gray: (s) => supportsColor ? `\x1b[90m${s}\x1b[0m` : s,
+  gray: (s) => (supportsColor ? `\x1b[90m${s}\x1b[0m` : s),
   /** @param {string} s */
-  bold: (s) => supportsColor ? `\x1b[1m${s}\x1b[0m` : s,
+  bold: (s) => (supportsColor ? `\x1b[1m${s}\x1b[0m` : s),
   /** @param {string} s */
-  dim: (s) => supportsColor ? `\x1b[2m${s}\x1b[0m` : s,
+  dim: (s) => (supportsColor ? `\x1b[2m${s}\x1b[0m` : s),
 };
 
 /**
@@ -112,7 +112,10 @@ if (!flags.file && args[1] && !args[1].startsWith('-')) {
 // Parse --patterns flag (comma-separated pattern IDs)
 const patIdx = args.indexOf('--patterns');
 if (patIdx !== -1 && args[patIdx + 1]) {
-  flags.patterns = args[patIdx + 1].split(',').map(Number).filter(n => n > 0);
+  flags.patterns = args[patIdx + 1]
+    .split(',')
+    .map(Number)
+    .filter((n) => n > 0);
 }
 
 // Parse --threshold flag
@@ -210,7 +213,9 @@ function readInput() {
 
     let data = '';
     process.stdin.setEncoding('utf-8');
-    process.stdin.on('data', chunk => { data += chunk; });
+    process.stdin.on('data', (chunk) => {
+      data += chunk;
+    });
     process.stdin.on('end', () => resolve(data));
     process.stdin.on('error', reject);
   });
@@ -243,7 +248,9 @@ function formatStatsReport(stats) {
   lines.push(color.bold('  ── Vocabulary ─────────────────────────────────'));
   lines.push(`    Total words:      ${stats.wordCount}`);
   lines.push(`    Unique words:     ${stats.uniqueWordCount}`);
-  lines.push(`    Type-token ratio: ${stats.typeTokenRatio}  ${ttrLabel(stats.typeTokenRatio, stats.wordCount)}`);
+  lines.push(
+    `    Type-token ratio: ${stats.typeTokenRatio}  ${ttrLabel(stats.typeTokenRatio, stats.wordCount)}`,
+  );
   lines.push(`    Avg word length:  ${stats.avgWordLength}`);
   lines.push('');
 
@@ -255,7 +262,9 @@ function formatStatsReport(stats) {
 
   lines.push(color.bold('  ── Readability ────────────────────────────────'));
   lines.push(`    Flesch-Kincaid:   ${stats.fleschKincaid} grade level`);
-  lines.push(`    Function words:   ${stats.functionWordRatio} (${(stats.functionWordRatio * 100).toFixed(1)}%)`);
+  lines.push(
+    `    Function words:   ${stats.functionWordRatio} (${(stats.functionWordRatio * 100).toFixed(1)}%)`,
+  );
   lines.push('');
 
   return lines.join('\n');
@@ -307,13 +316,19 @@ function formatColoredReport(result) {
 
   // Score bar with color
   const filled = Math.round(result.score / 5);
-  const barColor = result.score <= 25 ? color.green
-    : result.score <= 50 ? color.yellow
-    : result.score <= 75 ? color.magenta
-    : color.red;
+  const barColor =
+    result.score <= 25
+      ? color.green
+      : result.score <= 50
+        ? color.yellow
+        : result.score <= 75
+          ? color.magenta
+          : color.red;
   const bar = barColor('█'.repeat(filled)) + color.dim('░'.repeat(20 - filled));
   lines.push(`  Score: ${scoreBadge(result.score)}  [${bar}]`);
-  lines.push(`  ${color.dim(`Words: ${result.wordCount}  |  Matches: ${result.totalMatches}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`)}`);
+  lines.push(
+    `  ${color.dim(`Words: ${result.wordCount}  |  Matches: ${result.totalMatches}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`)}`,
+  );
   lines.push('');
   lines.push(`  ${result.summary}`);
   lines.push('');
@@ -323,7 +338,9 @@ function formatColoredReport(result) {
     const s = result.stats;
     lines.push(color.bold('  ── Statistics ──────────────────────────────────'));
     lines.push(`  Burstiness: ${s.burstiness}  ${burstLabel(s.burstiness)}`);
-    lines.push(`  Type-token ratio: ${s.typeTokenRatio}  ${ttrLabel(s.typeTokenRatio, s.wordCount)}`);
+    lines.push(
+      `  Type-token ratio: ${s.typeTokenRatio}  ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
+    );
     lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
     lines.push(`  Readability: ${s.fleschKincaid} grade level`);
     lines.push('');
@@ -333,7 +350,9 @@ function formatColoredReport(result) {
   lines.push(color.bold('  ── Categories ──────────────────────────────────'));
   for (const [, data] of Object.entries(result.categories)) {
     if (data.matches > 0) {
-      lines.push(`  ${color.cyan(data.label)}: ${data.matches} matches ${color.dim(`(${data.patternsDetected.join(', ')})`)}`);
+      lines.push(
+        `  ${color.cyan(data.label)}: ${data.matches} matches ${color.dim(`(${data.patternsDetected.join(', ')})`)}`,
+      );
     }
   }
   lines.push('');
@@ -345,21 +364,27 @@ function formatColoredReport(result) {
       if (flags.threshold && finding.weight < flags.threshold) continue;
 
       lines.push('');
-      const weightColor = finding.weight >= 4 ? color.red : finding.weight >= 2 ? color.yellow : color.blue;
-      lines.push(`  ${weightColor(`[${finding.patternId}]`)} ${color.bold(finding.patternName)} ${color.dim(`(×${finding.matchCount}, weight: ${finding.weight})`)}`);
+      const weightColor =
+        finding.weight >= 4 ? color.red : finding.weight >= 2 ? color.yellow : color.blue;
+      lines.push(
+        `  ${weightColor(`[${finding.patternId}]`)} ${color.bold(finding.patternName)} ${color.dim(`(×${finding.matchCount}, weight: ${finding.weight})`)}`,
+      );
       lines.push(`      ${color.dim(finding.description)}`);
       for (const match of finding.matches) {
         const loc = match.line ? `L${match.line}` : '';
-        const preview = typeof match.match === 'string'
-          ? match.match.substring(0, 80) + (match.match.length > 80 ? '...' : '')
-          : '';
+        const preview =
+          typeof match.match === 'string'
+            ? match.match.substring(0, 80) + (match.match.length > 80 ? '...' : '')
+            : '';
         lines.push(`      ${color.dim(loc)}: "${preview}"`);
         if (match.suggestion) {
           lines.push(`            ${color.green('→')} ${match.suggestion}`);
         }
       }
       if (finding.truncated) {
-        lines.push(`      ${color.dim(`... and ${finding.matchCount - finding.matches.length} more`)}`);
+        lines.push(
+          `      ${color.dim(`... and ${finding.matchCount - finding.matches.length} more`)}`,
+        );
       }
     }
   }
@@ -443,7 +468,7 @@ function formatGroupedSuggestions(result) {
  */
 function truncate(str, len) {
   if (typeof str !== 'string') return '';
-  return str.length > len ? str.substring(0, len) + '...' : str;
+  return str.length > len ? `${str.substring(0, len)}...` : str;
 }
 
 // ─── Main ────────────────────────────────────────────────
@@ -543,7 +568,7 @@ async function main() {
   }
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(color.red(`Fatal: ${err.message}`));
   process.exit(1);
 });

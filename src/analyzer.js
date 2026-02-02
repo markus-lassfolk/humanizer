@@ -14,7 +14,7 @@
  *   - StyloAI 31-feature stylometric analysis
  */
 
-const { patterns, registry, wordCount } = require('./patterns');
+const { patterns, wordCount } = require('./patterns');
 const { computeStats, computeUniformityScore } = require('./stats');
 
 // ─── Category Labels ────────────────────────────────────
@@ -41,12 +41,7 @@ const CATEGORY_LABELS = {
  * @returns {object}     — Full analysis result
  */
 function analyze(text, opts = {}) {
-  const {
-    verbose = false,
-    patternsToCheck = null,
-    includeStats = true,
-    config = {},
-  } = opts;
+  const { verbose = false, patternsToCheck = null, includeStats = true } = opts;
 
   if (!text || typeof text !== 'string') {
     return emptyResult();
@@ -60,8 +55,8 @@ function analyze(text, opts = {}) {
   // ── Compute text statistics ────────────────────────
   const stats = includeStats ? computeStats(trimmed) : null;
   // Only compute uniformity for text with enough structure to be meaningful
-  const uniformityScore = (stats && stats.wordCount >= 20 && stats.sentenceCount >= 3)
-    ? computeUniformityScore(stats) : 0;
+  const uniformityScore =
+    stats && stats.wordCount >= 20 && stats.sentenceCount >= 3 ? computeUniformityScore(stats) : 0;
 
   // ── Run pattern detectors ──────────────────────────
   const findings = [];
@@ -71,7 +66,7 @@ function analyze(text, opts = {}) {
   }
 
   const activePatterns = patternsToCheck
-    ? patterns.filter(p => patternsToCheck.includes(p.id))
+    ? patterns.filter((p) => patternsToCheck.includes(p.id))
     : patterns;
 
   for (const pattern of activePatterns) {
@@ -148,7 +143,7 @@ function calculatePatternScore(findings, words) {
   const breadthBonus = Math.min(findings.length * 2, 20);
 
   // Category diversity (max 15)
-  const categoriesHit = new Set(findings.map(f => f.category)).size;
+  const categoriesHit = new Set(findings.map((f) => f.category)).size;
   const categoryBonus = Math.min(categoriesHit * 3, 15);
 
   return Math.min(Math.round(densityScore + breadthBonus + categoryBonus), 100);
@@ -168,29 +163,33 @@ function calculateCompositeScore(patternScore, uniformityScore, findings) {
   if (findings.length === 0) return Math.min(Math.round(uniformityScore * 0.15), 15);
 
   // Weighted blend: patterns dominate, stats supplement
-  const blended = (patternScore * 0.7) + (uniformityScore * 0.3);
+  const blended = patternScore * 0.7 + uniformityScore * 0.3;
   return Math.min(Math.round(blended), 100);
 }
 
 /**
  * Build human-readable summary.
  */
-function buildSummary(score, totalMatches, findings, words, stats) {
-  if (totalMatches === 0 && score < 10) {
+function buildSummary(finalScore, totalMatches, findings, words, stats) {
+  if (totalMatches === 0 && finalScore < 10) {
     return 'No significant AI writing patterns detected. The text looks human-written.';
   }
 
-  const level = score >= 70 ? 'heavily AI-generated'
-    : score >= 45 ? 'moderately AI-influenced'
-    : score >= 20 ? 'lightly AI-touched'
-    : 'mostly human-sounding';
+  const level =
+    finalScore >= 70
+      ? 'heavily AI-generated'
+      : finalScore >= 45
+        ? 'moderately AI-influenced'
+        : finalScore >= 20
+          ? 'lightly AI-touched'
+          : 'mostly human-sounding';
 
   const topPatterns = findings
-    .sort((a, b) => (b.matchCount * b.weight) - (a.matchCount * a.weight))
+    .sort((a, b) => b.matchCount * b.weight - a.matchCount * a.weight)
     .slice(0, 3)
-    .map(f => f.patternName);
+    .map((f) => f.patternName);
 
-  let summary = `Score: ${score}/100 (${level}). Found ${totalMatches} matches across ${findings.length} pattern types in ${words} words.`;
+  let summary = `Score: ${finalScore}/100 (${level}). Found ${totalMatches} matches across ${findings.length} pattern types in ${words} words.`;
 
   if (topPatterns.length > 0) {
     summary += ` Top issues: ${topPatterns.join(', ')}.`;
@@ -235,7 +234,9 @@ function formatReport(result) {
   const filled = Math.round(result.score / 5);
   const bar = '█'.repeat(filled) + '░'.repeat(20 - filled);
   lines.push(`  Score: ${result.score}/100  [${bar}]`);
-  lines.push(`  Words: ${result.wordCount}  |  Matches: ${result.totalMatches}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`);
+  lines.push(
+    `  Words: ${result.wordCount}  |  Matches: ${result.totalMatches}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
+  );
   lines.push('');
   lines.push(`  ${result.summary}`);
   lines.push('');
@@ -247,7 +248,9 @@ function formatReport(result) {
     lines.push(`  Sentences: ${s.sentenceCount}  |  Paragraphs: ${s.paragraphCount}`);
     lines.push(`  Avg sentence length: ${s.avgSentenceLength} words (σ ${s.sentenceLengthStdDev})`);
     lines.push(`  Burstiness: ${s.burstiness} ${burstinessLabel(s.burstiness)}`);
-    lines.push(`  Vocabulary diversity (TTR): ${s.typeTokenRatio} ${ttrLabel(s.typeTokenRatio, s.wordCount)}`);
+    lines.push(
+      `  Vocabulary diversity (TTR): ${s.typeTokenRatio} ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
+    );
     lines.push(`  Function word ratio: ${s.functionWordRatio}`);
     lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
     lines.push(`  Readability (FK grade): ${s.fleschKincaid}`);
@@ -268,13 +271,16 @@ function formatReport(result) {
     lines.push('── Findings ────────────────────────────────────────');
     for (const finding of result.findings) {
       lines.push('');
-      lines.push(`  [${finding.patternId}] ${finding.patternName} (×${finding.matchCount}, weight: ${finding.weight})`);
+      lines.push(
+        `  [${finding.patternId}] ${finding.patternName} (×${finding.matchCount}, weight: ${finding.weight})`,
+      );
       lines.push(`      ${finding.description}`);
       for (const match of finding.matches) {
         const loc = match.line ? `L${match.line}:${match.column || ''}` : '';
-        const preview = typeof match.match === 'string'
-          ? match.match.substring(0, 80) + (match.match.length > 80 ? '...' : '')
-          : '';
+        const preview =
+          typeof match.match === 'string'
+            ? match.match.substring(0, 80) + (match.match.length > 80 ? '...' : '')
+            : '';
         const conf = match.confidence ? ` [${match.confidence}]` : '';
         lines.push(`      ${loc}: "${preview}"${conf}`);
         if (match.suggestion) {
@@ -302,7 +308,9 @@ function formatMarkdown(result) {
   lines.push('');
   lines.push(`**Score: ${result.score}/100** — ${scoreLabel(result.score)}`);
   lines.push('');
-  lines.push(`Words: ${result.wordCount} | Matches: ${result.totalMatches} | Pattern score: ${result.patternScore} | Uniformity score: ${result.uniformityScore}`);
+  lines.push(
+    `Words: ${result.wordCount} | Matches: ${result.totalMatches} | Pattern score: ${result.patternScore} | Uniformity score: ${result.uniformityScore}`,
+  );
   lines.push('');
   lines.push(result.summary);
   lines.push('');
@@ -311,14 +319,24 @@ function formatMarkdown(result) {
     const s = result.stats;
     lines.push('## Text statistics');
     lines.push('');
-    lines.push(`| Metric | Value | Assessment |`);
-    lines.push(`|--------|-------|------------|`);
-    lines.push(`| Avg sentence length | ${s.avgSentenceLength} words | ${s.avgSentenceLength > 25 ? 'Long' : s.avgSentenceLength < 12 ? 'Short' : 'Normal'} |`);
-    lines.push(`| Sentence variation | σ ${s.sentenceLengthStdDev} | ${s.sentenceLengthStdDev > 8 ? 'High (human-like)' : s.sentenceLengthStdDev < 4 ? 'Low (AI-like)' : 'Moderate'} |`);
+    lines.push('| Metric | Value | Assessment |');
+    lines.push('|--------|-------|------------|');
+    lines.push(
+      `| Avg sentence length | ${s.avgSentenceLength} words | ${s.avgSentenceLength > 25 ? 'Long' : s.avgSentenceLength < 12 ? 'Short' : 'Normal'} |`,
+    );
+    lines.push(
+      `| Sentence variation | σ ${s.sentenceLengthStdDev} | ${s.sentenceLengthStdDev > 8 ? 'High (human-like)' : s.sentenceLengthStdDev < 4 ? 'Low (AI-like)' : 'Moderate'} |`,
+    );
     lines.push(`| Burstiness | ${s.burstiness} | ${burstinessLabel(s.burstiness)} |`);
-    lines.push(`| Vocabulary diversity | ${s.typeTokenRatio} | ${ttrLabel(s.typeTokenRatio, s.wordCount)} |`);
-    lines.push(`| Trigram repetition | ${s.trigramRepetition} | ${s.trigramRepetition > 0.1 ? 'High (AI-like)' : 'Normal'} |`);
-    lines.push(`| Readability | FK grade ${s.fleschKincaid} | ${s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`);
+    lines.push(
+      `| Vocabulary diversity | ${s.typeTokenRatio} | ${ttrLabel(s.typeTokenRatio, s.wordCount)} |`,
+    );
+    lines.push(
+      `| Trigram repetition | ${s.trigramRepetition} | ${s.trigramRepetition > 0.1 ? 'High (AI-like)' : 'Normal'} |`,
+    );
+    lines.push(
+      `| Readability | FK grade ${s.fleschKincaid} | ${s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`,
+    );
     lines.push('');
   }
 
@@ -331,7 +349,9 @@ function formatMarkdown(result) {
       lines.push('');
       for (const match of finding.matches) {
         const loc = match.line ? `Line ${match.line}` : '';
-        lines.push(`- ${loc}: \`${typeof match.match === 'string' ? match.match.substring(0, 80) : ''}\``);
+        lines.push(
+          `- ${loc}: \`${typeof match.match === 'string' ? match.match.substring(0, 80) : ''}\``,
+        );
         if (match.suggestion) lines.push(`  - ${match.suggestion}`);
       }
       lines.push('');
@@ -350,10 +370,10 @@ function formatJSON(result) {
 
 // ─── Label Helpers ───────────────────────────────────────
 
-function scoreLabel(score) {
-  if (score >= 70) return 'Heavily AI-generated';
-  if (score >= 45) return 'Moderately AI-influenced';
-  if (score >= 20) return 'Lightly AI-touched';
+function scoreLabel(s) {
+  if (s >= 70) return 'Heavily AI-generated';
+  if (s >= 45) return 'Moderately AI-influenced';
+  if (s >= 20) return 'Lightly AI-touched';
   return 'Mostly human-sounding';
 }
 
@@ -364,8 +384,8 @@ function burstinessLabel(b) {
   return '(very low — AI-like uniformity)';
 }
 
-function ttrLabel(ttr, wordCount) {
-  if (wordCount < 100) return '(too short to assess)';
+function ttrLabel(ttr, wc) {
+  if (wc < 100) return '(too short to assess)';
   if (ttr >= 0.6) return '(high — diverse vocabulary)';
   if (ttr >= 0.45) return '(moderate)';
   return '(low — repetitive vocabulary)';
