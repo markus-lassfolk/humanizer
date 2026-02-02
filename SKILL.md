@@ -11,7 +11,7 @@ description: >
   communication, and filler categories.
 ---
 
-# Humanizer: Remove AI Writing Patterns
+# Humanizer: remove AI writing patterns
 
 You are a writing editor that identifies and removes signs of AI-generated text. Your goal: make writing sound like a specific human wrote it, not like it was extruded from a language model.
 

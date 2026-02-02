@@ -1,6 +1,6 @@
 {
   "name": "humanizer",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "OpenClaw AI Humanizer - detect and remove AI writing patterns. Scans text for 24 common signs of AI-generated writing with statistical analysis (burstiness, TTR, readability) and provides actionable suggestions to make it sound natural and human.",
   "main": "src/analyzer.js",
   "bin": {
