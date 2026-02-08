@@ -892,6 +892,154 @@ const patterns = [
       );
     },
   },
+
+  // ─── NEW PATTERNS (v2.2) ─────────────────────────────────
+
+  {
+    id: 25,
+    name: 'Reasoning chain artifacts',
+    category: 'communication',
+    description:
+      'Exposed chain-of-thought reasoning: "Let me think...", "Step 1:", "Breaking this down..."',
+    weight: 4,
+    detect(text) {
+      const reasoningPatterns = [
+        /\blet me think( about this| through this| step by step)?\b/gi,
+        /\blet's (think|reason|work) (about|through|this out)\b/gi,
+        /\bbreaking (this|it) down\b/gi,
+        /\bto approach this (systematically|methodically|logically)\b/gi,
+        /\breasoning through (this|the problem|it)\b/gi,
+        /\bworking through the logic\b/gi,
+        /\bstep ([1-9]|one|two|three|four|five):/gi,
+        /\bfirst,? let'?s consider\b/gi,
+        /\bthinking about this (carefully|logically|systematically)\b/gi,
+        /\bhere'?s my (thought process|reasoning|thinking)\b/gi,
+      ];
+      const results = [];
+      for (const regex of reasoningPatterns) {
+        results.push(
+          ...findMatches(
+            text,
+            regex,
+            'Hide reasoning or make it natural: "Here\'s my take:" instead of "Let me think step by step:"',
+          ),
+        );
+      }
+      return results;
+    },
+  },
+
+  {
+    id: 26,
+    name: 'Excessive structure',
+    category: 'style',
+    description:
+      'Over-formatted responses: too many headers, nested bullets, or numbered lists for simple content.',
+    weight: 3,
+    detect(text) {
+      const results = [];
+      const words = wordCount(text);
+
+      // Count markdown headers
+      const headers = (text.match(/^#{1,6}\s+.+$/gm) || []).length;
+      // Count bullet points
+      const bullets = (text.match(/^[\s]*[-*+]\s+/gm) || []).length;
+      // Count numbered items
+      const numbered = (text.match(/^[\s]*\d+\.\s+/gm) || []).length;
+
+      // Flag if structure seems excessive for content length
+      if (words < 300 && headers >= 3) {
+        results.push({
+          match: `${headers} headers in ${words} words`,
+          index: 0,
+          line: 1,
+          column: 1,
+          suggestion: 'Too many headers for short content. Use prose instead.',
+          confidence: 'medium',
+        });
+      }
+      if (words < 200 && bullets + numbered >= 8) {
+        results.push({
+          match: `${bullets + numbered} list items in ${words} words`,
+          index: 0,
+          line: 1,
+          column: 1,
+          suggestion: 'Excessive lists. Could this be a paragraph instead?',
+          confidence: 'medium',
+        });
+      }
+
+      // Check for "Overview:", "Key Points:", "Summary:" pattern
+      const structureHeaders =
+        /^#+\s*(overview|key (points|takeaways)|summary|conclusion|introduction|background)\s*:?\s*$/gim;
+      results.push(
+        ...findMatches(
+          text,
+          structureHeaders,
+          'Formulaic structure. Let content flow naturally.',
+          'medium',
+        ),
+      );
+
+      return results;
+    },
+  },
+
+  {
+    id: 27,
+    name: 'Confidence calibration',
+    category: 'communication',
+    description:
+      'Artificially hedged or over-confident phrasing: "I\'m confident that...", "It\'s worth noting..."',
+    weight: 3,
+    detect(text) {
+      const patterns = [
+        {
+          regex: /\bI'?m confident (that|in)\b/gi,
+          fix: 'State the fact without prefacing confidence',
+        },
+        { regex: /\bit'?s worth (noting|mentioning|pointing out) that\b/gi, fix: 'Just say it' },
+        { regex: /\binterestingly (enough)?,?\b/gi, fix: 'Let reader decide if interesting' },
+        { regex: /\bsurprisingly,?\s/gi, fix: 'State the fact; surprise is implied' },
+        { regex: /\bimportantly,?\s/gi, fix: 'Let reader judge importance' },
+        { regex: /\bsignificantly,?\s/gi, fix: 'Be specific about the significance' },
+        { regex: /\bnotably,?\s/gi, fix: 'Just state the notable thing' },
+        { regex: /\bcertainly,?\s/gi, fix: 'Remove or state with evidence' },
+        { regex: /\bundoubtedly,?\s/gi, fix: 'Remove or cite evidence' },
+        { regex: /\bwithout (a )?doubt,?\s/gi, fix: 'Remove or cite evidence' },
+      ];
+      const results = [];
+      for (const { regex, fix } of patterns) {
+        results.push(...findMatches(text, regex, fix));
+      }
+      return results;
+    },
+  },
+
+  {
+    id: 28,
+    name: 'Acknowledgment loops',
+    category: 'communication',
+    description: 'Restating the question before answering: "You\'re asking about X. X is..."',
+    weight: 4,
+    detect(text) {
+      const patterns = [
+        /\byou'?re asking (about|whether|if|how|why|what)\b/gi,
+        /\bthe question of (whether|how|why|what)\b/gi,
+        /\bwhen it comes to your question\b/gi,
+        /\bin (terms of|response to|answer to) your question\b/gi,
+        /\bto (answer|address) your question\b/gi,
+        /\byour question (about|regarding|concerning)\b/gi,
+        /\bthat'?s a (great|good|interesting) question\. (the|it|so)\b/gi,
+        /\bI understand you'?re (asking|wondering|curious)\b/gi,
+      ];
+      const results = [];
+      for (const regex of patterns) {
+        results.push(...findMatches(text, regex, "Just answer. Don't restate the question."));
+      }
+      return results;
+    },
+  },
 ];
 
 // ─── Pattern Registry ────────────────────────────────────
