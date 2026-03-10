@@ -1,12 +1,12 @@
 # humanizer
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Tests](https://img.shields.io/badge/tests-128%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-134%20passing-brightgreen)
 ![Node >= 18](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
 
 Detect and remove signs of AI-generated writing. Makes text sound natural and human.
 
-An [OpenClaw](https://github.com/nichochar/openclaw) skill and standalone CLI tool that scans text for **24 AI writing patterns** using **500+ vocabulary terms** and **statistical text analysis** (burstiness, type-token ratio, readability metrics) — then provides actionable suggestions to fix them.
+An [OpenClaw](https://github.com/nichochar/openclaw) skill and standalone CLI tool that scans text for **28 AI writing patterns** using **500+ vocabulary terms** and **statistical text analysis** (burstiness, type-token ratio, readability metrics) — then provides actionable suggestions to fix them.
 
 Based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing), [Copyleaks stylistic fingerprint research](https://arxiv.org/abs/2503.01659), and [blader/humanizer](https://github.com/blader/humanizer).
 
@@ -56,7 +56,7 @@ The scoring engine combines three signal types:
 │   Pattern Score    │    Uniformity Score         │
 │   (70% weight)     │    (30% weight)             │
 ├────────────────────┼────────────────────────────┤
-│ • 24 pattern       │ • Burstiness (sentence     │
+│ • 28 pattern       │ • Burstiness (sentence     │
 │   detectors        │   length variation)         │
 │ • 500+ vocabulary  │ • Type-token ratio          │
 │   terms (3 tiers)  │ • Trigram repetition        │
@@ -106,7 +106,18 @@ humanizer humanize -f article.txt
 
 # Apply safe auto-fixes
 humanizer humanize --autofix -f article.txt
+
+# Scan an entire docs folder and rank risk
+humanizer scan docs --ext md,txt --fail-above 45
+
+# Compare draft revisions and see score delta
+humanizer compare --before draft-v1.md --after draft-v2.md
 ```
+
+### New core capabilities
+
+- **Repo scan (`scan`)** — analyze a whole folder, rank files by risk, and optionally fail CI with `--fail-above`.
+- **Draft compare (`compare`)** — compare two versions of text and show exactly which patterns improved or regressed.
 
 ### Options
 
@@ -117,6 +128,11 @@ humanizer humanize --autofix -f article.txt
 --autofix               Apply safe fixes (humanize only)
 --patterns <ids>        Check specific pattern IDs (comma-separated)
 --threshold <n>         Only show patterns with weight above n
+--before <path>         Before file for compare command
+--after <path>          After file for compare command
+--ext <list>            Extensions for scan (e.g. md,txt,rst)
+--min-words <n>         Skip files shorter than n words (scan)
+--fail-above <n>        Exit non-zero if any scanned file score >= n
 --config <file>         Custom config file (JSON)
 --help, -h              Show help
 ```
@@ -170,7 +186,7 @@ console.log(stats.burstiness);       // Sentence variation
 console.log(stats.typeTokenRatio);   // Vocabulary diversity
 ```
 
-## The 24 patterns
+## Pattern catalog (top 24 shown)
 
 | # | Pattern | Category | Weight | Example |
 |---|---------|----------|--------|---------|
@@ -208,7 +224,7 @@ console.log(stats.typeTokenRatio);   // Vocabulary diversity
 
 ## How scoring works
 
-1. **Pattern detection** — Each of 24 detectors scans for regex matches. Matches are weighted 1-5.
+1. **Pattern detection** — Each of 28 detectors scans for regex matches. Matches are weighted 1-5.
 2. **Density calculation** — Weighted matches per 100 words, on a logarithmic curve (prevents runaway scores).
 3. **Breadth bonus** — More unique pattern types = higher score (up to +20).
 4. **Category diversity** — Hits across content/language/style/communication/filler = higher score (up to +15).

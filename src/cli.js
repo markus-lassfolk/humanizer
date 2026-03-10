@@ -10,6 +10,8 @@
  *   humanizer report <file>                 # Full markdown report
  *   humanizer suggest <file>                # Suggestions grouped by priority
  *   humanizer stats <file>                  # Statistical analysis only
+ *   humanizer scan docs --ext md            # Scan many files in a directory
+ *   humanizer compare --before v1.md --after v2.md  # Compare drafts
  *   humanizer analyze --json < input.txt    # JSON output
  *   humanizer analyze -f file.txt           # Read from file
  *   echo "text" | humanizer score           # Pipe text
@@ -21,6 +23,7 @@ const fs = require('fs');
 const { analyze, score, formatMarkdown, formatJSON } = require('./analyzer');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
+const { scanPath, compareFiles, normalizeExtensions } = require('./workflows');
 
 // ─── Tiny Color Helper (no chalk dependency) ─────────────
 
@@ -90,9 +93,14 @@ const flags = {
   autofix: args.includes('--autofix'),
   help: args.includes('--help') || args.includes('-h'),
   file: null,
+  before: null,
+  after: null,
   patterns: null,
   threshold: null,
   config: null,
+  extensions: null,
+  minWords: 1,
+  failAbove: null,
 };
 
 // Parse -f / --file flag
@@ -103,7 +111,7 @@ if (fileIdx !== -1 && args[fileIdx + 1]) {
 
 // Parse positional file argument (command <file>)
 if (!flags.file && args[1] && !args[1].startsWith('-')) {
-  const commands = ['analyze', 'score', 'humanize', 'report', 'suggest', 'stats'];
+  const commands = ['analyze', 'score', 'humanize', 'report', 'suggest', 'stats', 'scan', 'compare'];
   if (!commands.includes(args[1])) {
     flags.file = args[1];
   }
@@ -130,6 +138,36 @@ if (configIdx !== -1 && args[configIdx + 1]) {
   flags.config = args[configIdx + 1];
 }
 
+// Parse --before and --after flags (compare command)
+const beforeIdx = args.indexOf('--before');
+if (beforeIdx !== -1 && args[beforeIdx + 1]) {
+  flags.before = args[beforeIdx + 1];
+}
+const afterIdx = args.indexOf('--after');
+if (afterIdx !== -1 && args[afterIdx + 1]) {
+  flags.after = args[afterIdx + 1];
+}
+
+// Parse --ext flag (scan command)
+const extIdx = args.indexOf('--ext');
+if (extIdx !== -1 && args[extIdx + 1]) {
+  flags.extensions = normalizeExtensions(args[extIdx + 1].split(','));
+}
+
+// Parse --min-words flag (scan command)
+const minWordsIdx = args.indexOf('--min-words');
+if (minWordsIdx !== -1 && args[minWordsIdx + 1]) {
+  const n = parseInt(args[minWordsIdx + 1], 10);
+  if (!Number.isNaN(n) && n >= 0) flags.minWords = n;
+}
+
+// Parse --fail-above flag (scan command)
+const failIdx = args.indexOf('--fail-above');
+if (failIdx !== -1 && args[failIdx + 1]) {
+  const n = parseInt(args[failIdx + 1], 10);
+  if (!Number.isNaN(n)) flags.failAbove = n;
+}
+
 // ─── Help ────────────────────────────────────────────────
 
 /**
@@ -149,6 +187,8 @@ ${color.bold('Commands:')}
   ${color.cyan('report')}       Full markdown report (for piping to files)
   ${color.cyan('suggest')}      Show only suggestions, grouped by priority
   ${color.cyan('stats')}        Show statistical text analysis only
+  ${color.cyan('scan')}         Scan many files in a directory and rank by AI score
+  ${color.cyan('compare')}      Compare before/after drafts and show score delta
 
 ${color.bold('Options:')}
   -f, --file <path>       Read text from file (otherwise reads stdin)
@@ -157,6 +197,11 @@ ${color.bold('Options:')}
   --autofix               Apply safe mechanical fixes (humanize only)
   --patterns <ids>        Only check specific pattern IDs (comma-separated)
   --threshold <n>         Only show patterns with weight above threshold
+  --before <path>         Before file for compare command
+  --after <path>          After file for compare command
+  --ext <list>            File extensions for scan (e.g. md,txt,rst)
+  --min-words <n>         Skip files shorter than n words (scan)
+  --fail-above <n>        Exit non-zero if any scanned file score >= n
   --config <file>         Custom config file (JSON)
   --help, -h              Show this help
 
@@ -178,6 +223,12 @@ ${color.bold('Examples:')}
 
   ${color.gray('# Humanize with auto-fixes')}
   humanizer humanize --autofix -f article.txt
+
+  ${color.gray('# Scan all markdown docs in a repo')}
+  humanizer scan docs --ext md --fail-above 45
+
+  ${color.gray('# Compare two drafts')}
+  humanizer compare --before draft-v1.md --after draft-v2.md
 
 ${color.bold('Score badges:')}
   🟢 0-25    Mostly human-sounding
@@ -471,6 +522,112 @@ function truncate(str, len) {
   return str.length > len ? `${str.substring(0, len)}...` : str;
 }
 
+/**
+ * Format compare output.
+ *
+ * @param {object} result
+ * @returns {string}
+ */
+function formatComparisonReport(result) {
+  const lines = [];
+
+  const scoreDelta = result.delta.score;
+  const scoreArrow = scoreDelta < 0 ? '↓' : scoreDelta > 0 ? '↑' : '→';
+  const scoreDeltaColor = scoreDelta < 0 ? color.green : scoreDelta > 0 ? color.red : color.gray;
+
+  lines.push('');
+  lines.push(color.bold('  ┌──────────────────────────────────────────────┐'));
+  lines.push(color.bold('  │            DRAFT COMPARISON                  │'));
+  lines.push(color.bold('  └──────────────────────────────────────────────┘'));
+  lines.push('');
+  lines.push(
+    `  Before: ${scoreBadge(result.before.score)}  (${result.before.totalMatches} matches, ${result.before.wordCount} words)`,
+  );
+  lines.push(
+    `  After:  ${scoreBadge(result.after.score)}  (${result.after.totalMatches} matches, ${result.after.wordCount} words)`,
+  );
+  lines.push(
+    `  Delta:  ${scoreDeltaColor(`${scoreArrow} ${scoreDelta >= 0 ? '+' : ''}${scoreDelta} points`)}`,
+  );
+  lines.push('');
+
+  if (result.improvements.length > 0) {
+    lines.push(color.green(color.bold('  Top improvements:')));
+    for (const item of result.improvements.slice(0, 5)) {
+      lines.push(
+        `  ${color.green('•')} ${item.patternName}: ${item.beforeCount} → ${item.afterCount} (${item.delta})`,
+      );
+    }
+    lines.push('');
+  }
+
+  if (result.regressions.length > 0) {
+    lines.push(color.red(color.bold('  New regressions:')));
+    for (const item of result.regressions.slice(0, 5)) {
+      lines.push(
+        `  ${color.red('•')} ${item.patternName}: ${item.beforeCount} → ${item.afterCount} (+${item.delta})`,
+      );
+    }
+    lines.push('');
+  }
+
+  if (result.improvements.length === 0 && result.regressions.length === 0) {
+    lines.push(`  ${color.gray('Pattern mix unchanged between drafts.')}`);
+    lines.push('');
+  }
+
+  return lines.join('\n');
+}
+
+/**
+ * Format scan output.
+ *
+ * @param {object} scanResult
+ * @param {?number} failAbove
+ * @returns {string}
+ */
+function formatScanReport(scanResult, failAbove = null) {
+  const lines = [];
+  const files = scanResult.files;
+
+  lines.push('');
+  lines.push(color.bold('  ┌──────────────────────────────────────────────┐'));
+  lines.push(color.bold('  │               REPO SCAN                      │'));
+  lines.push(color.bold('  └──────────────────────────────────────────────┘'));
+  lines.push('');
+  lines.push(`  Target: ${scanResult.targetPath}`);
+  lines.push(
+    `  Files scanned: ${scanResult.summary.scannedFiles}  |  Skipped: ${scanResult.summary.skippedFiles}`,
+  );
+  lines.push(
+    `  Avg score: ${scanResult.summary.averageScore}  |  Max: ${scanResult.summary.maxScore}  |  Min: ${scanResult.summary.minScore}`,
+  );
+  lines.push('');
+
+  if (files.length === 0) {
+    lines.push(color.yellow('  No files matched the scan criteria.'));
+    lines.push('');
+    return lines.join('\n');
+  }
+
+  lines.push(color.bold('  Top flagged files:'));
+  for (const item of files.slice(0, 20)) {
+    const failTag =
+      failAbove !== null && item.score >= failAbove ? color.red(' [FAIL]') : color.gray(' [OK]');
+    lines.push(
+      `  ${scoreBadge(item.score)}${failTag} ${item.file} ${color.dim(`(${item.totalMatches} matches, ${item.wordCount} words)`)}`,
+    );
+  }
+  lines.push('');
+
+  if (scanResult.skipped.length > 0) {
+    lines.push(color.gray(`  ${scanResult.skipped.length} files skipped (too short or unreadable).`));
+    lines.push('');
+  }
+
+  return lines.join('\n');
+}
+
 // ─── Main ────────────────────────────────────────────────
 
 /**
@@ -482,17 +639,21 @@ async function main() {
     process.exit(command ? 0 : 1);
   }
 
-  let text;
-  try {
-    text = await readInput();
-  } catch (err) {
-    console.error(color.red(`Error: ${err.message}`));
-    process.exit(1);
-  }
+  const textCommands = new Set(['analyze', 'score', 'humanize', 'report', 'suggest', 'stats']);
 
-  if (!text.trim()) {
-    console.error(color.red('Error: Empty input.'));
-    process.exit(1);
+  let text = null;
+  if (textCommands.has(command)) {
+    try {
+      text = await readInput();
+    } catch (err) {
+      console.error(color.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+
+    if (!text.trim()) {
+      console.error(color.red('Error: Empty input.'));
+      process.exit(1);
+    }
   }
 
   const opts = {
@@ -558,6 +719,41 @@ async function main() {
         console.log(JSON.stringify(stats, null, 2));
       } else {
         console.log(formatStatsReport(stats));
+      }
+      break;
+    }
+
+    case 'compare': {
+      if (!flags.before || !flags.after) {
+        console.error(color.red('Error: compare requires --before <file> and --after <file>.'));
+        process.exit(1);
+      }
+
+      const result = compareFiles(flags.before, flags.after);
+      if (flags.json) {
+        console.log(JSON.stringify(result, null, 2));
+      } else {
+        console.log(formatComparisonReport(result));
+      }
+      break;
+    }
+
+    case 'scan': {
+      const target = flags.file || '.';
+      const scanResult = scanPath(target, {
+        exts: flags.extensions || undefined,
+        minWords: flags.minWords,
+      });
+
+      if (flags.json) {
+        console.log(JSON.stringify(scanResult, null, 2));
+      } else {
+        console.log(formatScanReport(scanResult, flags.failAbove));
+      }
+
+      if (flags.failAbove !== null) {
+        const hasFailure = scanResult.files.some((f) => f.score >= flags.failAbove);
+        if (hasFailure) process.exit(2);
       }
       break;
     }
