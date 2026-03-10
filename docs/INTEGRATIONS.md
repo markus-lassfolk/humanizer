@@ -1,21 +1,17 @@
-# Humanizer Integrations
+# Humanizer integrations
 
-Use humanizer with Claude, ChatGPT, and other LLMs via multiple integration methods.
+Use humanizer with Claude, ChatGPT, VS Code, OpenClaw, or your own app.
 
-## Quick Comparison
+## Integration options
 
-| Method | Platforms | Setup | Best For |
-|--------|-----------|-------|----------|
-| **MCP Server** | Claude, ChatGPT, VS Code | Medium | Cross-platform tool access |
-| **OpenAI Custom GPT** | ChatGPT Plus | Easy | ChatGPT users |
-| **HTTP API** | Any | Medium | Custom integrations |
-| **SKILL.md** | OpenClaw | Easy | OpenClaw agents |
+| Method | Platforms | Setup | Best for |
+|---|---|---|---|
+| MCP server | Claude, ChatGPT, VS Code | Medium | Shared tool access across clients |
+| OpenAI Custom GPT | ChatGPT Plus | Easy | ChatGPT-only workflow |
+| HTTP API | Any client | Medium | Custom apps and automations |
+| SKILL.md | OpenClaw | Easy | OpenClaw-native workflows |
 
----
-
-## MCP Server (Recommended)
-
-Model Context Protocol works with Claude Desktop, ChatGPT, VS Code, and other MCP clients.
+## MCP server (recommended)
 
 ### Install
 
@@ -24,9 +20,9 @@ cd humanizer/mcp-server
 npm install
 ```
 
-### Configure Claude Desktop
+### Claude Desktop config
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Add this to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
@@ -39,9 +35,9 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 }
 ```
 
-### Configure VS Code
+### VS Code config
 
-Add to `.vscode/settings.json`:
+Add this to `.vscode/settings.json`:
 
 ```json
 {
@@ -54,44 +50,30 @@ Add to `.vscode/settings.json`:
 }
 ```
 
-### Available Tools
+### MCP tools exposed
 
-| Tool | Description |
-|------|-------------|
-| `score` | Quick AI score (0-100) |
-| `analyze` | Full analysis with patterns and stats |
-| `humanize` | Get suggestions with optional auto-fix |
-| `stats` | Statistical analysis only |
-
----
+- `score` — quick score (0-100)
+- `analyze` — full pattern + stats report
+- `humanize` — suggestions, optional auto-fix
+- `stats` — statistical analysis only
 
 ## OpenAI Custom GPT
 
-Create a GPT that has humanizer capabilities built-in.
-
-### Setup
-
-1. Go to [chat.openai.com/gpts/editor](https://chat.openai.com/gpts/editor)
-2. Click "Create a GPT"
-3. Copy instructions from `openai-gpt/instructions.md`
-4. Name it "Humanizer"
-5. (Optional) Add Actions using `api-server/openapi.yaml`
+1. Go to <https://chat.openai.com/gpts/editor>
+2. Create a GPT
+3. Paste instructions from `openai-gpt/instructions.md`
+4. Name it (for example, "Humanizer")
+5. Optional: add Actions using `api-server/openapi.yaml`
 
 ### With Actions API
 
-If you want the GPT to call the humanizer programmatically:
+1. Deploy the API server
+2. In GPT editor, open **Configure** → **Create new action**
+3. Import the schema from your deployed `/api/openapi` endpoint
 
-1. Deploy the API server (see below)
-2. In GPT editor, click "Configure" → "Create new action"
-3. Import schema from your deployed `/api/openapi` endpoint
+## HTTP API server
 
----
-
-## HTTP API Server
-
-Simple HTTP API for OpenAI Actions and custom integrations.
-
-### Run Locally
+### Run locally
 
 ```bash
 cd humanizer
@@ -101,42 +83,30 @@ node api-server/server.js
 ### Deploy (Cloudflare Workers example)
 
 ```bash
-# Create wrangler.toml
 npx wrangler deploy
 ```
 
 ### Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/score` | POST | Quick score (0-100) |
-| `/api/analyze` | POST | Full analysis |
-| `/api/humanize` | POST | Suggestions + autofix |
-| `/api/stats` | POST | Statistical analysis |
-| `/api/openapi` | GET | OpenAPI spec |
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/score` | POST | Return score only |
+| `/api/analyze` | POST | Return full analysis |
+| `/api/humanize` | POST | Return suggestions + optional autofix |
+| `/api/stats` | POST | Return stats only |
+| `/api/openapi` | GET | Return OpenAPI schema |
 
-### Example
+### API example
 
 ```bash
 curl -X POST http://localhost:3000/api/score \
   -H "Content-Type: application/json" \
-  -d '{"text": "This serves as a testament to innovation."}'
+  -d '{"text": "This draft needs tighter wording and more specifics."}'
 ```
 
-Response:
-```json
-{
-  "score": 62,
-  "badge": "🟠",
-  "interpretation": "Moderately AI-influenced"
-}
-```
+## OpenClaw skill
 
----
-
-## OpenClaw Skill
-
-Already included as `SKILL.md`. Install via ClawHub:
+Install from ClawHub:
 
 ```bash
 clawhub install ai-humanizer
@@ -148,55 +118,32 @@ Or copy manually:
 cp SKILL.md ~/.config/openclaw/skills/humanizer.md
 ```
 
----
+## Always-on writing mode
 
-## Always-On Mode
+If you want your assistant to avoid common AI writing tells by default, keep these rules in your system prompt:
 
-For LLMs that should ALWAYS write like a human (not just when asked), add the core rules to the system prompt.
+- Skip filler intros and closers
+- Prefer plain verbs and concrete nouns
+- Use specific evidence over broad claims
+- Vary sentence length naturally
+- Keep tone direct
 
-### Claude (Projects or System Prompt)
-
-Add to your project instructions or custom system prompt:
-
-```markdown
-## Writing Rules (Always Active)
-
-Never use these words: delve, tapestry, vibrant, crucial, comprehensive, meticulous, embark, robust, seamless, groundbreaking, leverage, synergy, transformative, paramount, multifaceted, myriad, cornerstone, reimagine, empower, catalyst, invaluable, bustling, nestled, realm
-
-Replace filler phrases:
-- "In order to" → "to"
-- "Due to the fact that" → "because"  
-- "It is important to note that" → (just say it)
-
-Never write: "Great question!", "I hope this helps!", "Let me know if..."
-
-Vary sentence length. Have opinions. Use concrete specifics.
-```
-
-### ChatGPT (Custom Instructions)
-
-Add to "How would you like ChatGPT to respond?":
-
-```
-Write like a human, not an AI. Never use words like: delve, tapestry, vibrant, crucial, seamless, groundbreaking, leverage, synergy, transformative, paramount. Replace "in order to" with "to". Never say "Great question!" or "I hope this helps!" Vary your sentence length. Have opinions. Be specific.
-```
-
----
+For full pattern guidance, reference `SKILL.md`.
 
 ## Troubleshooting
 
-### MCP Server not connecting
+### MCP server is not connecting
 
-1. Check the path in config is absolute
-2. Run `node mcp-server/index.js` manually to test
-3. Check Claude/VS Code logs for errors
+1. Verify the path is absolute
+2. Run `node mcp-server/index.js` manually
+3. Check Claude or VS Code logs
 
 ### API returns 500
 
-1. Check that `src/*.js` files are ES modules (`import`/`export`)
-2. Add `"type": "module"` to package.json if needed
-3. Check Node version >= 18
+1. Confirm Node version is 18+
+2. Check module format compatibility
+3. Review server logs for stack traces
 
-### Score seems wrong
+### Score looks off
 
-The scoring is transparent — run `analyze` with `verbose: true` to see exactly which patterns matched.
+Run `analyze --verbose` and review exactly which patterns fired.

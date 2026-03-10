@@ -1,169 +1,76 @@
-# Humanizer v2.2 Improvements
+# Humanizer improvements and roadmap
 
-Based on 2026 AI detection research and real-world pattern analysis.
+This file tracks what shipped and what we plan to build next.
 
-## New Patterns to Add
+## Shipped in v2.2
 
-### Pattern 25: Reasoning Chain Artifacts
-**Category:** Communication  
-**Weight:** 4  
-**Description:** Exposed reasoning chains from chain-of-thought prompting
+### New detection patterns (25-28)
 
-**Triggers:**
-- "Let me think about this..."
-- "Step 1:", "Step 2:", "First, let's consider..."
-- "Breaking this down..."
-- "To approach this systematically..."
-- "Reasoning through this..."
-- "Working through the logic..."
+- Reasoning chain artifacts
+- Excessive structure
+- Confidence calibration
+- Acknowledgment loops
 
-**Fix:** Either hide the reasoning or make it sound natural: "Here's my take:" instead of "Let me think step by step:"
+These additions improved detection on recent 2025-2026 model output where responses sound polished but still contain predictable assistant patterns.
 
----
+### New CLI workflows
 
-### Pattern 26: Excessive Structure
-**Category:** Style  
-**Weight:** 3  
-**Description:** Over-formatted responses with headers, bullets, and sections for simple questions
+- `scan`: analyze a file or directory and rank documents by score
+- `compare`: compare two drafts and show score + pattern deltas
 
-**Triggers:**
-- More than 3 headers for a <500 word response
-- Nested bullet lists deeper than 2 levels
-- "Overview:", "Key Points:", "Summary:" structure for simple questions
-- Numbered lists when prose would be more natural
+These workflows make humanizer usable in docs QA and CI gates, not just one-off checks.
 
-**Fix:** Match format to complexity. Simple question = simple answer.
+### Test coverage
 
----
+- Added workflow tests (`tests/workflows.test.js`)
+- Test suite now includes scan and compare behavior
 
-### Pattern 27: Confidence Calibration
-**Category:** Communication  
-**Weight:** 3  
-**Description:** Artificially hedged or artificially confident statements
+## Why these updates mattered
 
-**Triggers:**
-- "I'm confident that..." (humans rarely preface confidence)
-- "It's worth noting that..." (just say it)
-- "Interestingly enough..." (let reader decide if interesting)
-- "Surprisingly..." at start of claims
-- Perfect certainty on nuanced topics
+The older feature set worked well for obvious chatbot text. The new patterns close gaps in subtler assistant writing, especially:
 
-**Fix:** State facts. Let context imply confidence. Acknowledge genuine uncertainty.
+- question restatement loops
+- over-structured responses to simple prompts
+- confidence framing that sounds unnatural
 
----
+## Current known limitations
 
-### Pattern 28: Acknowledgment Loops
-**Category:** Communication  
-**Weight:** 4  
-**Description:** Restating/paraphrasing the question before answering
+- Docs that intentionally contain AI-style examples will score high (expected)
+- The analyzer does not yet skip fenced code blocks by default
+- Very short text can still be noisy
 
-**Triggers:**
-- "You're asking about X. X is..."
-- "The question of whether X is..."
-- "When it comes to X, the key consideration is..."
-- "In terms of your question about X..."
+## Next candidate improvements (v2.3)
 
-**Fix:** Just answer. Don't restate the question.
+### 1) Optional code-block ignore mode
 
----
+Add a scan/analyze option to skip fenced code blocks and inline snippets.
 
-## New Vocabulary (Tier 1)
+Why: technical docs often quote "bad" examples on purpose.
 
-### 2025-2026 AI Vocabulary Additions
+### 2) Baseline-aware doc gating
 
-```javascript
-// Newly emerged AI tells
-'unpack',        // "Let's unpack this..."
-'unraveling',    // "unraveling the complexities"
-'dive into',     // as opening move
-'deep dive',     // noun form
-'at its core',   // "At its core, X is..."
-'speaking of',   // transition phrase
-'that said',     // as sentence opener
-'to be sure',    // hedge phrase
-'by the same token',
-'nuanced',       // overused qualifier
-'holistic',      // in business/tech context
-'synergistic',   
-'actionable',    // in advice context
-'impactful',     // instead of "important" or "effective"
-'learnings',     // instead of "lessons"
-'cadence',       // in non-music contexts
-'bandwidth',     // for time/attention
-'circle back',   
-'double-click',  // as "examine closer"
-'net-net',       
-'key takeaways',
-'value-add',
-'best practices',
-```
+Store a baseline JSON report and fail only on regressions, not absolute score.
 
-### New Phrases (AI_PHRASES additions)
+Why: avoids blocking teams when legacy docs are still being cleaned up.
 
-```javascript
-// 2025-2026 phrase patterns
-{ pattern: "let's dive in", fix: "(just start)" },
-{ pattern: "let's break this down", fix: "(just explain)" },
-{ pattern: "here's the thing", fix: "(just say it)" },
-{ pattern: "the reality is", fix: "(state the fact)" },
-{ pattern: "at the end of the day", fix: "ultimately" },
-{ pattern: "moving forward", fix: "next" },
-{ pattern: "circle back", fix: "return to" },
-{ pattern: "touch base", fix: "talk" },
-{ pattern: "going forward", fix: "from now on" },
-{ pattern: "key takeaway", fix: "main point" },
-{ pattern: "value proposition", fix: "benefit" },
-{ pattern: "core competency", fix: "strength" },
-{ pattern: "best-in-class", fix: "excellent" },
-{ pattern: "world-class", fix: "(be specific)" },
-{ pattern: "cutting-edge", fix: "(be specific)" },
-{ pattern: "state-of-the-art", fix: "(be specific)" },
-{ pattern: "gold standard", fix: "(cite the standard)" },
-{ pattern: "thought leader", fix: "expert" },
-{ pattern: "low-hanging fruit", fix: "easy wins" },
-{ pattern: "pain point", fix: "problem" },
-{ pattern: "deep dive", fix: "detailed look" },
-{ pattern: "paradigm shift", fix: "major change" },
-```
+### 3) Better non-English handling
 
----
+Reduce false positives on multilingual docs and mixed-language text.
 
-## Statistical Analysis Improvements
+Why: current vocabulary-heavy checks are English-first.
 
-### Add: Perplexity Score
-AI text tends to have lower perplexity (more predictable next tokens) than human text. Integrate a lightweight perplexity estimator using bigram/trigram frequencies.
+## Validation checklist for each new pattern
 
-### Add: Positional Analysis
-AI tends to front-load complexity and taper off. Humans have more varied complexity distribution. Track sentence complexity across document position.
+- At least 5 positive tests
+- At least 5 negative tests
+- Edge cases for short/technical text
+- Performance check to avoid slowing batch scans
 
-### Add: Topic Coherence Score
-AI sometimes drifts or maintains unnaturally perfect coherence. Neither extreme is human-typical.
+## Notes for contributors
 
----
+If you add a new pattern, include:
 
-## Implementation Priority
-
-1. **High Priority (v2.2.0)**
-   - Pattern 25 (Reasoning chains) — Very common with o1/o3 models
-   - Pattern 28 (Acknowledgment loops) — Dead giveaway
-   - New Tier 1 vocabulary
-   - New AI phrases
-
-2. **Medium Priority (v2.3.0)**
-   - Pattern 26 (Excessive structure)
-   - Pattern 27 (Confidence calibration)
-   - Perplexity scoring
-
-3. **Low Priority (v2.4.0)**
-   - Positional analysis
-   - Topic coherence scoring
-
----
-
-## Testing Notes
-
-Each new pattern needs:
-- [ ] At least 5 positive test cases (text that should trigger)
-- [ ] At least 5 negative test cases (text that shouldn't trigger)
-- [ ] Edge case tests (short text, technical jargon, poetry)
-- [ ] Performance benchmark (should not significantly slow analysis)
+- clear rationale
+- examples that should trigger
+- examples that should not trigger
+- a practical rewrite suggestion
