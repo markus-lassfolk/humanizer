@@ -16,6 +16,11 @@
 
 const { analyze } = require('./analyzer');
 
+const HIDDEN_UNICODE_CHARS = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/;
+const HIDDEN_UNICODE_CHARS_GLOBAL = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/g;
+const NON_BREAKING_SPACES = /(?:\u00A0|\u202F)/;
+const NON_BREAKING_SPACES_GLOBAL = /(?:\u00A0|\u202F)/g;
+
 // ─── Automatic Fixes ─────────────────────────────────────
 
 /**
@@ -37,6 +42,16 @@ function autoFix(text) {
   if (/[\u2018\u2019]/.test(result)) {
     result = result.replace(/[\u2018\u2019]/g, "'");
     fixes.push('Replaced curly single quotes with straight quotes');
+  }
+
+  // Hidden obfuscation chars → remove/normalize
+  if (HIDDEN_UNICODE_CHARS.test(result)) {
+    result = result.replace(HIDDEN_UNICODE_CHARS_GLOBAL, '');
+    fixes.push('Removed hidden unicode characters (zero-width/soft hyphen)');
+  }
+  if (NON_BREAKING_SPACES.test(result)) {
+    result = result.replace(NON_BREAKING_SPACES_GLOBAL, ' ');
+    fixes.push('Normalized non-breaking spaces to regular spaces');
   }
 
   // Filler phrase replacements (unambiguous)
@@ -230,6 +245,11 @@ function buildGuidance(analysis) {
   if (ids.has(24)) {
     tips.push(
       'Cut generic conclusions. End with a specific fact instead of "the future looks bright".',
+    );
+  }
+  if (ids.has(29)) {
+    tips.push(
+      'Remove hidden unicode characters (zero-width, soft hyphen, NBSP). They can break readability and look like detector-gaming obfuscation.',
     );
   }
 
