@@ -1,7 +1,7 @@
 # humanizer
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Tests](https://img.shields.io/badge/tests-137%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-153%20passing-brightgreen)
 ![Node >= 18](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
 
 Detect and remove signs of AI-generated writing. Makes text sound natural and human.
@@ -113,6 +113,10 @@ humanizer scan docs --ext md,txt --fail-above 45
 # Scan a large repo with reusable defaults + custom ignores
 humanizer scan . --config .humanizer.json --ignore-dirs vendor,generated
 
+# Baseline-aware scan: fail only on regressions vs a saved baseline
+humanizer scan docs --json > .humanizer-baseline.json
+humanizer scan docs --baseline .humanizer-baseline.json --fail-on-regression
+
 # Compare draft revisions and see score delta
 humanizer compare --before draft-v1.md --after draft-v2.md
 ```
@@ -120,8 +124,11 @@ humanizer compare --before draft-v1.md --after draft-v2.md
 ### New core capabilities
 
 - **Repo scan (`scan`)** — analyze a whole folder, rank files by risk, surface cross-file pattern hotspots, and optionally fail CI with `--fail-above`.
+- **Baseline-aware scan gating** — compare a current scan to a saved baseline (`--baseline`) and fail only when files regress.
 - **Config-driven scan defaults** — keep monorepo scan settings in one JSON file (`--config`) and layer one-off overrides from CLI.
 - **Custom ignore controls** — skip noisy directories with `--ignore-dirs` or disable built-in excludes with `--no-default-ignore`.
+- **Code-aware analysis mode (`--ignore-code`)** — ignore fenced code blocks and inline code snippets so technical docs do not get false positives from sample code.
+- Confidence calibration: every analysis now includes a confidence rating (high/medium/low) with short-sample warnings to reduce false-positive overconfidence.
 - **Draft compare (`compare`)** — compare two versions of text and show exactly which patterns improved or regressed.
 - **Unicode obfuscation detection (pattern 29)** — flags hidden zero-width/soft-hyphen tricks and suspicious non-breaking-space density often used in detector-evasion text.
 
@@ -139,8 +146,12 @@ humanizer compare --before draft-v1.md --after draft-v2.md
 --ext <list>            Extensions for scan (e.g. md,txt,rst)
 --min-words <n>         Skip files shorter than n words (scan)
 --fail-above <n>        Exit non-zero if any scanned file score >= n
+--baseline <file>       Compare scan against prior scan JSON output
+--regression-threshold <n>  Minimum score delta to flag regression (default: 1)
+--fail-on-regression    Exit non-zero if baseline regressions are found
 --ignore-dirs <list>    Extra dirs to ignore when scanning (comma-separated)
 --no-default-ignore     Disable built-in ignores (.git,node_modules,dist,...)
+--ignore-code           Ignore fenced/inline code snippets during analysis
 --config <file>         Load scan defaults from JSON (scan section)
 --help, -h              Show help
 ```
@@ -156,8 +167,12 @@ CLI flags still win when both are provided.
     "extensions": ["md", "txt"],
     "minWords": 30,
     "failAbove": 45,
+    "baseline": ".humanizer-baseline.json",
+    "regressionThreshold": 3,
+    "failOnRegression": true,
     "ignoreDirs": ["generated", "vendor"],
-    "includeDefaultIgnore": true
+    "includeDefaultIgnore": true,
+    "ignoreCode": true
   }
 }
 ```
@@ -166,6 +181,10 @@ Then run:
 
 ```bash
 humanizer scan . --config .humanizer.json
+# or one-off:
+humanizer analyze docs/guide.md --ignore-code
+# or regression-only gate:
+humanizer scan docs --baseline .humanizer-baseline.json --fail-on-regression
 ```
 
 ### Score badges

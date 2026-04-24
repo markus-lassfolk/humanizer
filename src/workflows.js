@@ -113,6 +113,7 @@ function scanPath(targetPath, opts = {}) {
     includeStats = false,
     ignoreDirs = null,
     includeDefaultIgnore = true,
+    ignoreCode = false,
   } = opts;
 
   const files = collectTextFiles(targetPath, { exts, ignoreDirs, includeDefaultIgnore });
@@ -136,7 +137,7 @@ function scanPath(targetPath, opts = {}) {
       continue;
     }
 
-    const result = analyze(text, { includeStats, verbose: false });
+    const result = analyze(text, { includeStats, verbose: false, ignoreCode });
 
     for (const finding of result.findings) {
       const existing = patternHotspotMap.get(finding.patternId) || {
@@ -200,6 +201,139 @@ function scanPath(targetPath, opts = {}) {
   };
 }
 
+function toScanRelativePath(filePath, rootPath) {
+  const absolute = path.resolve(filePath);
+  if (rootPath) {
+    const root = path.resolve(rootPath);
+    const relative = path.relative(root, absolute);
+    if (!relative.startsWith('..') && !path.isAbsolute(relative)) {
+      return relative.replace(/\\/g, '/');
+    }
+  }
+
+  return absolute.replace(/\\/g, '/');
+}
+
+function toScanIndex(scanResult) {
+  const files = Array.isArray(scanResult?.files) ? scanResult.files : [];
+  let root =
+    scanResult && typeof scanResult.targetPath === 'string'
+      ? path.resolve(scanResult.targetPath)
+      : null;
+
+  if (root && files.length === 1 && typeof files[0]?.file === 'string') {
+    const singleFile = path.resolve(files[0].file);
+    if (singleFile === root) {
+      root = path.dirname(root);
+    }
+  }
+
+  const index = new Map();
+  for (const file of files) {
+    if (!file || typeof file.file !== 'string') continue;
+    const relativePath = toScanRelativePath(file.file, root);
+    index.set(relativePath, {
+      ...file,
+      relativePath,
+    });
+  }
+
+  return index;
+}
+
+/**
+ * Compare two scan results and detect score regressions/improvements by file.
+ *
+ * @param {object} currentScan - Current scan payload from scanPath
+ * @param {object} baselineScan - Prior scan payload (usually from --json output)
+ * @param {object} opts
+ * @param {number} opts.regressionThreshold - Minimum absolute score delta to flag (default 1)
+ * @returns {object}
+ */
+function compareScanResults(currentScan, baselineScan, opts = {}) {
+  const rawThreshold = Number(opts.regressionThreshold);
+  const regressionThreshold =
+    Number.isFinite(rawThreshold) && rawThreshold >= 0 ? Math.trunc(rawThreshold) : 1;
+
+  const currentIndex = toScanIndex(currentScan);
+  const baselineIndex = toScanIndex(baselineScan);
+
+  const regressions = [];
+  const improvements = [];
+  const unchanged = [];
+  const newFiles = [];
+  const missingFiles = [];
+
+  for (const [relativePath, currentFile] of currentIndex.entries()) {
+    const baselineFile = baselineIndex.get(relativePath);
+
+    if (!baselineFile) {
+      newFiles.push({
+        file: currentFile.file,
+        relativePath,
+        currentScore: currentFile.score,
+      });
+      continue;
+    }
+
+    const delta = currentFile.score - baselineFile.score;
+    const item = {
+      file: currentFile.file,
+      relativePath,
+      baselineScore: baselineFile.score,
+      currentScore: currentFile.score,
+      delta,
+      baselineMatches: baselineFile.totalMatches,
+      currentMatches: currentFile.totalMatches,
+    };
+
+    if (delta > 0 && delta >= regressionThreshold) {
+      regressions.push(item);
+    } else if (delta < 0 && Math.abs(delta) >= regressionThreshold) {
+      improvements.push(item);
+    } else {
+      unchanged.push(item);
+    }
+  }
+
+  for (const [relativePath, baselineFile] of baselineIndex.entries()) {
+    if (!currentIndex.has(relativePath)) {
+      missingFiles.push({
+        file: baselineFile.file,
+        relativePath,
+        baselineScore: baselineFile.score,
+      });
+    }
+  }
+
+  regressions.sort((a, b) => b.delta - a.delta || b.currentScore - a.currentScore);
+  improvements.sort((a, b) => a.delta - b.delta || a.currentScore - b.currentScore);
+  unchanged.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+  newFiles.sort(
+    (a, b) => b.currentScore - a.currentScore || a.relativePath.localeCompare(b.relativePath),
+  );
+  missingFiles.sort(
+    (a, b) => b.baselineScore - a.baselineScore || a.relativePath.localeCompare(b.relativePath),
+  );
+
+  return {
+    summary: {
+      regressionThreshold,
+      comparedFiles: unchanged.length + regressions.length + improvements.length,
+      regressions: regressions.length,
+      improvements: improvements.length,
+      unchanged: unchanged.length,
+      newFiles: newFiles.length,
+      missingFiles: missingFiles.length,
+    },
+    regressions,
+    improvements,
+    unchanged,
+    newFiles,
+    missingFiles,
+  };
+}
+
 /** Build pattern histogram from analysis result. */
 function toPatternHistogram(result) {
   const map = new Map();
@@ -217,9 +351,10 @@ function toPatternHistogram(result) {
 /**
  * Compare two text drafts and show score + pattern deltas.
  */
-function compareTexts(beforeText, afterText) {
-  const before = analyze(beforeText, { verbose: true, includeStats: true });
-  const after = analyze(afterText, { verbose: true, includeStats: true });
+function compareTexts(beforeText, afterText, opts = {}) {
+  const { ignoreCode = false } = opts;
+  const before = analyze(beforeText, { verbose: true, includeStats: true, ignoreCode });
+  const after = analyze(afterText, { verbose: true, includeStats: true, ignoreCode });
 
   const histogram = toPatternHistogram(before);
   for (const f of after.findings) {
@@ -274,10 +409,10 @@ function compareTexts(beforeText, afterText) {
 }
 
 /** Compare two files. */
-function compareFiles(beforePath, afterPath) {
+function compareFiles(beforePath, afterPath, opts = {}) {
   const beforeText = fs.readFileSync(path.resolve(beforePath), 'utf-8');
   const afterText = fs.readFileSync(path.resolve(afterPath), 'utf-8');
-  return compareTexts(beforeText, afterText);
+  return compareTexts(beforeText, afterText, opts);
 }
 
 function scoreLabel(s) {
@@ -294,6 +429,7 @@ module.exports = {
   normalizeIgnoreDirs,
   collectTextFiles,
   scanPath,
+  compareScanResults,
   compareTexts,
   compareFiles,
   scoreLabel,

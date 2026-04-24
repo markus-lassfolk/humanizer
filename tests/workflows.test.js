@@ -11,6 +11,7 @@ import {
   normalizeIgnoreDirs,
   collectTextFiles,
   scanPath,
+  compareScanResults,
   compareTexts,
   compareFiles,
 } from '../src/workflows.js';
@@ -159,6 +160,25 @@ describe('scanPath', () => {
     expect(result.summary.scannedFiles).toBe(1);
     expect(result.files[0].file.endsWith('notes.md')).toBe(true);
   });
+
+  it('can ignore code snippets during scan', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+
+    const content = [
+      'Release notes',
+      '```md',
+      'Great question! This serves as a testament to innovation.',
+      '```',
+      'Shipped bug fixes and reduced latency by 18%.',
+    ].join('\n');
+
+    fs.writeFileSync(path.join(tmp, 'notes.md'), content);
+
+    const regular = scanPath(tmp, { exts: ['md'], minWords: 3, ignoreCode: false });
+    const ignoreCode = scanPath(tmp, { exts: ['md'], minWords: 3, ignoreCode: true });
+
+    expect(regular.files[0].score).toBeGreaterThan(ignoreCode.files[0].score);
+  });
 });
 
 describe('compareTexts and compareFiles', () => {
@@ -187,5 +207,97 @@ describe('compareTexts and compareFiles', () => {
     expect(result.before.score).toBeGreaterThanOrEqual(0);
     expect(result.after.score).toBeGreaterThanOrEqual(0);
     expect(typeof result.delta.score).toBe('number');
+  });
+
+  it('supports ignoreCode option in compare workflows', () => {
+    const before = '```md\nGreat question!\n```\nShipped bug fixes.';
+    const after = '```md\nGreat question!\n```\nShipped bug fixes and lowered latency.';
+
+    const regular = compareTexts(before, after);
+    const codeAware = compareTexts(before, after, { ignoreCode: true });
+
+    expect(regular.before.score).toBeGreaterThan(codeAware.before.score);
+  });
+});
+
+describe('compareScanResults', () => {
+  it('detects regressions, improvements, new files, and missing files by relative path', () => {
+    const baselineRoot = path.resolve('/tmp/humanizer-baseline-a');
+    const currentRoot = path.resolve('/tmp/humanizer-baseline-b');
+
+    const baseline = {
+      targetPath: baselineRoot,
+      files: [
+        {
+          file: path.join(baselineRoot, 'docs', 'a.md'),
+          score: 12,
+          totalMatches: 2,
+        },
+        {
+          file: path.join(baselineRoot, 'docs', 'b.md'),
+          score: 44,
+          totalMatches: 6,
+        },
+        {
+          file: path.join(baselineRoot, 'docs', 'c.md'),
+          score: 29,
+          totalMatches: 4,
+        },
+      ],
+    };
+
+    const current = {
+      targetPath: currentRoot,
+      files: [
+        {
+          file: path.join(currentRoot, 'docs', 'a.md'),
+          score: 20,
+          totalMatches: 5,
+        },
+        {
+          file: path.join(currentRoot, 'docs', 'b.md'),
+          score: 36,
+          totalMatches: 4,
+        },
+        {
+          file: path.join(currentRoot, 'docs', 'new.md'),
+          score: 18,
+          totalMatches: 2,
+        },
+      ],
+    };
+
+    const comparison = compareScanResults(current, baseline, { regressionThreshold: 5 });
+
+    expect(comparison.summary.regressions).toBe(1);
+    expect(comparison.summary.improvements).toBe(1);
+    expect(comparison.summary.newFiles).toBe(1);
+    expect(comparison.summary.missingFiles).toBe(1);
+
+    expect(comparison.regressions[0].relativePath).toBe('docs/a.md');
+    expect(comparison.regressions[0].delta).toBe(8);
+
+    expect(comparison.improvements[0].relativePath).toBe('docs/b.md');
+    expect(comparison.improvements[0].delta).toBe(-8);
+
+    expect(comparison.newFiles[0].relativePath).toBe('docs/new.md');
+    expect(comparison.missingFiles[0].relativePath).toBe('docs/c.md');
+  });
+
+  it('treats small deltas under threshold as unchanged', () => {
+    const baseline = {
+      targetPath: '/tmp/humanizer-baseline-a',
+      files: [{ file: '/tmp/humanizer-baseline-a/a.md', score: 30, totalMatches: 4 }],
+    };
+    const current = {
+      targetPath: '/tmp/humanizer-baseline-b',
+      files: [{ file: '/tmp/humanizer-baseline-b/a.md', score: 33, totalMatches: 4 }],
+    };
+
+    const comparison = compareScanResults(current, baseline, { regressionThreshold: 5 });
+
+    expect(comparison.summary.regressions).toBe(0);
+    expect(comparison.summary.improvements).toBe(0);
+    expect(comparison.summary.unchanged).toBe(1);
   });
 });
