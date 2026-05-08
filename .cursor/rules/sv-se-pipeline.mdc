@@ -1,0 +1,22 @@
+---
+description: When editing Swedish locale data under locales/sv-se, run the full pipeline and use PIPELINE-SNAPSHOT for verification.
+globs:
+  - locales/sv-se/**/*.tsv
+  - locales/sv-se/scripts/*.mjs
+  - locales/sv-se/tests/fixtures/sv-corpus/**/*
+  - src/locales/generated/sv-prescriptive.js
+---
+
+# Swedish (`sv-se`) data pipeline
+
+- After changing **TSV** files (`references/*list*.tsv`), **corpus fixtures**, or **scripts** under `locales/sv-se/`, run:
+
+  `npm run sv:pipeline`
+
+- The pipeline verifies outputs (prescriptive counts, 50+50 corpus, 200 prompts, JSON shapes, calibration fields) and writes **`locales/sv-se/references/PIPELINE-SNAPSHOT.md`**. Treat that file as the ground truth for what was last regenerated.
+
+- If a run fails, fix the error and continue with:
+
+  `npm run sv:pipeline -- --resume`
+
+- Optional: `--with-extended` (Wikipedia + extended-aware freq/validate by default), `--freq-include-extended` (same freq/validate if extended/ already exists), `--no-freq-include-extended` with `--with-extended` for log-odds-only extended. See `locales/sv-se/docs/SWEDISH-EXTENSION.md`.

@@ -57,17 +57,19 @@ These ship in the repo and in the **npm package** (`locales/sv-se/`, `reports/`,
 |----------|------|
 | `locales/sv-se/references/sv-frequencies.json` | Weights for curated tier words + **extra** multi-word AI-like n-grams (Pattern 7) |
 | `locales/sv-se/references/empirical-sv-tiers.md` | Human-readable log-odds table (incl. rows omitted from JSON) |
+| `locales/sv-se/references/PIPELINE-SNAPSHOT.md` | Last **`npm run sv:pipeline`** run: verified counts and artifact paths |
 | `reports/calibration-sv-latest.json` | Regression metrics for `locales/sv-se/tests/calibration.sv.regression.test.js` |
 
-Refresh locally after changing corpus or Wikipedia extended data:
+Refresh Swedish data end-to-end (codegen, corpora, empirical JSON, calibration, tests, snapshot doc):
 
 ```bash
-npm run corpus:refresh          # seed + log-odds + calibrate
-npm run locale:prescriptive       # TSV → src/locales/generated/sv-prescriptive.js
-npm run freq:baseline && npm run validate:sv-tiers   # tier vs human-frequency proxy
-npm run prompts:seed            # ~200 Swedish LLM prompts (fixtures)
-# optional: npm run corpus:build && npm run corpus:logodds
-# optional: OPENAI_API_KEY=... npm run corpus:llm   # fills locales/sv-se/tests/fixtures/sv-corpus/ai-llm/
+npm run sv:pipeline
+```
+
+After changing corpus or Wikipedia extended data, use `--with-extended` (includes extended-aware frequency ranks unless you pass `--no-freq-include-extended`) or `--freq-include-extended` when `sv-corpus-extended/` is already built. See [`locales/sv-se/references/PIPELINE-SNAPSHOT.md`](locales/sv-se/references/PIPELINE-SNAPSHOT.md) for the last verified artifact counts.
+
+```bash
+npm run corpus:refresh   # minimal: seed + log-odds + calibrate only
 ```
 
 `npm run check` also runs `locale:prescriptive --check` and `validate:sv-tiers`. See [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md).

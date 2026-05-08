@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-08T21:11:53.404Z",
+  "generatedAt": "2026-05-08T21:43:38.740Z",
   "corpus": {
     "humanDocs": 51,
     "aiDocs": 50
@@ -72,7 +72,7 @@
       "precision": 1,
       "recallDocs": 1,
       "fprPer1kHumanWords": 0,
-      "hitsAi": 2700.308,
+      "hitsAi": 2713.177,
       "hitsHuman": 0
     },
     "13": {

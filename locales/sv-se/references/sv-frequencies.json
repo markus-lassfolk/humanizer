@@ -1,1196 +1,1190 @@
 {
   "inom": {
     "ai": 50,
-    "human": 12,
-    "zscore": 7.896,
+    "human": 20,
+    "zscore": 8.104,
     "weight": 2.5
   },
   "genom": {
     "ai": 34,
-    "human": 13,
-    "zscore": 6.344,
-    "weight": 2.269
-  },
-  "dokument": {
-    "ai": 50,
-    "human": 2,
-    "zscore": 6.334,
-    "weight": 2.267
+    "human": 10,
+    "zscore": 6.839,
+    "weight": 2.368
   },
   "utan": {
     "ai": 33,
-    "human": 17,
-    "zscore": 5.925,
-    "weight": 2.185
+    "human": 18,
+    "zscore": 6.264,
+    "weight": 2.253
+  },
+  "banbrytande": {
+    "ai": 32,
+    "human": 1,
+    "zscore": 5.145,
+    "weight": 2.029
+  },
+  "innovation": {
+    "ai": 32,
+    "human": 1,
+    "zscore": 5.145,
+    "weight": 2.029
   },
   "kvalitet": {
     "ai": 32,
     "human": 1,
-    "zscore": 4.998,
-    "weight": 2
+    "zscore": 5.145,
+    "weight": 2.029
   },
-  "moderna": {
+  "visar": {
     "ai": 17,
-    "human": 3,
-    "zscore": 4.624,
-    "weight": 1.925
+    "human": 4,
+    "zscore": 4.879,
+    "weight": 1.976
   },
   "säga": {
     "ai": 16,
-    "human": 2,
-    "zscore": 4.399,
-    "weight": 1.88
-  },
-  "alltmer": {
-    "ai": 17,
-    "human": 1,
-    "zscore": 4.179,
-    "weight": 1.836
-  },
-  "tack": {
-    "ai": 17,
-    "human": 1,
-    "zscore": 4.179,
-    "weight": 1.836
-  },
-  "mellan": {
-    "ai": 17,
-    "human": 10,
-    "zscore": 4.122,
-    "weight": 1.824
+    "human": 3,
+    "zscore": 4.709,
+    "weight": 1.942
   },
   "snabbt": {
     "ai": 16,
-    "human": 1,
-    "zscore": 4.1,
-    "weight": 1.82
+    "human": 2,
+    "zscore": 4.579,
+    "weight": 1.916
   },
-  "handlar": {
+  "ljus": {
+    "ai": 16,
+    "human": 2,
+    "zscore": 4.579,
+    "weight": 1.916
+  },
+  "möjligheten": {
+    "ai": 17,
+    "human": 1,
+    "zscore": 4.323,
+    "weight": 1.865
+  },
+  "engagemang": {
+    "ai": 17,
+    "human": 1,
+    "zscore": 4.323,
+    "weight": 1.865
+  },
+  "moderna": {
+    "ai": 17,
+    "human": 1,
+    "zscore": 4.323,
+    "weight": 1.865
+  },
+  "digitala": {
     "ai": 16,
     "human": 1,
-    "zscore": 4.1,
-    "weight": 1.82
+    "zscore": 4.243,
+    "weight": 1.849
   },
-  "driver": {
+  "fördjupa": {
     "ai": 16,
     "human": 1,
-    "zscore": 4.1,
-    "weight": 1.82
+    "zscore": 4.243,
+    "weight": 1.849
+  },
+  "teknik": {
+    "ai": 16,
+    "human": 1,
+    "zscore": 4.243,
+    "weight": 1.849
+  },
+  "processen": {
+    "ai": 16,
+    "human": 1,
+    "zscore": 4.243,
+    "weight": 1.849
+  },
+  "resultatet": {
+    "ai": 16,
+    "human": 1,
+    "zscore": 4.243,
+    "weight": 1.849
   },
   "avgörande": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.02,
-    "weight": 1.804
+    "zscore": 4.106,
+    "weight": 1.821
   },
   "navigerar": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.02,
-    "weight": 1.804
+    "zscore": 4.106,
+    "weight": 1.821
   },
   "komplexiteten": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.02,
-    "weight": 1.804
+    "zscore": 4.106,
+    "weight": 1.821
+  },
+  "dokument": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 4.106,
+    "weight": 1.821
   },
   "ai-mall": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.02,
-    "weight": 1.804
+    "zscore": 4.106,
+    "weight": 1.821
+  },
+  "mellan": {
+    "ai": 17,
+    "human": 15,
+    "zscore": 3.848,
+    "weight": 1.77
   },
   "fråga": {
     "ai": 34,
     "human": 0,
-    "zscore": 3.744,
-    "weight": 1.749
+    "zscore": 3.83,
+    "weight": 1.766
   },
   "nyttja": {
     "ai": 34,
     "human": 0,
-    "zscore": 3.744,
-    "weight": 1.749
+    "zscore": 3.83,
+    "weight": 1.766
   },
   "gärna": {
     "ai": 34,
     "human": 0,
-    "zscore": 3.744,
-    "weight": 1.749
+    "zscore": 3.83,
+    "weight": 1.766
   },
   "dagens": {
     "ai": 33,
     "human": 0,
-    "zscore": 3.722,
-    "weight": 1.744
-  },
-  "banbrytande": {
-    "ai": 32,
-    "human": 0,
-    "zscore": 3.7,
-    "weight": 1.74
-  },
-  "innovation": {
-    "ai": 32,
-    "human": 0,
-    "zscore": 3.7,
-    "weight": 1.74
+    "zscore": 3.808,
+    "weight": 1.762
   },
   "holistiskt": {
     "ai": 32,
     "human": 0,
-    "zscore": 3.7,
-    "weight": 1.74
+    "zscore": 3.786,
+    "weight": 1.757
+  },
+  "alltmer": {
+    "ai": 17,
+    "human": 0,
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "komplex": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "marknad": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "kombinera": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "robusta": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "ramverk": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "proaktiva": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "strategier": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "värdeskapande": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "processer": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "möjliggöra": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "synergier": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "stakeholders": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "best": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "practices": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "takeaways": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "understryker": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "vikten": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "alignment": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "utmärkt": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
-  },
-  "möjligheten": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "optimera": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "värdekedjan": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "förändring": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "transformation": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
-  },
-  "visar": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
-  },
-  "engagemang": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "vision": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "framtidstro": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "värld": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "dyka": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "helhetslösningen": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "framtidssäkras": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "kärnkompetenser": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "kundresa": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "speglar": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "organisationens": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "mindset": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "omsvep": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "värt": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "nämna": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "insikterna": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "mångfacetterade": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
+  },
+  "tack": {
+    "ai": 17,
+    "human": 0,
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "intressant": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "frågeställning": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "resilienta": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "strukturer": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "transformativa": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "katalysatorer": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.245,
-    "weight": 1.649
+    "zscore": 3.33,
+    "weight": 1.666
   },
   "föränderliga": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
-  },
-  "digitala": {
-    "ai": 16,
-    "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "landskap": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "viktigt": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "notera": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "organisationen": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "behöver": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
-  },
-  "fördjupa": {
-    "ai": 16,
-    "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "sömlös": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "integration": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
-  "teknik": {
+  "handlar": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "perspektiv": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "transformativt": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "ekosystem": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "sammanfattningsvis": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "framtiden": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
-  },
-  "ljus": {
-    "ai": 16,
-    "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "grepp": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "hoppas": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "hjälper": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "översikt": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "hastighet": {
     "ai": 16,
     "human": 0,
-    "zscore": 3.201,
-    "weight": 1.64
+    "zscore": 3.286,
+    "weight": 1.657
   },
   "genom att": {
     "ai": 17,
     "human": 2,
-    "zscore": 4.506,
-    "weight": 1.901
+    "zscore": 4.689,
+    "weight": 1.938
+  },
+  "möjligheten att": {
+    "ai": 17,
+    "human": 1,
+    "zscore": 4.327,
+    "weight": 1.865
   },
   "säga att": {
     "ai": 16,
     "human": 1,
-    "zscore": 4.102,
-    "weight": 1.82
-  },
-  "ut för": {
-    "ai": 16,
-    "human": 1,
-    "zscore": 4.102,
-    "weight": 1.82
+    "zscore": 4.247,
+    "weight": 1.849
   },
   "och kvalitet": {
     "ai": 16,
     "human": 1,
-    "zscore": 4.102,
-    "weight": 1.82
+    "zscore": 4.247,
+    "weight": 1.849
   },
   "det avgörande": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.022,
-    "weight": 1.804
+    "zscore": 4.109,
+    "weight": 1.822
   },
   "avgörande att": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.022,
-    "weight": 1.804
+    "zscore": 4.109,
+    "weight": 1.822
   },
   "vi navigerar": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.022,
-    "weight": 1.804
+    "zscore": 4.109,
+    "weight": 1.822
   },
   "navigerar komplexiteten": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.022,
-    "weight": 1.804
+    "zscore": 4.109,
+    "weight": 1.822
   },
   "komplexiteten inom": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.022,
-    "weight": 1.804
+    "zscore": 4.109,
+    "weight": 1.822
   },
   "i dagens": {
     "ai": 33,
     "human": 0,
-    "zscore": 3.724,
-    "weight": 1.745
+    "zscore": 3.811,
+    "weight": 1.762
   },
   "ett holistiskt": {
     "ai": 32,
     "human": 0,
-    "zscore": 3.702,
-    "weight": 1.74
+    "zscore": 3.788,
+    "weight": 1.758
   },
   "en alltmer": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "alltmer komplex": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "komplex marknad": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "marknad är": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "att kombinera": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "kombinera robusta": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "robusta ramverk": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "ramverk proaktiva": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "proaktiva strategier": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "strategier och": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "och värdeskapande": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "värdeskapande processer": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "processer kan": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "vi möjliggöra": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "möjliggöra synergier": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "synergier mellan": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "mellan stakeholders": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "stakeholders best": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "best practices": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "practices och": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "och key": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "key takeaways": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "takeaways understryker": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "understryker vikten": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "vikten av": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "av alignment": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "alignment det": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "en utmärkt": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "utmärkt fråga": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "fråga nyttja": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "nyttja gärna": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "gärna möjligheten": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
-  },
-  "möjligheten att": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "att optimera": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "optimera värdekedjan": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "värdekedjan bra": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "bra fråga": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "fråga det": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.246,
-    "weight": 1.649
+    "zscore": 3.333,
+    "weight": 1.667
   },
   "är det avgörande": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.024,
-    "weight": 1.805
+    "zscore": 4.111,
+    "weight": 1.822
   },
   "det avgörande att": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.024,
-    "weight": 1.805
+    "zscore": 4.111,
+    "weight": 1.822
   },
   "avgörande att vi": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.024,
-    "weight": 1.805
+    "zscore": 4.111,
+    "weight": 1.822
   },
   "att vi navigerar": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.024,
-    "weight": 1.805
+    "zscore": 4.111,
+    "weight": 1.822
   },
   "vi navigerar komplexiteten": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.024,
-    "weight": 1.805
+    "zscore": 4.111,
+    "weight": 1.822
   },
   "navigerar komplexiteten inom": {
     "ai": 50,
     "human": 0,
-    "zscore": 4.024,
-    "weight": 1.805
+    "zscore": 4.111,
+    "weight": 1.822
   },
   "i en alltmer": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "en alltmer komplex": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "alltmer komplex marknad": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "komplex marknad är": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "marknad är det": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "genom att kombinera": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "att kombinera robusta": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "kombinera robusta ramverk": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "robusta ramverk proaktiva": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "ramverk proaktiva strategier": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "proaktiva strategier och": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "strategier och värdeskapande": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "och värdeskapande processer": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "värdeskapande processer kan": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "processer kan vi": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "kan vi möjliggöra": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "vi möjliggöra synergier": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "möjliggöra synergier mellan": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "synergier mellan stakeholders": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "mellan stakeholders best": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "stakeholders best practices": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "best practices och": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "practices och key": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "och key takeaways": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "key takeaways understryker": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "takeaways understryker vikten": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "understryker vikten av": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "vikten av alignment": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "av alignment det": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "alignment det är": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "är en utmärkt": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "en utmärkt fråga": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "utmärkt fråga nyttja": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "fråga nyttja gärna": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "nyttja gärna möjligheten": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "gärna möjligheten att": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "möjligheten att optimera": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "att optimera värdekedjan": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "optimera värdekedjan bra": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "värdekedjan bra fråga": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "bra fråga det": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "fråga det är": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "bara en förändring": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "en förändring det": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "förändring det är": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "är en transformation": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "en transformation som": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "transformation som visar": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   },
   "som visar på": {
     "ai": 17,
     "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
-  },
-  "visar på engagemang": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.248,
-    "weight": 1.65
+    "zscore": 3.335,
+    "weight": 1.667
   }
 }

@@ -32,32 +32,37 @@ Fork baseline: [brandonwise/humanizer](https://github.com/brandonwise/humanizer)
 - `HUMANIZER_LOCALE=sv node src/cli.js score file.txt`
 - Programmatic: `analyze(text, { locale: 'sv' })`, `autoFix(text, { locale: 'sv' })`
 
+## What we commit vs keep local
+
+**In GitHub:** curated locale data and small fixtures so the project works without running pipelines first (`references/*`, generated `sv-prescriptive.js`, `sv-corpus` human/ai/gold/prompts, calibration snapshot JSON, etc.).
+
+**Gitignored (re-download / regenerate):** bulky or non-deterministic source material—Wikipedia extended extracts (`sv-corpus-extended/`), optional LLM outputs (`ai-llm/`), pipeline logs under `.pipeline/`, and optionally large hand-placed dumps under `locales/sv-se/data/raw/` if you add that layout for future corpora.
+
 ## Maintainer workflows
 
+**One command (recommended):** regenerates prescriptive JS, baseline text, frequency ranks, prompts, synthetic corpus, log-odds, calibration; verifies each step; runs tests; writes [`references/PIPELINE-SNAPSHOT.md`](../references/PIPELINE-SNAPSHOT.md).
+
 ```bash
-# Prescriptive tables → generated JS (also runs in npm run check)
-npm run locale:prescriptive
-npm run locale:prescriptive -- --check
+npm run sv:pipeline              # full run; fails fast with log under locales/sv-se/.pipeline/
+npm run sv:pipeline -- --resume   # continue after a failed phase
+npm run sv:pipeline -- --force      # ignore saved state
+npm run sv:pipeline -- --dry-run    # list phases only
+npm run sv:pipeline -- --with-extended   # Wikipedia fetch + freq ranks incl. extended/ + validate + log-odds merge
+npm run sv:pipeline -- --freq-include-extended   # only extended-aware freq + validate (extended/*.txt must exist)
+npm run sv:pipeline -- --with-extended --no-freq-include-extended   # Wikipedia for log-odds only; ranks stay baseline-only
+```
 
-# Human frequency proxy → ranks JSON (excludes sv-corpus-extended unless SV_FREQ_INCLUDE_EXTENDED=1)
-npm run materialize:baseline-corpus   # optional: refresh locales/sv-se/references/baseline-corpus-sv.txt
-npm run freq:baseline
-npm run validate:sv-tiers
+**Going further (optional):** run `OPENAI_API_KEY=… npm run corpus:llm` before `corpus:logodds` for extra AI-class n-grams; consider larger human gold or corpus exports (e.g. Korp/SUC) for rank calibration; add post-checks (e.g. `uniqueTypes` growth after extended) if you want stricter CI.
 
-# Synthetic corpus + empirical pipeline
-npm run corpus:refresh          # seed + log-odds + calibrate
+Manual steps (same as the pipeline; use when debugging a single piece):
 
-# Prompt bank (~200) for optional LLM class
-npm run prompts:seed
-
-# Optional: real LLM outputs → locales/sv-se/tests/fixtures/sv-corpus/ai-llm/ (gitignored)
-export OPENAI_API_KEY=...
-npm run corpus:llm
+```bash
+npm run locale:prescriptive && npm run locale:prescriptive -- --check
+npm run materialize:baseline-corpus && npm run freq:baseline && npm run validate:sv-tiers
+npm run prompts:seed && npm run corpus:seed
 npm run corpus:logodds && npm run corpus:calibrate
-
-# Optional: Swedish Wikipedia extracts into extended/ (requires network)
-npm run corpus:build
-SV_FREQ_INCLUDE_EXTENDED=1 npm run freq:baseline
+# optional: npm run corpus:build
+# optional: OPENAI_API_KEY=... npm run corpus:llm
 ```
 
 ## Sources of truth for vocabulary

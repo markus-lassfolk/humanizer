@@ -1,5 +1,9 @@
 # Swedish calibration corpus (`locales/sv-se/tests/fixtures/sv-corpus/`)
 
+## Committed vs gitignored
+
+Directories under this folder (`human/`, `ai/`, `human-gold/`, `prompts/`) are **committed** so tests and calibration work from a fresh clone. Bulk or fetched source text lives elsewhere: `sv-corpus-extended/` (Wikipedia), `ai-llm/` (API), and optional `locales/sv-se/data/raw/` are **gitignored**; scripts fold their content into **committed** outputs like `references/sv-frequencies.json` when you run the pipeline.
+
 ## Summary
 
 | Directory | Files | Class | Source |

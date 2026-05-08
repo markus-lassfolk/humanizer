@@ -31,9 +31,20 @@ Thumbs.db
 coverage/
 .nyc_output/
 
-# Optional extended Swedish corpus (Wikipedia / Korp dumps)
+# --- Swedish (`sv-se`): bulky / reproducible source material ---
+# Do not commit raw downloads or API outputs used only to rebuild curated artifacts.
+# Shipped in-repo (for a clone-and-run experience): `locales/sv-se/references/*` (JSON/TSV/baseline
+# text, empirical tables), `src/locales/generated/sv-prescriptive.js`, committed fixtures under
+# `locales/sv-se/tests/fixtures/sv-corpus/{human,ai,human-gold,prompts}/`, `reports/calibration-sv-latest.json`.
+# Optional extended Swedish corpus (Wikipedia extracts, etc.)
 locales/sv-se/tests/fixtures/sv-corpus-extended/
 tests/fixtures/sv-corpus-extended/
 
+# Optional bulk imports you add by hand (Korp exports, dumps) before scripts consume them
+locales/sv-se/data/raw/
+
 # Optional multi-model LLM outputs for log-odds (API keys required to generate)
 locales/sv-se/tests/fixtures/sv-corpus/ai-llm/
+
+# Swedish pipeline resume state + log (sv-pipeline.mjs)
+locales/sv-se/.pipeline/

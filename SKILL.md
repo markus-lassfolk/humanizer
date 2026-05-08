@@ -35,6 +35,8 @@ Based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia
 
 **Syncing to an agent skills folder:** keep `SKILL.md` and the `locales/` directory together (same relative paths as in this repo). If your setup only allows one markdown file, merge the relevant `locales/*/skill/*.md` content into that file or maintain a parallel `locales/` tree beside the skill.
 
+**Maintainers (Swedish bundle):** after editing TSV tables or corpus fixtures under `locales/sv-se/`, run `npm run sv:pipeline` to regenerate derived files, verify outputs, and update `locales/sv-se/references/PIPELINE-SNAPSHOT.md` (see `locales/sv-se/docs/SWEDISH-EXTENSION.md`).
+
 ## Your task
 
 When given text to humanize:
