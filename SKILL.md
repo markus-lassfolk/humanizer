@@ -145,7 +145,7 @@ This fork adds Swedish language support. When input text is in Swedish, always u
 
 - **Swedish AI vocabulary** — loan-translated LLM clichés (fördjupa sig i, sömlös, banbrytande, transformativ, mångfacetterad, ekosystem), Swenglish (best practices, stakeholders, learnings, pain points, alignment), consultant compounds (helhetslösning, kundresa, värdeskapande), and density-gated Tier 2/3 lists (see [references/swedish-ai-vocabulary.md](references/swedish-ai-vocabulary.md))
 - **Formulaic phrases & bureaucratese** — regex-detected Swedish openers, chatbot/sycophancy strings, and many items aligned with Statsrådsberedningens *Svarta listan* (see [references/svarta-listan.md](references/svarta-listan.md))
-- **Empirical weights** — optional multipliers from `references/sv-frequencies.json` (built by `npm run corpus:logodds` over the gold corpus) so high–log-odds n-grams contribute more to the pattern score
+- **Empirical data** — bundled `references/sv-frequencies.json` + `references/empirical-sv-tiers.md`: (1) **weights** on curated tier words when keys match, (2) **`empiricalExtra`** multi-word n-grams scored automatically in Pattern 7 (excludes unigrams; see `src/locales/sv-empirical-filter.js`). Rebuild with `npm run corpus:logodds` or full `npm run corpus:refresh`.
 - **LIX readability** — Nordic LIX index instead of Flesch-Kincaid. LIX >50 = hard, >60 = very hard.
 - **Swedish sentence splitting** — abbreviations: t.ex., dvs., bl.a., m.m., m.fl., s.k., fr.o.m., t.o.m., plus legal/official (SOU, prop, kap, NJA, …)
 - **Swedish function words** — expanded list (även, dock, därför, således, kanske, …) for stylometrics

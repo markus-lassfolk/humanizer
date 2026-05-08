@@ -20,9 +20,15 @@ import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 const { tokenize } = require('../src/stats.js');
+const { functionWords } = require(path.join(path.dirname(fileURLToPath(import.meta.url)), '../src/locales/sv.js'));
+const {
+  buildStopSet,
+  shouldStoreSvFrequencyKey,
+} = require(path.join(path.dirname(fileURLToPath(import.meta.url)), '../src/locales/sv-empirical-filter.js'));
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
+const swStopSet = buildStopSet(functionWords);
 
 function readDirTxt(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -90,7 +96,12 @@ function main() {
   }
 
   const outJson = {};
-  const md = ['# Empirical Swedish AI-tells (log-odds)', '', '| rank | ngram | z | AI count | Human count | suggested weight |', '|------|-------|---|----------|-------------|------------------|'];
+  const md = [
+    '# Empirical Swedish AI-tells (log-odds)',
+    '',
+    '| rank | ngram | z | AI count | Human count | suggested weight | in sv-frequencies.json |',
+    '|------|-------|---|----------|-------------|------------------|-------------------------|',
+  ];
 
   let rank = 0;
   for (const n of [1, 2, 3]) {
@@ -107,13 +118,16 @@ function main() {
         zscore: Math.round(row.z * 1000) / 1000,
         weight: Math.round(weight * 1000) / 1000,
       };
-      const prev = outJson[row.w];
-      if (!prev || prev.zscore < entry.zscore) {
-        outJson[row.w] = entry;
+      const store = shouldStoreSvFrequencyKey(row.w, n, row.z, swStopSet);
+      if (store) {
+        const prev = outJson[row.w];
+        if (!prev || prev.zscore < entry.zscore) {
+          outJson[row.w] = entry;
+        }
       }
       if (rank <= 200) {
         md.push(
-          `| ${rank} | ${row.w.replace(/\|/g, '\\|')} | ${row.z.toFixed(2)} | ${row.c1} | ${row.c2} | ${weight.toFixed(2)} |`,
+          `| ${rank} | ${row.w.replace(/\|/g, '\\|')} | ${row.z.toFixed(2)} | ${row.c1} | ${row.c2} | ${weight.toFixed(2)} | ${store ? 'yes' : 'no'} |`,
         );
       }
     }

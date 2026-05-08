@@ -13,7 +13,9 @@
  *  - Swenglish loan-words ("best practices", "stakeholders") are Tier 1 when
  *    used in otherwise Swedish text.
  *
- * Empirical weights (optional): references/sv-frequencies.json from log-odds.
+ * Empirical data (bundled references/sv-frequencies.json):
+ *  - Weights on curated tier words (applyWeights).
+ *  - empiricalExtra: multi-word n-grams for Pattern 7 (see sv-empirical-filter.js).
  */
 
 const fs = require('fs');
@@ -728,6 +730,37 @@ const AUTOFIXES_SV = [
   },
 ];
 
+// ─── Empirical extras (Pattern 7) ─────────────────────────
+// N-grams from references/sv-frequencies.json not already in curated tiers.
+// Regenerate: npm run corpus:logodds
+
+const { buildStopSet, shouldScoreEmpiricalExtra } = require('./sv-empirical-filter.js');
+
+const SW_STOP_FOR_EMPIRICAL = buildStopSet(FUNCTION_WORDS_SV);
+const TIER_KEYS_LOWER = new Set(
+  [...TIER_1_SV_RAW, ...TIER_2_SV_RAW, ...TIER_3_SV_RAW].map((s) => String(s).toLowerCase()),
+);
+
+const EMPIRICAL_EXTRA_MAX = 100;
+
+function buildEmpiricalExtraList(weights) {
+  const rows = [];
+  for (const [key, v] of Object.entries(weights)) {
+    if (!v || typeof v.zscore !== 'number') continue;
+    if (!shouldScoreEmpiricalExtra(key, v.zscore, SW_STOP_FOR_EMPIRICAL, TIER_KEYS_LOWER)) {
+      continue;
+    }
+    const w = typeof v.weight === 'number' && v.weight > 0 ? v.weight : 1;
+    rows.push({ key, z: v.zscore, w });
+  }
+  rows.sort((a, b) => b.z - a.z);
+  return rows
+    .slice(0, EMPIRICAL_EXTRA_MAX)
+    .map(({ key, w }) => (Math.abs(w - 1) < 1e-9 ? key : { word: key, weight: w }));
+}
+
+const EMPIRICAL_EXTRA_SV = buildEmpiricalExtraList(EMPIRICAL_WEIGHTS);
+
 // ─── Export ───────────────────────────────────────────────
 
 module.exports = {
@@ -737,6 +770,9 @@ module.exports = {
   tier2: TIER_2_SV,
   tier3: TIER_3_SV,
   phrases: AI_PHRASES_SV,
+
+  /** Corpus-derived n-grams (not in tiers) scored in Pattern 7 */
+  empiricalExtra: EMPIRICAL_EXTRA_SV,
 
   functionWords: FUNCTION_WORDS_SV,
   abbreviations: ABBREVIATIONS_SV,

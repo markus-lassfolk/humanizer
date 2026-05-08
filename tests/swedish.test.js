@@ -13,6 +13,7 @@
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
+import { createRequire } from 'module';
 import { analyze, score } from '../src/analyzer.js';
 import { autoFix } from '../src/humanizer.js';
 import { tokenize, splitSentences, computeStats } from '../src/stats.js';
@@ -20,12 +21,32 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+const require = createRequire(import.meta.url);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 function loadFixture(name) {
   return fs.readFileSync(path.join(__dirname, 'fixtures', name), 'utf-8');
 }
+
+describe('Swedish empirical bundle', () => {
+  it('locale exposes non-empty empiricalExtra (multi-word n-grams only)', () => {
+    const { loadLocale } = require('../src/locales/index.js');
+    const sv = loadLocale('sv');
+    expect(Array.isArray(sv.empiricalExtra)).toBe(true);
+    expect(sv.empiricalExtra.length).toBeGreaterThan(0);
+    for (const entry of sv.empiricalExtra.slice(0, 8)) {
+      const w = typeof entry === 'string' ? entry : entry.word;
+      expect(w).toMatch(/\s/);
+    }
+  });
+
+  it('English locale has empty empiricalExtra', () => {
+    const { loadLocale } = require('../src/locales/index.js');
+    expect(loadLocale('en').empiricalExtra).toEqual([]);
+  });
+});
 
 // ─── 1. Unicode-safe tokenization ────────────────────────
 

@@ -425,6 +425,20 @@ const patterns = [
       // Tier 1: always flag
       results.push(...scanWordList(text, tier1, 'Tier 1 AI word', 'high'));
 
+      // Empirical n-grams from bundled sv-frequencies.json (Swedish); excludes
+      // stopwords and curated tier keys. Refresh: npm run corpus:logodds
+      const empiricalExtra = profile && profile.empiricalExtra ? profile.empiricalExtra : [];
+      if (empiricalExtra.length > 0) {
+        results.push(
+          ...scanWordList(
+            text,
+            empiricalExtra,
+            'Empirical AI signal (corpus log-odds — npm run corpus:refresh to rebuild)',
+            'medium',
+          ),
+        );
+      }
+
       // Tier 2: flag if 2+ tier-2 words appear
       const tier2Matches = scanWordList(text, tier2, 'Tier 2 AI word', 'medium');
       if (tier2Matches.length >= 2) {

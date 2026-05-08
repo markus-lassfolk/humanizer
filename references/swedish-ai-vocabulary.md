@@ -57,6 +57,7 @@ Implementation lives in [`src/locales/sv.js`](../src/locales/sv.js) (tiers + phr
 
 Same as English: multiple modal verbs and epistemic softeners in one sentence — flag in combination (existing hedging detector + Swedish filler).
 
-## Calibration
+## Calibration and runtime use
 
-Tier boundaries are **partly empirical**: run `npm run corpus:logodds` after updating [`tests/fixtures/sv-corpus/`](../tests/fixtures/sv-corpus/) to refresh [`empirical-sv-tiers.md`](empirical-sv-tiers.md) and weights.
+- **`references/sv-frequencies.json`** is bundled with the package. At runtime it (1) **weights** curated tier entries when keys match, and (2) feeds **`empiricalExtra`**: multi-word n-grams (2–4 words) that Pattern 7 scores automatically, excluding unigrams (see [`src/locales/sv-empirical-filter.js`](../src/locales/sv-empirical-filter.js)).
+- Regenerate after corpus changes: `npm run corpus:logodds` or `npm run corpus:refresh`.

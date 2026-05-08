@@ -44,4 +44,7 @@ module.exports = {
   // ── Locale-specific autofixes ─────────────────────────
   // English autofixes live in humanizer.js (safeFills). No extra ones here.
   autofixes: [],
+
+  /** Reserved for English empirical n-grams (unused; Swedish uses sv.js). */
+  empiricalExtra: [],
 };

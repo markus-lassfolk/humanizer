@@ -7,9 +7,11 @@ Fork baseline: [brandonwise/humanizer](https://github.com/brandonwise/humanizer)
 | Area | Implementation |
 |------|----------------|
 | Locale profile | [`src/locales/sv.js`](../src/locales/sv.js) — tiers, phrases, `functionWords`, `abbreviations`, `autofixes`, `readability: 'lix'` |
-| Pattern 7 (AI vocabulary) | Uses `localeProfile.tier1/2/3` + `phrases`; supports `{ word, weight }` entries and `matchWeight` in scoring |
+| Pattern 7 (AI vocabulary) | Uses `localeProfile.tier1/2/3` + `phrases` + **`empiricalExtra`** (multi-word n-grams from the JSON); supports `{ word, weight }` and `matchWeight` in scoring |
 | Phrase detection | Swedish `(ta bort …)` fixes are **not** filtered out (English-only noise filter still applies to `en`) |
-| Empirical weights | [`references/sv-frequencies.json`](../references/sv-frequencies.json) from [`scripts/log-odds.mjs`](../scripts/log-odds.mjs) |
+| Empirical weights | [`references/sv-frequencies.json`](../references/sv-frequencies.json) boosts curated tier hits when keys match |
+| Empirical extras | Same JSON drives **automatic** Pattern 7 matches for high–log-odds **2–4 word** phrases not already in tiers (see [`src/locales/sv-empirical-filter.js`](../src/locales/sv-empirical-filter.js)); unigrams are excluded to avoid stopword skew |
+| npm bundle | `package.json` **`files`** includes `references/`, `reports/`, `scripts/` so installs ship empirical tables and refresh tooling |
 | Gold corpus | [`tests/fixtures/sv-corpus/`](../tests/fixtures/sv-corpus/) — 50 human + 50 AI synthetic docs + [`MANIFEST.md`](../tests/fixtures/sv-corpus/MANIFEST.md) |
 | Calibration report | [`reports/calibration-sv-latest.json`](../reports/calibration-sv-latest.json) — ROC-AUC, means, per-pattern stats |
 | Extended corpus (optional) | [`scripts/build-corpus-extended.mjs`](../scripts/build-corpus-extended.mjs) → `tests/fixtures/sv-corpus-extended/` (gitignored) |

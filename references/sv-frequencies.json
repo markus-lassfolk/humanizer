@@ -1,45 +1,9 @@
 {
-  "att": {
-    "ai": 182,
-    "human": 82,
-    "zscore": 14.176,
-    "weight": 2.5
-  },
-  "det": {
-    "ai": 150,
-    "human": 44,
-    "zscore": 13.51,
-    "weight": 2.5
-  },
-  "är": {
-    "ai": 167,
-    "human": 127,
-    "zscore": 11.568,
-    "weight": 2.5
-  },
-  "vi": {
-    "ai": 84,
-    "human": 24,
-    "zscore": 10.132,
-    "weight": 2.5
-  },
   "inom": {
     "ai": 50,
     "human": 11,
     "zscore": 7.854,
     "weight": 2.5
-  },
-  "kan": {
-    "ai": 50,
-    "human": 8,
-    "zscore": 7.738,
-    "weight": 2.5
-  },
-  "oss": {
-    "ai": 33,
-    "human": 7,
-    "zscore": 6.395,
-    "weight": 2.279
   },
   "dokument": {
     "ai": 50,
@@ -53,23 +17,11 @@
     "zscore": 6.308,
     "weight": 2.262
   },
-  "inte": {
-    "ai": 33,
-    "human": 15,
-    "zscore": 6.047,
-    "weight": 2.209
-  },
   "utan": {
     "ai": 33,
     "human": 17,
     "zscore": 5.886,
     "weight": 2.177
-  },
-  "bara": {
-    "ai": 33,
-    "human": 2,
-    "zscore": 5.616,
-    "weight": 2.123
   },
   "moderna": {
     "ai": 17,
@@ -77,49 +29,13 @@
     "zscore": 4.605,
     "weight": 1.921
   },
-  "ett": {
-    "ai": 48,
-    "human": 60,
-    "zscore": 4.491,
-    "weight": 1.898
-  },
-  "vidare": {
-    "ai": 17,
-    "human": 2,
-    "zscore": 4.485,
-    "weight": 1.897
-  },
-  "också": {
-    "ai": 16,
-    "human": 3,
-    "zscore": 4.482,
-    "weight": 1.896
-  },
-  "ut": {
-    "ai": 16,
-    "human": 3,
-    "zscore": 4.482,
-    "weight": 1.896
-  },
   "säga": {
     "ai": 16,
     "human": 2,
     "zscore": 4.382,
     "weight": 1.876
   },
-  "detta": {
-    "ai": 16,
-    "human": 7,
-    "zscore": 4.258,
-    "weight": 1.852
-  },
   "alltmer": {
-    "ai": 17,
-    "human": 1,
-    "zscore": 4.165,
-    "weight": 1.833
-  },
-  "ner": {
     "ai": 17,
     "human": 1,
     "zscore": 4.165,
@@ -179,12 +95,6 @@
     "zscore": 4.012,
     "weight": 1.802
   },
-  "en": {
-    "ai": 102,
-    "human": 187,
-    "zscore": 3.931,
-    "weight": 1.786
-  },
   "fråga": {
     "ai": 34,
     "human": 0,
@@ -232,12 +142,6 @@
     "human": 0,
     "zscore": 3.692,
     "weight": 1.738
-  },
-  "hur": {
-    "ai": 17,
-    "human": 14,
-    "zscore": 3.59,
-    "weight": 1.718
   },
   "komplex": {
     "ai": 17,
@@ -323,12 +227,6 @@
     "zscore": 3.237,
     "weight": 1.647
   },
-  "key": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.237,
-    "weight": 1.647
-  },
   "takeaways": {
     "ai": 17,
     "human": 0,
@@ -377,12 +275,6 @@
     "zscore": 3.237,
     "weight": 1.647
   },
-  "bra": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.237,
-    "weight": 1.647
-  },
   "förändring": {
     "ai": 17,
     "human": 0,
@@ -420,12 +312,6 @@
     "weight": 1.647
   },
   "värld": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.237,
-    "weight": 1.647
-  },
-  "låt": {
     "ai": 17,
     "human": 0,
     "zscore": 3.237,
@@ -521,12 +407,6 @@
     "zscore": 3.237,
     "weight": 1.647
   },
-  "bör": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.237,
-    "weight": 1.647
-  },
   "resilienta": {
     "ai": 17,
     "human": 0,
@@ -546,18 +426,6 @@
     "weight": 1.647
   },
   "katalysatorer": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.237,
-    "weight": 1.647
-  },
-  "hör": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.237,
-    "weight": 1.647
-  },
-  "dig": {
     "ai": 17,
     "human": 0,
     "zscore": 3.237,
@@ -659,25 +527,7 @@
     "zscore": 3.193,
     "weight": 1.639
   },
-  "ser": {
-    "ai": 16,
-    "human": 0,
-    "zscore": 3.193,
-    "weight": 1.639
-  },
   "ljus": {
-    "ai": 16,
-    "human": 0,
-    "zscore": 3.193,
-    "weight": 1.639
-  },
-  "dem": {
-    "ai": 16,
-    "human": 0,
-    "zscore": 3.193,
-    "weight": 1.639
-  },
-  "tar": {
     "ai": 16,
     "human": 0,
     "zscore": 3.193,
@@ -719,59 +569,11 @@
     "zscore": 3.193,
     "weight": 1.639
   },
-  "är det": {
-    "ai": 67,
-    "human": 6,
-    "zscore": 8.351,
-    "weight": 2.5
-  },
-  "i en": {
-    "ai": 17,
-    "human": 3,
-    "zscore": 4.609,
-    "weight": 1.922
-  },
   "genom att": {
     "ai": 17,
     "human": 2,
     "zscore": 4.489,
     "weight": 1.898
-  },
-  "och ett": {
-    "ai": 16,
-    "human": 2,
-    "zscore": 4.385,
-    "weight": 1.877
-  },
-  "det är": {
-    "ai": 67,
-    "human": 0,
-    "zscore": 4.223,
-    "weight": 1.845
-  },
-  "bara en": {
-    "ai": 17,
-    "human": 1,
-    "zscore": 4.168,
-    "weight": 1.834
-  },
-  "för en": {
-    "ai": 17,
-    "human": 1,
-    "zscore": 4.168,
-    "weight": 1.834
-  },
-  "och en": {
-    "ai": 17,
-    "human": 10,
-    "zscore": 4.099,
-    "weight": 1.82
-  },
-  "om ett": {
-    "ai": 16,
-    "human": 1,
-    "zscore": 4.089,
-    "weight": 1.818
   },
   "säga att": {
     "ai": 16,
@@ -797,12 +599,6 @@
     "zscore": 4.014,
     "weight": 1.803
   },
-  "att vi": {
-    "ai": 50,
-    "human": 0,
-    "zscore": 4.014,
-    "weight": 1.803
-  },
   "vi navigerar": {
     "ai": 50,
     "human": 0,
@@ -820,12 +616,6 @@
     "human": 0,
     "zscore": 4.014,
     "weight": 1.803
-  },
-  "inte bara": {
-    "ai": 33,
-    "human": 0,
-    "zscore": 3.716,
-    "weight": 1.743
   },
   "i dagens": {
     "ai": 33,
@@ -912,12 +702,6 @@
     "weight": 1.648
   },
   "processer kan": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.238,
-    "weight": 1.648
-  },
-  "kan vi": {
     "ai": 17,
     "human": 0,
     "zscore": 3.238,
@@ -1073,12 +857,6 @@
     "zscore": 3.238,
     "weight": 1.648
   },
-  "är inte": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.238,
-    "weight": 1.648
-  },
   "är det avgörande": {
     "ai": 50,
     "human": 0,
@@ -1114,12 +892,6 @@
     "human": 0,
     "zscore": 4.015,
     "weight": 1.803
-  },
-  "det är en": {
-    "ai": 34,
-    "human": 0,
-    "zscore": 3.739,
-    "weight": 1.748
   },
   "i en alltmer": {
     "ai": 17,
@@ -1368,24 +1140,6 @@
     "weight": 1.648
   },
   "fråga det är": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.24,
-    "weight": 1.648
-  },
-  "det är inte": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.24,
-    "weight": 1.648
-  },
-  "är inte bara": {
-    "ai": 17,
-    "human": 0,
-    "zscore": 3.24,
-    "weight": 1.648
-  },
-  "inte bara en": {
     "ai": 17,
     "human": 0,
     "zscore": 3.24,

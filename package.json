@@ -50,5 +50,14 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "files": [
+    "src",
+    "references",
+    "reports",
+    "scripts",
+    "SKILL.md",
+    "README.md",
+    "LICENSE"
+  ]
 }

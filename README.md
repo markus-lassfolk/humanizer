@@ -45,6 +45,23 @@ humanizer analyze -f essay.md
 humanizer humanize --autofix < article.txt
 ```
 
+## Swedish empirical bundle (locale `sv`)
+
+These ship in the repo and in the **npm package** (`references/`, `reports/`, `scripts/`):
+
+| Artifact | Role |
+|----------|------|
+| `references/sv-frequencies.json` | Weights for curated tier words + **extra** multi-word AI-like n-grams (Pattern 7) |
+| `references/empirical-sv-tiers.md` | Human-readable log-odds table (incl. rows omitted from JSON) |
+| `reports/calibration-sv-latest.json` | Regression metrics for `tests/calibration.sv.regression.test.js` |
+
+Refresh locally after changing corpus or Wikipedia extended data:
+
+```bash
+npm run corpus:refresh          # seed + log-odds + calibrate
+# optional: npm run corpus:build && npm run corpus:logodds
+```
+
 ## Architecture
 
 The scoring engine combines three signal types:
