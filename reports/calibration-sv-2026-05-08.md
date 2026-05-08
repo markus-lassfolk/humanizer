@@ -4,8 +4,21 @@
 |--------|-------|
 | ROC-AUC | 1 |
 | Optimal threshold (Youden J) | 6 |
-| Mean score (human) | 2.06 |
+| Mean score (human) | 2.08 |
 | Mean score (AI) | 58.24 |
+
+## Per genre (filename prefix `human-{genre}-` / `ai-{genre}-`)
+
+| Genre | Mean human | Max human | Mean AI | #human | #ai |
+|-------|------------|-----------|---------|--------|-----|
+| academic | 2 | 2 | 58.14 | 7 | 7 |
+| casual | 2 | 2 | 57.86 | 7 | 7 |
+| fiction | 2 | 2 | 59 | 7 | 7 |
+| government | 0.38 | 3 | 59 | 8 | 7 |
+| misc | 5 | 5 | 55 | 1 | 1 |
+| news | 3 | 3 | 58.14 | 7 | 7 |
+| opinion | 3 | 3 | 57.86 | 7 | 7 |
+| technical | 2 | 2 | 58.14 | 7 | 7 |
 
 ## Per-pattern (document-level recall = share of AI docs with ≥1 hit)
 

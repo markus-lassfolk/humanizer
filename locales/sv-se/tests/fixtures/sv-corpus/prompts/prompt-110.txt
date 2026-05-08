@@ -1,0 +1,7 @@
+---
+genre: summary
+id: 110
+target_words: 150
+---
+
+Sammanfatta ett påhittat beslut eller protokollutdrag (11) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".

@@ -1,20 +1,78 @@
 {
-  "generatedAt": "2026-05-08T20:56:47.978Z",
+  "generatedAt": "2026-05-08T21:11:53.404Z",
   "corpus": {
-    "humanDocs": 50,
+    "humanDocs": 51,
     "aiDocs": 50
   },
   "auc": 1,
   "optimalThresholdYouden": 6,
   "yudenJ": 1,
-  "meanScoreHuman": 2.06,
+  "meanScoreHuman": 2.08,
   "meanScoreAi": 58.24,
+  "perGenre": {
+    "academic": {
+      "meanScoreHuman": 2,
+      "meanScoreAi": 58.14,
+      "maxScoreHuman": 2,
+      "countHuman": 7,
+      "countAi": 7
+    },
+    "casual": {
+      "meanScoreHuman": 2,
+      "meanScoreAi": 57.86,
+      "maxScoreHuman": 2,
+      "countHuman": 7,
+      "countAi": 7
+    },
+    "fiction": {
+      "meanScoreHuman": 2,
+      "meanScoreAi": 59,
+      "maxScoreHuman": 2,
+      "countHuman": 7,
+      "countAi": 7
+    },
+    "government": {
+      "meanScoreHuman": 0.38,
+      "meanScoreAi": 59,
+      "maxScoreHuman": 3,
+      "countHuman": 8,
+      "countAi": 7
+    },
+    "misc": {
+      "meanScoreHuman": 5,
+      "meanScoreAi": 55,
+      "maxScoreHuman": 5,
+      "countHuman": 1,
+      "countAi": 1
+    },
+    "news": {
+      "meanScoreHuman": 3,
+      "meanScoreAi": 58.14,
+      "maxScoreHuman": 3,
+      "countHuman": 7,
+      "countAi": 7
+    },
+    "opinion": {
+      "meanScoreHuman": 3,
+      "meanScoreAi": 57.86,
+      "maxScoreHuman": 3,
+      "countHuman": 7,
+      "countAi": 7
+    },
+    "technical": {
+      "meanScoreHuman": 2,
+      "meanScoreAi": 58.14,
+      "maxScoreHuman": 2,
+      "countHuman": 7,
+      "countAi": 7
+    }
+  },
   "perPattern": {
     "7": {
       "precision": 1,
       "recallDocs": 1,
       "fprPer1kHumanWords": 0,
-      "hitsAi": 2665.386,
+      "hitsAi": 2700.308,
       "hitsHuman": 0
     },
     "13": {

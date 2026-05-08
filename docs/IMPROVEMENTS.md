@@ -7,10 +7,10 @@ This file tracks what shipped and what we plan to build next.
 ### Swedish near-perfection track (locale `sv`)
 
 - Expanded [`src/locales/sv.js`](../src/locales/sv.js): *Svarta listan*-aligned autofixes, bureaucratic/LLM phrases, Swenglish Tier 1, consultant compounds, legal abbreviations, expanded function words.
-- **Weighted vocabulary matches** via optional [`references/sv-frequencies.json`](../references/sv-frequencies.json) (log-odds pipeline).
-- **Synthetic gold corpus** [`tests/fixtures/sv-corpus/`](../tests/fixtures/sv-corpus/) + scripts: `seed-sv-corpus.mjs`, `log-odds.mjs`, `calibration-report.mjs`, optional `build-corpus-extended.mjs`.
-- **Tests:** `tests/calibration.sv.test.js`, `tests/calibration.sv.regression.test.js`.
-- **Docs:** [`docs/SWEDISH-EXTENSION.md`](SWEDISH-EXTENSION.md), [`references/svarta-listan.md`](../references/svarta-listan.md), [`references/swedish-ai-vocabulary.md`](../references/swedish-ai-vocabulary.md).
+- **Weighted vocabulary matches** via optional [`locales/sv-se/references/sv-frequencies.json`](../locales/sv-se/references/sv-frequencies.json) (log-odds pipeline).
+- **Synthetic gold corpus** [`locales/sv-se/tests/fixtures/sv-corpus/`](../locales/sv-se/tests/fixtures/sv-corpus/) + scripts under `locales/sv-se/scripts/`.
+- **Tests:** `locales/sv-se/tests/calibration.sv.test.js`, `locales/sv-se/tests/calibration.sv.regression.test.js`.
+- **Docs:** [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](../locales/sv-se/docs/SWEDISH-EXTENSION.md), [`locales/sv-se/references/svarta-listan.md`](../locales/sv-se/references/svarta-listan.md), [`locales/sv-se/references/swedish-ai-vocabulary.md`](../locales/sv-se/references/swedish-ai-vocabulary.md).
 
 Why: English-first heuristics under-detect Swedish LLM output; calibration data prevents vocabulary changes from regressing precision on formal human Swedish.
 

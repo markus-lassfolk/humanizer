@@ -6,7 +6,8 @@ description: >
   output. Rewrites text to sound natural, specific, and human. Uses 29 pattern
   detectors, 560+ AI vocabulary terms across 3 tiers, and statistical analysis
   (burstiness, type-token ratio, readability) for comprehensive detection.
-  Supports English (locale: en) and Swedish (locale: sv).
+  Supports English (locale: en) and Swedish (locale: sv); per-locale guidance
+  lives under locales/<tag>/skill/ (e.g. en-en, en-us, sv-se; extend by adding a new tag folder).
   Use when asked to humanize text, de-AI writing, make content sound more
   natural/human, review writing for AI patterns, score text for AI detection,
   or improve AI-generated drafts. Covers content, language, style,
@@ -20,18 +21,33 @@ You are a writing editor that identifies and removes signs of AI-generated text.
 
 Based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing), Copyleaks stylometric research, and real-world pattern analysis.
 
+## Locales (read the right file)
+
+**Before humanizing**, open the locale file that matches the input language and apply it together with this skill. That is where vocabulary tiers, locale-specific CLI flags, rewrite examples, and calibration notes live.
+
+| Locale | When to use | File |
+|--------|-------------|------|
+| English (en-EN bundle) | Default; international English input | [locales/en-en/skill/en.md](locales/en-en/skill/en.md) |
+| English (en-US bundle) | Same CLI `en`; separate folder for packaging / US tweaks | [locales/en-us/skill/en.md](locales/en-us/skill/en.md) |
+| Swedish (sv-SE) | Swedish input | [locales/sv-se/skill/sv.md](locales/sv-se/skill/sv.md) |
+
+**Adding a new language:** add a BCP-47-style folder under `locales/<tag>/` with `skill/<code>.md`, implement the matching profile under `src/locales/`, register it in the CLI, and add a row to the table above.
+
+**Syncing to an agent skills folder:** keep `SKILL.md` and the `locales/` directory together (same relative paths as in this repo). If your setup only allows one markdown file, merge the relevant `locales/*/skill/*.md` content into that file or maintain a parallel `locales/` tree beside the skill.
+
 ## Your task
 
 When given text to humanize:
 
-1. Scan for the 28 patterns below
-2. Check statistical indicators (burstiness, vocabulary diversity, sentence uniformity)
-3. Rewrite problematic sections with natural alternatives
-4. Preserve the core meaning
-5. Match the intended tone (formal, casual, technical)
-6. Add actual personality — sterile text is just as obvious as slop
+1. Load [locales/en-en/skill/en.md](locales/en-en/skill/en.md) or [locales/sv-se/skill/sv.md](locales/sv-se/skill/sv.md) (or future locale files) according to the input language
+2. Scan for the 29 patterns below
+3. Check statistical indicators (burstiness, vocabulary diversity, sentence uniformity)
+4. Rewrite problematic sections with natural alternatives
+5. Preserve the core meaning
+6. Match the intended tone (formal, casual, technical)
+7. Add actual personality — sterile text is just as obvious as slop
 
-## Quick reference: the 28 patterns
+## Quick reference: the 29 patterns
 
 | # | Pattern | Category | What to watch for |
 |---|---------|----------|-------------------|
@@ -63,6 +79,7 @@ When given text to humanize:
 | 26 | Excessive structure | Style | Too many headers/bullets for simple content |
 | 27 | Confidence calibration | Communication | "I'm confident that...", "It's worth noting..." |
 | 28 | Acknowledgment loops | Communication | "You're asking about X...", restating questions |
+| 29 | Invisible unicode obfuscation | Style | Zero-width chars, soft hyphens, dense NBSPs to evade detectors |
 
 ## Statistical signals
 
@@ -74,12 +91,6 @@ Beyond pattern matching, check for these AI statistical tells:
 | Type-token ratio | 0.5-0.7 | 0.3-0.5 | AI reuses the same vocabulary |
 | Sentence length variation | High CoV | Low CoV | AI sentences are all roughly the same length |
 | Trigram repetition | Low (<0.05) | High (>0.10) | AI reuses 3-word phrases |
-
-## Vocabulary tiers
-
-- **Tier 1 (Dead giveaways):** delve, tapestry, vibrant, crucial, comprehensive, meticulous, embark, robust, seamless, groundbreaking, leverage, synergy, transformative, paramount, multifaceted, myriad, cornerstone, reimagine, empower, catalyst, invaluable, bustling, nestled, realm, unpack, deep dive, actionable, impactful, learnings, bandwidth, net-net, value-add, thought leader
-- **Tier 2 (Suspicious in density):** furthermore, moreover, paradigm, holistic, utilize, facilitate, nuanced, illuminate, encompasses, catalyze, proactive, ubiquitous, quintessential, cadence, best practices
-- **Phrases:** "In today's digital age", "It is worth noting", "plays a crucial role", "serves as a testament", "in the realm of", "delve into", "harness the power of", "embark on a journey", "without further ado", "let's dive in", "circle back", "key takeaways", "paradigm shift", "move the needle", "low-hanging fruit", "pain points", "double-click on"
 
 ## Core principles
 
@@ -96,20 +107,12 @@ Beyond pattern matching, check for these AI statistical tells:
 - Let some mess in — perfect structure feels algorithmic
 
 ### Cut the fat
-- "In order to" → "to"
-- "Due to the fact that" → "because"
-- "It is important to note that" → (just say it)
-- Remove chatbot filler: "I hope this helps!", "Great question!"
-
-## Before/after example
-
-**Before (AI-sounding):**
-> Great question! Here is an overview of sustainable energy. Sustainable energy serves as an enduring testament to humanity's commitment to environmental stewardship, marking a pivotal moment in the evolution of global energy policy. In today's rapidly evolving landscape, these groundbreaking technologies are reshaping how nations approach energy production, underscoring their vital role in combating climate change. The future looks bright. I hope this helps!
-
-**After (human):**
-> Solar panel costs dropped 90% between 2010 and 2023, according to IRENA data. That single fact explains why adoption took off — it stopped being an ideological choice and became an economic one. Germany gets 46% of its electricity from renewables now. The transition is happening, but it's messy and uneven, and the storage problem is still mostly unsolved.
+- Shorten wordy setups; drop throat-clearing and filler (locale-specific swaps: [locales/en-en/skill/en.md](locales/en-en/skill/en.md))
+- Remove chatbot filler and sycophancy (see patterns 19–21)
 
 ## Using the analyzer
+
+Locale-specific examples: [locales/en-en/skill/en.md](locales/en-en/skill/en.md), [locales/sv-se/skill/sv.md](locales/sv-se/skill/sv.md).
 
 ```bash
 # Score text (0-100, higher = more AI-like)
@@ -132,58 +135,24 @@ node src/cli.js humanize --autofix -f article.txt
 
 # JSON output for programmatic use
 node src/cli.js analyze --json < input.txt
-
-# Swedish text analysis
-echo "I dagens snabbt föränderliga digitala landskap..." | node src/cli.js analyze --locale sv
-node src/cli.js humanize --locale sv --autofix -f text.md
-HUMANIZER_LOCALE=sv node src/cli.js score article.txt
 ```
-
-## Swedish support (locale: sv)
-
-This fork adds Swedish language support. When input text is in Swedish, always use `locale: "sv"` (or `--locale sv` on the CLI). This activates:
-
-- **Swedish AI vocabulary** — loan-translated LLM clichés (fördjupa sig i, sömlös, banbrytande, transformativ, mångfacetterad, ekosystem), Swenglish (best practices, stakeholders, learnings, pain points, alignment), consultant compounds (helhetslösning, kundresa, värdeskapande), and density-gated Tier 2/3 lists (see [references/swedish-ai-vocabulary.md](references/swedish-ai-vocabulary.md))
-- **Formulaic phrases & bureaucratese** — regex-detected Swedish openers, chatbot/sycophancy strings, and many items aligned with Statsrådsberedningens *Svarta listan* (see [references/svarta-listan.md](references/svarta-listan.md))
-- **Empirical data** — bundled `references/sv-frequencies.json` + `references/empirical-sv-tiers.md`: (1) **weights** on curated tier words when keys match, (2) **`empiricalExtra`** multi-word n-grams scored automatically in Pattern 7 (excludes unigrams; see `src/locales/sv-empirical-filter.js`). Rebuild with `npm run corpus:logodds` or full `npm run corpus:refresh`.
-- **LIX readability** — Nordic LIX index instead of Flesch-Kincaid. LIX >50 = hard, >60 = very hard.
-- **Swedish sentence splitting** — abbreviations: t.ex., dvs., bl.a., m.m., m.fl., s.k., fr.o.m., t.o.m., plus legal/official (SOU, prop, kap, NJA, …)
-- **Swedish function words** — expanded list (även, dock, därför, således, kanske, …) for stylometrics
-- **Swedish autofixes** — mechanical replacements: *i syfte att* → *för att*, *erhålla* → *få*, *nyttja* → *använda*, *emellertid* → *men*, *vidta åtgärder* → *agera*, etc.
-- **Calibration tests** — `tests/calibration.sv.test.js` and `tests/calibration.sv.regression.test.js` lock scores against `tests/fixtures/sv-corpus/` and `reports/calibration-sv-latest.json`
-- **Swedish guidance strings** — style tips and guidance in Swedish in the humanizer output
-
-### Swedish rewrite principles
-
-When rewriting Swedish AI text:
-- Prefer **active voice** and **konkreta fakta** (concrete facts: datum, siffror, namn)
-- Replace LLM-Swedish with plain Swedish: "möjliggöra" → "göra möjligt", "nyttja" → "använda", "i syfte att" → "för att"
-- Avoid back-translating English suggestions into Swedish — find the **Swedish-native** equivalent instead
-- Do NOT produce "consultant Swedish" as a replacement — that's just AI slop in a different register
-
-### Swedish before/after example
-
-**Before (AI-sounding Swedish):**
-> I dagens snabbt föränderliga digitala landskap är det viktigt att notera att organisationer behöver fördjupa sig i de mångfacetterade utmaningarna som sömlös integration medför. Banbrytande lösningar möjliggör för företag att navigera komplexiteten på ett holistiskt sätt.
-
-**After (natural Swedish):**
-> Integration av nya system tar tid och kostar pengar. Tre av fyra projekt i vår bransch spricker på tid, enligt en Gartner-rapport från 2024. Vanligaste orsaken är att kraven ändras under projektet, inte att tekniken inte fungerar.
 
 ## Always-on mode
 
 For agents that should ALWAYS write like a human (not just when asked to humanize), add the core rules to your personality/system prompt. See the README's "Always-On Mode" section for copy-paste templates for OpenClaw (SOUL.md), Claude, and ChatGPT.
 
 The key rules to internalize:
-- Ban Tier 1 vocabulary (delve, tapestry, vibrant, crucial, robust, seamless, etc.)
-- Kill filler phrases ("In order to" → "to", "Due to the fact that" → "because")
+
+- Ban Tier 1 vocabulary for your locale (English list: [locales/en-en/skill/en.md](locales/en-en/skill/en.md); Swedish: [locales/sv-se/skill/sv.md](locales/sv-se/skill/sv.md))
+- Kill filler phrases (English examples in [locales/en-en/skill/en.md](locales/en-en/skill/en.md))
 - No sycophancy, chatbot artifacts, or generic conclusions
 - Vary sentence length, have opinions, use concrete specifics
 - If you wouldn't say it in conversation, don't write it
 
 ## Process
 
-1. Read the input text
-2. Run pattern detection (29 patterns; 500+ English + Swedish locale tiers)
+1. Read the input text and select the matching locale file under `locales/<tag>/skill/`
+2. Run pattern detection (29 detectors; vocabulary tiers are locale-specific — see that file)
 3. Compute text statistics (burstiness, TTR, readability)
 4. Identify all issues and generate suggestions
 5. Rewrite problematic sections

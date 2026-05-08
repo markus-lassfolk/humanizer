@@ -1,0 +1,94 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# Seven columns (tab). Empty fields allowed. kind: autofix | phrase_flag | tier1_phrase | template | skip
+i syfte att	för att	autofix				PM 2011:1 style
+i syfte med		phrase_flag	2	omformulera: vad är syftet?		PM 2011:1
+på grund av det faktum att	eftersom	autofix				
+med anledning av att	eftersom	autofix				
+med anledning av det faktum att	eftersom	autofix				
+i anledning av att	eftersom	autofix				
+det är viktigt att notera att		autofix				remove filler
+det bör noteras att		autofix				remove filler
+det kan konstateras att		phrase_flag	1	säg fakta direkt utan inramning		
+i dagsläget	nu	autofix				
+inom ramen för	inom	autofix				
+genomföra en analys av	analysera	autofix				
+erhålla	få	autofix				
+erhåller	får	autofix				
+erhållit	fått	autofix				
+innehava	ha	autofix				
+innehar	har	autofix				
+innehaft	haft	autofix				
+föreligga	finnas	autofix				
+föreligger	finns	autofix				
+förelegat	funits	autofix				
+vidmakthålla	behålla	autofix				
+vidmakthåller	behåller	autofix				
+vidmakthållit	behållit	autofix				
+bibringa	ge	autofix				
+bibringar	ger	autofix				
+bibragit	gett	autofix				
+åvila	ligga på	autofix				
+åvilade	låg på	autofix				
+åsamka	orsaka	autofix				
+åsamkar	orsakar	autofix				
+åsamkat	orsakat	autofix				
+tillse att	se till att	autofix				
+inkomma med	lämna in	autofix				
+inkommer med	lämnar in	autofix				
+inkommit med	lämnat in	autofix				
+vidta åtgärder	agera	autofix				
+åberopa	hänvisa till	autofix				
+åberopar	hänvisar till	autofix				
+åberopat	hänvisat till	autofix				
+emellertid	men	autofix				
+envar	var och en	autofix				
+ikraftträdande	börjar gälla	autofix				noun to verbal per Svarta listan
+följaktligen	alltså	autofix				
+nyttja	använda	autofix				
+nyttjar	använder	autofix				
+nyttjat	använt	autofix				
+förorsaka	orsaka	autofix				
+förorsakar	orsakar	autofix				
+förorsakat	orsakat	autofix				
+innefatta	omfatta	autofix				
+innefattar	omfattar	autofix				
+innefattat	omfattat	autofix				
+såsom	som	autofix				formal written
+i enlighet med	enligt	autofix				
+i avvaktan på	i väntan på	autofix				
+föranleda	leda till	autofix				
+föranleder	leder till	autofix				
+föranlett	lett till	autofix				
+träder i kraft	börjar gälla	autofix				
+träda i kraft	börja gälla	autofix				
+trädde i kraft	började gälla	autofix				
+har trätt i kraft	har börjat gälla	autofix				
+med utgångspunkt från	utifrån	autofix				
+i förhållande till	mot	autofix				context-sensitive; prefer mot/till
+vad beträffar	när det gäller	autofix				
+när det gäller		phrase_flag	2	behåll om konkret; undvik tom inledning		
+kunna erhållas	kan fås	autofix				
+beaktande av		phrase_flag	2	om / med hänsyn till		
+i enlighet med vad som		phrase_flag	2	förenkla: enligt …		
+i den mån		phrase_flag	2	i den utsträckning / om		
+förutsatt att		phrase_flag	2	om / under förutsättning att		
+i den händelse att		phrase_flag	2	om		
+i syfte att främja		phrase_flag	2	för att främja / främja genom		
+avseende		phrase_flag	2	om / för / angående		
+beträffande		phrase_flag	2	om / angående		
+huruvida		phrase_flag	2	om		
+försåvitt		phrase_flag	2	om / så länge		
+ehuru		phrase_flag	2	fastän / även om		
+enär		phrase_flag	2	eftersom / när		
+jämlikt		phrase_flag	2	enligt		
+härvidlag		phrase_flag	2	här		
+icke		phrase_flag	2	inte		
+förefaller		phrase_flag	2	verkar		
+ärende		phrase_flag	2	fråga (behåll juridiskt ärende)		
+har möjlighet att		phrase_flag	2	kan		
+det finns möjlighet att		phrase_flag	2	kan / det går att		
+med anledning av		phrase_flag	2	eftersom / på grund av		
+på grund av		phrase_flag	2	eftersom / därför att		när det följs av sats; behåll vid fysisk orsak
+upprättad		phrase_flag	2	överväg gjord / upprättad		
+upprättande		phrase_flag	2	skapande / inrättande		
+bereda tillfälle att		phrase_flag	2	gör det möjligt att / låt …		

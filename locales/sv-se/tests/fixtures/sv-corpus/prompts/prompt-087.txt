@@ -1,0 +1,7 @@
+---
+genre: academic
+id: 87
+target_words: 150
+---
+
+Skriv ett kort metod-/resultatstycke (9) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.

@@ -32,4 +32,8 @@ coverage/
 .nyc_output/
 
 # Optional extended Swedish corpus (Wikipedia / Korp dumps)
+locales/sv-se/tests/fixtures/sv-corpus-extended/
 tests/fixtures/sv-corpus-extended/
+
+# Optional multi-model LLM outputs for log-odds (API keys required to generate)
+locales/sv-se/tests/fixtures/sv-corpus/ai-llm/

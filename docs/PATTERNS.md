@@ -40,7 +40,7 @@ To add a new pattern to `src/patterns.js`:
 2. The detect function must return `{ match, index, line, column, suggestion }`
 3. Use the `findMatches()` helper for regex-based detection
 4. Add tests in `tests/analyzer.test.js`
-5. Document in `references/patterns.md`
+5. Document in `locales/generic/references/patterns.md`
 
 Example:
 

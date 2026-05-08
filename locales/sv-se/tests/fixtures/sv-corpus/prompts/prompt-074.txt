@@ -1,0 +1,7 @@
+---
+genre: technical
+id: 74
+target_words: 150
+---
+
+Skriv en kort teknisk anteckning (8) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.

@@ -13,7 +13,7 @@
  *  - Swenglish loan-words ("best practices", "stakeholders") are Tier 1 when
  *    used in otherwise Swedish text.
  *
- * Empirical data (bundled references/sv-frequencies.json):
+ * Empirical data (bundled locales/sv-se/references/sv-frequencies.json):
  *  - Weights on curated tier words (applyWeights).
  *  - empiricalExtra: multi-word n-grams for Pattern 7 (see sv-empirical-filter.js).
  */
@@ -21,11 +21,16 @@
 const fs = require('fs');
 const path = require('path');
 
+const {
+  AUTOFIXES_SV_PRESCRIPTIVE,
+  AI_PHRASES_SV_PRESCRIPTIVE,
+} = require('./generated/sv-prescriptive.js');
+
 // ─── Load empirical weights (Phase 4–5) ──────────────────
 
 let EMPIRICAL_WEIGHTS = {};
 try {
-  const weightsPath = path.join(__dirname, '../../references/sv-frequencies.json');
+  const weightsPath = path.join(__dirname, '../../locales/sv-se/references/sv-frequencies.json');
   const raw = fs.readFileSync(weightsPath, 'utf8');
   const data = JSON.parse(raw);
   if (data && typeof data === 'object' && !Array.isArray(data)) {
@@ -327,8 +332,9 @@ const TIER_2_SV = applyWeights(TIER_2_SV_RAW);
 const TIER_3_SV = applyWeights(TIER_3_SV_RAW);
 
 // ─── AI Phrases (Swedish) ────────────────────────────────
+// Hand-tuned sentence scaffolds + loan-translation clichés; prescriptive Svarta/Klarspråk follow.
 
-const AI_PHRASES_SV = [
+const AI_PHRASES_SV_HAND = [
   {
     pattern:
       /\bi dagens (snabbt föränderliga|digitala|moderna|komplexa|globala|alltmer komplexa)\b/gi,
@@ -378,7 +384,6 @@ const AI_PHRASES_SV = [
     tier: 1,
     fix: '(ta bort — säg bara vad det handlar om)',
   },
-  { pattern: /\bdet bör noteras att\b/gi, tier: 1, fix: '(ta bort — säg bara vad det handlar om)' },
   { pattern: /\bdet är värt att notera att\b/gi, tier: 1, fix: '(ta bort — säg det direkt)' },
   { pattern: /\bdet är värt att nämna att\b/gi, tier: 1, fix: '(ta bort — säg det direkt)' },
 
@@ -432,31 +437,10 @@ const AI_PHRASES_SV = [
     fix: 'Citera den specifika forskningen.',
   },
 
-  { pattern: /\bi syfte att\b/gi, tier: 2, fix: 'för att / att' },
-  { pattern: /\binom ramen för\b/gi, tier: 2, fix: 'i / under' },
-  { pattern: /\bi dagsläget\b/gi, tier: 2, fix: 'nu / just nu' },
-  {
-    pattern: /\bmed anledning av (det faktum )?att\b/gi,
-    tier: 1,
-    fix: 'eftersom / för att',
-  },
-  { pattern: /\bpå grund av det faktum att\b/gi, tier: 1, fix: 'eftersom' },
-  { pattern: /\bhar möjlighet att\b/gi, tier: 2, fix: 'kan' },
-  { pattern: /\bdet finns (möjlighet|potential) att\b/gi, tier: 2, fix: '(specificera)' },
-
-  // Svarta listan–style bureaucratese (phrase-level)
-  { pattern: /\bavseende\b/gi, tier: 2, fix: 'om / för' },
-  { pattern: /\bbeträffande\b/gi, tier: 2, fix: 'om / angående' },
-  { pattern: /\bhuruvida\b/gi, tier: 2, fix: 'om' },
-  { pattern: /\bförsåvitt\b/gi, tier: 2, fix: 'om / så länge' },
-  { pattern: /\behuru\b/gi, tier: 2, fix: 'fastän / även om' },
-  { pattern: /\benär\b/gi, tier: 2, fix: 'eftersom / när' },
-  { pattern: /\bjämlikt\b/gi, tier: 2, fix: 'enligt' },
-  { pattern: /\bhärvidlag\b/gi, tier: 2, fix: 'här' },
-  { pattern: /\bicke\b/gi, tier: 2, fix: 'inte' },
-  { pattern: /\bförefaller\b/gi, tier: 2, fix: 'verkar' },
-  { pattern: /\bärende\b/gi, tier: 2, fix: 'fråga / ärende (om det är juridiskt)' },
+  { pattern: /\bdet finns potential att\b/gi, tier: 2, fix: '(specificera)' },
 ];
+
+const AI_PHRASES_SV = [...AI_PHRASES_SV_HAND, ...AI_PHRASES_SV_PRESCRIPTIVE];
 
 // ─── Function Words (Swedish) ────────────────────────────
 
@@ -611,127 +595,12 @@ const ABBREVIATIONS_SV = [
 ];
 
 // ─── Locale-specific autofixes (Swedish) ─────────────────
-// Statsrådsberedningen PM 2011:1 "Svarta listan" and klarspråk pairs (mechanical).
+// Generated from locales/sv-se/references/svarta-listan-full.tsv (+ friends); regenerate: npm run locale:prescriptive
 
-const AUTOFIXES_SV = [
-  {
-    pattern: /\bi syfte att\b/gi,
-    replacement: 'för att',
-    label: '"i syfte att" → "för att"',
-  },
-  {
-    pattern: /\bpå grund av det faktum att\b/gi,
-    replacement: 'eftersom',
-    label: '"på grund av det faktum att" → "eftersom"',
-  },
-  {
-    pattern: /\bmed anledning av att\b/gi,
-    replacement: 'eftersom',
-    label: '"med anledning av att" → "eftersom"',
-  },
-  {
-    pattern: /\bdet är viktigt att notera att\b/gi,
-    replacement: '',
-    label: 'Removed "det är viktigt att notera att"',
-  },
-  {
-    pattern: /\bi dagsläget\b/gi,
-    replacement: 'nu',
-    label: '"i dagsläget" → "nu"',
-  },
-  {
-    pattern: /\binom ramen för\b/gi,
-    replacement: 'inom',
-    label: '"inom ramen för" → "inom"',
-  },
-  {
-    pattern: /\bgenomföra en analys av\b/gi,
-    replacement: 'analysera',
-    label: '"genomföra en analys av" → "analysera"',
-  },
-  { pattern: /\berhålla\b/gi, replacement: 'få', label: '"erhålla" → "få"' },
-  { pattern: /\berhåller\b/gi, replacement: 'får', label: '"erhåller" → "får"' },
-  { pattern: /\berhållit\b/gi, replacement: 'fått', label: '"erhållit" → "fått"' },
-  { pattern: /\binnehava\b/gi, replacement: 'ha', label: '"innehava" → "ha"' },
-  { pattern: /\binnehar\b/gi, replacement: 'har', label: '"innehar" → "har"' },
-  { pattern: /\binnehaft\b/gi, replacement: 'haft', label: '"innehaft" → "haft"' },
-  { pattern: /\bföreligga\b/gi, replacement: 'finnas', label: '"föreligga" → "finnas"' },
-  { pattern: /\bföreligger\b/gi, replacement: 'finns', label: '"föreligger" → "finns"' },
-  { pattern: /\bförelegat\b/gi, replacement: 'funits', label: '"förelegat" → "funits"' },
-  { pattern: /\bvidmakthålla\b/gi, replacement: 'behålla', label: '"vidmakthålla" → "behålla"' },
-  {
-    pattern: /\bvidmakthåller\b/gi,
-    replacement: 'behåller',
-    label: '"vidmakthåller" → "behåller"',
-  },
-  {
-    pattern: /\bvidmakthållit\b/gi,
-    replacement: 'behållit',
-    label: '"vidmakthållit" → "behållit"',
-  },
-  { pattern: /\bbibringa\b/gi, replacement: 'ge', label: '"bibringa" → "ge"' },
-  { pattern: /\bbibringar\b/gi, replacement: 'ger', label: '"bibringar" → "ger"' },
-  { pattern: /\bbibragit\b/gi, replacement: 'gett', label: '"bibragit" → "gett"' },
-  { pattern: /\båvila\b/gi, replacement: 'ligga på', label: '"åvila" → "ligga på"' },
-  { pattern: /\båvilade\b/gi, replacement: 'låg på', label: '"åvilade" → "låg på"' },
-  { pattern: /\båsamka\b/gi, replacement: 'orsaka', label: '"åsamka" → "orsaka"' },
-  { pattern: /\båsamkar\b/gi, replacement: 'orsakar', label: '"åsamkar" → "orsakar"' },
-  { pattern: /\båsamkat\b/gi, replacement: 'orsakat', label: '"åsamkat" → "orsakat"' },
-  {
-    pattern: /\btillse att\b/gi,
-    replacement: 'se till att',
-    label: '"tillse att" → "se till att"',
-  },
-  { pattern: /\binkomma med\b/gi, replacement: 'lämna in', label: '"inkomma med" → "lämna in"' },
-  {
-    pattern: /\binkommer med\b/gi,
-    replacement: 'lämnar in',
-    label: '"inkommer med" → "lämnar in"',
-  },
-  {
-    pattern: /\binkommit med\b/gi,
-    replacement: 'lämnat in',
-    label: '"inkommit med" → "lämnat in"',
-  },
-  { pattern: /\bvidta åtgärder\b/gi, replacement: 'agera', label: '"vidta åtgärder" → "agera"' },
-  { pattern: /\båberopa\b/gi, replacement: 'hänvisa till', label: '"åberopa" → "hänvisa till"' },
-  {
-    pattern: /\båberopar\b/gi,
-    replacement: 'hänvisar till',
-    label: '"åberopar" → "hänvisar till"',
-  },
-  {
-    pattern: /\båberopat\b/gi,
-    replacement: 'hänvisat till',
-    label: '"åberopat" → "hänvisat till"',
-  },
-  { pattern: /\bemellertid\b/gi, replacement: 'men', label: '"emellertid" → "men"' },
-  { pattern: /\benvar\b/gi, replacement: 'var och en', label: '"envar" → "var och en"' },
-  {
-    pattern: /\bikraftträdande\b/gi,
-    replacement: 'börjar gälla',
-    label: '"ikraftträdande" → "börjar gälla"',
-  },
-  { pattern: /\bföljaktligen\b/gi, replacement: 'alltså', label: '"följaktligen" → "alltså"' },
-  {
-    pattern: /\bnyttja\b/gi,
-    replacement: 'använda',
-    label: '"nyttja" → "använda"',
-  },
-  {
-    pattern: /\bnyttjar\b/gi,
-    replacement: 'använder',
-    label: '"nyttjar" → "använder"',
-  },
-  {
-    pattern: /\bnyttjat\b/gi,
-    replacement: 'använt',
-    label: '"nyttjat" → "använt"',
-  },
-];
+const AUTOFIXES_SV = [...AUTOFIXES_SV_PRESCRIPTIVE];
 
 // ─── Empirical extras (Pattern 7) ─────────────────────────
-// N-grams from references/sv-frequencies.json not already in curated tiers.
+// N-grams from locales/sv-se/references/sv-frequencies.json not already in curated tiers.
 // Regenerate: npm run corpus:logodds
 
 const { buildStopSet, shouldScoreEmpiricalExtra } = require('./sv-empirical-filter.js');

@@ -1,0 +1,7 @@
+---
+genre: fiction
+id: 73
+target_words: 150
+---
+
+Skriv ett kort prosastycke (8) med scen, dialog eller inre monolog. Konkret sensorik, inga metaforhögar. Ca 120–180 ord.

@@ -1,0 +1,7 @@
+---
+genre: product
+id: 48
+target_words: 150
+---
+
+Skriv produkttext (5) för en tjänst eller vara: vad den gör, för vem, pris eller villkor om relevant. Direkt, utan floskler. Ca 80–140 ord.

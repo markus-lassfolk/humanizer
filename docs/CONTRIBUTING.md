@@ -23,7 +23,7 @@ npm test
 
 1. Add the pattern definition to `src/patterns.js` (see `docs/PATTERNS.md` for the format)
 2. Write tests in `tests/analyzer.test.js`
-3. Add documentation to `references/patterns.md`
+3. Add documentation to `locales/generic/references/patterns.md`
 4. Run `npm test` — everything must pass
 
 ## Improving detection

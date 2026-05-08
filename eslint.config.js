@@ -45,7 +45,7 @@ module.exports = [
     },
   },
   {
-    files: ['tests/**/*.js'],
+    files: ['tests/**/*.js', 'locales/**/tests/**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -72,6 +72,12 @@ module.exports = [
     },
   },
   {
-    ignores: ['node_modules/', 'coverage/', 'dist/'],
+    ignores: [
+      'node_modules/',
+      'coverage/',
+      'dist/',
+      'src/locales/generated/',
+      'locales/**/scripts/**',
+    ],
   },
 ];

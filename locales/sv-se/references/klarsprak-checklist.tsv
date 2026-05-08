@@ -1,0 +1,80 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# Klarspråk / skrivregler — phrase and sentence scaffolds (often need rewrite, not blind replace)
+det är nödvändigt att		phrase_flag	2	säg vad som krävs direkt		
+det är av vikt att		phrase_flag	2	viktigt att / måste		
+i detta sammanhang		phrase_flag	2	behåll bara om det preciserar		
+i nämnda sammanhang		phrase_flag	2	här / i det fallet		
+såsom ovan nämnts		phrase_flag	2	som sagt / som nämnts		
+såsom framgår av		phrase_flag	2	enligt / i figur		
+i enlighet med ovan		phrase_flag	2	som ovan / enligt ovan		
+mot bakgrund av		phrase_flag	2	med hänsyn till / eftersom		
+med utgångspunkt i		phrase_flag	2	utifrån / med stöd av		
+i relation till		phrase_flag	2	mot / till / för		
+avseende på		phrase_flag	2	om / för		
+när det gäller frågan om		phrase_flag	2	förenkla: om …		
+det kan inte undvikas att		phrase_flag	2	man måste / det går inte att undvika		
+det kan inte uteslutas att		phrase_flag	2	kanske / risk att		
+i mån av tillgänglighet		phrase_flag	2	om tid / resurser finns		
+under förutsättning av		phrase_flag	2	om / när		
+i den utsträckning		phrase_flag	2	i den mån / om		
+genom att använda sig av		phrase_flag	2	genom att använda		
+göra bedömningen att		phrase_flag	2	bedöma att / anse att		
+föranleder frågan		phrase_flag	2	leder till frågan		
+lämpligen		phrase_flag	2	helst / gärna		
+i vilket avseende		phrase_flag	2	hur / på vilket sätt		
+i vilken mån		phrase_flag	2	i hur hög grad / om		
+såvitt avser		phrase_flag	2	när det gäller / för		
+i enlighet med gällande		phrase_flag	2	enligt		
+enligt vad som anges i		phrase_flag	2	i … står		
+så som framgår		phrase_flag	2	som framgår		
+i anledning härav		phrase_flag	2	därför / av den anledningen		
+härigenom		phrase_flag	2	genom detta / därmed		
+härefter		phrase_flag	2	efter det / sedan		
+härvid		phrase_flag	2	vid detta / här		
+i förevarande fall		phrase_flag	2	i det här fallet		
+i förevarande ärende		phrase_flag	2	i det här ärendet		
+i enlighet med bestämmelserna		phrase_flag	2	enligt reglerna		
+i överensstämmelse med		phrase_flag	2	enligt / som stämmer med		
+väl vitsordad		phrase_flag	2	vederhäftig / väl underbyggd		
+väl förankrad		phrase_flag	2	förankrad / förberedd		
+i stor utsträckning		phrase_flag	2	i hög grad / mycket		
+i begränsad utsträckning		phrase_flag	2	delvis / i mindre utsträckning		
+i allt väsentligt		phrase_flag	2	i stort sett / i huvudsak		
+i sak		phrase_flag	2	egentligen / i praktiken		
+i rätt tid		phrase_flag	2	i tid / när det behövs		
+i tid och otid		phrase_flag	2	ofta / hela tiden		idiom; flag only if misused as filler
+i den mån det är möjligt		phrase_flag	2	om möjligt / när det går		
+i den utsträckning det är möjligt		phrase_flag	2	om möjligt		
+i den händelse		phrase_flag	2	om		
+i den omständigheten		phrase_flag	2	om		
+i avsikt att		phrase_flag	2	för att		
+med avsikt att		phrase_flag	2	för att		
+i avsikt om		phrase_flag	2	för att / om		
+i enlighet med det ovan sagda		phrase_flag	2	som sagt		
+i enlighet med det anförda		phrase_flag	2	som anförts		
+det anförs att		phrase_flag	2	man säger att / uppger att		
+det konstateras att		phrase_flag	2	konstatera direkt		
+det framhålls att		phrase_flag	2	säg det utan inramning		
+det understryks att		phrase_flag	2	understryk med innehåll, inte meta		
+det betonas att		phrase_flag	2	säg varför det är viktigt		
+det är av stor betydelse att		phrase_flag	2	viktigt att / måste		
+det är av största vikt		phrase_flag	1	mycket viktigt / avgörande		AI+kansli stack
+i betydande utsträckning		phrase_flag	2	mycket / i stor utsträckning		
+i väsentlig mån		phrase_flag	2	i stor utsträckning		
+i tillämpliga delar		phrase_flag	2	där det passar / där det behövs		
+i tillämpligt fall		phrase_flag	2	i så fall / när det gäller		
+i förekommande fall		phrase_flag	2	ibland / när det händer		
+i enskilda fall		phrase_flag	2	ibland / i vissa fall		
+i undantagsfall		phrase_flag	2	om undantag / sällan		
+i regel		phrase_flag	2	vanligtvis / oftast		flag if stacked as hedge
+i allmänhet		phrase_flag	2	oftast / vanligtvis		
+i princip		phrase_flag	2	vanligtvis / i teorin		hedge
+i teorin		phrase_flag	2	teoretiskt / tänkt		
+i praktiken		phrase_flag	2	praktiskt		ok alone; flag density
+i praktisk bemärkelse		phrase_flag	2	i praktiken		
+i vidare bemärkelse		phrase_flag	2	i större bemärkelse		
+i snäv bemärkelse		phrase_flag	2	strikt / i begränsad betydelse		
+i vid bemärkelse		phrase_flag	2	i större utsträckning		
+i den bemärkelsen		phrase_flag	2	i den meningen		
+i det hänseendet		phrase_flag	2	där / i det avseendet		
+i det avseendet		phrase_flag	2	där / för det		

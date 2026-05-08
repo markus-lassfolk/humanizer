@@ -145,7 +145,11 @@ Or copy manually:
 
 ```bash
 cp SKILL.md ~/.config/openclaw/skills/humanizer.md
+mkdir -p ~/.config/openclaw/skills/locales
+cp -r locales ~/.config/openclaw/skills/
 ```
+
+The main skill links into `locales/en-en/skill/en.md` and `locales/sv-se/skill/sv.md`; keep the `locales/` tree under the same parent as `humanizer.md` so those paths resolve.
 
 ## Always-on writing mode
 
@@ -157,7 +161,7 @@ If you want your assistant to avoid common AI writing tells by default, keep the
 - Vary sentence length naturally
 - Keep tone direct
 
-For full pattern guidance, reference `SKILL.md`.
+For full pattern guidance, reference `SKILL.md` and the matching file under `locales/<tag>/skill/` for the input language.
 
 ## Troubleshooting
 

@@ -1,0 +1,7 @@
+---
+genre: news
+id: 191
+target_words: 150
+---
+
+Skriv en kort nyhetsartikel (20) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.

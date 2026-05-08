@@ -1,0 +1,10 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+prompta		phrase_flag	2	omformulera på svenska: mata in / be om		
+AI-tvätta		phrase_flag	1	undvik jargong; säg vad som gjorts		
+disruptiv		phrase_flag	2	störande / banbrytande / som förändrar branschen		
+leverage		phrase_flag	2	nyttja / dra nytta av		anglicism in Swedish prose
+paradigmshift		phrase_flag	2	paradigmskifte / förändring		often Swenglish
+deep dive		phrase_flag	2	fördjupning / genomgång		
+touchpoint		phrase_flag	2	kontaktpunkt / mötespunkt		
+low-hanging fruit		phrase_flag	1	lågt hängande frukt		keep aligned with tier1 calque
+win-win		phrase_flag	2	för båda / ömsesidigt fördelaktigt		

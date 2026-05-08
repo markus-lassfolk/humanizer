@@ -1,0 +1,7 @@
+---
+genre: opinion
+id: 142
+target_words: 150
+---
+
+Skriv en insändare (15) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.

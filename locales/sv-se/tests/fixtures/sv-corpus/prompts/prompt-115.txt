@@ -1,0 +1,7 @@
+---
+genre: casual
+id: 115
+target_words: 150
+---
+
+Skriv ett informellt stycke (12) som vardaglig berättelse mellan vänner eller familj. Ca 120–180 ord.

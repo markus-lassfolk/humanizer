@@ -1,7 +1,7 @@
 /**
  * sv-empirical-filter.js — Shared rules for Swedish empirical n-grams.
  *
- * Used when writing references/sv-frequencies.json (log-odds) and when
+ * Used when writing locales/sv-se/references/sv-frequencies.json (log-odds) and when
  * building runtime empiricalExtra in sv.js so shipped data stays usable.
  */
 
@@ -34,7 +34,12 @@ function shouldStoreSvFrequencyKey(key, nGramOrder, z, stopSet) {
   if (parts.length === 0) return false;
   if (parts.every((p) => stopSet.has(p))) return false;
   if (nGramOrder === 2) return z >= 3;
-  return z >= 2.5;
+  if (nGramOrder === 3) return z >= 2.5;
+  if (nGramOrder === 4) {
+    if (parts.length !== 4) return false;
+    return z >= 4.25;
+  }
+  return false;
 }
 
 /**

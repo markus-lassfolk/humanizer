@@ -1,7 +1,7 @@
 # humanizer
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Tests](https://img.shields.io/badge/tests-153%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-207%20passing-brightgreen)
 ![Node >= 18](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
 
 Detect and remove signs of AI-generated writing. Makes text sound natural and human.
@@ -17,6 +17,10 @@ Based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia
 ```bash
 git clone https://github.com/brandonwise/humanizer.git
 cp humanizer/SKILL.md ~/.config/openclaw/skills/humanizer.md
+mkdir -p ~/.config/openclaw/skills/locales
+cp -r humanizer/locales ~/.config/openclaw/skills/
+# Or copy only the skill fragments you need, e.g.:
+# cp humanizer/locales/en-en/skill/en.md ~/.config/openclaw/skills/locales/en-en/skill/
 ```
 
 ### As a standalone CLI tool
@@ -47,20 +51,26 @@ humanizer humanize --autofix < article.txt
 
 ## Swedish empirical bundle (locale `sv`)
 
-These ship in the repo and in the **npm package** (`references/`, `reports/`, `scripts/`):
+These ship in the repo and in the **npm package** (`locales/sv-se/`, `reports/`, root `scripts/`):
 
 | Artifact | Role |
 |----------|------|
-| `references/sv-frequencies.json` | Weights for curated tier words + **extra** multi-word AI-like n-grams (Pattern 7) |
-| `references/empirical-sv-tiers.md` | Human-readable log-odds table (incl. rows omitted from JSON) |
-| `reports/calibration-sv-latest.json` | Regression metrics for `tests/calibration.sv.regression.test.js` |
+| `locales/sv-se/references/sv-frequencies.json` | Weights for curated tier words + **extra** multi-word AI-like n-grams (Pattern 7) |
+| `locales/sv-se/references/empirical-sv-tiers.md` | Human-readable log-odds table (incl. rows omitted from JSON) |
+| `reports/calibration-sv-latest.json` | Regression metrics for `locales/sv-se/tests/calibration.sv.regression.test.js` |
 
 Refresh locally after changing corpus or Wikipedia extended data:
 
 ```bash
 npm run corpus:refresh          # seed + log-odds + calibrate
+npm run locale:prescriptive       # TSV → src/locales/generated/sv-prescriptive.js
+npm run freq:baseline && npm run validate:sv-tiers   # tier vs human-frequency proxy
+npm run prompts:seed            # ~200 Swedish LLM prompts (fixtures)
 # optional: npm run corpus:build && npm run corpus:logodds
+# optional: OPENAI_API_KEY=... npm run corpus:llm   # fills locales/sv-se/tests/fixtures/sv-corpus/ai-llm/
 ```
+
+`npm run check` also runs `locale:prescriptive --check` and `validate:sv-tiers`. See [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md).
 
 ## Architecture
 
@@ -412,24 +422,28 @@ Target: consistently **under 25** on the humanizer score.
 
 ```
 humanizer/
-├── SKILL.md          # OpenClaw skill definition
+├── SKILL.md              # OpenClaw skill definition (core rules; links into locales/)
+├── locales/
+│   ├── generic/references/   # Language-agnostic pattern docs (e.g. patterns.md)
+│   ├── en-en/                # English — international bundle (`skill/`, `references/`)
+│   ├── en-us/                # English — US packaging bundle (same CLI `en` today)
+│   └── sv-se/                # Swedish: references, scripts, tests, skill, docs
 ├── src/
-│   ├── patterns.js   # 29 pattern detectors + pattern registry
-│   ├── vocabulary.js  # 500+ AI words/phrases (3 tiers)
-│   ├── stats.js       # Statistical analysis engine
-│   ├── analyzer.js    # Composite scoring engine
-│   ├── humanizer.js   # Suggestion engine + auto-fix
-│   └── cli.js         # CLI with colored output
-├── tests/             # Vitest test suite (136 tests)
+│   ├── patterns.js       # 29 pattern detectors + pattern registry
+│   ├── vocabulary.js     # 500+ AI words/phrases (3 tiers)
+│   ├── stats.js          # Statistical analysis engine
+│   ├── analyzer.js       # Composite scoring engine
+│   ├── humanizer.js      # Suggestion engine + auto-fix
+│   └── cli.js            # CLI with colored output
+├── tests/                # Vitest — shared / English tests
 │   ├── analyzer.test.js
 │   ├── humanizer.test.js
-│   ├── statistics.test.js
-│   ├── calibration.test.js
-│   ├── performance.test.js
-│   └── edge-cases.test.js
-├── references/        # Pattern catalogs, vocabulary lists
-└── docs/              # Detailed documentation
+│   └── …
+├── scripts/              # Small shared shell helpers (locale-specific → locales/sv-se/scripts/)
+└── docs/                 # Repo-wide documentation
 ```
+
+**Deploy / packaging:** ship `src/` + `SKILL.md` + `locales/generic/` + any dialect folders you need (`en-en`, `en-us`, `sv-se`, …). Omit a folder (e.g. `sv-se`) if you do not want Swedish data, scripts, or tests in that artifact.
 
 ## Contributing
 
