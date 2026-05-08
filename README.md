@@ -51,12 +51,29 @@ humanizer humanize --autofix < article.txt
 
 ## Swedish empirical bundle (locale `sv`)
 
-These ship in the repo and in the **npm package** (`locales/sv-se/`, `reports/`, root `scripts/`):
+The Swedish locale targets **parity-or-better with English on every layer** of the engine — every one of the 29 detectors runs Swedish-tuned regex/phrase packs in addition to the English defaults.
+
+| Layer | English | Swedish |
+|-------|---------|---------|
+| Pattern detection (1-29) | Engine + English regexes | Engine + English regexes **+ `patternPacks` for 1, 2, 3, 4, 5, 6, 8, 10, 11, 12, 25, 26, 27, 28** |
+| Tier 1 (dead giveaways) | 84 | **107** |
+| Tier 2 (suspicious in density) | 141 | **190** |
+| Tier 3 (context-dependent) | 70 | **84** |
+| Phrases (multi-word) | 109 | **167** (hand-tuned + Svarta listan / Klarspråk codegen) |
+| Empirical n-grams (log-odds) | — | bundled `sv-frequencies.json` (Pattern 7 `empiricalExtra`) |
+| Function words (stylometrics) | 100 | 102 |
+| Autofixes | inline (English) | **65** Svarta listan / Klarspråk replacements |
+| Readability metric | Flesch-Kincaid | **LIX** (Nordic) |
+| Sentence splitter | English abbreviations | Swedish abbreviations (*t.ex., dvs., bl.a., m.fl., SOU, prop, NJA, …*) + Unicode-safe tokenizer for *å, ä, ö* |
+| Pattern catalogue | [`locales/generic/references/patterns.md`](locales/generic/references/patterns.md) | [`locales/sv-se/references/patterns-sv.md`](locales/sv-se/references/patterns-sv.md) |
+
+These artifacts ship in the repo and in the **npm package** (`locales/sv-se/`, `reports/`, root `scripts/`):
 
 | Artifact | Role |
 |----------|------|
 | `locales/sv-se/references/sv-frequencies.json` | Weights for curated tier words + **extra** multi-word AI-like n-grams (Pattern 7) |
 | `locales/sv-se/references/empirical-sv-tiers.md` | Human-readable log-odds table (incl. rows omitted from JSON) |
+| `locales/sv-se/references/patterns-sv.md` | Per-pattern Swedish signal catalogue (counterpart to the English `patterns.md`) |
 | `locales/sv-se/references/PIPELINE-SNAPSHOT.md` | Last **`npm run sv:pipeline`** run: verified counts and artifact paths |
 | `reports/calibration-sv-latest.json` | Regression metrics for `locales/sv-se/tests/calibration.sv.regression.test.js` |
 

@@ -2,7 +2,7 @@
 
 Swedish LLM output often mixes **loan translations** from English, **consultant Swedish**, **raw Swenglish**, and **bureaucratic** constructions. This reference mirrors the structure of [`ai-vocabulary.md`](../../en-en/references/ai-vocabulary.md) for the English list.
 
-Implementation lives in [`src/locales/sv.js`](../../../src/locales/sv.js) (tiers + phrases) and optional empirical weights in [`sv-frequencies.json`](sv-frequencies.json).
+Implementation lives in [`src/locales/sv/vocabulary.js`](../../../src/locales/sv/vocabulary.js) (tiers + phrases; profile: [`sv/index.js`](../../../src/locales/sv/index.js)) and optional empirical weights in [`sv-frequencies.json`](sv-frequencies.json).
 
 ## High-signal words / phrases (Tier 1–style)
 
@@ -59,5 +59,5 @@ Same as English: multiple modal verbs and epistemic softeners in one sentence �
 
 ## Calibration and runtime use
 
-- **`locales/sv-se/references/sv-frequencies.json`** is bundled with the package. At runtime it (1) **weights** curated tier entries when keys match, and (2) feeds **`empiricalExtra`**: multi-word n-grams (2–4 words) that Pattern 7 scores automatically, excluding unigrams (see [`src/locales/sv-empirical-filter.js`](../../../src/locales/sv-empirical-filter.js)).
+- **`locales/sv-se/references/sv-frequencies.json`** is bundled with the package. At runtime it (1) **weights** curated tier entries when keys match, and (2) feeds **`empiricalExtra`**: multi-word n-grams (2–4 words) that Pattern 7 scores automatically, excluding unigrams (see [`src/locales/sv/empirical-filter.js`](../../../src/locales/sv/empirical-filter.js)).
 - Regenerate after corpus changes: `npm run corpus:logodds` or `npm run corpus:refresh`.

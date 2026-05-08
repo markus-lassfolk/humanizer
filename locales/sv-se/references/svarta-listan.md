@@ -16,7 +16,7 @@ Regenerate locale output:
 npm run locale:prescriptive
 ```
 
-This writes [`../../../src/locales/generated/sv-prescriptive.js`](../../../src/locales/generated/sv-prescriptive.js), merged from [`../../../src/locales/sv.js`](../../../src/locales/sv.js) as `AUTOFIXES_SV` and `AI_PHRASES_SV_PRESCRIPTIVE` (multi-word **phrases** and **sentence-level** flags, not only single words).
+This writes [`../../../src/locales/generated/sv-prescriptive.js`](../../../src/locales/generated/sv-prescriptive.js), merged from [`../../../src/locales/sv/vocabulary.js`](../../../src/locales/sv/vocabulary.js) as `AUTOFIXES_SV` and `AI_PHRASES_SV_PRESCRIPTIVE` (multi-word **phrases** and **sentence-level** flags, not only single words).
 
 ## See also
 

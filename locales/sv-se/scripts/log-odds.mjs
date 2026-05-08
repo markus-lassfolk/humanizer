@@ -27,7 +27,7 @@ const SV_FIX = path.join(SV_SE, 'tests/fixtures');
 
 const require = createRequire(import.meta.url);
 const { tokenize } = require(path.join(REPO_ROOT, 'src/stats.js'));
-const { functionWords } = require(path.join(REPO_ROOT, 'src/locales/sv.js'));
+const { functionWords } = require(path.join(REPO_ROOT, 'src/locales/sv/index.js'));
 const {
   buildStopSet,
   shouldStoreSvFrequencyKey,

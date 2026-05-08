@@ -7,8 +7,8 @@ Fork baseline: [brandonwise/humanizer](https://github.com/brandonwise/humanizer)
 | Layer | Mechanism | Source |
 |-------|-----------|--------|
 | Mechanical replace | `autofixes` | TSV → `src/locales/generated/sv-prescriptive.js` |
-| Phrase / regex flags | `phrases` | Hand-tuned scaffolds in `sv.js` + prescriptive TSV |
-| Weighted tiers | `tier1`–`tier3` | `sv.js` + `locales/sv-se/references/sv-frequencies.json` weights |
+| Phrase / regex flags | `phrases` | Hand-tuned scaffolds in `sv/vocabulary.js` + prescriptive TSV |
+| Weighted tiers | `tier1`–`tier3` | `sv/vocabulary.js` + `locales/sv-se/references/sv-frequencies.json` weights |
 | Empirical n-grams | `empiricalExtra` (Pattern 7) | `locales/sv-se/references/sv-frequencies.json` from log-odds (1–4-grams, filtered) |
 
 **Sentences:** hand-maintained regexes in `AI_PHRASES_SV_HAND` catch variable slots (e.g. `genom att .{3,120} kan vi`). Prescriptive TSV adds hundreds of **fixed** multi-word phrases from Svarta listan and Klarspråk.
@@ -17,10 +17,11 @@ Fork baseline: [brandonwise/humanizer](https://github.com/brandonwise/humanizer)
 
 | Area | Implementation |
 |------|----------------|
-| Locale profile | [`src/locales/sv.js`](../../../src/locales/sv.js) — tiers, hand phrases, merged prescriptive phrases/autofixes |
+| Locale profile | [`src/locales/sv/index.js`](../../../src/locales/sv/index.js) — wires `vocabulary.js` (tiers, hand phrases, prescriptive merge), `pattern-packs.js`, `empirical-filter.js` |
+| **Pattern catalogue** | [`references/patterns-sv.md`](../references/patterns-sv.md) — Swedish-language walk-through of all 29 detectors with the SV signals they fire on |
 | Prescriptive codegen | [`scripts/build-sv-locale-prescriptive.mjs`](../scripts/build-sv-locale-prescriptive.mjs) ← `references/*.tsv` |
 | Tier vs frequency | [`references/sv-human-frequency-ranks.json`](../references/sv-human-frequency-ranks.json) + [`scripts/validate-sv-tiers.mjs`](../scripts/validate-sv-tiers.mjs) |
-| Pattern 7 | `localeProfile.tier1/2/3` + `phrases` + **`empiricalExtra`**; [`src/locales/sv-empirical-filter.js`](../../../src/locales/sv-empirical-filter.js) |
+| Pattern 7 | `localeProfile.tier1/2/3` + `phrases` + **`empiricalExtra`** (built in [`sv/vocabulary.js`](../../../src/locales/sv/vocabulary.js)); rules in [`sv/empirical-filter.js`](../../../src/locales/sv/empirical-filter.js) (shim: `sv-empirical-filter.js`) |
 | Empirical weights | [`references/sv-frequencies.json`](../references/sv-frequencies.json) |
 | Gold corpus | [`tests/fixtures/sv-corpus/`](../tests/fixtures/sv-corpus/) — synthetic human/ai + `human-gold/` + `prompts/` (under `locales/sv-se/`) |
 | Calibration | [`reports/calibration-sv-latest.json`](../../../reports/calibration-sv-latest.json) — global + **perGenre** stats |

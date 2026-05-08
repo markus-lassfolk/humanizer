@@ -28,7 +28,7 @@ Extra **human** documents for calibration and log-odds (formal register, real-wo
 
 ## AI class (`ai/`)
 
-Template-generated Swedish saturated with patterns from `src/locales/sv.js` (loan translations, Swenglish, chatbot phrases). Used as **positive labels** for ROC/calibration — not a sample of a specific commercial LLM until you add `ai-llm/`.
+Template-generated Swedish saturated with patterns from `src/locales/sv/` (vocabulary + pattern packs) (loan translations, Swenglish, chatbot phrases). Used as **positive labels** for ROC/calibration — not a sample of a specific commercial LLM until you add `ai-llm/`.
 
 ## Prompts (`prompts/`)
 

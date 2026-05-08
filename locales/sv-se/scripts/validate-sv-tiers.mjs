@@ -15,7 +15,7 @@ const REPO_ROOT = path.join(__dirname, '..', '..', '..');
 const SV_REF = path.join(REPO_ROOT, 'locales/sv-se/references');
 
 const require = createRequire(import.meta.url);
-const sv = require(path.join(REPO_ROOT, 'src/locales/sv.js'));
+const sv = require(path.join(REPO_ROOT, 'src/locales/sv/index.js'));
 
 function flattenTier(arr) {
   return arr.map((x) => (typeof x === 'string' ? x : x.word)).filter(Boolean);

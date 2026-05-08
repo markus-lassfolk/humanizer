@@ -8,13 +8,31 @@
  *   - Each pattern is an object with id, name, category, description,
  *     weight (1-5), and a detect(text, opts) function
  *   - detect() returns [{ match, index, line, column, suggestion, confidence }]
- *   - opts.localeProfile (from src/locales/) allows pattern 7 to use locale-
- *     specific vocabulary; all other patterns ignore opts.
+ *   - opts.localeProfile (from src/locales/) supplies tiers, phrases, and
+ *     patternPacks[id] for localized regex lists / structured data. If a pack
+ *     is missing or empty, that detector returns no matches for that locale.
+ *   - localeProfile.phrases entries may carry an optional `category`
+ *     tag ('chatbot' | 'sycophantic' | 'cutoff' | 'filler' | 'hedging' |
+ *     'conclusion'). Patterns 19-24 dispatch by category. English
+ *     phrases that lack a tag fall back to the original heuristic so
+ *     default behaviour is unchanged.
  *   - The registry holds all patterns and provides query methods
- *   - Vocabulary is sourced from vocabulary.js (500+ words/phrases)
+ *   - Default English vocabulary lives in locales/en/vocabulary.js (shim: en-vocabulary.js)
  */
 
-const { TIER_1, TIER_2, TIER_3, AI_PHRASES } = require('./vocabulary');
+const {
+  TIER_1,
+  TIER_2,
+  TIER_3,
+  AI_PHRASES,
+} = require('./locales/en-vocabulary');
+const {
+  SIGNIFICANCE_PHRASES,
+  PROMOTIONAL_WORDS,
+  VAGUE_ATTRIBUTION_PHRASES,
+  CHALLENGES_PHRASES,
+  COPULA_AVOIDANCE,
+} = require('./locales/en-pattern-packs');
 // Stats imported for cross-module analysis when needed
 // const { tokenize } = require('./stats');
 
@@ -131,115 +149,142 @@ function scanPhrases(text, phrases, tierFilter = null) {
   return results;
 }
 
-// ─── Significance / Promotional Phrase Lists ─────────────
-// (Kept here for patterns that need inline regex arrays)
+// ─── Locale Helpers ─────────────────────────────────────
 
-const SIGNIFICANCE_PHRASES = [
-  /marking a pivotal/gi,
-  /pivotal moment/gi,
-  /pivotal role/gi,
-  /key role/gi,
-  /crucial role/gi,
-  /vital role/gi,
-  /significant role/gi,
-  /is a testament/gi,
-  /stands as a testament/gi,
-  /serves as a testament/gi,
-  /serves as a reminder/gi,
-  /reflects broader/gi,
-  /broader trends/gi,
-  /broader movement/gi,
-  /evolving landscape/gi,
-  /evolving world/gi,
-  /setting the stage for/gi,
-  /marking a shift/gi,
-  /key turning point/gi,
-  /indelible mark/gi,
-  /deeply rooted/gi,
-  /focal point/gi,
-  /symbolizing its ongoing/gi,
-  /enduring legacy/gi,
-  /lasting impact/gi,
-  /contributing to the/gi,
-  /underscores the importance/gi,
-  /highlights the significance/gi,
-  /represents a shift/gi,
-  /shaping the future/gi,
-  /the evolution of/gi,
-  /rich tapestry/gi,
-  /rich heritage/gi,
-  /stands as a beacon/gi,
-  /marks a milestone/gi,
-  /paving the way/gi,
-  /charting a course/gi,
-];
+/**
+ * Active phrase list for the call (locale profile if present, else English).
+ */
+function phrasesForLocale(opts) {
+  const profile = opts && opts.localeProfile;
+  return profile && Array.isArray(profile.phrases) ? profile.phrases : AI_PHRASES;
+}
 
-const PROMOTIONAL_WORDS = [
-  /\bnestled\b/gi,
-  /\bin the heart of\b/gi,
-  /\bbreathtaking\b/gi,
-  /\bmust-visit\b/gi,
-  /\bstunning\b/gi,
-  /\brenowned\b/gi,
-  /\bnatural beauty\b/gi,
-  /\brich cultural heritage\b/gi,
-  /\brich history\b/gi,
-  /\bcommitment to\b/gi,
-  /\bexemplifies\b/gi,
-  /\bworld-class\b/gi,
-  /\bstate-of-the-art\b/gi,
-  /\bgame-changing\b/gi,
-  /\bgame changer\b/gi,
-  /\bunparalleled\b/gi,
-  /\bprofound\b/gi,
-  /\bbest-in-class\b/gi,
-  /\btrailblazing\b/gi,
-  /\bvisionary\b/gi,
-  /\bcutting-edge\b/gi,
-  /\bworldwide recognition\b/gi,
-];
+/**
+ * Pattern pack for `id` from the locale profile, or `null`.
+ *
+ * Shape is detector-specific (array of regex entries, synonym arrays for #11,
+ * structured object for #10 / #16). No implicit English merge — the active
+ * locale profile must supply the full pack (English uses locales/en.js).
+ */
+function getPatternPack(opts, id) {
+  const profile = opts && opts.localeProfile;
+  if (!profile || !profile.patternPacks) return null;
+  const pack = profile.patternPacks[id];
+  if (Array.isArray(pack) && pack.length === 0) return null;
+  if (pack && typeof pack === 'object' && !Array.isArray(pack)) {
+    if (Object.keys(pack).length === 0) return null;
+  }
+  return pack || null;
+}
 
-const VAGUE_ATTRIBUTION_PHRASES = [
-  /\bexperts (believe|argue|say|suggest|note|agree|contend|have noted)\b/gi,
-  /\bindustry (reports|observers|experts|analysts|leaders|insiders)\b/gi,
-  /\bobservers have (cited|noted|pointed out)\b/gi,
-  /\bsome critics argue\b/gi,
-  /\bsome experts (say|believe|suggest)\b/gi,
-  /\bseveral sources\b/gi,
-  /\baccording to reports\b/gi,
-  /\bwidely (regarded|considered|recognized|acknowledged)\b/gi,
-  /\bit is widely (known|believed|accepted)\b/gi,
-  /\bmany (experts|scholars|researchers|analysts) (believe|argue|suggest)\b/gi,
-  /\bstudies (show|suggest|indicate|have shown)\b/gi,
-  /\bresearch (shows|suggests|indicates|has shown)\b/gi,
-  /\bsources close to\b/gi,
-  /\bpeople familiar with\b/gi,
-];
+/**
+ * Run findMatches for pack entries: RegExp or { regex, suggestion?, confidence?, fix? }.
+ * Uses `fix` as the suggestion string when present (Pattern 27).
+ */
+function scanRegexPack(text, pack, defaultSuggestion, defaultConfidence = 'medium') {
+  if (!Array.isArray(pack) || pack.length === 0) return [];
+  const results = [];
+  for (const entry of pack) {
+    let regex;
+    let suggestion;
+    let confidence = defaultConfidence;
+    if (entry instanceof RegExp) {
+      regex = entry;
+      suggestion = defaultSuggestion;
+      confidence = defaultConfidence;
+    } else if (entry && entry.regex instanceof RegExp) {
+      regex = entry.regex;
+      suggestion = entry.fix != null ? entry.fix : (entry.suggestion ?? defaultSuggestion);
+      confidence = entry.confidence ?? defaultConfidence;
+    } else {
+      continue;
+    }
+    results.push(...findMatches(text, regex, suggestion, confidence));
+  }
+  return results;
+}
 
-const CHALLENGES_PHRASES = [
-  /despite (its|these|the|their) (challenges|setbacks|obstacles|difficulties|limitations)/gi,
-  /faces (several|many|numerous|various) challenges/gi,
-  /continues to thrive/gi,
-  /continues to grow/gi,
-  /future (outlook|prospects) (remain|look|appear)/gi,
-  /challenges and (future|legacy|opportunities)/gi,
-  /despite these (challenges|hurdles|obstacles)/gi,
-  /overcoming (obstacles|challenges|adversity)/gi,
-  /weather(ing|ed) the storm/gi,
-];
+/**
+ * Infer phrase category from English fix-string heuristics for back-compat.
+ *
+ * Phrases that explicitly set `category` (e.g. all Swedish entries) win.
+ * Returns one of: 'chatbot' | 'cutoff' | 'sycophantic' | 'filler' |
+ * 'hedging' | 'conclusion' | null.
+ */
+function inferPhraseCategory(p) {
+  if (!p) return null;
+  if (p.category) return p.category;
+  const fix = p.fix || '';
+  const src = p.pattern && p.pattern.source ? p.pattern.source : '';
 
-const COPULA_AVOIDANCE = [
-  /\bserves as( a)?\b/gi,
-  /\bstands as( a)?\b/gi,
-  /\bmarks a\b/gi,
-  /\brepresents a\b/gi,
-  /\bboasts (a|an|over|more)\b/gi,
-  /\bfeatures (a|an|over|more)\b/gi,
-  /\boffers (a|an)\b/gi,
-  /\bfunctions as\b/gi,
-  /\bacts as( a)?\b/gi,
-  /\boperates as( a)?\b/gi,
-];
+  if (fix === '(remove)' || fix === '(remove — start with the content)') {
+    if (
+      src.includes('training') ||
+      src.includes('details are') ||
+      src.includes('available')
+    ) {
+      return 'cutoff';
+    }
+    if (
+      src.includes('question') ||
+      src.includes('point') ||
+      src.includes('right') ||
+      src.includes('observation')
+    ) {
+      return 'sycophantic';
+    }
+    return 'chatbot';
+  }
+  if (fix && fix.includes('address the substance')) {
+    return 'sycophantic';
+  }
+  if (
+    fix &&
+    !fix.startsWith('(') &&
+    [
+      'to',
+      'because',
+      'now',
+      'if',
+      'can',
+      'to / for',
+      'first',
+      'finally',
+      'for / regarding',
+      'because / since',
+    ].includes(fix)
+  ) {
+    return 'filler';
+  }
+  if (
+    fix &&
+    (fix.includes('could') ||
+      fix.includes('might') ||
+      fix.includes('may ') ||
+      fix.includes('perhaps') ||
+      fix.includes('maybe'))
+  ) {
+    return 'hedging';
+  }
+  if (
+    fix &&
+    (fix.includes('specific fact') ||
+      fix.includes('concrete') ||
+      fix.includes('cite evidence') ||
+      fix.includes('what you do know') ||
+      fix.includes('what happens next'))
+  ) {
+    return 'conclusion';
+  }
+  return null;
+}
+
+function phrasesByCategory(phrases, ...categories) {
+  const set = new Set(categories);
+  return phrases.filter((p) => set.has(inferPhraseCategory(p)));
+}
+
+// ─── Language-agnostic pattern literals ──────────────────
 
 const HIDDEN_UNICODE_CHARS = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/g;
 const NON_BREAKING_SPACES = /(?:\u00A0|\u202F)/g;
@@ -256,19 +301,14 @@ const patterns = [
     description:
       'Inflated claims about significance, legacy, or broader trends. LLMs puff up importance of mundane things.',
     weight: 4,
-    detect(text) {
-      const results = [];
-      for (const regex of SIGNIFICANCE_PHRASES) {
-        results.push(
-          ...findMatches(
-            text,
-            regex,
-            'Remove inflated significance claim. State concrete facts instead.',
-            'high',
-          ),
-        );
-      }
-      return results;
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 1);
+      return scanRegexPack(
+        text,
+        pack,
+        'Remove inflated significance claim. State concrete facts instead.',
+        'high',
+      );
     },
   },
 
@@ -279,40 +319,14 @@ const patterns = [
     description:
       'Listing media outlets or sources to claim notability without providing context or specific claims.',
     weight: 3,
-    detect(text) {
-      const mediaList =
-        /\b(cited|featured|covered|mentioned|reported|published|recognized|highlighted) (in|by) .{0,20}(The New York Times|BBC|CNN|The Washington Post|The Guardian|Wired|Forbes|Reuters|Bloomberg|Financial Times|The Verge|TechCrunch|The Hindu|Al Jazeera|Time|Newsweek|The Economist|Nature|Science).{0,100}(,\s*(and\s+)?(The New York Times|BBC|CNN|The Washington Post|The Guardian|Wired|Forbes|Reuters|Bloomberg|Financial Times|The Verge|TechCrunch|The Hindu|Al Jazeera|Time|Newsweek|The Economist|Nature|Science))+/gi;
-      const results = findMatches(
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 2);
+      return scanRegexPack(
         text,
-        mediaList,
-        'Instead of listing outlets, cite one specific claim from one source.',
-        'high',
+        pack,
+        'Cite a specific claim from one named source instead of listing outlets.',
+        'medium',
       );
-      results.push(
-        ...findMatches(
-          text,
-          /\bactive social media presence\b/gi,
-          'Remove — not meaningful without specific context.',
-          'high',
-        ),
-      );
-      results.push(
-        ...findMatches(
-          text,
-          /\bwritten by a leading expert\b/gi,
-          'Name the expert and their specific credential.',
-          'medium',
-        ),
-      );
-      results.push(
-        ...findMatches(
-          text,
-          /\bhas been (featured|recognized|acknowledged) (by|in)\b/gi,
-          'Cite the specific feature with a concrete claim.',
-          'medium',
-        ),
-      );
-      return results;
     },
   },
 
@@ -322,12 +336,11 @@ const patterns = [
     category: 'content',
     description: 'Tacking "-ing" participial phrases onto sentences to fake depth.',
     weight: 4,
-    detect(text) {
-      const ingPhrases =
-        /,\s*(highlighting|underscoring|emphasizing|ensuring|reflecting|symbolizing|contributing to|cultivating|fostering|encompassing|showcasing|demonstrating|illustrating|representing|signaling|indicating|solidifying|reinforcing|cementing|underscoring|bolstering|reaffirming|illuminating|epitomizing)\b[^.]{5,}/gi;
-      return findMatches(
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 3);
+      return scanRegexPack(
         text,
-        ingPhrases,
+        pack,
         'Remove trailing -ing phrase. If the point matters, give it its own sentence with specifics.',
         'high',
       );
@@ -340,19 +353,14 @@ const patterns = [
     category: 'content',
     description: 'Ad-copy language that sounds like a tourism brochure or press release.',
     weight: 3,
-    detect(text) {
-      const results = [];
-      for (const regex of PROMOTIONAL_WORDS) {
-        results.push(
-          ...findMatches(
-            text,
-            regex,
-            'Replace promotional language with neutral, factual description.',
-            'high',
-          ),
-        );
-      }
-      return results;
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 4);
+      return scanRegexPack(
+        text,
+        pack,
+        'Replace promotional language with neutral, factual description.',
+        'high',
+      );
     },
   },
 
@@ -362,19 +370,14 @@ const patterns = [
     category: 'content',
     description: 'Attributing claims to unnamed experts, industry reports, or vague authorities.',
     weight: 4,
-    detect(text) {
-      const results = [];
-      for (const regex of VAGUE_ATTRIBUTION_PHRASES) {
-        results.push(
-          ...findMatches(
-            text,
-            regex,
-            "Name the specific source, study, or person. If you can't, remove the claim.",
-            'high',
-          ),
-        );
-      }
-      return results;
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 5);
+      return scanRegexPack(
+        text,
+        pack,
+        "Name the specific source, study, or person. If you can't, remove the claim.",
+        'high',
+      );
     },
   },
 
@@ -384,19 +387,14 @@ const patterns = [
     category: 'content',
     description: 'Boilerplate "Despite challenges... continues to thrive" sections.',
     weight: 3,
-    detect(text) {
-      const results = [];
-      for (const regex of CHALLENGES_PHRASES) {
-        results.push(
-          ...findMatches(
-            text,
-            regex,
-            'Replace with specific challenges and concrete outcomes.',
-            'high',
-          ),
-        );
-      }
-      return results;
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 6);
+      return scanRegexPack(
+        text,
+        pack,
+        'Replace with specific challenges and concrete outcomes.',
+        'high',
+      );
     },
   },
 
@@ -458,34 +456,40 @@ const patterns = [
         }
       }
 
-      // AI phrases — filter out "remove" instructions and pure substitutions
-      // that would make the suggestion list noisy (English defaults).
-      // Swedish fixes often use "(ta bort...)" — those must still score.
-      const isSv = profile && profile.code === 'sv';
+      // AI phrases — Pattern 7 carries the broad LLM-cliché signal. Patterns
+      // 19-24 own chatbot/sycophantic/cutoff/filler/hedging/conclusion so we
+      // exclude those categories here to avoid double counting. Pure mechanical
+      // substitutions (where `fix` is just a Swedish/English replacement word)
+      // are also filtered out — they belong to the autofix flow, not scoring.
+      const SUBSTITUTION_FIXES = new Set([
+        'to',
+        'because',
+        'now',
+        'if',
+        'can',
+        'first',
+        'finally',
+        'för att',
+        'eftersom',
+        'nu',
+        'om',
+        'kan',
+        'först',
+      ]);
+      const SUPPRESSED_CATEGORIES = new Set([
+        'chatbot',
+        'sycophantic',
+        'cutoff',
+        'filler',
+        'hedging',
+        'conclusion',
+      ]);
       const filteredPhrases = phrases.filter((p) => {
-        if (!p.fix) return false;
-        if (isSv) {
-          return !['för att', 'eftersom', 'nu', 'om', 'kan', 'först'].includes(p.fix);
-        }
-        return (
-          !p.fix.startsWith('(remove') &&
-          !p.fix.startsWith('(ta bort') &&
-          ![
-            'to',
-            'because',
-            'now',
-            'if',
-            'can',
-            'first',
-            'finally',
-            'för att',
-            'eftersom',
-            'nu',
-            'om',
-            'kan',
-            'först',
-          ].includes(p.fix)
-        );
+        if (!p || !p.fix) return false;
+        if (SUBSTITUTION_FIXES.has(p.fix)) return false;
+        const cat = inferPhraseCategory(p);
+        if (cat && SUPPRESSED_CATEGORIES.has(cat)) return false;
+        return true;
       });
       results.push(...scanPhrases(text, filteredPhrases));
 
@@ -500,14 +504,9 @@ const patterns = [
     description:
       'Using "serves as", "functions as", "boasts" instead of simple "is", "has", "are".',
     weight: 3,
-    detect(text) {
-      const results = [];
-      for (const regex of COPULA_AVOIDANCE) {
-        results.push(
-          ...findMatches(text, regex, 'Use simple "is", "are", or "has" instead.', 'high'),
-        );
-      }
-      return results;
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 8);
+      return scanRegexPack(text, pack, 'Use simple "is", "are", or "has" instead.', 'high');
     },
   },
 
@@ -518,24 +517,14 @@ const patterns = [
     description:
       '"It\'s not just X, it\'s Y" or "Not only X but Y" constructions — overused by LLMs.',
     weight: 3,
-    detect(text) {
-      const negParallel =
-        /\b(it'?s|this is) not (just|merely|only|simply) .{3,60}(,|;|—)\s*(it'?s|this is|but)\b/gi;
-      const notOnly = /\bnot only .{3,60} but (also )?\b/gi;
-      return [
-        ...findMatches(
-          text,
-          negParallel,
-          'Rewrite directly. State what the thing IS, not what it "isn\'t just".',
-          'high',
-        ),
-        ...findMatches(
-          text,
-          notOnly,
-          'Simplify. Remove the "not only...but also" frame.',
-          'medium',
-        ),
-      ];
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 9);
+      return scanRegexPack(
+        text,
+        pack,
+        'Rewrite directly. State what the thing IS, not what it "isn\'t just".',
+        'high',
+      );
     },
   },
 
@@ -545,53 +534,64 @@ const patterns = [
     category: 'language',
     description: 'Forcing ideas into groups of three. LLMs love triads that sound "comprehensive".',
     weight: 2,
-    detect(text) {
-      // Abstract noun triads
-      const buzzyTriad =
-        /\b(\w+tion|\w+ity|\w+ment|\w+ness|\w+ance|\w+ence),\s+(\w+tion|\w+ity|\w+ment|\w+ness|\w+ance|\w+ence),\s+and\s+(\w+tion|\w+ity|\w+ment|\w+ness|\w+ance|\w+ence)\b/gi;
-      const results = findMatches(
-        text,
-        buzzyTriad,
-        'Rule of three with abstract nouns. Pick the one or two that actually matter.',
-        'medium',
-      );
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 10);
+      if (!pack) return [];
+      const results = [];
 
-      // Buzzy adjective triads
-      const buzzAdj = [
-        'seamless',
-        'intuitive',
-        'powerful',
-        'innovative',
-        'dynamic',
-        'robust',
-        'comprehensive',
-        'cutting-edge',
-        'scalable',
-        'agile',
-        'efficient',
-        'effective',
-        'engaging',
-        'impactful',
-        'meaningful',
-        'transformative',
-        'sustainable',
-        'resilient',
-        'inclusive',
-        'accessible',
-      ];
-      const adjPattern = buzzAdj.join('|');
-      const adjTriad = new RegExp(
-        `\\b(${adjPattern}),\\s+(${adjPattern}),\\s+and\\s+(${adjPattern})\\b`,
-        'gi',
-      );
-      results.push(
-        ...findMatches(
+      if (Array.isArray(pack)) {
+        return scanRegexPack(
           text,
-          adjTriad,
-          'Buzzy adjective triad. Pick one and make it specific.',
+          pack,
+          'Rule of three — pick one or two items that actually matter.',
           'medium',
-        ),
-      );
+        );
+      }
+
+      if (Array.isArray(pack.triadRegexes) && pack.triadRegexes.length > 0) {
+        const sug = pack.triadSuggestions || [];
+        pack.triadRegexes.forEach((regex, i) => {
+          results.push(
+            ...findMatches(
+              text,
+              regex,
+              sug[i] || 'Rule of three — pick what actually matters.',
+              'medium',
+            ),
+          );
+        });
+      }
+
+      if (Array.isArray(pack.adjectives) && pack.adjectives.length >= 3) {
+        const escaped = pack.adjectives
+          .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+          .join('|');
+        const conj = pack.conjunction || 'och';
+        const adjRegex = new RegExp(
+          `\\b(${escaped})(?:[a-zåäö]*)?,\\s+(${escaped})(?:[a-zåäö]*)?,?\\s+${conj}\\s+(${escaped})(?:[a-zåäö]*)?\\b`,
+          'gi',
+        );
+        results.push(
+          ...findMatches(
+            text,
+            adjRegex,
+            pack.adjectiveSuggestion || 'Buzzy adjective triad. Pick one and make it specific.',
+            'medium',
+          ),
+        );
+      }
+
+      if (pack.abstractNounRegex instanceof RegExp) {
+        results.push(
+          ...findMatches(
+            text,
+            pack.abstractNounRegex,
+            pack.abstractNounSuggestion ||
+              'Abstract noun triad. Pick the one or two that actually matter.',
+            'medium',
+          ),
+        );
+      }
 
       return results;
     },
@@ -604,17 +604,11 @@ const patterns = [
     description:
       'Referring to the same thing by different names in consecutive sentences to avoid repetition.',
     weight: 2,
-    detect(text) {
-      const synonymSets = [
-        ['protagonist', 'main character', 'central figure', 'hero', 'lead character', 'lead'],
-        ['company', 'firm', 'organization', 'enterprise', 'corporation', 'establishment', 'entity'],
-        ['city', 'metropolis', 'urban center', 'municipality', 'locale', 'township'],
-        ['building', 'structure', 'edifice', 'facility', 'complex', 'establishment'],
-        ['tool', 'instrument', 'mechanism', 'apparatus', 'device', 'utility'],
-        ['country', 'nation', 'state', 'republic', 'sovereign state'],
-        ['problem', 'challenge', 'issue', 'obstacle', 'hurdle', 'difficulty'],
-        ['solution', 'approach', 'methodology', 'framework', 'strategy', 'paradigm'],
-      ];
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 11);
+      if (!Array.isArray(pack) || pack.length === 0) return [];
+
+      const synonymSets = pack;
 
       const results = [];
       const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
@@ -653,27 +647,14 @@ const patterns = [
     category: 'language',
     description: '"From X to Y" where X and Y aren\'t on a meaningful scale.',
     weight: 2,
-    detect(text) {
-      const doubleRange = /\bfrom .{3,40} to .{3,40},\s*from .{3,40} to .{3,40}/gi;
-      const results = findMatches(
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 12);
+      return scanRegexPack(
         text,
-        doubleRange,
-        "False range — X and Y probably aren't on a meaningful scale. Just list the topics.",
-        'high',
+        pack,
+        "False range — be specific about what you're actually covering.",
+        'medium',
       );
-
-      const abstractRange =
-        /\bfrom (the )?(dawn|birth|inception|beginning|advent|emergence|rise|earliest) .{3,60} to (the )?(modern|current|present|contemporary|latest|cutting-edge|digital|future)/gi;
-      results.push(
-        ...findMatches(
-          text,
-          abstractRange,
-          "Unnecessarily broad range. Be specific about what you're actually covering.",
-          'medium',
-        ),
-      );
-
-      return results;
     },
   },
 
@@ -750,28 +731,36 @@ const patterns = [
     category: 'style',
     description: 'Capitalizing Every Main Word In Headings. AI chatbots default to this.',
     weight: 1,
-    detect(text) {
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 16);
+      const cfg = pack && pack.titleCase;
+      if (!cfg) return [];
+
+      const minWords = cfg.minWords ?? 3;
+      const minRatio = cfg.minCapitalizedRatio ?? 0.7;
+      const skipWords = cfg.skipWords;
+      const suggestion =
+        cfg.suggestion ||
+        'Use sentence case for headings (only capitalize first word and proper nouns).';
+
       const headingRegex = /^#{1,6}\s+(.+)$/gm;
       const results = [];
       let m;
       while ((m = headingRegex.exec(text)) !== null) {
         const heading = m[1].trim();
         const words = heading.split(/\s+/);
-        if (words.length >= 3) {
-          const skipWords =
-            /^(I|AI|API|CLI|URL|HTML|CSS|JS|TS|NPM|NYC|USA|UK|EU|LLM|GPT|SaaS|IoT|CEO|CTO|VP|PR|HR|IT|UI|UX)\b/;
+        if (words.length >= minWords) {
           const capitalizedCount = words.filter(
-            (w) => /^[A-Z]/.test(w) && !skipWords.test(w),
+            (w) => /^[A-Z]/.test(w) && !(skipWords && skipWords.test(w)),
           ).length;
-          if (capitalizedCount / words.length > 0.7) {
+          if (capitalizedCount / words.length > minRatio) {
             const lineNum = text.substring(0, m.index).split('\n').length;
             results.push({
               match: m[0],
               index: m.index,
               line: lineNum,
               column: 1,
-              suggestion:
-                'Use sentence case for headings (only capitalize first word and proper nouns).',
+              suggestion,
               confidence: 'medium',
             });
           }
@@ -827,14 +816,9 @@ const patterns = [
     description:
       'Leftover chatbot phrases: "I hope this helps!", "Let me know if...", "Here is an overview".',
     weight: 5,
-    detect(text) {
-      // Use the phrase-level detection from vocabulary.js
-      return scanPhrases(
-        text,
-        AI_PHRASES.filter(
-          (p) => p.fix === '(remove)' || p.fix === '(remove — start with the content)',
-        ),
-      );
+    detect(text, opts = {}) {
+      const phrases = phrasesForLocale(opts);
+      return scanPhrases(text, phrasesByCategory(phrases, 'chatbot'));
     },
   },
 
@@ -844,17 +828,9 @@ const patterns = [
     category: 'communication',
     description: 'AI knowledge-cutoff disclaimers left in text.',
     weight: 4,
-    detect(text) {
-      return scanPhrases(
-        text,
-        AI_PHRASES.filter(
-          (p) =>
-            p.fix === '(remove)' &&
-            (p.pattern.source.includes('training') ||
-              p.pattern.source.includes('details are') ||
-              p.pattern.source.includes('available')),
-        ),
-      );
+    detect(text, opts = {}) {
+      const phrases = phrasesForLocale(opts);
+      return scanPhrases(text, phrasesByCategory(phrases, 'cutoff'));
     },
   },
 
@@ -865,19 +841,9 @@ const patterns = [
     description:
       'Overly positive, people-pleasing language: "Great question!", "You\'re absolutely right!".',
     weight: 4,
-    detect(text) {
-      return scanPhrases(
-        text,
-        AI_PHRASES.filter(
-          (p) =>
-            p.fix &&
-            (p.fix.includes('(remove)') || p.fix.includes('address the substance')) &&
-            (p.pattern.source.includes('question') ||
-              p.pattern.source.includes('point') ||
-              p.pattern.source.includes('right') ||
-              p.pattern.source.includes('observation')),
-        ),
-      );
+    detect(text, opts = {}) {
+      const phrases = phrasesForLocale(opts);
+      return scanPhrases(text, phrasesByCategory(phrases, 'sycophantic'));
     },
   },
 
@@ -890,27 +856,9 @@ const patterns = [
     description:
       'Wordy filler that can be shortened: "in order to" → "to", "due to the fact that" → "because".',
     weight: 3,
-    detect(text) {
-      return scanPhrases(
-        text,
-        AI_PHRASES.filter(
-          (p) =>
-            p.fix &&
-            !p.fix.startsWith('(') &&
-            [
-              'to',
-              'because',
-              'now',
-              'if',
-              'can',
-              'to / for',
-              'first',
-              'finally',
-              'for / regarding',
-              'because / since',
-            ].includes(p.fix),
-        ),
-      );
+    detect(text, opts = {}) {
+      const phrases = phrasesForLocale(opts);
+      return scanPhrases(text, phrasesByCategory(phrases, 'filler'));
     },
   },
 
@@ -920,19 +868,9 @@ const patterns = [
     category: 'filler',
     description: 'Stacking qualifiers: "could potentially possibly", "might arguably perhaps".',
     weight: 3,
-    detect(text) {
-      return scanPhrases(
-        text,
-        AI_PHRASES.filter(
-          (p) =>
-            p.fix &&
-            (p.fix.includes('could') ||
-              p.fix.includes('might') ||
-              p.fix.includes('may') ||
-              p.fix.includes('perhaps') ||
-              p.fix.includes('maybe')),
-        ),
-      );
+    detect(text, opts = {}) {
+      const phrases = phrasesForLocale(opts);
+      return scanPhrases(text, phrasesByCategory(phrases, 'hedging'));
     },
   },
 
@@ -942,19 +880,9 @@ const patterns = [
     category: 'filler',
     description: 'Vague upbeat endings: "The future looks bright", "Exciting times lie ahead".',
     weight: 3,
-    detect(text) {
-      return scanPhrases(
-        text,
-        AI_PHRASES.filter(
-          (p) =>
-            p.fix &&
-            (p.fix.includes('specific fact') ||
-              p.fix.includes('concrete') ||
-              p.fix.includes('cite evidence') ||
-              p.fix.includes('what you do know') ||
-              p.fix.includes('what happens next')),
-        ),
-      );
+    detect(text, opts = {}) {
+      const phrases = phrasesForLocale(opts);
+      return scanPhrases(text, phrasesByCategory(phrases, 'conclusion'));
     },
   },
 
@@ -967,30 +895,14 @@ const patterns = [
     description:
       'Exposed chain-of-thought reasoning: "Let me think...", "Step 1:", "Breaking this down..."',
     weight: 4,
-    detect(text) {
-      const reasoningPatterns = [
-        /\blet me think( about this| through this| step by step)?\b/gi,
-        /\blet's (think|reason|work) (about|through|this out)\b/gi,
-        /\bbreaking (this|it) down\b/gi,
-        /\bto approach this (systematically|methodically|logically)\b/gi,
-        /\breasoning through (this|the problem|it)\b/gi,
-        /\bworking through the logic\b/gi,
-        /\bstep ([1-9]|one|two|three|four|five):/gi,
-        /\bfirst,? let'?s consider\b/gi,
-        /\bthinking about this (carefully|logically|systematically)\b/gi,
-        /\bhere'?s my (thought process|reasoning|thinking)\b/gi,
-      ];
-      const results = [];
-      for (const regex of reasoningPatterns) {
-        results.push(
-          ...findMatches(
-            text,
-            regex,
-            'Hide reasoning or make it natural: "Here\'s my take:" instead of "Let me think step by step:"',
-          ),
-        );
-      }
-      return results;
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 25);
+      return scanRegexPack(
+        text,
+        pack,
+        "Hide reasoning or make it natural: \"Here's my take:\" instead of \"Let me think step by step:\"",
+        'high',
+      );
     },
   },
 
@@ -1001,7 +913,7 @@ const patterns = [
     description:
       'Over-formatted responses: too many headers, nested bullets, or numbered lists for simple content.',
     weight: 3,
-    detect(text) {
+    detect(text, opts = {}) {
       const results = [];
       const words = wordCount(text);
 
@@ -1034,13 +946,11 @@ const patterns = [
         });
       }
 
-      // Check for "Overview:", "Key Points:", "Summary:" pattern
-      const structureHeaders =
-        /^#+\s*(overview|key (points|takeaways)|summary|conclusion|introduction|background)\s*:?\s*$/gim;
+      const pack = getPatternPack(opts, 26);
       results.push(
-        ...findMatches(
+        ...scanRegexPack(
           text,
-          structureHeaders,
+          pack,
           'Formulaic structure. Let content flow naturally.',
           'medium',
         ),
@@ -1057,27 +967,9 @@ const patterns = [
     description:
       'Artificially hedged or over-confident phrasing: "I\'m confident that...", "It\'s worth noting..."',
     weight: 3,
-    detect(text) {
-      const patterns = [
-        {
-          regex: /\bI'?m confident (that|in)\b/gi,
-          fix: 'State the fact without prefacing confidence',
-        },
-        { regex: /\bit'?s worth (noting|mentioning|pointing out) that\b/gi, fix: 'Just say it' },
-        { regex: /\binterestingly (enough)?,?\b/gi, fix: 'Let reader decide if interesting' },
-        { regex: /\bsurprisingly,?\s/gi, fix: 'State the fact; surprise is implied' },
-        { regex: /\bimportantly,?\s/gi, fix: 'Let reader judge importance' },
-        { regex: /\bsignificantly,?\s/gi, fix: 'Be specific about the significance' },
-        { regex: /\bnotably,?\s/gi, fix: 'Just state the notable thing' },
-        { regex: /\bcertainly,?\s/gi, fix: 'Remove or state with evidence' },
-        { regex: /\bundoubtedly,?\s/gi, fix: 'Remove or cite evidence' },
-        { regex: /\bwithout (a )?doubt,?\s/gi, fix: 'Remove or cite evidence' },
-      ];
-      const results = [];
-      for (const { regex, fix } of patterns) {
-        results.push(...findMatches(text, regex, fix));
-      }
-      return results;
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 27);
+      return scanRegexPack(text, pack, 'State the fact plainly.', 'high');
     },
   },
 
@@ -1087,22 +979,14 @@ const patterns = [
     category: 'communication',
     description: 'Restating the question before answering: "You\'re asking about X. X is..."',
     weight: 4,
-    detect(text) {
-      const patterns = [
-        /\byou'?re asking (about|whether|if|how|why|what)\b/gi,
-        /\bthe question of (whether|how|why|what)\b/gi,
-        /\bwhen it comes to your question\b/gi,
-        /\bin (terms of|response to|answer to) your question\b/gi,
-        /\bto (answer|address) your question\b/gi,
-        /\byour question (about|regarding|concerning)\b/gi,
-        /\bthat'?s a (great|good|interesting) question\. (the|it|so)\b/gi,
-        /\bI understand you'?re (asking|wondering|curious)\b/gi,
-      ];
-      const results = [];
-      for (const regex of patterns) {
-        results.push(...findMatches(text, regex, "Just answer. Don't restate the question."));
-      }
-      return results;
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 28);
+      return scanRegexPack(
+        text,
+        pack,
+        "Just answer. Don't restate the question.",
+        'high',
+      );
     },
   },
 

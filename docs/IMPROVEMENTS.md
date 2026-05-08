@@ -6,7 +6,7 @@ This file tracks what shipped and what we plan to build next.
 
 ### Swedish near-perfection track (locale `sv`)
 
-- Expanded [`src/locales/sv.js`](../src/locales/sv.js): *Svarta listan*-aligned autofixes, bureaucratic/LLM phrases, Swenglish Tier 1, consultant compounds, legal abbreviations, expanded function words.
+- Expanded [`src/locales/sv/`](../src/locales/sv/) (vocabulary + packs): *Svarta listan*-aligned autofixes, bureaucratic/LLM phrases, Swenglish Tier 1, consultant compounds, legal abbreviations, expanded function words.
 - **Weighted vocabulary matches** via optional [`locales/sv-se/references/sv-frequencies.json`](../locales/sv-se/references/sv-frequencies.json) (log-odds pipeline).
 - **Synthetic gold corpus** [`locales/sv-se/tests/fixtures/sv-corpus/`](../locales/sv-se/tests/fixtures/sv-corpus/) + scripts under `locales/sv-se/scripts/`.
 - **Tests:** `locales/sv-se/tests/calibration.sv.test.js`, `locales/sv-se/tests/calibration.sv.regression.test.js`.

@@ -5,7 +5,7 @@
 
 | Field | Value |
 |-------|-------|
-| Generated at (UTC) | 2026-05-08T21:43:40.587Z |
+| Generated at (UTC) | 2026-05-08T22:25:54.360Z |
 | Prescriptive autofixes | 65 |
 | Prescriptive phrase rows | 114 |
 | Baseline corpus lines | 6000 |
@@ -14,9 +14,10 @@
 | Prompt files | 200 |
 | Corpus human / AI docs | 50 / 50 |
 | Extended corpus (wiki) | 74 files in locales/sv-se/tests/fixtures/sv-corpus-extended (log-odds merges these into human side when present) |
+| Frequency ranks used `sv-corpus-extended/` tokens | no (baseline + human + gold only) |
 | sv-frequencies.json keys | 198 |
 | Calibration AUC | 1 |
-| Calibration mean score (human / AI) | 2.08 / 58.24 |
+| Calibration mean score (human / AI) | 2.08 / 66.16 |
 | Calibration corpus human / AI (report) | 51 / 50 |
 | Government genre mean human (report) | 0.38 |
 
@@ -37,10 +38,12 @@
 ```json
 {
   "resume": false,
-  "force": true,
+  "force": false,
   "withExtended": false,
   "freqIncludeExtended": false,
-  "noTest": false,
+  "noFreqIncludeExtended": false,
+  "effectiveFreqIncludeExtended": false,
+  "noTest": true,
   "node": "v22.22.2"
 }
 ```
@@ -52,6 +55,7 @@
 - Re-run with `--resume` after fixing a failure; use `--force` to ignore state.
 
 <!-- sv-pipeline:snapshot:end -->
+
 
 
 
