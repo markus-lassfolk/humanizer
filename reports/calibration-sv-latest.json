@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-05-08T20:36:11.631Z",
+  "corpus": {
+    "humanDocs": 50,
+    "aiDocs": 50
+  },
+  "auc": 1,
+  "optimalThresholdYouden": 6,
+  "yudenJ": 1,
+  "meanScoreHuman": 2.06,
+  "meanScoreAi": 58.24,
+  "perPattern": {
+    "7": {
+      "precision": 1,
+      "recallDocs": 1,
+      "fprPer1kHumanWords": 0,
+      "hitsAi": 1175.657,
+      "hitsHuman": 0
+    },
+    "13": {
+      "precision": 1,
+      "recallDocs": 0.34,
+      "fprPer1kHumanWords": 0,
+      "hitsAi": 34,
+      "hitsHuman": 0
+    },
+    "15": {
+      "precision": 1,
+      "recallDocs": 0.32,
+      "fprPer1kHumanWords": 0,
+      "hitsAi": 32,
+      "hitsHuman": 0
+    }
+  }
+}

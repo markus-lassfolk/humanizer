@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Refuse to push to the upstream/parent repository.
+#
+# This fork must NEVER push to brandonwise/humanizer. Any attempt to do so
+# (whether via `git push upstream`, a manually-set push URL, or someone
+# renaming origin) is aborted before a single byte hits the wire.
+#
+# Activated by setting `core.hooksPath` to `.githooks` (see scripts/setup-git-guards.sh).
+
+set -u
+
+remote_name="${1:-}"
+remote_url="${2:-}"
+
+# Case-insensitive substring patterns for forbidden push targets.
+forbidden_patterns=(
+  "brandonwise/humanizer"
+)
+
+normalized_url="$(printf '%s' "$remote_url" | tr '[:upper:]' '[:lower:]')"
+
+for pattern in "${forbidden_patterns[@]}"; do
+  lower_pattern="$(printf '%s' "$pattern" | tr '[:upper:]' '[:lower:]')"
+  if [[ "$normalized_url" == *"$lower_pattern"* ]]; then
+    cat >&2 <<EOF
+==============================================================================
+ PUSH BLOCKED: pushing to the parent/upstream repository is forbidden.
+   remote : $remote_name
+   url    : $remote_url
+   match  : $pattern
+
+ This fork (markus-lassfolk/humanizer) is configured to never push upstream.
+ Push to 'origin' instead:    git push origin <branch>
+
+ If you truly need to bypass this (you almost certainly don't), you can run
+ the push with --no-verify, but please don't.
+==============================================================================
+EOF
+    exit 1
+  fi
+done
+
+exit 0

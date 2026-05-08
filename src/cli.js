@@ -124,6 +124,7 @@ const flags = {
   ignoreDirs: null,
   includeDefaultIgnore: null,
   ignoreCode: null,
+  locale: process.env.HUMANIZER_LOCALE || 'en',
 };
 
 // Parse -f / --file flag
@@ -232,6 +233,12 @@ if (args.includes('--no-default-ignore')) {
 
 if (args.includes('--ignore-code')) {
   flags.ignoreCode = true;
+}
+
+// Parse --locale flag (overrides HUMANIZER_LOCALE env)
+const localeIdx = args.indexOf('--locale');
+if (localeIdx !== -1 && args[localeIdx + 1]) {
+  flags.locale = args[localeIdx + 1];
 }
 
 // ─── Scan Config Resolution ──────────────────────────────
@@ -422,6 +429,7 @@ ${color.bold('Options:')}
   --ignore-dirs <list>    Extra dirs to ignore when scanning (comma-separated)
   --no-default-ignore     Disable built-in ignores (.git,node_modules,dist,...)
   --ignore-code           Ignore fenced/inline code snippets during analysis
+  --locale <code>         Language locale: en (default) or sv. Also HUMANIZER_LOCALE env.
   --config <file>         Load scan defaults from JSON (scan section)
   --help, -h              Show this help
 
@@ -462,6 +470,11 @@ ${color.bold('Examples:')}
 
   ${color.gray('# Compare two drafts')}
   humanizer compare --before draft-v1.md --after draft-v2.md
+
+  ${color.gray('# Swedish text analysis')}
+  echo "I dagens snabbt föränderliga digitala landskap..." | humanizer analyze --locale sv
+  humanizer humanize --locale sv --autofix -f text.md
+  HUMANIZER_LOCALE=sv humanizer score article.txt
 
 ${color.bold('Score badges:')}
   🟢 0-25    Mostly human-sounding
@@ -545,7 +558,11 @@ function formatStatsReport(stats) {
   lines.push('');
 
   lines.push(color.bold('  ── Readability ────────────────────────────────'));
-  lines.push(`    Flesch-Kincaid:   ${stats.fleschKincaid} grade level`);
+  if (stats.lix !== null) {
+    lines.push(`    LIX:              ${stats.lix}`);
+  } else {
+    lines.push(`    Flesch-Kincaid:   ${stats.fleschKincaid} grade level`);
+  }
   lines.push(
     `    Function words:   ${stats.functionWordRatio} (${(stats.functionWordRatio * 100).toFixed(1)}%)`,
   );
@@ -950,6 +967,7 @@ async function main() {
     verbose: flags.verbose,
     patternsToCheck: flags.patterns,
     ignoreCode: flags.ignoreCode === true,
+    locale: flags.locale,
   };
 
   switch (command) {
@@ -978,6 +996,7 @@ async function main() {
         autofix: flags.autofix,
         verbose: flags.verbose,
         ignoreCode: opts.ignoreCode,
+        locale: opts.locale,
       });
       if (flags.json) {
         console.log(JSON.stringify(result, null, 2));
@@ -1002,6 +1021,7 @@ async function main() {
       const result = humanize(text, {
         verbose: flags.verbose,
         ignoreCode: opts.ignoreCode,
+        locale: opts.locale,
       });
       if (flags.json) {
         console.log(JSON.stringify(result, null, 2));
@@ -1013,7 +1033,9 @@ async function main() {
 
     case 'stats': {
       const statsText = opts.ignoreCode ? stripCodeSnippets(text) : text;
-      const stats = computeStats(statsText);
+      const { loadLocale } = require('./locales');
+      const localeProfile = loadLocale(opts.locale);
+      const stats = computeStats(statsText, localeProfile);
       if (flags.json) {
         console.log(JSON.stringify(stats, null, 2));
       } else {

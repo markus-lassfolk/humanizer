@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: Humanizer API
-  description: AI writing detection and humanization API. Detects 24 patterns of AI-generated text and provides actionable suggestions.
-  version: 2.1.0
+  description: AI writing detection and humanization API. Detects 29 patterns of AI-generated text and provides actionable suggestions. Supports English (en) and Swedish (sv) via the optional locale field.
+  version: 2.2.0
   contact:
     name: Brandon Wise
     url: https://github.com/brandonwise/humanizer
@@ -10,6 +10,14 @@ info:
 servers:
   - url: https://humanizer.example.com/api
     description: Production server
+
+components:
+  schemas:
+    LocaleEnum:
+      type: string
+      enum: [en, sv]
+      default: en
+      description: Language locale. Use "sv" for Swedish text (Swedish vocabulary tiers, LIX readability, Swedish abbreviation handling).
 
 paths:
   /score:
@@ -29,6 +37,8 @@ paths:
                 text:
                   type: string
                   description: Text to analyze
+                locale:
+                  $ref: '#/components/schemas/LocaleEnum'
       responses:
         '200':
           description: Score result
@@ -46,12 +56,14 @@ paths:
                     enum: ['🟢', '🟡', '🟠', '🔴']
                   interpretation:
                     type: string
+                  locale:
+                    type: string
 
   /analyze:
     post:
       operationId: analyzeText
       summary: Full AI analysis
-      description: Complete analysis with pattern matches, category breakdown, and statistical analysis.
+      description: Complete analysis with pattern matches, category breakdown, and statistical analysis. Pass locale "sv" for Swedish text.
       requestBody:
         required: true
         content:
@@ -68,6 +80,8 @@ paths:
                   type: boolean
                   default: false
                   description: Include all pattern matches
+                locale:
+                  $ref: '#/components/schemas/LocaleEnum'
       responses:
         '200':
           description: Analysis result
@@ -86,6 +100,7 @@ paths:
                     type: object
                   stats:
                     type: object
+                    description: Includes fleschKincaid (en) or lix (sv)
                   findings:
                     type: array
                     items:
@@ -95,7 +110,7 @@ paths:
     post:
       operationId: humanizeText
       summary: Get humanization suggestions
-      description: Returns suggestions grouped by priority to make text sound more human, with optional auto-fix.
+      description: Returns suggestions grouped by priority to make text sound more human, with optional auto-fix. Pass locale "sv" for Swedish text — guidance strings and autofix rules will be Swedish-native.
       requestBody:
         required: true
         content:
@@ -112,6 +127,8 @@ paths:
                   type: boolean
                   default: false
                   description: Apply safe mechanical fixes
+                locale:
+                  $ref: '#/components/schemas/LocaleEnum'
       responses:
         '200':
           description: Humanization suggestions
@@ -123,26 +140,38 @@ paths:
                   critical:
                     type: array
                     items:
-                      type: string
+                      type: object
                   important:
                     type: array
                     items:
-                      type: string
+                      type: object
+                  minor:
+                    type: array
+                    items:
+                      type: object
                   guidance:
                     type: array
                     items:
                       type: string
+                  styleTips:
+                    type: array
+                    items:
+                      type: object
                   autofix:
                     type: object
                     properties:
                       text:
                         type: string
+                      fixes:
+                        type: array
+                        items:
+                          type: string
 
   /stats:
     post:
       operationId: statsText
       summary: Statistical analysis only
-      description: Returns burstiness, type-token ratio, sentence variation, and readability metrics.
+      description: Returns burstiness, type-token ratio, sentence variation, and readability metrics. For Swedish (locale "sv"), returns LIX instead of Flesch-Kincaid.
       requestBody:
         required: true
         content:
@@ -154,6 +183,8 @@ paths:
               properties:
                 text:
                   type: string
+                locale:
+                  $ref: '#/components/schemas/LocaleEnum'
       responses:
         '200':
           description: Statistical analysis
@@ -162,13 +193,23 @@ paths:
               schema:
                 type: object
                 properties:
+                  wordCount:
+                    type: integer
+                  sentenceCount:
+                    type: integer
                   burstiness:
                     type: number
                   typeTokenRatio:
                     type: number
-                  sentenceCoV:
+                  sentenceLengthVariation:
                     type: number
                   trigramRepetition:
                     type: number
                   fleschKincaid:
                     type: number
+                    nullable: true
+                    description: English readability grade (null when locale is sv)
+                  lix:
+                    type: number
+                    nullable: true
+                    description: Swedish LIX readability score (null when locale is en)

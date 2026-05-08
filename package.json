@@ -1,6 +1,6 @@
 {
   "name": "humanizer",
-  "version": "2.2.0",
+  "version": "2.6.0",
   "description": "OpenClaw AI Humanizer - detect and remove AI writing patterns. Scans text for 29 common signs of AI-generated writing with statistical analysis (burstiness, TTR, readability) and provides actionable suggestions to make it sound natural and human.",
   "main": "src/analyzer.js",
   "bin": {
@@ -15,6 +15,11 @@
     "format": "prettier --write 'src/**/*.js' 'tests/**/*.js'",
     "format:check": "prettier --check 'src/**/*.js' 'tests/**/*.js'",
     "check": "npm run lint && npm run format:check && npm test",
+    "corpus:seed": "node scripts/seed-sv-corpus.mjs",
+    "corpus:build": "node scripts/build-corpus-extended.mjs",
+    "corpus:logodds": "node scripts/log-odds.mjs",
+    "corpus:calibrate": "node scripts/calibration-report.mjs",
+    "corpus:refresh": "node scripts/seed-sv-corpus.mjs && node scripts/log-odds.mjs && node scripts/calibration-report.mjs",
     "build": "echo 'No build step needed — pure Node.js'"
   },
   "keywords": [

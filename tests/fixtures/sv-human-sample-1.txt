@@ -1,0 +1,7 @@
+Vi bytte ut det gamla bokningssystemet i mars. Anledningen var enkel: det kraschade varannan vecka och supporten tog tre dagar att svara.
+
+Det nya systemet kostade 45 000 kronor och tog sex veckor att driftsätta. Tre av oss jobbade halvtid på migreringen. Vi tappade ungefär tjugo bokningar under övergången, vilket vi ersatte med rabattkoder.
+
+Fungerar det bättre nu? Ja, men inte på alla sätt vi hoppades. Laddningstiderna är snabbare. Personalens inlärningskurva var brantare än leverantören lovade — det tog fyra veckor innan alla kände sig bekväma, inte de utlovade tio dagarna.
+
+En sak vi inte räknade med: det nya systemet skickar automatiska bekräftelsemejl på engelska, inte svenska. Vi har rapporterat det som en bugg. De säger att det åtgärdas i nästa version, men de har inte satt något datum.

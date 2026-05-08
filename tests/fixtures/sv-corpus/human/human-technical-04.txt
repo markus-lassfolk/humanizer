@@ -1,0 +1,2 @@
+Felet uppstod när jobbkön fick dubbla meddelanden med samma id. Vi lade in en unik nyckel i databasen och backade de 140 poster som krockat. Deploy skedde 22:14 och övervakningen visade inga nya dubbletter under de följande sex timmarna.
+Releaseanteckning 4.

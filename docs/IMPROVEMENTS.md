@@ -2,6 +2,18 @@
 
 This file tracks what shipped and what we plan to build next.
 
+## Shipped in v2.6
+
+### Swedish near-perfection track (locale `sv`)
+
+- Expanded [`src/locales/sv.js`](../src/locales/sv.js): *Svarta listan*-aligned autofixes, bureaucratic/LLM phrases, Swenglish Tier 1, consultant compounds, legal abbreviations, expanded function words.
+- **Weighted vocabulary matches** via optional [`references/sv-frequencies.json`](../references/sv-frequencies.json) (log-odds pipeline).
+- **Synthetic gold corpus** [`tests/fixtures/sv-corpus/`](../tests/fixtures/sv-corpus/) + scripts: `seed-sv-corpus.mjs`, `log-odds.mjs`, `calibration-report.mjs`, optional `build-corpus-extended.mjs`.
+- **Tests:** `tests/calibration.sv.test.js`, `tests/calibration.sv.regression.test.js`.
+- **Docs:** [`docs/SWEDISH-EXTENSION.md`](SWEDISH-EXTENSION.md), [`references/svarta-listan.md`](../references/svarta-listan.md), [`references/swedish-ai-vocabulary.md`](../references/swedish-ai-vocabulary.md).
+
+Why: English-first heuristics under-detect Swedish LLM output; calibration data prevents vocabulary changes from regressing precision on formal human Swedish.
+
 ## Shipped in v2.5
 
 ### Baseline-aware doc gating (`--baseline`, `--fail-on-regression`)
@@ -70,11 +82,9 @@ The older feature set worked well for obvious chatbot text. The new patterns clo
 
 ## Next candidate improvements
 
-### Better non-English handling
+### Mixed-language and multilingual docs
 
-Reduce false positives on multilingual docs and mixed-language text.
-
-Why: current vocabulary-heavy checks are English-first.
+Reduce false positives when Swedish and English appear in the same document (detect language segments or soften cross-language Tier 1 hits).
 
 ## Validation checklist for each new pattern
 

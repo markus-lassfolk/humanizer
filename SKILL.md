@@ -1,11 +1,12 @@
 ---
 name: humanizer
-version: 2.2.0
+version: 2.6.0
 description: >
   Humanize AI-generated text by detecting and removing patterns typical of LLM
-  output. Rewrites text to sound natural, specific, and human. Uses 28 pattern
+  output. Rewrites text to sound natural, specific, and human. Uses 29 pattern
   detectors, 560+ AI vocabulary terms across 3 tiers, and statistical analysis
   (burstiness, type-token ratio, readability) for comprehensive detection.
+  Supports English (locale: en) and Swedish (locale: sv).
   Use when asked to humanize text, de-AI writing, make content sound more
   natural/human, review writing for AI patterns, score text for AI detection,
   or improve AI-generated drafts. Covers content, language, style,
@@ -13,7 +14,7 @@ description: >
 license: MIT
 ---
 
-# Humanizer: remove AI writing patterns (v2.2)
+# Humanizer: remove AI writing patterns (v2.6)
 
 You are a writing editor that identifies and removes signs of AI-generated text. Your goal: make writing sound like a specific human wrote it, not like it was extruded from a language model.
 
@@ -131,7 +132,42 @@ node src/cli.js humanize --autofix -f article.txt
 
 # JSON output for programmatic use
 node src/cli.js analyze --json < input.txt
+
+# Swedish text analysis
+echo "I dagens snabbt föränderliga digitala landskap..." | node src/cli.js analyze --locale sv
+node src/cli.js humanize --locale sv --autofix -f text.md
+HUMANIZER_LOCALE=sv node src/cli.js score article.txt
 ```
+
+## Swedish support (locale: sv)
+
+This fork adds Swedish language support. When input text is in Swedish, always use `locale: "sv"` (or `--locale sv` on the CLI). This activates:
+
+- **Swedish AI vocabulary** — loan-translated LLM clichés (fördjupa sig i, sömlös, banbrytande, transformativ, mångfacetterad, ekosystem), Swenglish (best practices, stakeholders, learnings, pain points, alignment), consultant compounds (helhetslösning, kundresa, värdeskapande), and density-gated Tier 2/3 lists (see [references/swedish-ai-vocabulary.md](references/swedish-ai-vocabulary.md))
+- **Formulaic phrases & bureaucratese** — regex-detected Swedish openers, chatbot/sycophancy strings, and many items aligned with Statsrådsberedningens *Svarta listan* (see [references/svarta-listan.md](references/svarta-listan.md))
+- **Empirical weights** — optional multipliers from `references/sv-frequencies.json` (built by `npm run corpus:logodds` over the gold corpus) so high–log-odds n-grams contribute more to the pattern score
+- **LIX readability** — Nordic LIX index instead of Flesch-Kincaid. LIX >50 = hard, >60 = very hard.
+- **Swedish sentence splitting** — abbreviations: t.ex., dvs., bl.a., m.m., m.fl., s.k., fr.o.m., t.o.m., plus legal/official (SOU, prop, kap, NJA, …)
+- **Swedish function words** — expanded list (även, dock, därför, således, kanske, …) for stylometrics
+- **Swedish autofixes** — mechanical replacements: *i syfte att* → *för att*, *erhålla* → *få*, *nyttja* → *använda*, *emellertid* → *men*, *vidta åtgärder* → *agera*, etc.
+- **Calibration tests** — `tests/calibration.sv.test.js` and `tests/calibration.sv.regression.test.js` lock scores against `tests/fixtures/sv-corpus/` and `reports/calibration-sv-latest.json`
+- **Swedish guidance strings** — style tips and guidance in Swedish in the humanizer output
+
+### Swedish rewrite principles
+
+When rewriting Swedish AI text:
+- Prefer **active voice** and **konkreta fakta** (concrete facts: datum, siffror, namn)
+- Replace LLM-Swedish with plain Swedish: "möjliggöra" → "göra möjligt", "nyttja" → "använda", "i syfte att" → "för att"
+- Avoid back-translating English suggestions into Swedish — find the **Swedish-native** equivalent instead
+- Do NOT produce "consultant Swedish" as a replacement — that's just AI slop in a different register
+
+### Swedish before/after example
+
+**Before (AI-sounding Swedish):**
+> I dagens snabbt föränderliga digitala landskap är det viktigt att notera att organisationer behöver fördjupa sig i de mångfacetterade utmaningarna som sömlös integration medför. Banbrytande lösningar möjliggör för företag att navigera komplexiteten på ett holistiskt sätt.
+
+**After (natural Swedish):**
+> Integration av nya system tar tid och kostar pengar. Tre av fyra projekt i vår bransch spricker på tid, enligt en Gartner-rapport från 2024. Vanligaste orsaken är att kraven ändras under projektet, inte att tekniken inte fungerar.
 
 ## Always-on mode
 
@@ -147,7 +183,7 @@ The key rules to internalize:
 ## Process
 
 1. Read the input text
-2. Run pattern detection (24 patterns, 500+ vocabulary terms)
+2. Run pattern detection (29 patterns; 500+ English + Swedish locale tiers)
 3. Compute text statistics (burstiness, TTR, readability)
 4. Identify all issues and generate suggestions
 5. Rewrite problematic sections

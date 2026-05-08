@@ -4,6 +4,10 @@
  * 
  * Exposes AI writing detection and humanization tools via Model Context Protocol.
  * Works with Claude Desktop, ChatGPT, VS Code, and other MCP clients.
+ *
+ * All tools accept an optional "locale" parameter: "en" (default) or "sv".
+ * When analyzing Swedish text, pass locale: "sv" to use Swedish vocabulary
+ * tiers, LIX readability, and Swedish-aware sentence splitting.
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -17,11 +21,14 @@ import {
 import { analyze, score } from '../src/analyzer.js';
 import { humanize, autoFix } from '../src/humanizer.js';
 import { computeStats } from '../src/stats.js';
+import { loadLocale } from '../src/locales/index.js';
+
+const LOCALE_DESCRIPTION = 'Language locale: "en" (default) or "sv" for Swedish. Use "sv" when the input text is in Swedish.';
 
 const server = new Server(
   {
     name: 'humanizer',
-    version: '2.1.0',
+    version: '2.2.0',
   },
   {
     capabilities: {
@@ -44,13 +51,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: 'string',
               description: 'Text to analyze for AI patterns',
             },
+            locale: {
+              type: 'string',
+              description: LOCALE_DESCRIPTION,
+              enum: ['en', 'sv'],
+              default: 'en',
+            },
           },
           required: ['text'],
         },
       },
       {
         name: 'analyze',
-        description: 'Full AI writing analysis with pattern matches, scores by category, and statistical analysis (burstiness, vocabulary diversity, readability).',
+        description: 'Full AI writing analysis with pattern matches, scores by category, and statistical analysis (burstiness, vocabulary diversity, readability). Supports locale: "sv" for Swedish.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -63,13 +76,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               description: 'Include all pattern matches (default: false)',
               default: false,
             },
+            locale: {
+              type: 'string',
+              description: LOCALE_DESCRIPTION,
+              enum: ['en', 'sv'],
+              default: 'en',
+            },
           },
           required: ['text'],
         },
       },
       {
         name: 'humanize',
-        description: 'Get suggestions to make text sound more human. Groups issues by priority (critical, important, guidance) with specific fixes.',
+        description: 'Get suggestions to make text sound more human. Groups issues by priority (critical, important, guidance) with specific fixes. Supports locale: "sv" for Swedish.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -82,19 +101,31 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               description: 'Apply safe mechanical fixes automatically (default: false)',
               default: false,
             },
+            locale: {
+              type: 'string',
+              description: LOCALE_DESCRIPTION,
+              enum: ['en', 'sv'],
+              default: 'en',
+            },
           },
           required: ['text'],
         },
       },
       {
         name: 'stats',
-        description: 'Statistical text analysis only: burstiness, type-token ratio, sentence variation, trigram repetition, readability score.',
+        description: 'Statistical text analysis only: burstiness, type-token ratio, sentence variation, trigram repetition, readability score (LIX for Swedish, Flesch-Kincaid for English).',
         inputSchema: {
           type: 'object',
           properties: {
             text: {
               type: 'string',
               description: 'Text to analyze statistically',
+            },
+            locale: {
+              type: 'string',
+              description: LOCALE_DESCRIPTION,
+              enum: ['en', 'sv'],
+              default: 'en',
             },
           },
           required: ['text'],
@@ -107,11 +138,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const locale = args.locale || 'en';
 
   try {
     switch (name) {
       case 'score': {
-        const s = score(args.text);
+        const s = score(args.text, { locale });
         const badge = s <= 25 ? '🟢' : s <= 50 ? '🟡' : s <= 75 ? '🟠' : '🔴';
         return {
           content: [
@@ -125,7 +157,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                   : s <= 75
                   ? 'Moderately AI-influenced'
                   : 'Heavily AI-generated'
-              }`,
+              }${locale !== 'en' ? `\n\nLocale: ${locale}` : ''}`,
             },
           ],
         };
@@ -135,18 +167,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const result = analyze(args.text, {
           verbose: args.verbose || false,
           includeStats: true,
+          locale,
         });
         
         let output = `## AI Analysis\n\n`;
         output += `**Score:** ${result.score}/100\n`;
         output += `**Pattern Score:** ${result.patternScore}/100\n`;
-        output += `**Uniformity Score:** ${result.uniformityScore}/100\n\n`;
+        output += `**Uniformity Score:** ${result.uniformityScore}/100\n`;
+        if (locale !== 'en') output += `**Locale:** ${locale}\n`;
+        output += '\n';
         
         if (result.categories) {
           output += `### Category Breakdown\n`;
-          for (const [cat, data] of Object.entries(result.categories)) {
-            if (data.count > 0) {
-              output += `- **${cat}:** ${data.count} issues\n`;
+          for (const [, data] of Object.entries(result.categories)) {
+            if (data.matches > 0) {
+              output += `- **${data.label}:** ${data.matches} matches\n`;
             }
           }
           output += '\n';
@@ -156,13 +191,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           output += `### Statistical Signals\n`;
           output += `- Burstiness: ${result.stats.burstiness?.toFixed(2) || 'N/A'} (human: 0.5-1.0, AI: 0.1-0.3)\n`;
           output += `- Type-Token Ratio: ${result.stats.typeTokenRatio?.toFixed(2) || 'N/A'} (human: 0.5-0.7, AI: 0.3-0.5)\n`;
-          output += `- Readability (FK): ${result.stats.fleschKincaid?.toFixed(1) || 'N/A'}\n`;
+          if (result.stats.lix !== null) {
+            output += `- Readability (LIX): ${result.stats.lix?.toFixed(1) || 'N/A'}\n`;
+          } else {
+            output += `- Readability (FK): ${result.stats.fleschKincaid?.toFixed(1) || 'N/A'}\n`;
+          }
         }
         
         if (args.verbose && result.findings?.length > 0) {
           output += `\n### Pattern Matches\n`;
           for (const f of result.findings.slice(0, 10)) {
-            output += `- **${f.pattern}:** "${f.match}" (weight: ${f.weight})\n`;
+            output += `- **${f.patternName}:** ${f.matchCount} match(es) (weight: ${f.weight})\n`;
           }
           if (result.findings.length > 10) {
             output += `\n...and ${result.findings.length - 10} more\n`;
@@ -173,22 +212,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'humanize': {
-        const suggestions = humanize(args.text, { autofix: args.autofix || false });
+        const suggestions = humanize(args.text, { autofix: args.autofix || false, locale });
         
         let output = `## Humanization Suggestions\n\n`;
+        if (locale !== 'en') output += `*Locale: ${locale}*\n\n`;
         
         if (suggestions.critical?.length > 0) {
           output += `### 🔴 Critical (Dead giveaways)\n`;
-          for (const s of suggestions.critical) {
-            output += `- ${s}\n`;
+          for (const s of suggestions.critical.slice(0, 10)) {
+            output += `- Line ${s.line}: \`${s.text?.substring(0, 60) || ''}\` → ${s.suggestion}\n`;
           }
           output += '\n';
         }
         
         if (suggestions.important?.length > 0) {
           output += `### 🟠 Important (Noticeable patterns)\n`;
-          for (const s of suggestions.important) {
-            output += `- ${s}\n`;
+          for (const s of suggestions.important.slice(0, 10)) {
+            output += `- Line ${s.line}: \`${s.text?.substring(0, 60) || ''}\` → ${s.suggestion}\n`;
           }
           output += '\n';
         }
@@ -209,16 +249,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'stats': {
-        const stats = computeStats(args.text);
+        const localeProfile = loadLocale(locale);
+        const stats = computeStats(args.text, localeProfile);
         
-        let output = `## Statistical Analysis\n\n`;
+        let output = `## Statistical Analysis\n`;
+        if (locale !== 'en') output += `*Locale: ${locale}*\n`;
+        output += `\n`;
         output += `| Metric | Value | Human Range | AI Range |\n`;
         output += `|--------|-------|-------------|----------|\n`;
         output += `| Burstiness | ${stats.burstiness?.toFixed(3) || 'N/A'} | 0.5-1.0 | 0.1-0.3 |\n`;
         output += `| Type-Token Ratio | ${stats.typeTokenRatio?.toFixed(3) || 'N/A'} | 0.5-0.7 | 0.3-0.5 |\n`;
-        output += `| Sentence CoV | ${stats.sentenceCoV?.toFixed(3) || 'N/A'} | 0.4-0.8 | 0.15-0.35 |\n`;
+        output += `| Sentence Variation | ${stats.sentenceLengthVariation?.toFixed(3) || 'N/A'} | 0.4-0.8 | 0.15-0.35 |\n`;
         output += `| Trigram Repetition | ${stats.trigramRepetition?.toFixed(3) || 'N/A'} | <0.05 | >0.10 |\n`;
-        output += `| Flesch-Kincaid | ${stats.fleschKincaid?.toFixed(1) || 'N/A'} | varies | 8-12 |\n`;
+        if (stats.lix !== null) {
+          output += `| LIX Readability | ${stats.lix?.toFixed(1) || 'N/A'} | 20-40 | varies |\n`;
+        } else {
+          output += `| Flesch-Kincaid | ${stats.fleschKincaid?.toFixed(1) || 'N/A'} | varies | 8-12 |\n`;
+        }
         
         return { content: [{ type: 'text', text: output }] };
       }

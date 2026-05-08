@@ -22,6 +22,7 @@ import { dirname, join } from 'path';
 import { analyze, score } from '../src/analyzer.js';
 import { humanize } from '../src/humanizer.js';
 import { computeStats } from '../src/stats.js';
+import { loadLocale } from '../src/locales/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
@@ -102,9 +103,12 @@ async function handleRequest(req, res) {
         return;
       }
 
+      // Optional locale field: 'en' (default) or 'sv'
+      const locale = body.locale || 'en';
+
       switch (path) {
         case '/api/score': {
-          const s = score(body.text);
+          const s = score(body.text, { locale });
           const badge = s <= 25 ? '🟢' : s <= 50 ? '🟡' : s <= 75 ? '🟠' : '🔴';
           const interpretation = s <= 25
             ? 'Mostly human-sounding'
@@ -113,7 +117,7 @@ async function handleRequest(req, res) {
             : s <= 75
             ? 'Moderately AI-influenced'
             : 'Heavily AI-generated';
-          sendJson(res, { score: s, badge, interpretation });
+          sendJson(res, { score: s, badge, interpretation, locale });
           return;
         }
 
@@ -121,6 +125,7 @@ async function handleRequest(req, res) {
           const result = analyze(body.text, {
             verbose: body.verbose || false,
             includeStats: true,
+            locale,
           });
           sendJson(res, result);
           return;
@@ -128,14 +133,16 @@ async function handleRequest(req, res) {
 
         case '/api/humanize': {
           const suggestions = humanize(body.text, { 
-            autofix: body.autofix || false 
+            autofix: body.autofix || false,
+            locale,
           });
           sendJson(res, suggestions);
           return;
         }
 
         case '/api/stats': {
-          const stats = computeStats(body.text);
+          const localeProfile = loadLocale(locale);
+          const stats = computeStats(body.text, localeProfile);
           sendJson(res, stats);
           return;
         }

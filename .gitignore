@@ -30,3 +30,6 @@ Thumbs.db
 # Test/Coverage
 coverage/
 .nyc_output/
+
+# Optional extended Swedish corpus (Wikipedia / Korp dumps)
+tests/fixtures/sv-corpus-extended/

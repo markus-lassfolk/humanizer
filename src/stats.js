@@ -9,8 +9,11 @@
  *   - Vocabulary diversity (type-token ratio)
  *   - Function word ratio
  *   - N-gram repetition density
- *   - Readability metrics (Flesch-Kincaid)
+ *   - Readability metrics (Flesch-Kincaid for 'en', LIX for 'sv')
  *   - Paragraph structure statistics
+ *
+ * Locale support: pass opts.localeProfile (from src/locales/) to use
+ * locale-specific function words, abbreviations, and readability formula.
  */
 
 const { FUNCTION_WORDS } = require('./vocabulary');
@@ -18,15 +21,60 @@ const { FUNCTION_WORDS } = require('./vocabulary');
 // ─── Sentence Splitting ─────────────────────────────────
 
 /**
+ * Protect a list of abbreviations from being treated as sentence-ending dots.
+ * Replaces each abbreviation's dots with the ONE DOT LEADER (\u2024) so the
+ * general splitter does not split on them.
+ *
+ * Abbreviations that contain internal dots (e.g. "t.ex", "bl.a") have ALL
+ * their dots escaped. Simple abbreviations (e.g. "Mr", "Dr") only have their
+ * trailing dot escaped.
+ *
+ * @param {string}   text          — Input text
+ * @param {string[]} abbreviations — Abbreviation list from locale profile
+ * @returns {string}               — Text with abbreviation dots protected
+ */
+function protectAbbreviations(text, abbreviations) {
+  let result = text;
+  for (const abbr of abbreviations) {
+    // Escape any dots within the abbreviation for regex use
+    const escaped = abbr.replace(/\./g, '\\.');
+    // Build pattern: word boundary + abbreviation + trailing dot
+    const regex = new RegExp(`\\b${escaped}\\.`, 'gi');
+    // Replace every dot (internal + trailing) with the placeholder
+    const placeholder = abbr.replace(/\./g, '\u2024') + '\u2024';
+    result = result.replace(regex, placeholder);
+  }
+  return result;
+}
+
+/**
  * Split text into sentences. Handles abbreviations and edge cases better
  * than a naive split on period.
+ *
+ * @param {string}  text          — Input text
+ * @param {object}  [localeProfile] — Locale profile (from src/locales/)
+ * @returns {string[]}
  */
-function splitSentences(text) {
-  // Handle common abbreviations that shouldn't split
-  const cleaned = text
-    .replace(/\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|etc|vs|approx|dept|est|vol)\./gi, '$1\u2024') // temp replace
+function splitSentences(text, localeProfile) {
+  const abbreviations = localeProfile ? localeProfile.abbreviations : null;
+
+  let cleaned = text;
+
+  // Apply locale-specific abbreviation protection
+  if (abbreviations && abbreviations.length > 0) {
+    cleaned = protectAbbreviations(cleaned, abbreviations);
+  } else {
+    // English fallback (legacy behaviour)
+    cleaned = cleaned.replace(
+      /\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|etc|vs|approx|dept|est|vol)\./gi,
+      '$1\u2024',
+    );
+  }
+
+  // Language-agnostic: protect initials and numbered lists regardless of locale
+  cleaned = cleaned
     .replace(/\b([A-Z])\./g, '$1\u2024') // initials: "J. K. Rowling"
-    .replace(/\b(\d+)\./g, '$1\u2024'); // numbered lists
+    .replace(/\b(\d+)\./g, '$1\u2024'); // numbered lists: "1. First"
 
   const sentences = cleaned
     .split(/(?<=[.!?])\s+(?=[A-Z"'\u201C])|(?<=[.!?])$/)
@@ -39,29 +87,43 @@ function splitSentences(text) {
 // ─── Core Statistics ─────────────────────────────────────
 
 /**
- * Tokenize text into words (lowercase, stripped of punctuation).
+ * Tokenize text into words (lowercase).
+ *
+ * Uses Unicode property escapes (\p{L}, \p{N}) with the /u flag so that
+ * letters outside ASCII — including Swedish å, ä, ö and other accented
+ * characters — are preserved rather than stripped.
+ *
+ * @param {string} text
+ * @returns {string[]}
  */
 function tokenize(text) {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s'-]/g, ' ')
-    .split(/\s+/)
-    .filter((w) => w.length > 0);
+  return (
+    text
+      .toLowerCase()
+      // Keep Unicode letters, digits, apostrophes, and hyphens between letters.
+      // Replace everything else with a space.
+      .replace(/[^\p{L}\p{N}'\-\s]/gu, ' ')
+      // Collapse runs of hyphens/apostrophes that aren't surrounded by letters
+      .replace(/(?<!\p{L})[-']|[-'](?!\p{L})/gu, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length > 0)
+  );
 }
 
 /**
  * Compute all text statistics.
  *
- * @param {string} text — Input text
- * @returns {object}    — Statistics object
+ * @param {string}  text          — Input text
+ * @param {object}  [localeProfile] — Locale profile (from src/locales/)
+ * @returns {object}              — Statistics object
  */
-function computeStats(text) {
+function computeStats(text, localeProfile) {
   if (!text || typeof text !== 'string' || text.trim().length === 0) {
     return emptyStats();
   }
 
   const words = tokenize(text);
-  const sentences = splitSentences(text);
+  const sentences = splitSentences(text, localeProfile);
   const paragraphs = text.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
 
   if (words.length === 0) return emptyStats();
@@ -109,7 +171,8 @@ function computeStats(text) {
   }
 
   // ── Function word ratio ─────────────────────────────
-  const functionWordSet = new Set(FUNCTION_WORDS);
+  const activeFunctionWords = localeProfile ? localeProfile.functionWords : FUNCTION_WORDS;
+  const functionWordSet = new Set(activeFunctionWords);
   const functionWordCount = words.filter((w) => functionWordSet.has(w)).length;
   const functionWordRatio = functionWordCount / wordCount;
 
@@ -123,12 +186,29 @@ function computeStats(text) {
       ? paragraphs.reduce((sum, p) => sum + tokenize(p).length, 0) / paragraphCount
       : 0;
 
-  // ── Readability (Flesch-Kincaid Grade Level approximation) ──
-  const syllableCount = words.reduce((sum, w) => sum + estimateSyllables(w), 0);
-  const fleschKincaid =
-    sentenceCount > 0
-      ? 0.39 * (wordCount / sentenceCount) + 11.8 * (syllableCount / wordCount) - 15.59
-      : 0;
+  // ── Readability ─────────────────────────────────────
+  const useReadability = localeProfile ? localeProfile.readability : 'flesch-kincaid';
+  let fleschKincaid = null;
+  let lix = null;
+
+  if (useReadability === 'lix') {
+    // LIX (Läsbarhetsindex) — standard Nordic readability metric.
+    // LIX = words/sentences + (longWords * 100) / words
+    // "Long word" = more than 6 characters.
+    if (sentenceCount > 0) {
+      const longWordCount = words.filter((w) => w.length > 6).length;
+      lix = round(wordCount / sentenceCount + (longWordCount * 100) / wordCount);
+    } else {
+      lix = 0;
+    }
+  } else {
+    // Flesch-Kincaid Grade Level approximation (English)
+    const syllableCount = words.reduce((sum, w) => sum + estimateSyllables(w), 0);
+    fleschKincaid =
+      sentenceCount > 0
+        ? round(0.39 * (wordCount / sentenceCount) + 11.8 * (syllableCount / wordCount) - 15.59)
+        : 0;
+  }
 
   return {
     wordCount,
@@ -138,13 +218,15 @@ function computeStats(text) {
     avgWordLength: round(avgWordLength),
     avgSentenceLength: round(avgSentenceLength),
     sentenceLengthStdDev: round(sentenceLengthStdDev),
-    sentenceLengthVariation: round(sentenceLengthVariation), // coefficient of variation
+    sentenceLengthVariation: round(sentenceLengthVariation),
     burstiness: round(burstiness),
     typeTokenRatio: round(typeTokenRatio),
     functionWordRatio: round(functionWordRatio),
     trigramRepetition: round(trigramRepetition),
     avgParagraphLength: round(avgParagraphLength),
-    fleschKincaid: round(fleschKincaid),
+    // Readability: one of these will be null depending on locale
+    fleschKincaid,
+    lix,
     sentenceLengths,
   };
 }
@@ -172,6 +254,7 @@ function computeNgramRepetition(words, n) {
 
 /**
  * Estimate syllable count for a word (English heuristic).
+ * Not used for Swedish (LIX does not require syllable counting).
  */
 function estimateSyllables(word) {
   word = word.toLowerCase().replace(/[^a-z]/g, '');
@@ -183,7 +266,7 @@ function estimateSyllables(word) {
 
   // Subtract silent e
   if (word.endsWith('e') && !word.endsWith('le')) count--;
-  // Add for -ed that creates syllable
+  // Subtract for -ed that doesn't create a syllable
   if (word.endsWith('ed') && word.length > 3 && !/[aeiouy]ed$/.test(word)) count--;
 
   return Math.max(count, 1);
@@ -192,7 +275,7 @@ function estimateSyllables(word) {
 /**
  * Compute a "uniformity score" from text stats.
  * Higher = more uniform/AI-like. Lower = more varied/human-like.
- * Range: 0-100.
+ * Range: 0-100. Language-agnostic — based purely on structural metrics.
  */
 function computeUniformityScore(stats) {
   if (stats.wordCount === 0) return 0;
@@ -229,10 +312,8 @@ function computeUniformityScore(stats) {
   // Abnormally uniform paragraph lengths (max 15 points)
   // Only check if we have multiple paragraphs
   if (stats.paragraphCount >= 3 && stats.sentenceCount > 5) {
-    // Check if all paragraphs are similar length
-    // Use sentence length uniformity as a proxy for paragraph uniformity
     if (stats.sentenceLengthStdDev < 3 && stats.avgSentenceLength > 10) {
-      score += 15; // Very uniform sentence lengths with moderate length = AI
+      score += 15;
     }
   }
 
@@ -255,6 +336,7 @@ function emptyStats() {
     trigramRepetition: 0,
     avgParagraphLength: 0,
     fleschKincaid: 0,
+    lix: null,
     sentenceLengths: [],
   };
 }
@@ -272,4 +354,5 @@ module.exports = {
   splitSentences,
   tokenize,
   estimateSyllables,
+  protectAbbreviations,
 };

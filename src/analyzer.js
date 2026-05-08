@@ -17,6 +17,7 @@
 const { patterns, wordCount } = require('./patterns');
 const { computeStats, computeUniformityScore } = require('./stats');
 const { stripCodeSnippets } = require('./preprocess');
+const { loadLocale } = require('./locales');
 
 // ─── Category Labels ────────────────────────────────────
 
@@ -41,11 +42,21 @@ const RELIABILITY_RECOMMENDED_WORDS = 150;
  *   - patternsToCheck {number[]}  Only run specific pattern IDs
  *   - includeStats {boolean}  Include full text statistics (default: true)
  *   - ignoreCode {boolean}  Ignore fenced/inline code snippets before analysis
+ *   - locale {string}       Locale code: 'en' (default) or 'sv'
  *   - config {object}       Custom config overrides
  * @returns {object}     — Full analysis result
  */
 function analyze(text, opts = {}) {
-  const { verbose = false, patternsToCheck = null, includeStats = true, ignoreCode = false } = opts;
+  const {
+    verbose = false,
+    patternsToCheck = null,
+    includeStats = true,
+    ignoreCode = false,
+    locale = 'en',
+  } = opts;
+
+  // Load locale profile (throws on unknown locale codes)
+  const localeProfile = loadLocale(locale);
 
   if (!text || typeof text !== 'string') {
     return emptyResult();
@@ -58,7 +69,7 @@ function analyze(text, opts = {}) {
   const words = wordCount(trimmed);
 
   // ── Compute text statistics ────────────────────────
-  const stats = includeStats ? computeStats(trimmed) : null;
+  const stats = includeStats ? computeStats(trimmed, localeProfile) : null;
   // Only compute uniformity for text with enough structure to be meaningful
   const uniformityScore =
     stats && stats.wordCount >= 20 && stats.sentenceCount >= 3 ? computeUniformityScore(stats) : 0;
@@ -74,22 +85,26 @@ function analyze(text, opts = {}) {
     ? patterns.filter((p) => patternsToCheck.includes(p.id))
     : patterns;
 
+  // detectOpts is passed to every pattern; only pattern 7 uses localeProfile.
+  const detectOpts = { localeProfile };
+
   for (const pattern of activePatterns) {
-    const matches = pattern.detect(trimmed);
+    const matches = pattern.detect(trimmed, detectOpts);
     if (matches.length > 0) {
+      const weightedCount = matches.reduce((sum, m) => sum + (m.matchWeight ?? 1), 0);
       const finding = {
         patternId: pattern.id,
         patternName: pattern.name,
         category: pattern.category,
         description: pattern.description,
         weight: pattern.weight,
-        matchCount: matches.length,
+        matchCount: weightedCount,
         matches: verbose ? matches : matches.slice(0, 5),
         truncated: !verbose && matches.length > 5,
       };
 
       findings.push(finding);
-      categoryScores[pattern.category].matches += matches.length;
+      categoryScores[pattern.category].matches += weightedCount;
       categoryScores[pattern.category].weightedScore += matches.length * pattern.weight;
       categoryScores[pattern.category].patterns.push(pattern.name);
     }
@@ -285,6 +300,7 @@ function buildSummary(finalScore, totalMatches, findings, words, stats, reliabil
 
 /**
  * Quick score — returns just the number (0-100).
+ * Accepts same opts as analyze(), including locale.
  */
 function score(text, opts = {}) {
   return analyze(text, opts).score;
@@ -332,7 +348,11 @@ function formatReport(result) {
     );
     lines.push(`  Function word ratio: ${s.functionWordRatio}`);
     lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
-    lines.push(`  Readability (FK grade): ${s.fleschKincaid}`);
+    if (s.lix !== null) {
+      lines.push(`  Readability (LIX): ${s.lix}`);
+    } else {
+      lines.push(`  Readability (FK grade): ${s.fleschKincaid}`);
+    }
     lines.push('');
   }
 
@@ -418,9 +438,23 @@ function formatMarkdown(result) {
     lines.push(
       `| Trigram repetition | ${s.trigramRepetition} | ${s.trigramRepetition > 0.1 ? 'High (AI-like)' : 'Normal'} |`,
     );
-    lines.push(
-      `| Readability | FK grade ${s.fleschKincaid} | ${s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`,
-    );
+    if (s.lix !== null) {
+      const lixLabel =
+        s.lix > 60
+          ? 'Very hard'
+          : s.lix > 50
+            ? 'Hard'
+            : s.lix > 40
+              ? 'Medium'
+              : s.lix > 30
+                ? 'Easy'
+                : 'Very easy';
+      lines.push(`| Readability | LIX ${s.lix} | ${lixLabel} |`);
+    } else {
+      lines.push(
+        `| Readability | FK grade ${s.fleschKincaid} | ${s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`,
+      );
+    }
     lines.push('');
   }
 

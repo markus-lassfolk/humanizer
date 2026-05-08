@@ -6,8 +6,10 @@
  *
  * Architecture:
  *   - Each pattern is an object with id, name, category, description,
- *     weight (1-5), and a detect(text) function
+ *     weight (1-5), and a detect(text, opts) function
  *   - detect() returns [{ match, index, line, column, suggestion, confidence }]
+ *   - opts.localeProfile (from src/locales/) allows pattern 7 to use locale-
+ *     specific vocabulary; all other patterns ignore opts.
  *   - The registry holds all patterns and provides query methods
  *   - Vocabulary is sourced from vocabulary.js (500+ words/phrases)
  */
@@ -76,11 +78,27 @@ function wordRegex(word) {
 }
 
 /**
+ * Normalize locale tier entry: string or { word, weight }.
+ * @param {string|{word:string,weight?:number}} entry
+ * @returns {{ word: string, weight: number }}
+ */
+function normalizeWordEntry(entry) {
+  if (entry === null || entry === undefined) return { word: '', weight: 1 };
+  if (typeof entry === 'string') return { word: entry, weight: 1 };
+  const w = entry.word;
+  const weight = typeof entry.weight === 'number' && entry.weight > 0 ? entry.weight : 1;
+  return { word: w, weight };
+}
+
+/**
  * Scan text for words from a tier list. Returns matches with word-specific suggestions.
+ * Supports weighted entries (matchWeight) for empirical calibration.
  */
 function scanWordList(text, wordList, suggestionPrefix, confidence = 'high') {
   const results = [];
-  for (const word of wordList) {
+  for (const raw of wordList) {
+    const { word, weight } = normalizeWordEntry(raw);
+    if (!word) continue;
     const regex = wordRegex(word);
     const matches = findMatches(
       text,
@@ -88,7 +106,9 @@ function scanWordList(text, wordList, suggestionPrefix, confidence = 'high') {
       `${suggestionPrefix}: "${word}". Use a simpler, more specific alternative.`,
       confidence,
     );
-    results.push(...matches);
+    for (const m of matches) {
+      results.push({ ...m, matchWeight: weight });
+    }
   }
   return results;
 }
@@ -389,43 +409,71 @@ const patterns = [
     description:
       'Words and phrases that appear far more frequently in AI-generated text. 500+ words tracked across 3 tiers.',
     weight: 5,
-    detect(text) {
+    detect(text, opts = {}) {
+      const profile = opts.localeProfile;
+
+      // Use locale-specific vocabulary if a profile is provided, otherwise
+      // fall back to the English vocabulary imported at the top of this file.
+      const tier1 = profile ? profile.tier1 : TIER_1;
+      const tier2 = profile ? profile.tier2 : TIER_2;
+      const tier3 = profile ? profile.tier3 : TIER_3;
+      const phrases = profile ? profile.phrases : AI_PHRASES;
+
       const results = [];
       const words = wordCount(text);
 
       // Tier 1: always flag
-      results.push(...scanWordList(text, TIER_1, 'Tier 1 AI word', 'high'));
+      results.push(...scanWordList(text, tier1, 'Tier 1 AI word', 'high'));
 
       // Tier 2: flag if 2+ tier-2 words appear
-      const tier2Matches = scanWordList(text, TIER_2, 'Tier 2 AI word', 'medium');
+      const tier2Matches = scanWordList(text, tier2, 'Tier 2 AI word', 'medium');
       if (tier2Matches.length >= 2) {
         results.push(...tier2Matches);
       }
 
       // Tier 3: flag only at high density (>3% of words are tier-3)
       if (words > 50) {
-        const tier3Count = TIER_3.reduce((count, word) => {
+        const tier3Count = tier3.reduce((count, entry) => {
+          const { word } = normalizeWordEntry(entry);
           const regex = wordRegex(word);
           return count + countMatches(text, regex);
         }, 0);
         const density = tier3Count / words;
         if (density > 0.03) {
-          results.push(...scanWordList(text, TIER_3, 'Tier 3 AI word (high density)', 'low'));
+          results.push(...scanWordList(text, tier3, 'Tier 3 AI word (high density)', 'low'));
         }
       }
 
-      // AI phrases (from vocabulary.js)
-      results.push(
-        ...scanPhrases(
-          text,
-          AI_PHRASES.filter(
-            (p) =>
-              p.fix &&
-              !p.fix.startsWith('(remove') &&
-              !['to', 'because', 'now', 'if', 'can', 'first', 'finally'].includes(p.fix),
-          ),
-        ),
-      );
+      // AI phrases — filter out "remove" instructions and pure substitutions
+      // that would make the suggestion list noisy (English defaults).
+      // Swedish fixes often use "(ta bort...)" — those must still score.
+      const isSv = profile && profile.code === 'sv';
+      const filteredPhrases = phrases.filter((p) => {
+        if (!p.fix) return false;
+        if (isSv) {
+          return !['för att', 'eftersom', 'nu', 'om', 'kan', 'först'].includes(p.fix);
+        }
+        return (
+          !p.fix.startsWith('(remove') &&
+          !p.fix.startsWith('(ta bort') &&
+          ![
+            'to',
+            'because',
+            'now',
+            'if',
+            'can',
+            'first',
+            'finally',
+            'för att',
+            'eftersom',
+            'nu',
+            'om',
+            'kan',
+            'först',
+          ].includes(p.fix)
+        );
+      });
+      results.push(...scanPhrases(text, filteredPhrases));
 
       return results;
     },
@@ -1156,6 +1204,7 @@ module.exports = {
   findMatches,
   countMatches,
   wordCount,
+  normalizeWordEntry,
   scanWordList,
   scanPhrases,
   // Re-export vocabulary for backward compat

@@ -422,6 +422,20 @@ humanizer/
 4. Run `npm test` — all tests must pass
 5. Open a PR
 
+### Fork-only push policy
+
+This clone of the repo is configured to **never push to the parent repository**
+(`brandonwise/humanizer`). After cloning, run:
+
+```bash
+bash scripts/setup-git-guards.sh
+```
+
+That installs a tracked `pre-push` hook (in `.githooks/`) that aborts any push
+whose URL matches the parent repo, pins `pushDefault` to `origin`, and rewrites
+the push URL of any `upstream` remote to `no_push`. All work goes to the fork;
+contributions back upstream happen via pull requests on github.com only.
+
 ## License
 
 [MIT](LICENSE)

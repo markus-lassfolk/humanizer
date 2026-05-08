@@ -1,0 +1,10 @@
+# Swedish AI corpus — stratified prompt themes (scripts/seed-sv-corpus.mjs)
+
+Each file in ai/ is generated from a template combining:
+- Genre: news, opinion, fiction, technical, casual, government, academic, misc
+- Opener: "I dagens snabbt föränderliga digitala landskap" / "I en alltmer komplex marknad" / "I dagens moderna värld"
+- Body: consultant-style Swedish (sömlös, banbrytande, stakeholders, synergier, etc.)
+- Closer: sammanfattningsvis / sycophancy / chatbot filler
+
+This is synthetic labelled-positive data for calibration, not live LLM output.
+For production evaluation, replace with outputs from your models and prompts.
