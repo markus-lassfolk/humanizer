@@ -28,7 +28,7 @@ const LOCALE_DESCRIPTION = 'Language locale: "en" (default) or "sv" for Swedish.
 const server = new Server(
   {
     name: 'humanizer',
-    version: '2.2.0',
+    version: '2.6.0',
   },
   {
     capabilities: {
