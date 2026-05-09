@@ -12,9 +12,13 @@ const {
   EMPIRICAL_EXTRA_EN,
 } = require('./vocabulary');
 const { PATTERN_PACKS_EN } = require('./pattern-packs');
+const { SCORING_KNOBS_EN } = require('../scoring-defaults');
 
 module.exports = {
   code: 'en',
+
+  /** Composite score tuning (pattern density / breadth / blend). Same as global default unless overridden. */
+  scoring: SCORING_KNOBS_EN,
 
   tier1: TIER_1,
   tier2: TIER_2,

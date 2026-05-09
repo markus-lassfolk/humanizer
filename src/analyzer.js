@@ -18,6 +18,7 @@ const { patterns, wordCount } = require('./patterns');
 const { computeStats, computeUniformityScore, computeLmUniformityBoost } = require('./stats');
 const { stripCodeSnippets } = require('./preprocess');
 const { loadLocale } = require('./locales');
+const { DEFAULT_SCORING_KNOBS, mergeScoringKnobs } = require('./locales/scoring-defaults');
 const { buildCalibrationFeatureVector } = require('./calibration-features');
 const { applyEnglishCalibrator } = require('./score-calibration-en');
 
@@ -66,6 +67,7 @@ function analyze(text, opts = {}) {
 
   // Load locale profile (throws on unknown locale codes)
   const localeProfile = loadLocale(locale);
+  const scoringKnobs = mergeScoringKnobs(localeProfile);
 
   if (!text || typeof text !== 'string') {
     return emptyResult();
@@ -123,9 +125,14 @@ function analyze(text, opts = {}) {
     }
   }
 
-  // ── Calculate composite score ──────────────────────
-  const patternScore = calculatePatternScore(findings, words);
-  const compositeHeuristic = calculateCompositeScore(patternScore, uniformityScore, findings);
+  // ── Calculate composite score (knobs from locale profile; see scoring-defaults.js) ──
+  const patternScore = calculatePatternScore(findings, words, scoringKnobs);
+  const compositeHeuristic = calculateCompositeScore(
+    patternScore,
+    uniformityScore,
+    findings,
+    scoringKnobs,
+  );
 
   const reliability = buildReliability({
     words,
@@ -252,8 +259,9 @@ function buildReliability({ words, stats, findings, patternScore, uniformityScor
 /**
  * Pattern-based score component (0-100).
  * Uses density, breadth, and category diversity.
+ * @param {object} [knobs] — see `mergeScoringKnobs` / `DEFAULT_SCORING_KNOBS`
  */
-function calculatePatternScore(findings, words) {
+function calculatePatternScore(findings, words, knobs = DEFAULT_SCORING_KNOBS) {
   if (words === 0 || findings.length === 0) return 0;
 
   let weightedTotal = 0;
@@ -263,14 +271,14 @@ function calculatePatternScore(findings, words) {
 
   // Density: weighted hits per 100 words (log scale)
   const density = (weightedTotal / words) * 100;
-  const densityScore = Math.min(Math.log2(density + 1) * 13, 65);
+  const densityScore = Math.min(Math.log2(density + 1) * knobs.densityCoef, knobs.densityCap);
 
-  // Breadth: unique pattern types (max 20)
-  const breadthBonus = Math.min(findings.length * 2, 20);
+  // Breadth: unique pattern types
+  const breadthBonus = Math.min(findings.length * knobs.breadthMult, knobs.breadthCap);
 
-  // Category diversity (max 15)
+  // Category diversity
   const categoriesHit = new Set(findings.map((f) => f.category)).size;
-  const categoryBonus = Math.min(categoriesHit * 3, 15);
+  const categoryBonus = Math.min(categoriesHit * knobs.categoryMult, knobs.categoryCap);
 
   return Math.min(Math.round(densityScore + breadthBonus + categoryBonus), 100);
 }
@@ -278,18 +286,24 @@ function calculatePatternScore(findings, words) {
 /**
  * Composite score combining pattern detection and statistical analysis.
  *
- * Pattern score is the primary signal (70% weight).
- * Uniformity score adds statistical evidence (30% weight).
- * But only when both are present — stats alone aren't enough.
+ * Pattern vs uniformity weights come from `knobs.patternWeight` (default 0.8 / 0.2).
+ * Stats alone are never enough to accuse without pattern hits.
+ * @param {object} [knobs] — see `mergeScoringKnobs` / `DEFAULT_SCORING_KNOBS`
  */
-function calculateCompositeScore(patternScore, uniformityScore, findings) {
+function calculateCompositeScore(
+  patternScore,
+  uniformityScore,
+  findings,
+  knobs = DEFAULT_SCORING_KNOBS,
+) {
   if (patternScore === 0 && uniformityScore === 0) return 0;
 
   // If no patterns detected, uniformity alone isn't enough to accuse
   if (findings.length === 0) return Math.min(Math.round(uniformityScore * 0.15), 15);
 
-  // Weighted blend: patterns dominate, stats supplement
-  const blended = patternScore * 0.7 + uniformityScore * 0.3;
+  const pw = knobs.patternWeight;
+  const uw = 1 - pw;
+  const blended = patternScore * pw + uniformityScore * uw;
   return Math.min(Math.round(blended), 100);
 }
 
@@ -590,6 +604,7 @@ module.exports = {
   score,
   calculatePatternScore,
   calculateCompositeScore,
+  DEFAULT_SCORING_KNOBS,
   formatReport,
   formatMarkdown,
   formatJSON,

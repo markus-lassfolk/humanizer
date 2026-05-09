@@ -48,6 +48,29 @@ const da = require('./da');
 const LOCALES = { en, sv, da };
 ```
 
+### Composite scoring (optional)
+
+New locales **inherit** `DEFAULT_SCORING_KNOBS` from [`src/locales/scoring-defaults.js`](../src/locales/scoring-defaults.js) (pattern density / breadth / category caps and the pattern-vs-uniformity blend). You do not need to set anything on day one.
+
+When you have a labeled human/AI corpus for the language, run `npm run tune:scoring`, then add an explicit override on the profile:
+
+```js
+// src/locales/da/index.js
+const { DEFAULT_SCORING_KNOBS } = require('../scoring-defaults');
+
+module.exports = {
+  code: 'da',
+  // …
+  scoring: {
+    ...DEFAULT_SCORING_KNOBS,
+    densityCap: 68,
+    patternWeight: 0.75,
+  },
+};
+```
+
+Partial objects are merged over the default; omit `scoring` entirely to use the global baseline.
+
 Add shims only if you need backwards-compatible require paths, for example:
 
 ```text

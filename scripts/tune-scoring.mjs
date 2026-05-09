@@ -471,8 +471,7 @@ function writeReports(reports) {
   }
 
   md += `## How to apply\n\n`;
-  md += `Edit \`src/analyzer.js\` → \`calculatePatternScore\` and \`calculateCompositeScore\` and replace the literals with the **Best (FPR≤${FPR50_CEILING})** values above.\n\n`;
-  md += `Or, fold the knobs into a config object so it can be unit-tested end-to-end.\n\n`;
+  md += `Knobs live in \`src/locales/scoring-defaults.js\`: update \`DEFAULT_SCORING_KNOBS\` (global / new locales) and/or \`SCORING_KNOBS_EN\` / \`SCORING_KNOBS_SV\` with the **Best (FPR≤${FPR50_CEILING})** row above. The analyzer merges \`profile.scoring\` over \`DEFAULT_SCORING_KNOBS\`.\n\n`;
   md += `Re-run \`npm run sv:pipeline\` / \`npm run en:pipeline\` (if available) and \`npm test\` to confirm regression gates still pass.\n`;
 
   const mdPath = path.join(reportsDir, `tuning-${date}.md`);

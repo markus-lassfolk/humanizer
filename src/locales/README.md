@@ -11,6 +11,7 @@ Each supported language uses the **same file names** under its own folder. Optio
 | **`en/empirical-filter.js`** | Gates for English corpus n-grams / Pattern 7 extras |
 | **`generated/en-prescriptive.js`** | Built from EN TSVs (prescriptive phrases + autofixes) |
 | **`en/index.js`** | English profile (`loadLocale('en')`) |
+| **`scoring-defaults.js`** | `DEFAULT_SCORING_KNOBS` (fallback for new locales) + `mergeScoringKnobs(profile)` |
 | **`sv/vocabulary.js`** | Swedish tiers, phrases, abbreviations, autofixes, **`empiricalExtra`** build |
 | **`sv/pattern-packs.js`** | Swedish `patternPacks` (English baseline + Swedish rows) |
 | **`sv/empirical-filter.js`** | Gates for corpus n-grams / Pattern 7 extras |
@@ -27,3 +28,7 @@ Each supported language uses the **same file names** under its own folder. Optio
 | `en-empirical-filter.js` | `sv-empirical-filter.js` |
 
 Loader: **`index.js`** (`loadLocale`).
+
+## Composite scoring (`scoring`)
+
+Each profile may export optional **`scoring`**: `{ densityCoef, densityCap, breadthMult, breadthCap, categoryMult, categoryCap, patternWeight }`. If omitted, **`DEFAULT_SCORING_KNOBS`** from `scoring-defaults.js` applies (English-tuned, safe baseline for new languages). `en` and `sv` set explicit presets. Re-tune with `npm run tune:scoring` after large pattern changes.
