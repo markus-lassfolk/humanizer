@@ -233,7 +233,15 @@ Swedish locale maintainers can regenerate derived Swedish artifacts with:
 npm run sv:pipeline
 ```
 
-See `locales/sv-se/docs/SWEDISH-EXTENSION.md` for the Swedish empirical pipeline.
+After changing corpus or Wikipedia extended data, use `--with-extended` (includes extended-aware frequency ranks unless you pass `--no-freq-include-extended`) or `--freq-include-extended` when `sv-corpus-extended/` is already built. See [`locales/sv-se/references/PIPELINE-SNAPSHOT.md`](locales/sv-se/references/PIPELINE-SNAPSHOT.md) for the last verified artifact counts.
+
+```bash
+npm run corpus:refresh   # minimal: seed + log-odds + calibrate only
+```
+
+`npm run check` also runs `locale:prescriptive --check` and `validate:sv-tiers`. See [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md) for the full Swedish empirical pipeline.
+
+For **always-on** persona wiring (OpenClaw `SOUL.md`, Claude, ChatGPT) with locale-aware guidance, see [docs/AGENTS.md](docs/AGENTS.md) and the skill files under `locales/<tag>/skill/`.
 
 ## Contributing
 
@@ -252,3 +260,7 @@ bash scripts/setup-git-guards.sh
 ## License
 
 [MIT](LICENSE)
+
+## Credits
+
+This project is a fork of **[humanizer](https://github.com/brandonwise/humanizer)** by [Brandon Wise](https://github.com/brandonwise). Thanks to the original author and contributors for the core engine, pattern model, and tooling this work builds on.
