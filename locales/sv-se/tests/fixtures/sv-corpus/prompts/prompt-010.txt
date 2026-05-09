@@ -1,7 +1,7 @@
 ---
-genre: summary
+genre: email
 id: 10
 target_words: 150
 ---
 
-Sammanfatta ett påhittat beslut eller protokollutdrag (1) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".
+Skriv ett kort affärsmejl (1) på svenska: tydlig begäran eller svar, utan onödig artighetsfyllnad. Ca 80–120 ord.

@@ -1,7 +1,7 @@
 ---
-genre: news
+genre: casual
 id: 181
 target_words: 150
 ---
 
-Skriv en kort nyhetsartikel (19) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.
+Skriv ett informellt stycke (17) som vardaglig berättelse mellan vänner eller familj. Ca 120–180 ord.

@@ -48,3 +48,9 @@ locales/sv-se/tests/fixtures/sv-corpus/ai-llm/
 
 # Swedish pipeline resume state + log (sv-pipeline.mjs)
 locales/sv-se/.pipeline/
+
+# English ML calibration artifacts (regenerate: npm run en:ml:dataset && npm run en:ml:train)
+locales/en-en/references/ml-dataset-en.jsonl
+locales/en-en/references/en-calibrator.json
+locales/en-en/.pipeline/
+locales/en-en/data/wiki-human/wiki-api-*.txt

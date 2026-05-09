@@ -1,0 +1,7 @@
+---
+genre: academic
+id: 7
+target_words: 150
+---
+
+Write a short methods/results paragraph (1) for a social-science paper. Avoid hype. 120–180 words.

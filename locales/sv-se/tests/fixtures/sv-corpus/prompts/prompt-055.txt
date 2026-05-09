@@ -1,7 +1,7 @@
 ---
-genre: casual
+genre: summary
 id: 55
 target_words: 150
 ---
 
-Skriv ett informellt stycke (6) som vardaglig berättelse mellan vänner eller familj. Ca 120–180 ord.
+Sammanfatta ett påhittat beslut eller protokollutdrag (5) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".

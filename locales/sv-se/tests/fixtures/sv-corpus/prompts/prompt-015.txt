@@ -1,7 +1,7 @@
 ---
-genre: casual
+genre: technical
 id: 15
 target_words: 150
 ---
 
-Skriv ett informellt stycke (2) som vardaglig berättelse mellan vänner eller familj. Ca 120–180 ord.
+Skriv en kort teknisk anteckning (2) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.

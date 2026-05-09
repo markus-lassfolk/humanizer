@@ -1,7 +1,7 @@
 ---
-genre: opinion
+genre: email
 id: 32
 target_words: 150
 ---
 
-Skriv en insändare (4) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.
+Skriv ett kort affärsmejl (3) på svenska: tydlig begäran eller svar, utan onödig artighetsfyllnad. Ca 80–120 ord.

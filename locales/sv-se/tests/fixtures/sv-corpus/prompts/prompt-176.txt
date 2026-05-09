@@ -1,7 +1,7 @@
 ---
-genre: government
+genre: summary
 id: 176
 target_words: 150
 ---
 
-Skriv ett neutralt myndighetstextstycke (18): beslut, inbjudan eller information till medborgare. Klarspråk, inga engelska modeord. Ca 120–180 ord.
+Sammanfatta ett påhittat beslut eller protokollutdrag (16) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".

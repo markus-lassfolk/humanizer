@@ -1,0 +1,7 @@
+---
+genre: summary
+id: 160
+target_words: 150
+---
+
+Summarize a fictional decision memo (16) in five sentences. No “in conclusion” openers.

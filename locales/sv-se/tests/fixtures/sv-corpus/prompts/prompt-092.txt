@@ -1,7 +1,7 @@
 ---
-genre: opinion
+genre: technical
 id: 92
 target_words: 150
 ---
 
-Skriv en insändare (10) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.
+Skriv en kort teknisk anteckning (9) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.

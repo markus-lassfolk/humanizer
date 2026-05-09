@@ -1,7 +1,7 @@
 ---
-genre: academic
+genre: fiction
 id: 47
 target_words: 150
 ---
 
-Skriv ett kort metod-/resultatstycke (5) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.
+Skriv ett kort prosastycke (5) med scen, dialog eller inre monolog. Konkret sensorik, inga metaforhögar. Ca 120–180 ord.

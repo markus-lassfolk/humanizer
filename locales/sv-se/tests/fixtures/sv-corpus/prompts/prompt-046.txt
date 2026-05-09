@@ -1,7 +1,7 @@
 ---
-genre: government
+genre: opinion
 id: 46
 target_words: 150
 ---
 
-Skriv ett neutralt myndighetstextstycke (5): beslut, inbjudan eller information till medborgare. Klarspråk, inga engelska modeord. Ca 120–180 ord.
+Skriv en insändare (5) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.

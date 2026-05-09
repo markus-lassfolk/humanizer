@@ -240,6 +240,58 @@ Fångas via prescriptive autofixes från [Svarta listan](svarta-listan.md): *i s
 
 Språkagnostisk. Flaggar zero-width-tecken, mjuka bindestreck och tät förekomst av non-breaking spaces även i svensk text — viktigt eftersom NBSP före `%`, *kr*, etc. förekommer naturligt på svenska, så detektorn kräver hög densitet innan den slår ut.
 
+## Prescriptive packs & density (30–35) + optional LM (36)
+
+Dessa detektorer delas med den engelska motorn men matas med **svensk** data från [`build-sv-locale-prescriptive.mjs`](../scripts/build-sv-locale-prescriptive.mjs) (`weasel-words-sv.tsv`, `cliches-sv.tsv`, `redundancy-sv.tsv`, `passive-voice-sv.tsv`, `inclusive-language-sv.tsv`, `hedging-sv.tsv`) och [`pattern-packs.js`](../../../src/locales/sv/pattern-packs.js).
+
+### 30. Passive voice / formal passiv
+
+**Signals:** regex-rader i `passive-voice-sv.tsv` (t.ex. *behandlas*, *hanteras*, *genomförs*, S-passiv, *blev …ad*, *har varit …ad*), plus allow-listar för legitim myndighetsform (*beslutas av*, *förhandlas fram*).
+
+**Before:** *Beslutet fattades av nämnden och dokumentet hanterades av kansliet.*
+
+**After:** *Nämnden fattade beslutet och kansliet hanterade dokumentet därefter.*
+
+---
+
+### 31. Adverb / hedge density (svensk profil)
+
+**Signals:** ord som slutar på *-ligen* / *-vis*, samt en fast lista av tomma betoningar (*uppenbarligen*, *naturligtvis*, *möjligen*, …). Tröskel ~4 % av tokens; kort text under `minWords` ignoreras.
+
+**Before:** *Uppenbarligen, naturligtvis och självklart är det troligen så att vi möjligen måste agera snabbt.*
+
+**After:** *Vi måste agera snabbt: läget är akut.*
+
+---
+
+### 32. Weasel words
+
+**Signals:** `WEASELS_SV` från `weasel-words-sv.tsv` (t.ex. *många experter*, *studier visar*, *uppenbarligen*).
+
+---
+
+### 33. Clichés
+
+**Signals:** `CLICHES_SV` från `cliches-sv.tsv` (t.ex. *vädra stormen*, *tänka utanför boxen*, *paradigmskifte*).
+
+---
+
+### 34. Redundancy / pleonasm
+
+**Signals:** `REDUNDANCY_SV` från `redundancy-sv.tsv` (t.ex. *PIN-kod kod*, *ATM-maskin*, *helt unik*).
+
+---
+
+### 35. Inclusive language (strikt läge)
+
+**Signals:** `INCLUSIVE_SV` från `inclusive-language-sv.tsv`. Körs **endast** när `strict: true` (CLI/API), så normal scoring påverkas inte.
+
+---
+
+### 36. LM perplexity / uniformity (valfritt)
+
+**Signals:** lokalt tränad KN-jämnad n-gram-modell i `references/sv-ngram-lm.json` (bygg med `npm run lm:build-sv`). Aktivera med `withLm: true` eller `--with-lm`. Ingen modell nedladdning i grundflödet.
+
 ## Statistical signals (samma som engelska)
 
 Samma engine, men med svensk anpassning:
@@ -256,7 +308,7 @@ Samma engine, men med svensk anpassning:
 
 | Steg | Vad det gör |
 |------|-------------|
-| **Pattern detection** | Alla 29 detektorer + svenska packs |
+| **Pattern detection** | Alla **36** detektorer (30–35 enligt ovan; 36 valfritt med LM) + svenska packs |
 | **Density** | Vägda träffar per 100 ord på logaritmisk kurva (ingen runaway) |
 | **Breadth bonus** | Antal unika pattern-typer (max +20) |
 | **Category diversity** | Träffar i content / language / style / communication / filler (max +15) |

@@ -1,7 +1,7 @@
 ---
-genre: news
+genre: marketing
 id: 41
 target_words: 150
 ---
 
-Skriv en kort nyhetsartikel (5) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.
+Skriv en saklig men värmande text (4) för en kommunal evenemangssida eller välgörenhetsinsamling: datum, plats, praktisk info. Undvik genrens mest slitna superlativ. Ca 100–160 ord.

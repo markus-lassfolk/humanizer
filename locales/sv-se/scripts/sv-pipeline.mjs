@@ -15,6 +15,7 @@
  *                         (unless --no-freq-include-extended). Skips a redundant baseline-only freq/validate.
  *   --freq-include-extended   freq+validate with extended counts only (needs sv-corpus-extended/ populated)
  *   --no-freq-include-extended   With --with-extended: skip extended-aware freq/validate (faster, weaker ranks)
+ *   --with-lm                    After corpus seed: rebuild sv-ngram-lm.json for Swedish --with-lm uniformity
  *
  * State: locales/sv-se/.pipeline/state.json (gitignored)
  * Log:   locales/sv-se/.pipeline/last-run.log (gitignored)
@@ -41,6 +42,9 @@ const HUMAN_DIR = path.join(SV_FIX, 'sv-corpus', 'human');
 const AI_DIR = path.join(SV_FIX, 'sv-corpus', 'ai');
 const EXT_DIR = path.join(SV_FIX, 'sv-corpus-extended');
 
+const EXPECTED_PROMPTS = 230;
+const EXPECTED_CORPUS_DOCS = 60;
+
 const SCRIPTS = {
   prescriptive: path.join(SV_SE, 'scripts', 'build-sv-locale-prescriptive.mjs'),
   materialize: path.join(SV_SE, 'scripts', 'materialize-baseline-corpus.mjs'),
@@ -48,6 +52,7 @@ const SCRIPTS = {
   validate: path.join(SV_SE, 'scripts', 'validate-sv-tiers.mjs'),
   prompts: path.join(SV_SE, 'scripts', 'seed-sv-prompts.mjs'),
   seed: path.join(SV_SE, 'scripts', 'seed-sv-corpus.mjs'),
+  ngram: path.join(SV_SE, 'scripts', 'build-sv-ngram-lm.mjs'),
   extended: path.join(SV_SE, 'scripts', 'build-corpus-extended.mjs'),
   logodds: path.join(SV_SE, 'scripts', 'log-odds.mjs'),
   calibrate: path.join(SV_SE, 'scripts', 'calibration-report.mjs'),
@@ -67,6 +72,7 @@ function parseArgs(argv) {
     withExtended: argv.includes('--with-extended'),
     freqIncludeExtended: argv.includes('--freq-include-extended'),
     noFreqIncludeExtended: argv.includes('--no-freq-include-extended'),
+    withLm: argv.includes('--with-lm'),
   };
 }
 
@@ -128,7 +134,17 @@ function verifyPrescriptive() {
   const nPh = mod.AI_PHRASES_SV_PRESCRIPTIVE?.length ?? 0;
   if (nAf < 1) throw new Error(`AUTOFIXES_SV_PRESCRIPTIVE empty (${nAf})`);
   if (nPh < 1) throw new Error(`AI_PHRASES_SV_PRESCRIPTIVE empty (${nPh})`);
-  return { autofixes: nAf, phrases: nPh };
+  const nW = mod.WEASELS_SV?.length ?? 0;
+  const nC = mod.CLICHES_SV?.length ?? 0;
+  const nR = mod.REDUNDANCY_SV?.length ?? 0;
+  const nP = mod.PASSIVE_SV?.length ?? 0;
+  const nI = mod.INCLUSIVE_SV?.length ?? 0;
+  if (nW < 50) throw new Error(`WEASELS_SV too few (${nW})`);
+  if (nC < 100) throw new Error(`CLICHES_SV too few (${nC})`);
+  if (nR < 50) throw new Error(`REDUNDANCY_SV too few (${nR})`);
+  if (nP < 20) throw new Error(`PASSIVE_SV too few (${nP})`);
+  if (nI < 10) throw new Error(`INCLUSIVE_SV too few (${nI})`);
+  return { autofixes: nAf, phrases: nPh, weasels: nW, cliches: nC, redundancy: nR, passive: nP, inclusive: nI };
 }
 
 function verifyBaselineCorpus() {
@@ -155,12 +171,14 @@ function verifyFreqJson() {
 function verifyPrompts() {
   if (!fs.existsSync(PROMPTS_DIR)) throw new Error('Missing prompts/ directory');
   const prompts = fs.readdirSync(PROMPTS_DIR).filter((f) => /^prompt-\d{3}\.txt$/.test(f));
-  if (prompts.length !== 200) throw new Error(`Expected 200 prompt-NNN.txt, got ${prompts.length}`);
+  if (prompts.length !== EXPECTED_PROMPTS) {
+    throw new Error(`Expected ${EXPECTED_PROMPTS} prompt-NNN.txt, got ${prompts.length}`);
+  }
   const man = path.join(SV_FIX, 'sv-corpus', 'prompts-manifest.json');
   assertFile(man, 50);
   const m = JSON.parse(fs.readFileSync(man, 'utf8'));
-  if (!Array.isArray(m.prompts) || m.prompts.length !== 200) {
-    throw new Error(`prompts-manifest.json expected 200 entries, got ${m.prompts?.length}`);
+  if (!Array.isArray(m.prompts) || m.prompts.length !== EXPECTED_PROMPTS) {
+    throw new Error(`prompts-manifest.json expected ${EXPECTED_PROMPTS} entries, got ${m.prompts?.length}`);
   }
   return { promptFiles: prompts.length };
 }
@@ -168,8 +186,12 @@ function verifyPrompts() {
 function verifyCorpusSeed() {
   const h = countTxt(HUMAN_DIR);
   const a = countTxt(AI_DIR);
-  if (h !== 50) throw new Error(`Expected 50 human/*.txt, got ${h}`);
-  if (a !== 50) throw new Error(`Expected 50 ai/*.txt, got ${a}`);
+  if (h !== EXPECTED_CORPUS_DOCS) {
+    throw new Error(`Expected ${EXPECTED_CORPUS_DOCS} human/*.txt, got ${h}`);
+  }
+  if (a !== EXPECTED_CORPUS_DOCS) {
+    throw new Error(`Expected ${EXPECTED_CORPUS_DOCS} ai/*.txt, got ${a}`);
+  }
   return { humanDocs: h, aiDocs: a };
 }
 
@@ -196,6 +218,9 @@ function verifyCalibrate() {
   if (typeof data.auc !== 'number') throw new Error('calibration-sv-latest.json missing auc');
   if (data.meanScoreHuman === undefined) throw new Error('calibration missing meanScoreHuman');
   if (!data.perGenre) throw new Error('calibration missing perGenre');
+  if (data.perGenre.marketing === undefined) {
+    throw new Error('calibration missing perGenre.marketing (run seed-sv-corpus with marketing genre)');
+  }
   return {
     auc: data.auc,
     meanScoreHuman: data.meanScoreHuman,
@@ -203,7 +228,17 @@ function verifyCalibrate() {
     humanDocs: data.corpus?.humanDocs,
     aiDocs: data.corpus?.aiDocs,
     governmentMeanHuman: data.perGenre?.government?.meanScoreHuman,
+    marketingMeanHuman: data.perGenre?.marketing?.meanScoreHuman,
   };
+}
+
+function verifyNgramLm() {
+  const p = path.join(SV_SE, 'references', 'sv-ngram-lm.json');
+  assertFile(p, 500);
+  const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+  const tok = data._meta?.tokens ?? 0;
+  if (tok < 1000) throw new Error(`sv-ngram-lm.json too few tokens: ${tok}`);
+  return { lmTokens: tok };
 }
 
 function runTests() {
@@ -243,7 +278,16 @@ function readSnapshotMetrics() {
     calHumanDocs: c.humanDocs,
     calAiDocs: c.aiDocs,
     governmentMeanHuman: c.governmentMeanHuman,
+    marketingMeanHuman: c.marketingMeanHuman,
   });
+  const lmPath = path.join(SV_SE, 'references', 'sv-ngram-lm.json');
+  if (fs.existsSync(lmPath)) {
+    try {
+      Object.assign(m, verifyNgramLm());
+    } catch {
+      /* optional artifact */
+    }
+  }
   return m;
 }
 
@@ -261,6 +305,7 @@ function writeSnapshot(opts, metrics) {
 | Generated at (UTC) | ${metrics.generatedAt} |
 | Prescriptive autofixes | ${metrics.autofixes} |
 | Prescriptive phrase rows | ${metrics.phrases} |
+| Pattern pack rows (weasel / cliché / redundancy / passive / inclusive) | ${metrics.weasels ?? 'n/a'} / ${metrics.cliches ?? 'n/a'} / ${metrics.redundancy ?? 'n/a'} / ${metrics.passive ?? 'n/a'} / ${metrics.inclusive ?? 'n/a'} |
 | Baseline corpus lines | ${metrics.baselineLines} |
 | Frequency ranks (unique types) | ${metrics.uniqueTypes} |
 | Frequency ranks (total tokens) | ${metrics.totalTokens} |
@@ -273,6 +318,8 @@ function writeSnapshot(opts, metrics) {
 | Calibration mean score (human / AI) | ${metrics.meanScoreHuman} / ${metrics.meanScoreAi} |
 | Calibration corpus human / AI (report) | ${metrics.calHumanDocs} / ${metrics.calAiDocs} |
 | Government genre mean human (report) | ${metrics.governmentMeanHuman ?? 'n/a'} |
+| Marketing genre mean human (report) | ${metrics.marketingMeanHuman ?? 'n/a'} |
+| N-gram LM (sv-ngram-lm.json tokens) | ${metrics.lmTokens ?? 'n/a (run with --with-lm or npm run lm:build-sv)'} |
 
 ## Outputs touched by a full run
 
@@ -285,6 +332,7 @@ function writeSnapshot(opts, metrics) {
 | Calibration | \`reports/calibration-sv-latest.json\` (+ dated \`.md\`) |
 | Synthetic corpus | \`locales/sv-se/tests/fixtures/sv-corpus/human/\`, \`ai/\` |
 | Prompt bank | \`locales/sv-se/tests/fixtures/sv-corpus/prompts/\` |
+| Swedish n-gram LM | \`locales/sv-se/references/sv-ngram-lm.json\` (optional, \`--with-lm\` / \`npm run lm:build-sv\`) |
 
 ## Last run flags
 
@@ -331,7 +379,9 @@ function main() {
     fs.writeFileSync(LOG_PATH, '', 'utf8');
   }
 
-  logLine(`sv-pipeline start (resume=${opts.resume}, force=${opts.force}, dryRun=${opts.dryRun})`);
+  logLine(
+    `sv-pipeline start (resume=${opts.resume}, force=${opts.force}, dryRun=${opts.dryRun}, withLm=${opts.withLm})`,
+  );
 
   let state = loadState();
   if (opts.force) {
@@ -380,17 +430,26 @@ function main() {
   phases.push(
     {
       id: 'prompts',
-      label: '200 prompts + manifest',
+      label: `${EXPECTED_PROMPTS} prompts + manifest`,
       run: () => runNode(SCRIPTS.prompts, []),
       verify: () => verifyPrompts(),
     },
     {
       id: 'corpus_seed',
-      label: '50+50 synthetic corpus',
+      label: `${EXPECTED_CORPUS_DOCS}+${EXPECTED_CORPUS_DOCS} synthetic corpus`,
       run: () => runNode(SCRIPTS.seed, []),
       verify: () => verifyCorpusSeed(),
     },
   );
+
+  if (opts.withLm) {
+    phases.push({
+      id: 'ngram_lm',
+      label: 'sv-ngram-lm.json (Swedish --with-lm)',
+      run: () => runNode(SCRIPTS.ngram, []),
+      verify: () => verifyNgramLm(),
+    });
+  }
 
   if (opts.withExtended) {
     phases.push({
@@ -479,6 +538,7 @@ function main() {
           resume: opts.resume,
           force: opts.force,
           withExtended: opts.withExtended,
+          withLm: opts.withLm,
           freqIncludeExtended: opts.freqIncludeExtended,
           noFreqIncludeExtended: opts.noFreqIncludeExtended,
           effectiveFreqIncludeExtended,

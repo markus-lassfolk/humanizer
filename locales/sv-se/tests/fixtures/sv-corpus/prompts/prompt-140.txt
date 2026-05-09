@@ -1,7 +1,7 @@
 ---
-genre: summary
+genre: marketing
 id: 140
 target_words: 150
 ---
 
-Sammanfatta ett påhittat beslut eller protokollutdrag (14) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".
+Skriv en saklig men värmande text (13) för en kommunal evenemangssida eller välgörenhetsinsamling: datum, plats, praktisk info. Undvik genrens mest slitna superlativ. Ca 100–160 ord.

@@ -206,6 +206,117 @@ const ACKNOWLEDGMENT_LOOPS_EN = [
   /\bI understand you'?re (asking|wondering|curious)\b/gi,
 ];
 
+/** Past-participle-heavy passive templates common in AI/formal prose (English). */
+const PASSIVE_VOICE_EN = [
+  /\b(?:was|were)\s+(?:developed|implemented|created|designed|built|written|delivered|established|conducted|performed|achieved|completed|undertaken|initiated|launched|deployed|integrated|validated|verified|examined|assessed|evaluated|determined|identified|defined|outlined|highlighted|emphasized|demonstrated|illustrated|presented|introduced|proposed|suggested|recommended)\b/gi,
+  /\b(?:has|have)\s+been\s+(?:developed|implemented|created|designed|built|written|delivered|established|conducted|performed|achieved|completed|launched|deployed|integrated|validated|verified|examined|assessed|evaluated|identified|defined|highlighted|demonstrated|presented|proposed|suggested|recommended)\b/gi,
+  /\b(?:is|are)\s+being\s+(?:developed|implemented|created|designed|built|deployed|integrated|validated|examined|evaluated)\b/gi,
+];
+
+const WEASEL_TERMS_EN = [
+  'clearly',
+  'obviously',
+  'certainly',
+  'undoubtedly',
+  'arguably',
+  'basically',
+  'literally',
+  'virtually',
+  'essentially',
+  'fundamentally',
+  'generally',
+  'typically',
+  'usually',
+  'many experts',
+  'most experts',
+  'some experts',
+  'experts say',
+  'experts believe',
+  'studies show',
+  'research shows',
+  'it is widely believed',
+  'people say',
+  'everyone knows',
+  'common knowledge',
+];
+
+const CLICHE_TERMS_EN = [
+  'think outside the box',
+  'at the end of the day',
+  'par for the course',
+  'the whole nine yards',
+  'read between the lines',
+  'the best of both worlds',
+  'only time will tell',
+  'tip of the iceberg',
+  'the elephant in the room',
+  'wake-up call',
+  'win-win situation',
+  'move the goalposts',
+  'low-hanging fruit',
+  'paradigm shift',
+  'perfect storm',
+  'silver bullet',
+  'needle in a haystack',
+  'when life gives you lemons',
+  'actions speak louder than words',
+  'better late than never',
+  'the calm before the storm',
+  'cut corners',
+  'hit the nail on the head',
+  'let sleeping dogs lie',
+  'on the ball',
+  'spill the beans',
+  'the ball is in your court',
+  'under the weather',
+  'break the ice',
+  'cost an arm and a leg',
+  'piece of cake',
+  'speak of the devil',
+  'once in a blue moon',
+  'the last straw',
+  'add insult to injury',
+  'beat around the bush',
+  'bite the bullet',
+  'burn the midnight oil',
+  'cry over spilled milk',
+  'jump on the bandwagon',
+  'kill two birds with one stone',
+  'let the cat out of the bag',
+  'miss the boat',
+  'on cloud nine',
+  'out of the blue',
+  'pull yourself up by your bootstraps',
+  'see eye to eye',
+  'through thick and thin',
+  'time flies',
+];
+
+const REDUNDANCY_REGEX_EN = [
+  /\bPIN number\b/gi,
+  /\bATM machine\b/gi,
+  /\bLCD display\b/gi,
+  /\bUPC code\b/gi,
+  /\bplease RSVP\b/gi,
+  /\bnull and void\b/gi,
+  /\badvance planning\b/gi,
+  /\bfree gift\b/gi,
+  /\bend result\b/gi,
+  /\bbasic fundamentals\b/gi,
+  /\bclose proximity\b/gi,
+  /\bconsensus of opinion\b/gi,
+];
+
+const INCLUSIVE_LANGUAGE_EN = [
+  { regex: /\bchairman\b/gi, fix: 'Use “chair” or a specific title' },
+  { regex: /\bchairwoman\b/gi, fix: 'Use “chair” or a specific title' },
+  { regex: /\bmanpower\b/gi, fix: 'Use “workforce” or “staff”' },
+  { regex: /\bmankind\b/gi, fix: 'Use “humanity” or “people”' },
+  { regex: /\bman-made\b/gi, fix: 'Use “human-made” or “synthetic”' },
+  { regex: /\bmaster slave\b/gi, fix: 'Use neutral technical terms (e.g. primary/replica)' },
+  { regex: /\bmaster branch\b/gi, fix: 'Prefer “main branch” if that is your policy' },
+];
+
 /** @param {RegExp[]} regexes @param {string} suggestion @param {'high'|'medium'|'low'} [confidence] */
 function asRegexPack(regexes, suggestion, confidence = 'high') {
   return regexes.map((regex) => ({ regex, suggestion, confidence }));
@@ -335,6 +446,32 @@ const PATTERN_PACKS_EN = {
   27: CONFIDENCE_CALIBRATION_EN,
 
   28: asRegexPack(ACKNOWLEDGMENT_LOOPS_EN, "Just answer. Don't restate the question.", 'high'),
+
+  30: asRegexPack(
+    PASSIVE_VOICE_EN,
+    'Prefer active voice when the actor matters (“we shipped”, “the team fixed”).',
+    'medium',
+  ),
+
+  32: WEASEL_TERMS_EN.map((w) => ({
+    regex: new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi'),
+    suggestion: 'Name evidence or delete the hedge.',
+    confidence: 'medium',
+  })),
+
+  33: CLICHE_TERMS_EN.map((w) => ({
+    regex: new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi'),
+    suggestion: 'Say what you mean in plain language.',
+    confidence: 'low',
+  })),
+
+  34: asRegexPack(REDUNDANCY_REGEX_EN, 'Remove redundant wording.', 'medium'),
+
+  35: INCLUSIVE_LANGUAGE_EN.map(({ regex, fix }) => ({
+    regex,
+    suggestion: fix,
+    confidence: 'low',
+  })),
 };
 
 module.exports = {
@@ -344,4 +481,7 @@ module.exports = {
   VAGUE_ATTRIBUTION_PHRASES,
   CHALLENGES_PHRASES,
   COPULA_AVOIDANCE,
+  PASSIVE_VOICE_EN,
+  WEASEL_TERMS_EN,
+  CLICHE_TERMS_EN,
 };

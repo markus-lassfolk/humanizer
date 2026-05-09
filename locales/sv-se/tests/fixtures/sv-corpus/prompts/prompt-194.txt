@@ -1,7 +1,7 @@
 ---
-genre: technical
+genre: academic
 id: 194
 target_words: 150
 ---
 
-Skriv en kort teknisk anteckning (20) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.
+Skriv ett kort metod-/resultatstycke (18) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.

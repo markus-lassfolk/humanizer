@@ -4,4 +4,4 @@ id: 117
 target_words: 150
 ---
 
-Skriv ett kort metod-/resultatstycke (12) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.
+Skriv ett kort metod-/resultatstycke (11) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.

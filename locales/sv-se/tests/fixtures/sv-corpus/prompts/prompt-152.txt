@@ -1,7 +1,7 @@
 ---
-genre: opinion
+genre: product
 id: 152
 target_words: 150
 ---
 
-Skriv en insändare (16) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.
+Skriv produkttext (14) för en tjänst eller vara: vad den gör, för vem, pris eller villkor om relevant. Direkt, utan floskler. Ca 80–140 ord.

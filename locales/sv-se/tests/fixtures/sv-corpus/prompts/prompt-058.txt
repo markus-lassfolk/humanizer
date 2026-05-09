@@ -1,7 +1,7 @@
 ---
-genre: product
+genre: fiction
 id: 58
 target_words: 150
 ---
 
-Skriv produkttext (6) för en tjänst eller vara: vad den gör, för vem, pris eller villkor om relevant. Direkt, utan floskler. Ca 80–140 ord.
+Skriv ett kort prosastycke (6) med scen, dialog eller inre monolog. Konkret sensorik, inga metaforhögar. Ca 120–180 ord.

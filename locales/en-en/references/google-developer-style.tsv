@@ -1,0 +1,9 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+via	through	phrase_flag	3	prefer plain preposition		Google dev
+e.g.	for example	phrase_flag	3			Google dev
+i.e.	that is	phrase_flag	3			Google dev
+should not	don't	phrase_flag	3	contractions OK in dev docs		Google dev
+filename	file name	autofix				Google dev
+file name	filename	phrase_flag	3	pick one house style		Google dev

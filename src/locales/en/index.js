@@ -2,7 +2,15 @@
  * locales/en/index.js — English locale profile (default).
  */
 
-const { TIER_1, TIER_2, TIER_3, AI_PHRASES, FUNCTION_WORDS } = require('./vocabulary');
+const {
+  TIER_1,
+  TIER_2,
+  TIER_3,
+  AI_PHRASES,
+  FUNCTION_WORDS,
+  AUTOFIXES_EN,
+  EMPIRICAL_EXTRA_EN,
+} = require('./vocabulary');
 const { PATTERN_PACKS_EN } = require('./pattern-packs');
 
 module.exports = {
@@ -12,6 +20,8 @@ module.exports = {
   tier2: TIER_2,
   tier3: TIER_3,
   phrases: AI_PHRASES,
+
+  empiricalExtra: EMPIRICAL_EXTRA_EN,
 
   functionWords: FUNCTION_WORDS,
 
@@ -33,9 +43,7 @@ module.exports = {
 
   readability: 'flesch-kincaid',
 
-  autofixes: [],
-
-  empiricalExtra: [],
+  autofixes: AUTOFIXES_EN,
 
   patternPacks: PATTERN_PACKS_EN,
 };

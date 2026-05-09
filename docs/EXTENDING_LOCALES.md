@@ -80,7 +80,7 @@ Then update the locale table in `SKILL.md` and [LANGUAGES.md](LANGUAGES.md).
 
 ## Pattern packs
 
-Pattern packs let the shared 29 detectors use language-specific phrases and regexes.
+Pattern packs let the shared detectors (36 pattern slots in the registry) use language-specific phrases and regexes.
 
 Start with the detectors that are language-heavy:
 

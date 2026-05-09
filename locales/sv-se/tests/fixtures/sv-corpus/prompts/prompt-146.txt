@@ -1,7 +1,7 @@
 ---
-genre: government
+genre: fiction
 id: 146
 target_words: 150
 ---
 
-Skriv ett neutralt myndighetstextstycke (15): beslut, inbjudan eller information till medborgare. Klarspråk, inga engelska modeord. Ca 120–180 ord.
+Skriv ett kort prosastycke (14) med scen, dialog eller inre monolog. Konkret sensorik, inga metaforhögar. Ca 120–180 ord.

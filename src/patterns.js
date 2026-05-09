@@ -1,7 +1,7 @@
 /**
  * patterns.js — AI writing pattern detection engine.
  *
- * 29 pattern detectors organized into 5 categories, with a registry
+ * 36 pattern detectors organized into 5 categories, with a registry
  * that supports dynamic add/remove and custom word lists.
  *
  * Architecture:
@@ -28,8 +28,7 @@ const {
   CHALLENGES_PHRASES,
   COPULA_AVOIDANCE,
 } = require('./locales/en-pattern-packs');
-// Stats imported for cross-module analysis when needed
-// const { tokenize } = require('./stats');
+const { tokenize } = require('./stats');
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -282,6 +281,91 @@ function phrasesByCategory(phrases, ...categories) {
 
 const HIDDEN_UNICODE_CHARS = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/g;
 const NON_BREAKING_SPACES = /(?:\u00A0|\u202F)/g;
+
+/** Swedish “-ligen / -vis / filler adverb” density (Pattern 31) — pack.svAdverbDensity on locale profile. */
+function detectSwedishAdverbDensity(text, opts) {
+  const pack = getPatternPack(opts, 31);
+  if (!pack || typeof pack !== 'object' || !pack.svAdverbDensity) return [];
+  const minWords = pack.minWords ?? 50;
+  const threshold = pack.threshold ?? 0.04;
+  const words = tokenize(text);
+  if (words.length < minWords) return [];
+  const exclude = new Set([
+    'jämförelsevis',
+    'relativt',
+    'absolut',
+    'respektive',
+    'likaså',
+    'tidvis',
+    'delvis',
+    'successivt',
+    'massivt',
+    'oberoende',
+    'oavsett',
+    'ändå',
+    'redan',
+    'genast',
+    'direkt',
+    'sällan',
+    'ofta',
+    'alltid',
+    'aldrig',
+    'mycket',
+    'lite',
+    'mer',
+    'mindre',
+  ]);
+  const extra = new Set([
+    'uppenbarligen',
+    'naturligtvis',
+    'självklart',
+    'faktiskt',
+    'generellt',
+    'antagligen',
+    'troligen',
+    'onekligen',
+    'tydligen',
+    'vanligtvis',
+    'normaltvis',
+    'särskilt',
+    'oftast',
+    'möjligen',
+    'eventuellt',
+    'förmodligen',
+    'självfallet',
+    'givetvis',
+    'såklart',
+  ]);
+  let n = 0;
+  for (const w of words) {
+    if (w.length < 4) continue;
+    if (exclude.has(w)) continue;
+    if (extra.has(w)) {
+      n++;
+      continue;
+    }
+    if (w.endsWith('ligen') && w.length >= 7) {
+      n++;
+      continue;
+    }
+    if (w.endsWith('vis') && w.length >= 5 && w !== 'elvis') {
+      n++;
+      continue;
+    }
+  }
+  const d = n / words.length;
+  if (d <= threshold) return [];
+  return [
+    {
+      match: `${n} Swedish hedge/adverb tokens (~${(d * 100).toFixed(1)}% of words)`,
+      index: 0,
+      line: 1,
+      column: 1,
+      suggestion: 'Stryk utfyllnadsadverb och hävden; behåll bara det som ändrar betydelse.',
+      confidence: 'medium',
+    },
+  ];
+}
 
 // ─── Pattern Definitions ─────────────────────────────────
 
@@ -1005,6 +1089,147 @@ const patterns = [
       }
 
       return results;
+    },
+  },
+
+  {
+    id: 30,
+    name: 'Passive voice density',
+    category: 'language',
+    description:
+      'Formal passive constructions (“was developed”, “has been implemented”) clustered like templated AI prose.',
+    weight: 2,
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 30);
+      if (!Array.isArray(pack) || pack.length === 0) return [];
+      return scanRegexPack(
+        text,
+        pack,
+        'Prefer active voice when the actor matters (“we shipped”, “the team fixed”).',
+        'medium',
+      );
+    },
+  },
+
+  {
+    id: 31,
+    name: 'Adverb density (-ly)',
+    category: 'language',
+    description:
+      'Unusually high rate of -ly adverbs (English) or -ligen/-vis hedges (Swedish) — common in padded AI style.',
+    weight: 1,
+    detect(text, opts = {}) {
+      const code = opts.localeProfile && opts.localeProfile.code;
+      if (code === 'sv') {
+        return detectSwedishAdverbDensity(text, opts);
+      }
+      if (code && code !== 'en') return [];
+      const words = tokenize(text);
+      if (words.length < 80) return [];
+      const exc = new Set([
+        'only',
+        'early',
+        'daily',
+        'weekly',
+        'yearly',
+        'monthly',
+        'friendly',
+        'ugly',
+        'silly',
+        'family',
+        'supply',
+        'rely',
+        'fly',
+        'apply',
+        'comply',
+        'imply',
+        'July',
+        'holy',
+      ]);
+      let n = 0;
+      for (const w of words) {
+        if (w.length < 5 || !w.endsWith('ly')) continue;
+        if (exc.has(w)) continue;
+        n++;
+      }
+      const d = n / words.length;
+      if (d <= 0.04) return [];
+      return [
+        {
+          match: `${n} -ly adverbs (~${(d * 100).toFixed(1)}% of words)`,
+          index: 0,
+          line: 1,
+          column: 1,
+          suggestion: 'Cut most -ly adverbs; keep only those that change meaning.',
+          confidence: 'medium',
+        },
+      ];
+    },
+  },
+
+  {
+    id: 32,
+    name: 'Weasel words',
+    category: 'language',
+    description: 'Hedges and unattributed claims (“clearly”, “studies show”) without evidence.',
+    weight: 2,
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 32);
+      if (!Array.isArray(pack) || pack.length === 0) return [];
+      return scanRegexPack(text, pack, 'Name evidence or delete the hedge.', 'medium');
+    },
+  },
+
+  {
+    id: 33,
+    name: 'Clichés',
+    category: 'language',
+    description: 'Stock phrases and idioms that pad text without adding information.',
+    weight: 1,
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 33);
+      if (!Array.isArray(pack) || pack.length === 0) return [];
+      return scanRegexPack(text, pack, 'Say what you mean in plain language.', 'low');
+    },
+  },
+
+  {
+    id: 34,
+    name: 'Redundant phrasing',
+    category: 'language',
+    description: 'Tautologies like “PIN number”, “free gift”, “advance planning”.',
+    weight: 1,
+    detect(text, opts = {}) {
+      const pack = getPatternPack(opts, 34);
+      if (!Array.isArray(pack) || pack.length === 0) return [];
+      return scanRegexPack(text, pack, 'Remove redundant wording.', 'medium');
+    },
+  },
+
+  {
+    id: 35,
+    name: 'Inclusive language (strict)',
+    category: 'communication',
+    description:
+      'Potentially exclusionary terms — flagged only with --strict / opts.strictInclusive.',
+    weight: 1,
+    detect(text, opts = {}) {
+      if (!opts.strictInclusive) return [];
+      const pack = getPatternPack(opts, 35);
+      if (!Array.isArray(pack) || pack.length === 0) return [];
+      return scanRegexPack(text, pack, 'Consider inclusive wording.', 'low');
+    },
+  },
+
+  {
+    id: 36,
+    name: 'LM uniformity (n-gram)',
+    category: 'style',
+    description:
+      'Optional n-gram language-model uniformity boost when using --with-lm (see uniformity score, not pattern hits).',
+    weight: 0,
+    detect() {
+      return [];
     },
   },
 ];

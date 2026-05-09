@@ -1,7 +1,7 @@
 ---
-genre: casual
+genre: marketing
 id: 85
 target_words: 150
 ---
 
-Skriv ett informellt stycke (9) som vardaglig berättelse mellan vänner eller familj. Ca 120–180 ord.
+Skriv en saklig men värmande text (8) för en kommunal evenemangssida eller välgörenhetsinsamling: datum, plats, praktisk info. Undvik genrens mest slitna superlativ. Ca 100–160 ord.

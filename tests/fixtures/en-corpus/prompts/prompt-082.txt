@@ -1,0 +1,7 @@
+---
+genre: opinion
+id: 82
+target_words: 150
+---
+
+Write an op-ed (9) on an everyday issue (housing, transit, or schools). Personal but factual tone. 120–180 words.

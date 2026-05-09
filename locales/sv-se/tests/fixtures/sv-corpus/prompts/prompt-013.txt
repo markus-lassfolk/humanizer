@@ -1,7 +1,7 @@
 ---
-genre: fiction
+genre: opinion
 id: 13
 target_words: 150
 ---
 
-Skriv ett kort prosastycke (2) med scen, dialog eller inre monolog. Konkret sensorik, inga metaforhögar. Ca 120–180 ord.
+Skriv en insändare (2) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.

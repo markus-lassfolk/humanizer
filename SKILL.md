@@ -3,8 +3,8 @@ name: humanizer
 version: 2.6.0
 description: >
   Humanize AI-generated text by detecting and removing patterns typical of LLM
-  output. Rewrites text to sound natural, specific, and human. Uses 29 pattern
-  detectors, 560+ AI vocabulary terms across 3 tiers, and statistical analysis
+  output. Rewrites text to sound natural, specific, and human. Uses 36 pattern
+  slots (35 regex detectors + optional LM uniformity), 560+ AI vocabulary terms across 3 tiers, and statistical analysis
   (burstiness, type-token ratio, readability) for comprehensive detection.
   Supports English (locale: en) and Swedish (locale: sv); per-locale guidance
   lives under locales/<tag>/skill/ (e.g. en-en, en-us, sv-se; extend by adding a new tag folder).
@@ -37,19 +37,21 @@ Based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia
 
 **Maintainers (Swedish bundle):** after editing TSV tables or corpus fixtures under `locales/sv-se/`, run `npm run sv:pipeline` to regenerate derived files, verify outputs, and update `locales/sv-se/references/PIPELINE-SNAPSHOT.md` (see `locales/sv-se/docs/SWEDISH-EXTENSION.md`).
 
+**Maintainers (English bundle):** after editing EN TSVs or `tests/fixtures/en-corpus/`, run `npm run en:pipeline` (see `locales/en-en/docs/ENGLISH-EXTENSION.md`).
+
 ## Your task
 
 When given text to humanize:
 
 1. Load [locales/en-en/skill/en.md](locales/en-en/skill/en.md) or [locales/sv-se/skill/sv.md](locales/sv-se/skill/sv.md) (or future locale files) according to the input language
-2. Scan for the 29 patterns below
+2. Scan for the patterns below (1–35; 36 is optional LM uniformity via `--with-lm`)
 3. Check statistical indicators (burstiness, vocabulary diversity, sentence uniformity)
 4. Rewrite problematic sections with natural alternatives
 5. Preserve the core meaning
 6. Match the intended tone (formal, casual, technical)
 7. Add actual personality — sterile text is just as obvious as slop
 
-## Quick reference: the 29 patterns
+## Quick reference: the 36 pattern slots
 
 | # | Pattern | Category | What to watch for |
 |---|---------|----------|-------------------|
@@ -82,6 +84,13 @@ When given text to humanize:
 | 27 | Confidence calibration | Communication | "I'm confident that...", "It's worth noting..." |
 | 28 | Acknowledgment loops | Communication | "You're asking about X...", restating questions |
 | 29 | Invisible unicode obfuscation | Style | Zero-width chars, soft hyphens, dense NBSPs to evade detectors |
+| 30 | Passive voice density | Language | Clusters of "was developed / has been implemented" |
+| 31 | Adverb density (-ly) | Language | Padded prose with many -ly words |
+| 32 | Weasel words | Language | "Clearly", "studies show", unattributed claims |
+| 33 | Clichés | Language | Stock idioms ("at the end of the day", "paradigm shift") |
+| 34 | Redundant phrasing | Language | "PIN number", "free gift", tautologies |
+| 35 | Inclusive language (strict) | Communication | Optional; enable with `--strict` — low-confidence wording hints |
+| 36 | LM uniformity (n-gram) | Style | Optional `--with-lm` — adjusts uniformity score, not pattern hits |
 
 ## Statistical signals
 
@@ -153,7 +162,7 @@ The key rules to internalize:
 ## Process
 
 1. Read the input text and select the matching locale file under `locales/<tag>/skill/`
-2. Run pattern detection (29 detectors; vocabulary tiers are locale-specific — see that file)
+2. Run pattern detection (36 slots; vocabulary tiers are locale-specific — see that file)
 3. Compute text statistics (burstiness, TTR, readability)
 4. Identify all issues and generate suggestions
 5. Rewrite problematic sections

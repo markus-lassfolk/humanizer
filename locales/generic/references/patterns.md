@@ -1,6 +1,6 @@
 # AI writing patterns — full catalog
 
-Comprehensive reference for all 24 AI writing patterns detected by humanizer. Each entry includes the pattern description, detection signals, and before/after examples.
+Comprehensive reference for the core English AI writing patterns (1–29). Locales may add detectors 30+; see `locales/en-en/references/patterns-en.md`. Each entry includes the pattern description, detection signals, and before/after examples.
 
 ## Content patterns (1-6)
 

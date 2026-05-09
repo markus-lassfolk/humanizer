@@ -1,0 +1,7 @@
+---
+genre: news
+id: 21
+target_words: 150
+---
+
+Write a short news item (3) about a concrete local event. Avoid consultant jargon. About 120–180 words.

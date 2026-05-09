@@ -1,7 +1,7 @@
 ---
-genre: summary
+genre: news
 id: 100
 target_words: 150
 ---
 
-Sammanfatta ett påhittat beslut eller protokollutdrag (10) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".
+Skriv en kort nyhetsartikel (10) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.

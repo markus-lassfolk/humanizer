@@ -1,7 +1,7 @@
 ---
-genre: summary
+genre: fiction
 id: 190
 target_words: 150
 ---
 
-Sammanfatta ett påhittat beslut eller protokollutdrag (19) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".
+Skriv ett kort prosastycke (18) med scen, dialog eller inre monolog. Konkret sensorik, inga metaforhögar. Ca 120–180 ord.

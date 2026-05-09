@@ -1,7 +1,7 @@
 ---
-genre: opinion
+genre: academic
 id: 172
 target_words: 150
 ---
 
-Skriv en insändare (18) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.
+Skriv ett kort metod-/resultatstycke (16) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.

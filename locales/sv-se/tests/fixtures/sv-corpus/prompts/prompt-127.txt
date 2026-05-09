@@ -1,7 +1,7 @@
 ---
-genre: academic
+genre: government
 id: 127
 target_words: 150
 ---
 
-Skriv ett kort metod-/resultatstycke (13) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.
+Skriv ett neutralt myndighetstextstycke (12): beslut, inbjudan eller information till medborgare. Klarspråk, inga engelska modeord. Ca 120–180 ord.

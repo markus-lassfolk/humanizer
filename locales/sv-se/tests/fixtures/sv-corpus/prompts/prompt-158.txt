@@ -1,7 +1,7 @@
 ---
-genre: product
+genre: technical
 id: 158
 target_words: 150
 ---
 
-Skriv produkttext (16) för en tjänst eller vara: vad den gör, för vem, pris eller villkor om relevant. Direkt, utan floskler. Ca 80–140 ord.
+Skriv en kort teknisk anteckning (15) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.

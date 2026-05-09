@@ -13,12 +13,24 @@ Fork baseline: [brandonwise/humanizer](https://github.com/brandonwise/humanizer)
 
 **Sentences:** hand-maintained regexes in `AI_PHRASES_SV_HAND` catch variable slots (e.g. `genom att .{3,120} kan vi`). Prescriptive TSV adds hundreds of **fixed** multi-word phrases from Svarta listan and Klarspråk.
 
+## What ships in v2.7+ (locale parity with English empirical upgrade)
+
+| Area | Implementation |
+|------|----------------|
+| **Patterns 30–35** | Shared engine in `src/patterns.js`; Swedish data in `src/locales/sv/pattern-packs.js` + generated `WEASELS_SV`, `CLICHES_SV`, `REDUNDANCY_SV`, `PASSIVE_SV`, `INCLUSIVE_SV` from new TSV rule packs |
+| **Pattern 31 (SV)** | Swedish adverb / hedge density via `svAdverbDensity` + `detectSwedishAdverbDensity()` (not English `-ly`) |
+| **Pattern 35** | Inclusive-language rows from `inclusive-language-sv.tsv`; fires only when `strict: true` (same policy as `en`) |
+| **Pattern 36 (optional)** | Local n-gram LM uniformity — `npm run lm:build-sv` → `references/sv-ngram-lm.json`; analyze with `withLm: true` or `npm run sv:pipeline:lm` / CLI `--with-lm` |
+| **New prescriptive TSVs** | `weasel-words-sv.tsv`, `cliches-sv.tsv`, `redundancy-sv.tsv`, `hedging-sv.tsv`, `passive-voice-sv.tsv`, `inclusive-language-sv.tsv` (+ attribution in `references/LICENSES.md`) |
+| **Marketing genre** | Synthetic corpus genre `marketing` (10 human + 10 AI), prompts **201–230**, fixture `tests/fixtures/sv-marketing-pr-sample.txt` for calibration gates |
+| **Regression gates** | Committed `reports/calibration-sv-latest.json`: AUC ≥ **0.95**, per-pattern precision ≥ **0.85** when **≥ 30** cumulative hits; **marketing** human mean ≤ **40** (max ≤ **55**); **government** human mean &lt; **35** (max ≤ **40**) — formal prose may score higher than casual genres while staying far below AI |
+
 ## What ships in v2.6+
 
 | Area | Implementation |
 |------|----------------|
 | Locale profile | [`src/locales/sv/index.js`](../../../src/locales/sv/index.js) — wires `vocabulary.js` (tiers, hand phrases, prescriptive merge), `pattern-packs.js`, `empirical-filter.js` |
-| **Pattern catalogue** | [`references/patterns-sv.md`](../references/patterns-sv.md) — Swedish-language walk-through of all 29 detectors with the SV signals they fire on |
+| **Pattern catalogue** | [`references/patterns-sv.md`](../references/patterns-sv.md) — Swedish-language walk-through of all runtime detectors with the SV signals they fire on |
 | Prescriptive codegen | [`scripts/build-sv-locale-prescriptive.mjs`](../scripts/build-sv-locale-prescriptive.mjs) ← `references/*.tsv` |
 | Tier vs frequency | [`references/sv-human-frequency-ranks.json`](../references/sv-human-frequency-ranks.json) + [`scripts/validate-sv-tiers.mjs`](../scripts/validate-sv-tiers.mjs) |
 | Pattern 7 | `localeProfile.tier1/2/3` + `phrases` + **`empiricalExtra`** (built in [`sv/vocabulary.js`](../../../src/locales/sv/vocabulary.js)); rules in [`sv/empirical-filter.js`](../../../src/locales/sv/empirical-filter.js) (shim: `sv-empirical-filter.js`) |
@@ -48,6 +60,8 @@ npm run sv:pipeline              # full run; fails fast with log under locales/s
 npm run sv:pipeline -- --resume   # continue after a failed phase
 npm run sv:pipeline -- --force      # ignore saved state
 npm run sv:pipeline -- --dry-run    # list phases only
+npm run sv:pipeline:lm           # same as sv:pipeline + builds Swedish n-gram LM (`--with-lm`)
+npm run lm:build-sv              # only (re)build `references/sv-ngram-lm.json` for optional LM scoring
 npm run sv:pipeline -- --with-extended   # Wikipedia fetch + freq ranks incl. extended/ + validate + log-odds merge
 npm run sv:pipeline -- --freq-include-extended   # only extended-aware freq + validate (extended/*.txt must exist)
 npm run sv:pipeline -- --with-extended --no-freq-include-extended   # Wikipedia for log-odds only; ranks stay baseline-only
@@ -74,9 +88,10 @@ npm run corpus:logodds && npm run corpus:calibrate
 
 ## Regression gates
 
-- `locales/sv-se/tests/calibration.sv.test.js` — fixture thresholds (`sv-ai-sample-1`, human samples, formal public sector).
-- `locales/sv-se/tests/calibration.sv.regression.test.js` — committed `reports/calibration-sv-latest.json` (AUC ≥ 0.92, per-pattern precision ≥ 0.85 when enough hits, **government** human ceiling).
-- `locales/sv-se/tests/sv-prescriptive-uptodate.test.js` — TSV and `sv-prescriptive.js` in sync.
+- `locales/sv-se/tests/calibration.sv.test.js` — fixture thresholds (`sv-ai-sample-1`, human samples, formal public sector, **marketing PR** sample &lt; 40 vs AI sample).
+- `locales/sv-se/tests/calibration.sv.regression.test.js` — committed `reports/calibration-sv-latest.json` (AUC ≥ **0.95**, per-pattern precision ≥ **0.85** when **≥ 30** hits, **government** + **marketing** genre ceilings).
+- `locales/sv-se/tests/sv-prescriptive-uptodate.test.js` — TSV and `sv-prescriptive.js` in sync (including new rule-pack TSVs).
+- `locales/sv-se/tests/lm-perplexity.sv.optional.test.js` — run with `WITH_LM=1` after `npm run lm:build-sv`.
 
 ## Related upstream work
 

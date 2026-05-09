@@ -1,7 +1,7 @@
 ---
-genre: product
+genre: government
 id: 28
 target_words: 150
 ---
 
-Skriv produkttext (3) för en tjänst eller vara: vad den gör, för vem, pris eller villkor om relevant. Direkt, utan floskler. Ca 80–140 ord.
+Skriv ett neutralt myndighetstextstycke (3): beslut, inbjudan eller information till medborgare. Klarspråk, inga engelska modeord. Ca 120–180 ord.

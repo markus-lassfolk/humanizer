@@ -1,7 +1,7 @@
 ---
-genre: academic
+genre: email
 id: 197
 target_words: 150
 ---
 
-Skriv ett kort metod-/resultatstycke (20) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.
+Skriv ett kort affärsmejl (18) på svenska: tydlig begäran eller svar, utan onödig artighetsfyllnad. Ca 80–120 ord.

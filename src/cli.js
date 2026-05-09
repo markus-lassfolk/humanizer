@@ -125,6 +125,8 @@ const flags = {
   includeDefaultIgnore: null,
   ignoreCode: null,
   locale: process.env.HUMANIZER_LOCALE || 'en',
+  strict: args.includes('--strict'),
+  withLm: args.includes('--with-lm'),
 };
 
 // Parse -f / --file flag
@@ -430,6 +432,9 @@ ${color.bold('Options:')}
   --no-default-ignore     Disable built-in ignores (.git,node_modules,dist,...)
   --ignore-code           Ignore fenced/inline code snippets during analysis
   --locale <code>         Language locale: en (default) or sv. Also HUMANIZER_LOCALE env.
+  --strict                English: enable inclusive-language hints (pattern 35)
+  --with-lm               Add n-gram LM uniformity boost (en: en-ngram-lm.json, sv: sv-ngram-lm.json)
+  HUMANIZER_ML_CALIBRATION=1  English: apply trained en-calibrator.json (see ENGLISH-EXTENSION.md)
   --config <file>         Load scan defaults from JSON (scan section)
   --help, -h              Show this help
 
@@ -968,6 +973,8 @@ async function main() {
     patternsToCheck: flags.patterns,
     ignoreCode: flags.ignoreCode === true,
     locale: flags.locale,
+    strict: flags.strict === true,
+    withLm: flags.withLm === true,
   };
 
   switch (command) {

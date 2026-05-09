@@ -1,7 +1,7 @@
 ---
-genre: technical
+genre: fiction
 id: 124
 target_words: 150
 ---
 
-Skriv en kort teknisk anteckning (13) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.
+Skriv ett kort prosastycke (12) med scen, dialog eller inre monolog. Konkret sensorik, inga metaforhögar. Ca 120–180 ord.

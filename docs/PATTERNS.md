@@ -1,6 +1,6 @@
 # Pattern documentation
 
-Detailed technical documentation for all 29 AI writing patterns detected by humanizer.
+Detailed technical documentation for all **36** AI writing pattern slots in humanizer (pattern **36** contributes via optional LM uniformity, not standalone regex hits).
 
 ## How detection works
 
@@ -19,8 +19,11 @@ Patterns are weighted 1-5 based on how strongly they signal AI-generated text:
 | 5 | Dead giveaway | AI vocabulary (7), Chatbot artifacts (19) |
 | 4 | Strong signal | Significance inflation (1), -ing analyses (3), Vague attributions (5), Cutoff disclaimers (20), Sycophantic tone (21), Reasoning chain artifacts (25), Acknowledgment loops (28), Invisible unicode obfuscation (29) |
 | 3 | Moderate signal | Notability (2), Promotional language (4), Formulaic challenges (6), Copula avoidance (8), Negative parallelisms (9), Inline-header lists (15), Filler phrases (22), Hedging (23), Generic conclusions (24), Excessive structure (26), Confidence calibration (27) |
-| 2 | Weak signal | Rule of three (10), Synonym cycling (11), False ranges (12), Em dash overuse (13), Boldface overuse (14), Emoji overuse (17) |
-| 1 | Minor tell | Title Case headings (16), Curly quotes (18) |
+| 2 | Weak signal | Rule of three (10), Synonym cycling (11), False ranges (12), Em dash overuse (13), Boldface overuse (14), Emoji overuse (17), **Passive voice density (30)**, **Weasel words (32)** |
+| 1 | Minor tell | Title Case headings (16), Curly quotes (18), **Adverb density -ly (31)**, **Clichés (33)**, **Redundancy (34)**, **Inclusive language / strict (35)** |
+| 0 | Uniformity-only | **LM n-gram boost (36)** — no pattern rows; use `--with-lm` (English) |
+
+English-only detectors **30–35** are documented in [`locales/en-en/references/patterns-en.md`](../locales/en-en/references/patterns-en.md).
 
 ## Scoring algorithm
 

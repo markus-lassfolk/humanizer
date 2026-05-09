@@ -1,0 +1,42 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind passive_pattern → Pattern 30 (regex in pattern column)
+passive		passive_pattern		Överväg aktiv form om agenten är viktig.	\b(?:behandlas|hanteras|genomförs|utförs|beslutas|fattas|levereras|implementeras|utvecklas|produceras|analyseras|utvärderas|granskas|godkänns|avvisas|offentliggörs)\b	
+passive_s_common		passive_pattern		S-passiv — överväg aktiv form.	\b(?:användas|skapas|visas|ges|tas|hävdas|ifrågasätts|diskuteras|förhandlas|genomförs|redovisas|rapporteras|offentliggörs|publiceras|kungörs|fastställs|överklagas|överprövas|prövas|utreds|handläggs)\b	
+passive_bli		passive_pattern		"blev X:ad" — överväg aktiv form.	\b(?:blir|blev|blivit)\s+\w{3,}(?:ad|ade|at|dda|dde|tt|t)\b	
+passive_varit		passive_pattern		Perfekt passiv — överväg aktiv.	\bhar\s+varit\s+\w+ad\b	
+fattades av		passive_pattern		Legitim myndighetsform — låg prioritet men fångar passiv klustring.	\bfattades\s+av\b	
+beslutades av		passive_pattern			\bbeslutades\s+av\b	
+handläggs av		passive_pattern			\bhandläggs\s+av\b	
+utreds av		passive_pattern			\butreds\s+av\b	
+prövas av		passive_pattern			\bprövas\s+av\b	
+lämnas in till		passive_pattern			\blämnas\s+in\s+till\b	
+ska genomföras		passive_pattern			\b(?:ska|skall)\s+genomföras\b	
+kommer att genomföras		passive_pattern			\bkommer\s+att\s+genomföras\b	
+måste hanteras		passive_pattern			\bmåste\s+hanteras\b	
+bör åtgärdas		passive_pattern			\bbör\s+åtgärdas\b	
+kan komma att påverkas		passive_pattern			\bkan\s+komma\s+att\s+påverkas\b	
+förväntas öka		passive_pattern			\bförväntas\s+\w+\b	
+anses vara		passive_pattern			\banses\s+vara\b	
+betraktas som		passive_pattern			\bbetraktas\s+som\b	
+uppfattas som		passive_pattern			\buppfattas\s+som\b	
+upplevs som		passive_pattern			\bupplevs\s+som\b	
+visar sig vara		passive_pattern			\bvisar\s+sig\s+vara\b	
+kommer att bli		passive_pattern			\bkommer\s+att\s+bli\b	
+har kommit att		passive_pattern			\bhar\s+kommit\s+att\b	
+möjliggörs genom		passive_pattern			\bmöjliggörs\s+genom\b	
+säkerställs genom		passive_pattern			\bsäkerställs\s+genom\b	
+uppnås genom		passive_pattern			\buppnås\s+genom\b	
+drivs av		passive_pattern			\bdrivs\s+av\b	
+leds av		passive_pattern			\bleds\s+av\b	
+stöds av		passive_pattern			\bstöds\s+av\b	
+finansieras av		passive_pattern			\bfinansieras\s+av\b	
+ägs av		passive_pattern			\bägs\s+av\b	
+hyrs ut till		passive_pattern			\bhyrs\s+ut\s+till\b	
+säljs till		passive_pattern			\bsäljs\s+till\b	
+byggs ut		passive_pattern			\bbyggs\s+ut\b	
+tas i bruk		passive_pattern			\btas\s+i\s+bruk\b	
+tas i anspråk		passive_pattern			\btas\s+i\s+anspråk\b	
+tas hänsyn till		passive_pattern			\btas\s+hänsyn\s+till\b	
+görs tillgänglig		passive_pattern			\bgörs\s+tillgänglig\w*\b	
+görs kända		passive_pattern			\bgörs\s+kända\b	
+görs känt		passive_pattern			\bgörs\s+känt\b	

@@ -1,7 +1,7 @@
 ---
-genre: email
+genre: news
 id: 89
 target_words: 150
 ---
 
-Skriv ett kort affärsmejl (9) på svenska: tydlig begäran eller svar, utan onödig artighetsfyllnad. Ca 80–120 ord.
+Skriv en kort nyhetsartikel (9) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.

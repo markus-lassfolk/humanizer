@@ -1,0 +1,7 @@
+---
+genre: product
+id: 108
+target_words: 150
+---
+
+Write product copy (11): what it does, for whom, price if relevant. Direct. 80–140 words.

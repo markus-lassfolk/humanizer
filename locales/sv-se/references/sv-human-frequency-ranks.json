@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "generatedAt": "2026-05-08T22:25:53.655Z",
-    "totalTokens": 51872,
-    "uniqueTypes": 740,
+    "generatedAt": "2026-05-09T10:58:08.083Z",
+    "totalTokens": 52352,
+    "uniqueTypes": 767,
     "sources": [
       "locales/sv-se/references/baseline-corpus-sv.txt",
       "locales/sv-se/tests/fixtures/sv-corpus/human/",
@@ -12,3702 +12,3837 @@
   },
   "ranks": {
     "1": {
-      "rank": 509,
-      "count": 8,
-      "perMillion": 154
+      "rank": 534,
+      "count": 9,
+      "perMillion": 172
     },
     "2": {
-      "rank": 497,
-      "count": 15,
-      "perMillion": 289
+      "rank": 502,
+      "count": 16,
+      "perMillion": 306
     },
     "3": {
-      "rank": 495,
-      "count": 21,
-      "perMillion": 405
+      "rank": 496,
+      "count": 22,
+      "perMillion": 420
     },
     "4": {
-      "rank": 523,
-      "count": 7,
-      "perMillion": 135
+      "rank": 540,
+      "count": 8,
+      "perMillion": 153
     },
     "5": {
-      "rank": 498,
-      "count": 15,
-      "perMillion": 289
+      "rank": 503,
+      "count": 16,
+      "perMillion": 306
     },
     "6": {
-      "rank": 524,
-      "count": 7,
-      "perMillion": 135
+      "rank": 541,
+      "count": 8,
+      "perMillion": 153
     },
     "7": {
-      "rank": 525,
-      "count": 7,
-      "perMillion": 135
+      "rank": 542,
+      "count": 8,
+      "perMillion": 153
+    },
+    "8": {
+      "rank": 704,
+      "count": 1,
+      "perMillion": 19
+    },
+    "9": {
+      "rank": 705,
+      "count": 1,
+      "perMillion": 19
     },
     "10": {
-      "rank": 676,
-      "count": 1,
-      "perMillion": 19
+      "rank": 697,
+      "count": 2,
+      "perMillion": 38
+    },
+    "11": {
+      "rank": 509,
+      "count": 10,
+      "perMillion": 191
     },
     "12": {
-      "rank": 503,
+      "rank": 535,
       "count": 9,
-      "perMillion": 174
+      "perMillion": 172
     },
     "14": {
-      "rank": 499,
-      "count": 14,
-      "perMillion": 270
+      "rank": 495,
+      "count": 24,
+      "perMillion": 458
     },
     "15": {
-      "rank": 677,
-      "count": 1,
-      "perMillion": 19
+      "rank": 507,
+      "count": 11,
+      "perMillion": 210
     },
     "22": {
-      "rank": 526,
+      "rank": 555,
       "count": 7,
-      "perMillion": 135
+      "perMillion": 134
     },
     "30": {
-      "rank": 678,
+      "rank": 706,
       "count": 1,
       "perMillion": 19
     },
     "38": {
-      "rank": 527,
+      "rank": 556,
       "count": 7,
-      "perMillion": 135
+      "perMillion": 134
     },
     "40": {
-      "rank": 106,
+      "rank": 109,
       "count": 69,
-      "perMillion": 1330
+      "perMillion": 1318
     },
     "60": {
-      "rank": 679,
+      "rank": 707,
       "count": 1,
       "perMillion": 19
     },
     "140": {
-      "rank": 528,
+      "rank": 557,
       "count": 7,
-      "perMillion": 135
+      "perMillion": 134
     },
     "180": {
-      "rank": 529,
+      "rank": 558,
       "count": 7,
-      "perMillion": 135
+      "perMillion": 134
     },
     "2026": {
-      "rank": 670,
+      "rank": 698,
       "count": 2,
-      "perMillion": 39
+      "perMillion": 38
     },
     "2027": {
-      "rank": 680,
+      "rank": 708,
       "count": 1,
       "perMillion": 19
     },
     "och": {
       "rank": 1,
-      "count": 2587,
-      "perMillion": 49873
+      "count": 2597,
+      "perMillion": 49607
     },
     "i": {
       "rank": 2,
-      "count": 1780,
-      "perMillion": 34315
+      "count": 1800,
+      "perMillion": 34383
     },
     "på": {
       "rank": 3,
-      "count": 1346,
-      "perMillion": 25948
+      "count": 1356,
+      "perMillion": 25902
     },
     "vi": {
       "rank": 4,
       "count": 907,
-      "perMillion": 17485
+      "perMillion": 17325
     },
     "om": {
       "rank": 5,
       "count": 842,
-      "perMillion": 16232
+      "perMillion": 16083
     },
     "med": {
       "rank": 6,
       "count": 838,
-      "perMillion": 16155
+      "perMillion": 16007
     },
     "utan": {
       "rank": 7,
       "count": 695,
-      "perMillion": 13398
+      "perMillion": 13276
     },
     "till": {
       "rank": 8,
-      "count": 557,
-      "perMillion": 10738
+      "count": 577,
+      "perMillion": 11022
     },
     "att": {
       "rank": 9,
       "count": 514,
-      "perMillion": 9909
+      "perMillion": 9818
     },
     "för": {
       "rank": 10,
       "count": 485,
-      "perMillion": 9350
+      "perMillion": 9264
     },
     "en": {
       "rank": 11,
-      "count": 368,
-      "perMillion": 7094
+      "count": 378,
+      "perMillion": 7220
     },
     "när": {
       "rank": 12,
       "count": 347,
-      "perMillion": 6690
+      "perMillion": 6628
     },
     "innan": {
       "rank": 13,
       "count": 342,
-      "perMillion": 6593
+      "perMillion": 6533
     },
     "bytte": {
       "rank": 14,
       "count": 341,
-      "perMillion": 6574
-    },
-    "men": {
-      "rank": 15,
-      "count": 315,
-      "perMillion": 6073
+      "perMillion": 6514
     },
     "av": {
+      "rank": 15,
+      "count": 322,
+      "perMillion": 6151
+    },
+    "men": {
       "rank": 16,
-      "count": 312,
-      "perMillion": 6015
+      "count": 315,
+      "perMillion": 6017
     },
     "förklarade": {
       "rank": 17,
       "count": 273,
-      "perMillion": 5263
+      "perMillion": 5215
     },
     "hon": {
       "rank": 18,
       "count": 233,
-      "perMillion": 4492
+      "perMillion": 4451
     },
     "var": {
       "rank": 19,
       "count": 232,
-      "perMillion": 4473
+      "perMillion": 4432
     },
     "ett": {
       "rank": 20,
       "count": 228,
-      "perMillion": 4395
+      "perMillion": 4355
     },
     "kommunen": {
       "rank": 21,
       "count": 219,
-      "perMillion": 4222
+      "perMillion": 4183
     },
     "efter": {
       "rank": 22,
       "count": 219,
-      "perMillion": 4222
+      "perMillion": 4183
     },
     "medan": {
       "rank": 23,
       "count": 206,
-      "perMillion": 3971
+      "perMillion": 3935
     },
     "nära": {
       "rank": 24,
       "count": 205,
-      "perMillion": 3952
+      "perMillion": 3916
     },
     "längs": {
       "rank": 25,
       "count": 204,
-      "perMillion": 3933
+      "perMillion": 3897
     },
     "publicerade": {
       "rank": 26,
       "count": 204,
-      "perMillion": 3933
+      "perMillion": 3897
     },
     "tidigt": {
       "rank": 27,
       "count": 204,
-      "perMillion": 3933
+      "perMillion": 3897
     },
     "under": {
       "rank": 28,
       "count": 167,
-      "perMillion": 3219
+      "perMillion": 3190
     },
     "den": {
       "rank": 29,
       "count": 155,
-      "perMillion": 2988
-    },
-    "fick": {
-      "rank": 30,
-      "count": 145,
-      "perMillion": 2795
+      "perMillion": 2961
     },
     "vid": {
-      "rank": 31,
-      "count": 144,
-      "perMillion": 2776
-    },
-    "skrev": {
-      "rank": 32,
-      "count": 144,
-      "perMillion": 2776
-    },
-    "kort": {
-      "rank": 33,
-      "count": 144,
-      "perMillion": 2776
-    },
-    "stängde": {
-      "rank": 34,
-      "count": 144,
-      "perMillion": 2776
+      "rank": 30,
+      "count": 154,
+      "perMillion": 2942
     },
     "mot": {
-      "rank": 35,
-      "count": 144,
-      "perMillion": 2776
-    },
-    "från": {
-      "rank": 36,
-      "count": 144,
-      "perMillion": 2776
-    },
-    "sjönk": {
-      "rank": 37,
-      "count": 143,
-      "perMillion": 2757
-    },
-    "vattnet": {
-      "rank": 38,
-      "count": 143,
-      "perMillion": 2757
-    },
-    "nya": {
-      "rank": 39,
-      "count": 143,
-      "perMillion": 2757
-    },
-    "åt": {
-      "rank": 40,
-      "count": 143,
-      "perMillion": 2757
-    },
-    "blev": {
-      "rank": 41,
-      "count": 138,
-      "perMillion": 2660
-    },
-    "fönstret": {
-      "rank": 42,
-      "count": 138,
-      "perMillion": 2660
-    },
-    "hann": {
-      "rank": 43,
-      "count": 137,
-      "perMillion": 2641
+      "rank": 31,
+      "count": 154,
+      "perMillion": 2942
     },
     "barnen": {
+      "rank": 32,
+      "count": 147,
+      "perMillion": 2808
+    },
+    "fick": {
+      "rank": 33,
+      "count": 145,
+      "perMillion": 2770
+    },
+    "skrev": {
+      "rank": 34,
+      "count": 144,
+      "perMillion": 2751
+    },
+    "kort": {
+      "rank": 35,
+      "count": 144,
+      "perMillion": 2751
+    },
+    "stängde": {
+      "rank": 36,
+      "count": 144,
+      "perMillion": 2751
+    },
+    "från": {
+      "rank": 37,
+      "count": 144,
+      "perMillion": 2751
+    },
+    "sjönk": {
+      "rank": 38,
+      "count": 143,
+      "perMillion": 2732
+    },
+    "vattnet": {
+      "rank": 39,
+      "count": 143,
+      "perMillion": 2732
+    },
+    "nya": {
+      "rank": 40,
+      "count": 143,
+      "perMillion": 2732
+    },
+    "åt": {
+      "rank": 41,
+      "count": 143,
+      "perMillion": 2732
+    },
+    "blev": {
+      "rank": 42,
+      "count": 138,
+      "perMillion": 2636
+    },
+    "fönstret": {
+      "rank": 43,
+      "count": 138,
+      "perMillion": 2636
+    },
+    "hann": {
       "rank": 44,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "pratade": {
       "rank": 45,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "priser": {
       "rank": 46,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "stannade": {
       "rank": 47,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "myndigheten": {
       "rank": 48,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "lagade": {
       "rank": 49,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "lagret": {
       "rank": 50,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "hamnen": {
       "rank": 51,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "tydligt": {
       "rank": 52,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "onödiga": {
       "rank": 53,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "snön": {
       "rank": 54,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "boende": {
       "rank": 55,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "upp": {
       "rank": 56,
       "count": 137,
-      "perMillion": 2641
+      "perMillion": 2617
     },
     "källaren": {
       "rank": 57,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "klagade": {
       "rank": 58,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "halka": {
       "rank": 59,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "varnade": {
       "rank": 60,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "temperaturen": {
       "rank": 61,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "bonden": {
       "rank": 62,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "tidningen": {
       "rank": 63,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "domen": {
       "rank": 64,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "enkla": {
       "rank": 65,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "ord": {
       "rank": 66,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "listerna": {
       "rank": 67,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "sålde": {
       "rank": 68,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "hittade": {
       "rank": 69,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "staden": {
       "rank": 70,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "träd": {
       "rank": 71,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "skyltade": {
       "rank": 72,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "tydliga": {
       "rank": 73,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "ur": {
       "rank": 74,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "sjuksköterskan": {
       "rank": 75,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "markerade": {
       "rank": 76,
       "count": 136,
-      "perMillion": 2622
+      "perMillion": 2598
     },
     "tre": {
       "rank": 77,
       "count": 92,
-      "perMillion": 1774
+      "perMillion": 1757
     },
     "som": {
       "rank": 78,
       "count": 89,
-      "perMillion": 1716
-    },
-    "juni": {
-      "rank": 79,
-      "count": 83,
-      "perMillion": 1600
-    },
-    "dagar": {
-      "rank": 80,
-      "count": 78,
-      "perMillion": 1504
-    },
-    "nämnden": {
-      "rank": 81,
-      "count": 77,
-      "perMillion": 1484
-    },
-    "beslutade": {
-      "rank": 82,
-      "count": 76,
-      "perMillion": 1465
-    },
-    "tåget": {
-      "rank": 83,
-      "count": 76,
-      "perMillion": 1465
-    },
-    "grannen": {
-      "rank": 84,
-      "count": 76,
-      "perMillion": 1465
-    },
-    "hade": {
-      "rank": 85,
-      "count": 76,
-      "perMillion": 1465
+      "perMillion": 1700
     },
     "lördag": {
-      "rank": 86,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "bron": {
-      "rank": 87,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "fler": {
-      "rank": 88,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "kom": {
-      "rank": 89,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "inga": {
-      "rank": 90,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "felet": {
-      "rank": 91,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "tillbaka": {
-      "rank": 92,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "berättade": {
-      "rank": 93,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "visade": {
-      "rank": 94,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "högt": {
-      "rank": 95,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "ån": {
-      "rank": 96,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "istället": {
-      "rank": 97,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "tog": {
-      "rank": 98,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "lade": {
-      "rank": 99,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "upphandlingen": {
-      "rank": 100,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "skulle": {
-      "rank": 101,
-      "count": 75,
-      "perMillion": 1446
-    },
-    "timmar": {
-      "rank": 102,
-      "count": 70,
-      "perMillion": 1349
-    },
-    "katten": {
-      "rank": 103,
-      "count": 70,
-      "perMillion": 1349
-    },
-    "är": {
-      "rank": 104,
-      "count": 70,
-      "perMillion": 1349
-    },
-    "stege": {
-      "rank": 105,
-      "count": 70,
-      "perMillion": 1349
-    },
-    "renovera": {
-      "rank": 107,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "skolan": {
-      "rank": 108,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "höstterminen": {
-      "rank": 109,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "börjar": {
-      "rank": 110,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "patienten": {
-      "rank": 111,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "vänta": {
-      "rank": 112,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "läkaren": {
-      "rank": 113,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "fram": {
-      "rank": 114,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "lekte": {
-      "rank": 115,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "åkern": {
-      "rank": 116,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "föräldrarna": {
-      "rank": 117,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "bränsle": {
-      "rank": 118,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "alvesta": {
-      "rank": 119,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "många": {
-      "rank": 120,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "passagerare": {
-      "rank": 121,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "buss": {
-      "rank": 122,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "bad": {
-      "rank": 123,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "prövning": {
-      "rank": 124,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "ärendet": {
-      "rank": 125,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "soppa": {
-      "rank": 126,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "rotfrukter": {
-      "rank": 127,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "serverade": {
-      "rank": 128,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "mörkt": {
-      "rank": 129,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "bröd": {
-      "rank": 130,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "biblioteket": {
-      "rank": 131,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "tidigare": {
-      "rank": 132,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "grund": {
-      "rank": 133,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "strömavbrott": {
-      "rank": 134,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "stadsdelen": {
-      "rank": 135,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "företaget": {
-      "rank": 136,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "flyttade": {
-      "rank": 137,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "mindre": {
-      "rank": 138,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "samhälle": {
-      "rank": 139,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "läraren": {
-      "rank": 140,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "reglerna": {
-      "rank": 141,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "omskrivningar": {
-      "rank": 142,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "smälte": {
-      "rank": 143,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "snabbt": {
-      "rank": 144,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "gatorna": {
-      "rank": 145,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "blöta": {
-      "rank": 146,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "fötterna": {
-      "rank": 147,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "debatten": {
-      "rank": 148,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "handlade": {
-      "rank": 149,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "skatter": {
-      "rank": 150,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "bostäder": {
-      "rank": 151,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "kollektivtrafik": {
-      "rank": 152,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "stan": {
-      "rank": 153,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "sov": {
-      "rank": 154,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "regnet": {
-      "rank": 155,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "slog": {
-      "rank": 156,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "rutorna": {
-      "rank": 157,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "journalisten": {
-      "rank": 158,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "intervjuade": {
-      "rank": 159,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "buller": {
-      "rank": 160,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "byggarbetsplatsen": {
-      "rank": 161,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "skjuter": {
-      "rank": 162,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "beslutet": {
-      "rank": 163,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "tills": {
-      "rank": 164,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "nästa": {
-      "rank": 165,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "protokoll": {
-      "rank": 166,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "klart": {
-      "rank": 167,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "lånade": {
-      "rank": 168,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "hjälpte": {
-      "rank": 169,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "byta": {
-      "rank": 170,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "takplåt": {
-      "rank": 171,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "apoteket": {
-      "rank": 172,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "slut": {
-      "rank": 173,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "vissa": {
-      "rank": 174,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "receptbelagda": {
-      "rank": 175,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "läkemedel": {
-      "rank": 176,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "två": {
-      "rank": 177,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "kommunala": {
-      "rank": 178,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "via": {
-      "rank": 179,
-      "count": 69,
-      "perMillion": 1330
-    },
-    "musikerna": {
-      "rank": 180,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "repeterade": {
-      "rank": 181,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "spelningen": {
-      "rank": 182,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "cyklister": {
-      "rank": 183,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "strandpromenaden": {
-      "rank": 184,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "nattfrost": {
-      "rank": 185,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "skogen": {
-      "rank": 186,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "tyst": {
-      "rank": 187,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "förutom": {
-      "rank": 188,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "hackspettens": {
-      "rank": 189,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "tickande": {
-      "rank": 190,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "björk": {
-      "rank": 191,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "eleverna": {
-      "rank": 192,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "redovisade": {
-      "rank": 193,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "resultat": {
-      "rank": 194,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "matte": {
-      "rank": 195,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "använda": {
-      "rank": 196,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "fackjargong": {
-      "rank": 197,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "polisen": {
-      "rank": 198,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sådde": {
-      "rank": 199,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "vårvete": {
-      "rank": 200,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "marken": {
-      "rank": 201,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "äntligen": {
-      "rank": 202,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "torkat": {
-      "rank": 203,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "köket": {
-      "rank": 204,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "luktade": {
-      "rank": 205,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kanel": {
-      "rank": 206,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "nygräddade": {
-      "rank": 207,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kakor": {
-      "rank": 208,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "inför": {
-      "rank": 209,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kalaset": {
-      "rank": 210,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "genomgång": {
-      "rank": 211,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "avgifter": {
-      "rank": 212,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "piloten": {
-      "rank": 213,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "meddelade": {
-      "rank": 214,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "turbulens": {
-      "rank": 215,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "flög": {
-      "rank": 216,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "över": {
-      "rank": 217,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "fjällen": {
-      "rank": 218,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sjukhuset": {
-      "rank": 219,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "anställde": {
-      "rank": 220,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "skötare": {
-      "rank": 221,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "korta": {
-      "rank": 222,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kötiden": {
-      "rank": 223,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "hämtade": {
-      "rank": 224,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "ved": {
-      "rank": 225,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "ladan": {
-      "rank": 226,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "staplade": {
-      "rank": 227,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "tak": {
-      "rank": 228,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "domaren": {
-      "rank": 229,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "salen": {
-      "rank": 230,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "fiskarna": {
-      "rank": 231,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "små": {
-      "rank": 232,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sillfångster": {
-      "rank": 233,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "målade": {
-      "rank": 234,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "hallen": {
-      "rank": 235,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "ljusgrått": {
-      "rank": 236,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "busschauffören": {
-      "rank": 237,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "extra": {
-      "rank": 238,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "trottoarkanten": {
-      "rank": 239,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "rullstolen": {
-      "rank": 240,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "föreningen": {
-      "rank": 241,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "ordnade": {
-      "rank": 242,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "loppis": {
-      "rank": 243,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "böcker": {
-      "rank": 244,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "välgörenhet": {
-      "rank": 245,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "vinden": {
-      "rank": 246,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "knakade": {
-      "rank": 247,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "taket": {
-      "rank": 248,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "tegel": {
-      "rank": 249,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "lossnade": {
-      "rank": 250,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "programmeraren": {
-      "rank": 251,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "loggen": {
-      "rank": 252,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "rullade": {
-      "rank": 253,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "versionen": {
-      "rank": 254,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "morfar": {
-      "rank": 255,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "skolåren": {
-      "rank": 256,
-      "count": 68,
-      "perMillion": 1311
+      "rank": 79,
+      "count": 85,
+      "perMillion": 1624
+    },
+    "juni": {
+      "rank": 80,
+      "count": 83,
+      "perMillion": 1585
+    },
+    "dagar": {
+      "rank": 81,
+      "count": 78,
+      "perMillion": 1490
     },
     "måla": {
-      "rank": 257,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sentimentala": {
-      "rank": 258,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "scener": {
-      "rank": 259,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "planterade": {
-      "rank": 260,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "cykelbanan": {
-      "rank": 261,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "skugga": {
-      "rank": 262,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sommaren": {
-      "rank": 263,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kocken": {
-      "rank": 264,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "skar": {
-      "rank": 265,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "grönsaker": {
-      "rank": 266,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "tunt": {
-      "rank": 267,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "fräste": {
-      "rank": 268,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "dem": {
-      "rank": 269,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "smör": {
-      "rank": 270,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "banken": {
-      "rank": 271,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sänkte": {
-      "rank": 272,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "räntan": {
-      "rank": 273,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sparkontot": {
-      "rank": 274,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kunderna": {
-      "rank": 275,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "reagerade": {
-      "rank": 276,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "lugnt": {
-      "rank": 277,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "badade": {
-      "rank": 278,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sjön": {
-      "rank": 279,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "trots": {
-      "rank": 280,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kallt": {
-      "rank": 281,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "redaktören": {
-      "rank": 282,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "strök": {
-      "rank": 283,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "inledningar": {
-      "rank": 284,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "insändaren": {
-      "rank": 285,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "barnmorskan": {
-      "rank": 286,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "mätte": {
-      "rank": 287,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "blodtryck": {
-      "rank": 288,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "antecknade": {
-      "rank": 289,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "journalen": {
-      "rank": 290,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "lastbilen": {
-      "rank": 291,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "motorstopp": {
-      "rank": 292,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "orsakade": {
-      "rank": 293,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kö": {
-      "rank": 294,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "väg": {
-      "rank": 295,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "konstnären": {
-      "rank": 296,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "skisser": {
-      "rank": 297,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "överdrivna": {
-      "rank": 298,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "etiketter": {
-      "rank": 299,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "skidspåret": {
-      "rank": 300,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "preparerades": {
-      "rank": 301,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sent": {
-      "rank": 302,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kvällen": {
-      "rank": 303,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "diskuterade": {
-      "rank": 304,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "matlådor": {
-      "rank": 305,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "pendling": {
-      "rank": 306,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "semesterplaner": {
-      "rank": 307,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "jobbet": {
-      "rank": 308,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "hantverkaren": {
-      "rank": 309,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "packningen": {
-      "rank": 310,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "först": {
-      "rank": 311,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "prästen": {
-      "rank": 312,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "talade": {
-      "rank": 313,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "solidaritet": {
-      "rank": 314,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "praktiska": {
-      "rank": 315,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "insatser": {
-      "rank": 316,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "fåglarna": {
-      "rank": 317,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "återvände": {
-      "rank": 318,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "våren": {
-      "rank": 319,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "försvann": {
-      "rank": 320,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "butiken": {
-      "rank": 321,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "reaade": {
-      "rank": 322,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "vinterkläder": {
-      "rank": 323,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "juristen": {
-      "rank": 324,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sammanfattade": {
-      "rank": 325,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "avtalet": {
-      "rank": 326,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kansliaktiga": {
-      "rank": 327,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "konstruktioner": {
-      "rank": 328,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "grävmaskinen": {
-      "rank": 329,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "hördes": {
-      "rank": 330,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "avstånd": {
-      "rank": 331,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "ledningar": {
-      "rank": 332,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "grävdes": {
-      "rank": 333,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "ner": {
-      "rank": 334,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "skötaren": {
-      "rank": 335,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "vattnade": {
-      "rank": 336,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "växthuset": {
-      "rank": 337,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "noterade": {
-      "rank": 338,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "fuktigheten": {
-      "rank": 339,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sill": {
-      "rank": 340,
-      "count": 68,
-      "perMillion": 1311
+      "rank": 82,
+      "count": 78,
+      "perMillion": 1490
     },
     "potatis": {
-      "rank": 341,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "midsommar": {
-      "rank": 342,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "högtidstal": {
-      "rank": 343,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "brandkåren": {
-      "rank": 344,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "övade": {
-      "rank": 345,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "räddning": {
-      "rank": 346,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "isvak": {
-      "rank": 347,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "säker": {
-      "rank": 348,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "lina": {
-      "rank": 349,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "lantbrukaren": {
-      "rank": 350,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "torka": {
-      "rank": 351,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "skörden": {
-      "rank": 352,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "ändå": {
-      "rank": 353,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "godkänd": {
-      "rank": 354,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "dottern": {
-      "rank": 355,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "läste": {
-      "rank": 356,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "barnbok": {
-      "rank": 357,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "meningar": {
-      "rank": 358,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "informerade": {
-      "rank": 359,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sophämtning": {
-      "rank": 360,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sms": {
-      "rank": 361,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "snickaren": {
-      "rank": 362,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "passade": {
-      "rank": 363,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "dörren": {
-      "rank": 364,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "slipade": {
-      "rank": 365,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "slätt": {
-      "rank": 366,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "promenerade": {
-      "rank": 367,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "framtida": {
-      "rank": 368,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "renoveringar": {
-      "rank": 369,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "doktorn": {
-      "rank": 370,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "rekommenderade": {
-      "rank": 371,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "promenader": {
-      "rank": 372,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "receptfria": {
-      "rank": 373,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "piller": {
-      "rank": 374,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "läckte": {
-      "rank": 375,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "stormen": {
-      "rank": 376,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "hyresvärden": {
-      "rank": 377,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "lister": {
-      "rank": 378,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "studenter": {
-      "rank": 379,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "presenterade": {
-      "rank": 380,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "data": {
-      "rank": 381,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "tabeller": {
-      "rank": 382,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "överdriven": {
-      "rank": 383,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "inramning": {
-      "rank": 384,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "bageriet": {
-      "rank": 385,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "semlor": {
-      "rank": 386,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "tisdag": {
-      "rank": 387,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kön": {
-      "rank": 388,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "ringlade": {
-      "rank": 389,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "ut": {
-      "rank": 390,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "gatan": {
-      "rank": 391,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "däck": {
-      "rank": 392,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "garaget": {
-      "rank": 393,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kontrollerade": {
-      "rank": 394,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "bromsvätskan": {
-      "rank": 395,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sjöfarten": {
-      "rank": 396,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "dimbankar": {
-      "rank": 397,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "öarna": {
-      "rank": 398,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "skärgården": {
-      "rank": 399,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "lärarinnan": {
-      "rank": 400,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "instruktioner": {
-      "rank": 401,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "tavlan": {
-      "rank": 402,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "hunden": {
-      "rank": 403,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sprang": {
-      "rank": 404,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "pinnen": {
-      "rank": 405,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "haltade": {
-      "rank": 406,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "snedsteg": {
-      "rank": 407,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "siffror": {
-      "rank": 408,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "dölja": {
-      "rank": 409,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "osäkerheter": {
-      "rank": 410,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "grillade": {
-      "rank": 411,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "korv": {
-      "rank": 412,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "parken": {
-      "rank": 413,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "delade": {
-      "rank": 414,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "saft": {
-      "rank": 415,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "grannar": {
-      "rank": 416,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "arkeologerna": {
-      "rank": 417,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "fann": {
-      "rank": 418,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "keramik": {
-      "rank": 419,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "dokumenterade": {
-      "rank": 420,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "noggrant": {
-      "rank": 421,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "prover": {
-      "rank": 422,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "märkte": {
-      "rank": 423,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "rören": {
-      "rank": 424,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "streckkod": {
-      "rank": 425,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "bussen": {
-      "rank": 426,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "försenad": {
-      "rank": 427,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "chauffören": {
-      "rank": 428,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "vägarbetet": {
-      "rank": 429,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "städade": {
-      "rank": 430,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kartonger": {
-      "rank": 431,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "nittiotalet": {
-      "rank": 432,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "fjällstationen": {
-      "rank": 433,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "rapporterade": {
-      "rank": 434,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "väderomslag": {
-      "rank": 435,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "stark": {
-      "rank": 436,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "vind": {
-      "rank": 437,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "levererade": {
-      "rank": 438,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "mjölk": {
-      "rank": 439,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "mejeriet": {
-      "rank": 440,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "gryningen": {
-      "rank": 441,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "stickade": {
-      "rank": 442,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "tröja": {
-      "rank": 443,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "radion": {
-      "rank": 444,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "sände": {
-      "rank": 445,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "nyheter": {
-      "rank": 446,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "valresultat": {
-      "rank": 447,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "asfalt": {
-      "rank": 448,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "cykelvägen": {
-      "rank": 449,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "kurvor": {
-      "rank": 450,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "fotografen": {
-      "rank": 451,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "justerade": {
-      "rank": 452,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "ljuset": {
-      "rank": 453,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "modeord": {
-      "rank": 454,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "bildtexten": {
-      "rank": 455,
-      "count": 68,
-      "perMillion": 1311
-    },
-    "köpte": {
-      "rank": 456,
-      "count": 68,
-      "perMillion": 1311
+      "rank": 83,
+      "count": 78,
+      "perMillion": 1490
     },
     "äpplen": {
+      "rank": 84,
+      "count": 78,
+      "perMillion": 1490
+    },
+    "nämnden": {
+      "rank": 85,
+      "count": 77,
+      "perMillion": 1471
+    },
+    "beslutade": {
+      "rank": 86,
+      "count": 76,
+      "perMillion": 1452
+    },
+    "tåget": {
+      "rank": 87,
+      "count": 76,
+      "perMillion": 1452
+    },
+    "grannen": {
+      "rank": 88,
+      "count": 76,
+      "perMillion": 1452
+    },
+    "hade": {
+      "rank": 89,
+      "count": 76,
+      "perMillion": 1452
+    },
+    "bron": {
+      "rank": 90,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "fler": {
+      "rank": 91,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "kom": {
+      "rank": 92,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "inga": {
+      "rank": 93,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "felet": {
+      "rank": 94,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "tillbaka": {
+      "rank": 95,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "berättade": {
+      "rank": 96,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "visade": {
+      "rank": 97,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "högt": {
+      "rank": 98,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "ån": {
+      "rank": 99,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "istället": {
+      "rank": 100,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "tog": {
+      "rank": 101,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "lade": {
+      "rank": 102,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "upphandlingen": {
+      "rank": 103,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "skulle": {
+      "rank": 104,
+      "count": 75,
+      "perMillion": 1433
+    },
+    "timmar": {
+      "rank": 105,
+      "count": 70,
+      "perMillion": 1337
+    },
+    "katten": {
+      "rank": 106,
+      "count": 70,
+      "perMillion": 1337
+    },
+    "är": {
+      "rank": 107,
+      "count": 70,
+      "perMillion": 1337
+    },
+    "stege": {
+      "rank": 108,
+      "count": 70,
+      "perMillion": 1337
+    },
+    "renovera": {
+      "rank": 110,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "skolan": {
+      "rank": 111,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "höstterminen": {
+      "rank": 112,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "börjar": {
+      "rank": 113,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "patienten": {
+      "rank": 114,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "vänta": {
+      "rank": 115,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "läkaren": {
+      "rank": 116,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "fram": {
+      "rank": 117,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "lekte": {
+      "rank": 118,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "åkern": {
+      "rank": 119,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "föräldrarna": {
+      "rank": 120,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "bränsle": {
+      "rank": 121,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "alvesta": {
+      "rank": 122,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "många": {
+      "rank": 123,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "passagerare": {
+      "rank": 124,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "buss": {
+      "rank": 125,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "bad": {
+      "rank": 126,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "prövning": {
+      "rank": 127,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "ärendet": {
+      "rank": 128,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "soppa": {
+      "rank": 129,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "rotfrukter": {
+      "rank": 130,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "serverade": {
+      "rank": 131,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "mörkt": {
+      "rank": 132,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "bröd": {
+      "rank": 133,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "biblioteket": {
+      "rank": 134,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "tidigare": {
+      "rank": 135,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "grund": {
+      "rank": 136,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "strömavbrott": {
+      "rank": 137,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "stadsdelen": {
+      "rank": 138,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "företaget": {
+      "rank": 139,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "flyttade": {
+      "rank": 140,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "mindre": {
+      "rank": 141,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "samhälle": {
+      "rank": 142,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "läraren": {
+      "rank": 143,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "reglerna": {
+      "rank": 144,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "omskrivningar": {
+      "rank": 145,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "smälte": {
+      "rank": 146,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "snabbt": {
+      "rank": 147,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "gatorna": {
+      "rank": 148,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "blöta": {
+      "rank": 149,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "fötterna": {
+      "rank": 150,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "debatten": {
+      "rank": 151,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "handlade": {
+      "rank": 152,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "skatter": {
+      "rank": 153,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "bostäder": {
+      "rank": 154,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "kollektivtrafik": {
+      "rank": 155,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "stan": {
+      "rank": 156,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "sov": {
+      "rank": 157,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "regnet": {
+      "rank": 158,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "slog": {
+      "rank": 159,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "rutorna": {
+      "rank": 160,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "journalisten": {
+      "rank": 161,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "intervjuade": {
+      "rank": 162,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "buller": {
+      "rank": 163,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "byggarbetsplatsen": {
+      "rank": 164,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "skjuter": {
+      "rank": 165,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "beslutet": {
+      "rank": 166,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "tills": {
+      "rank": 167,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "nästa": {
+      "rank": 168,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "protokoll": {
+      "rank": 169,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "klart": {
+      "rank": 170,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "lånade": {
+      "rank": 171,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "hjälpte": {
+      "rank": 172,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "byta": {
+      "rank": 173,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "takplåt": {
+      "rank": 174,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "apoteket": {
+      "rank": 175,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "slut": {
+      "rank": 176,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "vissa": {
+      "rank": 177,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "receptbelagda": {
+      "rank": 178,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "läkemedel": {
+      "rank": 179,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "två": {
+      "rank": 180,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "kommunala": {
+      "rank": 181,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "via": {
+      "rank": 182,
+      "count": 69,
+      "perMillion": 1318
+    },
+    "musikerna": {
+      "rank": 183,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "repeterade": {
+      "rank": 184,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "spelningen": {
+      "rank": 185,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "cyklister": {
+      "rank": 186,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "strandpromenaden": {
+      "rank": 187,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "nattfrost": {
+      "rank": 188,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "skogen": {
+      "rank": 189,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "tyst": {
+      "rank": 190,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "förutom": {
+      "rank": 191,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "hackspettens": {
+      "rank": 192,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "tickande": {
+      "rank": 193,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "björk": {
+      "rank": 194,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "eleverna": {
+      "rank": 195,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "redovisade": {
+      "rank": 196,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "resultat": {
+      "rank": 197,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "matte": {
+      "rank": 198,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "använda": {
+      "rank": 199,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "fackjargong": {
+      "rank": 200,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "polisen": {
+      "rank": 201,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sådde": {
+      "rank": 202,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "vårvete": {
+      "rank": 203,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "marken": {
+      "rank": 204,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "äntligen": {
+      "rank": 205,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "torkat": {
+      "rank": 206,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "köket": {
+      "rank": 207,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "luktade": {
+      "rank": 208,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kanel": {
+      "rank": 209,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "nygräddade": {
+      "rank": 210,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kakor": {
+      "rank": 211,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "inför": {
+      "rank": 212,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kalaset": {
+      "rank": 213,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "genomgång": {
+      "rank": 214,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "avgifter": {
+      "rank": 215,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "piloten": {
+      "rank": 216,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "meddelade": {
+      "rank": 217,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "turbulens": {
+      "rank": 218,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "flög": {
+      "rank": 219,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "över": {
+      "rank": 220,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "fjällen": {
+      "rank": 221,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sjukhuset": {
+      "rank": 222,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "anställde": {
+      "rank": 223,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "skötare": {
+      "rank": 224,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "korta": {
+      "rank": 225,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kötiden": {
+      "rank": 226,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "hämtade": {
+      "rank": 227,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "ved": {
+      "rank": 228,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "ladan": {
+      "rank": 229,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "staplade": {
+      "rank": 230,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "tak": {
+      "rank": 231,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "domaren": {
+      "rank": 232,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "salen": {
+      "rank": 233,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "fiskarna": {
+      "rank": 234,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "små": {
+      "rank": 235,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sillfångster": {
+      "rank": 236,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "målade": {
+      "rank": 237,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "hallen": {
+      "rank": 238,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "ljusgrått": {
+      "rank": 239,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "busschauffören": {
+      "rank": 240,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "extra": {
+      "rank": 241,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "trottoarkanten": {
+      "rank": 242,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "rullstolen": {
+      "rank": 243,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "föreningen": {
+      "rank": 244,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "ordnade": {
+      "rank": 245,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "loppis": {
+      "rank": 246,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "böcker": {
+      "rank": 247,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "välgörenhet": {
+      "rank": 248,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "vinden": {
+      "rank": 249,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "knakade": {
+      "rank": 250,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "taket": {
+      "rank": 251,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "tegel": {
+      "rank": 252,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "lossnade": {
+      "rank": 253,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "programmeraren": {
+      "rank": 254,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "loggen": {
+      "rank": 255,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "rullade": {
+      "rank": 256,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "versionen": {
+      "rank": 257,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "morfar": {
+      "rank": 258,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "skolåren": {
+      "rank": 259,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sentimentala": {
+      "rank": 260,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "scener": {
+      "rank": 261,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "planterade": {
+      "rank": 262,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "cykelbanan": {
+      "rank": 263,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "skugga": {
+      "rank": 264,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sommaren": {
+      "rank": 265,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kocken": {
+      "rank": 266,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "skar": {
+      "rank": 267,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "grönsaker": {
+      "rank": 268,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "tunt": {
+      "rank": 269,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "fräste": {
+      "rank": 270,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "dem": {
+      "rank": 271,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "smör": {
+      "rank": 272,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "banken": {
+      "rank": 273,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sänkte": {
+      "rank": 274,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "räntan": {
+      "rank": 275,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sparkontot": {
+      "rank": 276,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kunderna": {
+      "rank": 277,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "reagerade": {
+      "rank": 278,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "lugnt": {
+      "rank": 279,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "badade": {
+      "rank": 280,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sjön": {
+      "rank": 281,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "trots": {
+      "rank": 282,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kallt": {
+      "rank": 283,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "redaktören": {
+      "rank": 284,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "strök": {
+      "rank": 285,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "inledningar": {
+      "rank": 286,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "insändaren": {
+      "rank": 287,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "barnmorskan": {
+      "rank": 288,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "mätte": {
+      "rank": 289,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "blodtryck": {
+      "rank": 290,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "antecknade": {
+      "rank": 291,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "journalen": {
+      "rank": 292,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "lastbilen": {
+      "rank": 293,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "motorstopp": {
+      "rank": 294,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "orsakade": {
+      "rank": 295,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kö": {
+      "rank": 296,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "väg": {
+      "rank": 297,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "konstnären": {
+      "rank": 298,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "skisser": {
+      "rank": 299,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "överdrivna": {
+      "rank": 300,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "etiketter": {
+      "rank": 301,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "skidspåret": {
+      "rank": 302,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "preparerades": {
+      "rank": 303,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sent": {
+      "rank": 304,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kvällen": {
+      "rank": 305,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "diskuterade": {
+      "rank": 306,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "matlådor": {
+      "rank": 307,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "pendling": {
+      "rank": 308,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "semesterplaner": {
+      "rank": 309,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "jobbet": {
+      "rank": 310,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "hantverkaren": {
+      "rank": 311,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "packningen": {
+      "rank": 312,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "först": {
+      "rank": 313,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "prästen": {
+      "rank": 314,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "talade": {
+      "rank": 315,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "solidaritet": {
+      "rank": 316,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "praktiska": {
+      "rank": 317,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "insatser": {
+      "rank": 318,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "fåglarna": {
+      "rank": 319,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "återvände": {
+      "rank": 320,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "våren": {
+      "rank": 321,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "försvann": {
+      "rank": 322,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "butiken": {
+      "rank": 323,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "reaade": {
+      "rank": 324,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "vinterkläder": {
+      "rank": 325,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "juristen": {
+      "rank": 326,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sammanfattade": {
+      "rank": 327,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "avtalet": {
+      "rank": 328,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kansliaktiga": {
+      "rank": 329,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "konstruktioner": {
+      "rank": 330,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "grävmaskinen": {
+      "rank": 331,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "hördes": {
+      "rank": 332,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "avstånd": {
+      "rank": 333,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "ledningar": {
+      "rank": 334,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "grävdes": {
+      "rank": 335,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "ner": {
+      "rank": 336,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "skötaren": {
+      "rank": 337,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "vattnade": {
+      "rank": 338,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "växthuset": {
+      "rank": 339,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "noterade": {
+      "rank": 340,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "fuktigheten": {
+      "rank": 341,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sill": {
+      "rank": 342,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "midsommar": {
+      "rank": 343,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "högtidstal": {
+      "rank": 344,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "brandkåren": {
+      "rank": 345,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "övade": {
+      "rank": 346,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "räddning": {
+      "rank": 347,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "isvak": {
+      "rank": 348,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "säker": {
+      "rank": 349,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "lina": {
+      "rank": 350,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "lantbrukaren": {
+      "rank": 351,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "torka": {
+      "rank": 352,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "skörden": {
+      "rank": 353,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "ändå": {
+      "rank": 354,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "godkänd": {
+      "rank": 355,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "dottern": {
+      "rank": 356,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "läste": {
+      "rank": 357,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "barnbok": {
+      "rank": 358,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "meningar": {
+      "rank": 359,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "informerade": {
+      "rank": 360,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sophämtning": {
+      "rank": 361,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sms": {
+      "rank": 362,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "snickaren": {
+      "rank": 363,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "passade": {
+      "rank": 364,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "dörren": {
+      "rank": 365,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "slipade": {
+      "rank": 366,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "slätt": {
+      "rank": 367,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "promenerade": {
+      "rank": 368,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "framtida": {
+      "rank": 369,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "renoveringar": {
+      "rank": 370,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "doktorn": {
+      "rank": 371,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "rekommenderade": {
+      "rank": 372,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "promenader": {
+      "rank": 373,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "receptfria": {
+      "rank": 374,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "piller": {
+      "rank": 375,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "läckte": {
+      "rank": 376,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "stormen": {
+      "rank": 377,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "hyresvärden": {
+      "rank": 378,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "lister": {
+      "rank": 379,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "studenter": {
+      "rank": 380,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "presenterade": {
+      "rank": 381,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "data": {
+      "rank": 382,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "tabeller": {
+      "rank": 383,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "överdriven": {
+      "rank": 384,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "inramning": {
+      "rank": 385,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "bageriet": {
+      "rank": 386,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "semlor": {
+      "rank": 387,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "tisdag": {
+      "rank": 388,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kön": {
+      "rank": 389,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "ringlade": {
+      "rank": 390,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "ut": {
+      "rank": 391,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "gatan": {
+      "rank": 392,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "däck": {
+      "rank": 393,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "garaget": {
+      "rank": 394,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kontrollerade": {
+      "rank": 395,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "bromsvätskan": {
+      "rank": 396,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sjöfarten": {
+      "rank": 397,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "dimbankar": {
+      "rank": 398,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "öarna": {
+      "rank": 399,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "skärgården": {
+      "rank": 400,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "lärarinnan": {
+      "rank": 401,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "instruktioner": {
+      "rank": 402,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "tavlan": {
+      "rank": 403,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "hunden": {
+      "rank": 404,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sprang": {
+      "rank": 405,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "pinnen": {
+      "rank": 406,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "haltade": {
+      "rank": 407,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "snedsteg": {
+      "rank": 408,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "siffror": {
+      "rank": 409,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "dölja": {
+      "rank": 410,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "osäkerheter": {
+      "rank": 411,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "grillade": {
+      "rank": 412,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "korv": {
+      "rank": 413,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "parken": {
+      "rank": 414,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "delade": {
+      "rank": 415,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "saft": {
+      "rank": 416,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "grannar": {
+      "rank": 417,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "arkeologerna": {
+      "rank": 418,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "fann": {
+      "rank": 419,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "keramik": {
+      "rank": 420,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "dokumenterade": {
+      "rank": 421,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "noggrant": {
+      "rank": 422,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "prover": {
+      "rank": 423,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "märkte": {
+      "rank": 424,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "rören": {
+      "rank": 425,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "streckkod": {
+      "rank": 426,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "bussen": {
+      "rank": 427,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "försenad": {
+      "rank": 428,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "chauffören": {
+      "rank": 429,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "vägarbetet": {
+      "rank": 430,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "städade": {
+      "rank": 431,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kartonger": {
+      "rank": 432,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "nittiotalet": {
+      "rank": 433,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "fjällstationen": {
+      "rank": 434,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "rapporterade": {
+      "rank": 435,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "väderomslag": {
+      "rank": 436,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "stark": {
+      "rank": 437,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "vind": {
+      "rank": 438,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "levererade": {
+      "rank": 439,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "mjölk": {
+      "rank": 440,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "mejeriet": {
+      "rank": 441,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "gryningen": {
+      "rank": 442,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "stickade": {
+      "rank": 443,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "tröja": {
+      "rank": 444,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "radion": {
+      "rank": 445,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "sände": {
+      "rank": 446,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "nyheter": {
+      "rank": 447,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "valresultat": {
+      "rank": 448,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "asfalt": {
+      "rank": 449,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "cykelvägen": {
+      "rank": 450,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "kurvor": {
+      "rank": 451,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "fotografen": {
+      "rank": 452,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "justerade": {
+      "rank": 453,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "ljuset": {
+      "rank": 454,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "modeord": {
+      "rank": 455,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "bildtexten": {
+      "rank": 456,
+      "count": 68,
+      "perMillion": 1299
+    },
+    "köpte": {
       "rank": 457,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "gårdsbutiken": {
       "rank": 458,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "pressade": {
       "rank": 459,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "must": {
       "rank": 460,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "hemma": {
       "rank": 461,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "elektrikern": {
       "rank": 462,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "drog": {
       "rank": 463,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "kablar": {
       "rank": 464,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "märkade": {
       "rank": 465,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "säkringsskåpet": {
       "rank": 466,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "byggde": {
       "rank": 467,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "snögubbe": {
       "rank": 468,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "morot": {
       "rank": 469,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "gammal": {
       "rank": 470,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "hatt": {
       "rank": 471,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "granskade": {
       "rank": 472,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "spekulativa": {
       "rank": 473,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "adjektiv": {
       "rank": 474,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "cykelkedjan": {
       "rank": 475,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "smorde": {
       "rank": 476,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "växlarna": {
       "rank": 477,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "tunn": {
       "rank": 478,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "olja": {
       "rank": 479,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "skogshuggaren": {
       "rank": 480,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "gallras": {
       "rank": 481,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "vår": {
       "rank": 482,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "biverkningar": {
       "rank": 483,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "vardagliga": {
       "rank": 484,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "tillfällig": {
       "rank": 485,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "enkelriktning": {
       "rank": 486,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "vattenskada": {
       "rank": 487,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "frukost": {
       "rank": 488,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "färjan": {
       "rank": 489,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "domstolen": {
       "rank": 490,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "fulltext": {
       "rank": 491,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "webbplatsen": {
       "rank": 492,
       "count": 68,
-      "perMillion": 1311
+      "perMillion": 1299
     },
     "de": {
       "rank": 493,
       "count": 35,
-      "perMillion": 675
+      "perMillion": 669
     },
     "jag": {
       "rank": 494,
       "count": 28,
-      "perMillion": 540
+      "perMillion": 535
     },
     "samma": {
-      "rank": 496,
+      "rank": 497,
       "count": 21,
-      "perMillion": 405
-    },
-    "avsnitt": {
-      "rank": 500,
-      "count": 14,
-      "perMillion": 270
-    },
-    "sedan": {
-      "rank": 501,
-      "count": 14,
-      "perMillion": 270
-    },
-    "hur": {
-      "rank": 502,
-      "count": 14,
-      "perMillion": 270
-    },
-    "enligt": {
-      "rank": 504,
-      "count": 9,
-      "perMillion": 174
-    },
-    "senast": {
-      "rank": 505,
-      "count": 9,
-      "perMillion": 174
-    },
-    "klockan": {
-      "rank": 506,
-      "count": 9,
-      "perMillion": 174
+      "perMillion": 401
     },
     "kommunens": {
-      "rank": 507,
-      "count": 9,
-      "perMillion": 174
-    },
-    "upphandling": {
-      "rank": 508,
-      "count": 9,
-      "perMillion": 174
-    },
-    "glömde": {
-      "rank": 510,
-      "count": 8,
-      "perMillion": 154
-    },
-    "ingen": {
-      "rank": 511,
-      "count": 8,
-      "perMillion": 154
-    },
-    "ska": {
-      "rank": 512,
-      "count": 8,
-      "perMillion": 154
-    },
-    "prövas": {
-      "rank": 513,
-      "count": 8,
-      "perMillion": 154
-    },
-    "framgår": {
-      "rank": 514,
-      "count": 8,
-      "perMillion": 154
-    },
-    "bilaga": {
-      "rank": 515,
-      "count": 8,
-      "perMillion": 154
-    },
-    "informationsmöte": {
-      "rank": 516,
-      "count": 8,
-      "perMillion": 154
-    },
-    "hålls": {
-      "rank": 517,
-      "count": 8,
-      "perMillion": 154
-    },
-    "stadshuset": {
-      "rank": 518,
-      "count": 8,
-      "perMillion": 154
+      "rank": 498,
+      "count": 19,
+      "perMillion": 363
     },
     "finns": {
-      "rank": 519,
-      "count": 8,
-      "perMillion": 154
-    },
-    "webbplats": {
-      "rank": 520,
-      "count": 8,
-      "perMillion": 154
-    },
-    "inom": {
-      "rank": 521,
-      "count": 8,
-      "perMillion": 154
-    },
-    "inte": {
-      "rank": 522,
-      "count": 8,
-      "perMillion": 154
-    },
-    "materialet": {
-      "rank": 530,
-      "count": 7,
-      "perMillion": 135
-    },
-    "består": {
-      "rank": 531,
-      "count": 7,
-      "perMillion": 135
-    },
-    "intervjuer": {
-      "rank": 532,
-      "count": 7,
-      "perMillion": 135
-    },
-    "lärare": {
-      "rank": 533,
-      "count": 7,
-      "perMillion": 135
-    },
-    "skolor": {
-      "rank": 534,
-      "count": 7,
-      "perMillion": 135
-    },
-    "transkriptionen": {
-      "rank": 535,
-      "count": 7,
-      "perMillion": 135
-    },
-    "kodades": {
-      "rank": 536,
-      "count": 7,
-      "perMillion": 135
-    },
-    "tematiskt": {
-      "rank": 537,
-      "count": 7,
-      "perMillion": 135
-    },
-    "metodbeskrivningen": {
-      "rank": 538,
-      "count": 7,
-      "perMillion": 135
-    },
-    "kapitel": {
-      "rank": 539,
-      "count": 7,
-      "perMillion": 135
-    },
-    "citat": {
-      "rank": 540,
-      "count": 7,
-      "perMillion": 135
-    },
-    "har": {
-      "rank": 541,
-      "count": 7,
-      "perMillion": 135
-    },
-    "strukits": {
-      "rank": 542,
-      "count": 7,
-      "perMillion": 135
-    },
-    "integritetsskäl": {
-      "rank": 543,
-      "count": 7,
-      "perMillion": 135
-    },
-    "resultatredogörelsen": {
-      "rank": 544,
-      "count": 7,
-      "perMillion": 135
-    },
-    "följer": {
-      "rank": 545,
-      "count": 7,
-      "perMillion": 135
-    },
-    "normativa": {
-      "rank": 546,
-      "count": 7,
-      "perMillion": 135
-    },
-    "slutsatser": {
-      "rank": 547,
-      "count": 7,
-      "perMillion": 135
-    },
-    "skolform": {
-      "rank": 548,
-      "count": 7,
-      "perMillion": 135
-    },
-    "metodnot": {
-      "rank": 549,
-      "count": 7,
-      "perMillion": 135
-    },
-    "träffas": {
-      "rank": 550,
-      "count": 7,
-      "perMillion": 135
-    },
-    "spåret": {
-      "rank": 551,
-      "count": 7,
-      "perMillion": 135
-    },
-    "försenat": {
-      "rank": 552,
-      "count": 7,
-      "perMillion": 135
-    },
-    "så": {
-      "rank": 553,
-      "count": 7,
-      "perMillion": 135
-    },
-    "satte": {
-      "rank": 554,
-      "count": 7,
-      "perMillion": 135
-    },
-    "oss": {
-      "rank": 555,
-      "count": 7,
-      "perMillion": 135
-    },
-    "bänken": {
-      "rank": 556,
-      "count": 7,
-      "perMillion": 135
-    },
-    "där": {
-      "rank": 557,
-      "count": 7,
-      "perMillion": 135
-    },
-    "torra": {
-      "rank": 558,
-      "count": 7,
-      "perMillion": 135
-    },
-    "kakorna": {
-      "rank": 559,
-      "count": 7,
-      "perMillion": 135
-    },
-    "maja": {
-      "rank": 560,
-      "count": 7,
-      "perMillion": 135
-    },
-    "jobbintervjun": {
-      "rank": 561,
-      "count": 7,
-      "perMillion": 135
-    },
-    "jackan": {
-      "rank": 562,
-      "count": 7,
-      "perMillion": 135
-    },
-    "hissen": {
-      "rank": 563,
-      "count": 7,
-      "perMillion": 135
-    },
-    "skrattade": {
-      "rank": 564,
-      "count": 7,
-      "perMillion": 135
-    },
-    "äldre": {
-      "rank": 565,
-      "count": 7,
-      "perMillion": 135
-    },
-    "man": {
-      "rank": 566,
-      "count": 7,
-      "perMillion": 135
-    },
-    "tittade": {
-      "rank": 567,
-      "count": 7,
-      "perMillion": 135
-    },
-    "log": {
-      "rank": 568,
-      "count": 7,
-      "perMillion": 135
-    },
-    "sms-tråd": {
-      "rank": 569,
-      "count": 7,
-      "perMillion": 135
-    },
-    "sammanställd": {
-      "rank": 570,
-      "count": 7,
-      "perMillion": 135
-    },
-    "ställde": {
-      "rank": 571,
-      "count": 7,
-      "perMillion": 135
-    },
-    "kaffemuggen": {
-      "rank": 572,
-      "count": 7,
-      "perMillion": 135
-    },
-    "räcket": {
-      "rank": 573,
-      "count": 7,
-      "perMillion": 135
-    },
-    "såg": {
-      "rank": 574,
-      "count": 7,
-      "perMillion": 135
-    },
-    "rörde": {
-      "rank": 575,
-      "count": 7,
-      "perMillion": 135
-    },
-    "sig": {
-      "rank": 576,
-      "count": 7,
-      "perMillion": 135
-    },
-    "långsammare": {
-      "rank": 577,
-      "count": 7,
-      "perMillion": 135
-    },
-    "än": {
-      "rank": 578,
-      "count": 7,
-      "perMillion": 135
+      "rank": 499,
+      "count": 18,
+      "perMillion": 344
     },
     "går": {
-      "rank": 579,
-      "count": 7,
-      "perMillion": 135
-    },
-    "någon": {
-      "rank": 580,
-      "count": 7,
-      "perMillion": 135
-    },
-    "lagt": {
-      "rank": 581,
-      "count": 7,
-      "perMillion": 135
-    },
-    "cykel": {
-      "rank": 582,
-      "count": 7,
-      "perMillion": 135
-    },
-    "lås": {
-      "rank": 583,
-      "count": 7,
-      "perMillion": 135
-    },
-    "tänkte": {
-      "rank": 584,
-      "count": 7,
-      "perMillion": 135
-    },
-    "ringa": {
-      "rank": 585,
-      "count": 7,
-      "perMillion": 135
-    },
-    "det": {
-      "rank": 586,
-      "count": 7,
-      "perMillion": 135
-    },
-    "gick": {
-      "rank": 587,
-      "count": 7,
-      "perMillion": 135
-    },
-    "hem": {
-      "rank": 588,
-      "count": 7,
-      "perMillion": 135
-    },
-    "ljudet": {
-      "rank": 589,
-      "count": 7,
-      "perMillion": 135
-    },
-    "fläkten": {
-      "rank": 590,
-      "count": 7,
-      "perMillion": 135
-    },
-    "annonseras": {
-      "rank": 591,
-      "count": 7,
-      "perMillion": 135
-    },
-    "ansökningar": {
-      "rank": 592,
-      "count": 7,
-      "perMillion": 135
-    },
-    "kriterier": {
-      "rank": 593,
-      "count": 7,
-      "perMillion": 135
-    },
-    "sal": {
-      "rank": 594,
-      "count": 7,
-      "perMillion": 135
-    },
-    "b": {
-      "rank": 595,
-      "count": 7,
-      "perMillion": 135
-    },
-    "handlingarna": {
-      "rank": 596,
-      "count": 7,
-      "perMillion": 135
-    },
-    "rubriken": {
-      "rank": 597,
-      "count": 7,
-      "perMillion": 135
-    },
-    "diarienummer": {
-      "rank": 598,
-      "count": 7,
-      "perMillion": 135
-    },
-    "badhuset": {
-      "rank": 599,
-      "count": 7,
-      "perMillion": 135
-    },
-    "februari": {
-      "rank": 600,
-      "count": 7,
-      "perMillion": 135
-    },
-    "läckage": {
-      "rank": 601,
-      "count": 7,
-      "perMillion": 135
-    },
-    "filtret": {
-      "rank": 602,
-      "count": 7,
-      "perMillion": 135
-    },
-    "reparationen": {
-      "rank": 603,
-      "count": 7,
-      "perMillion": 135
-    },
-    "kostade": {
-      "rank": 604,
-      "count": 7,
-      "perMillion": 135
-    },
-    "000": {
-      "rank": 605,
-      "count": 7,
-      "perMillion": 135
-    },
-    "kronor": {
-      "rank": 606,
-      "count": 7,
-      "perMillion": 135
-    },
-    "elva": {
-      "rank": 607,
-      "count": 7,
-      "perMillion": 135
-    },
-    "besökarantalet": {
-      "rank": 608,
-      "count": 7,
-      "perMillion": 135
-    },
-    "fjärdedel": {
-      "rank": 609,
-      "count": 7,
-      "perMillion": 135
-    },
-    "stängningen": {
-      "rank": 610,
-      "count": 7,
-      "perMillion": 135
-    },
-    "nivå": {
-      "rank": 611,
-      "count": 7,
-      "perMillion": 135
-    },
-    "veckor": {
-      "rank": 612,
-      "count": 7,
-      "perMillion": 135
-    },
-    "öppning": {
-      "rank": 613,
-      "count": 7,
-      "perMillion": 135
-    },
-    "verksamhetschefen": {
-      "rank": 614,
-      "count": 7,
-      "perMillion": 135
-    },
-    "säger": {
-      "rank": 615,
-      "count": 7,
-      "perMillion": 135
-    },
-    "bytt": {
-      "rank": 616,
-      "count": 7,
-      "perMillion": 135
-    },
-    "leverantör": {
-      "rank": 617,
-      "count": 7,
-      "perMillion": 135
-    },
-    "reservdelar": {
-      "rank": 618,
-      "count": 7,
-      "perMillion": 135
-    },
-    "variant": {
-      "rank": 619,
-      "count": 7,
-      "perMillion": 135
-    },
-    "kontroller": {
-      "rank": 620,
-      "count": 7,
-      "perMillion": 135
-    },
-    "görs": {
-      "rank": 621,
-      "count": 7,
-      "perMillion": 135
-    },
-    "nu": {
-      "rank": 622,
-      "count": 7,
-      "perMillion": 135
-    },
-    "varje": {
-      "rank": 623,
-      "count": 7,
-      "perMillion": 135
-    },
-    "måndag": {
-      "rank": 624,
-      "count": 7,
-      "perMillion": 135
-    },
-    "tycker": {
-      "rank": 625,
-      "count": 7,
-      "perMillion": 135
-    },
-    "höjningen": {
-      "rank": 626,
-      "count": 7,
-      "perMillion": 135
-    },
-    "tunnelbanepriset": {
-      "rank": 627,
-      "count": 7,
-      "perMillion": 135
-    },
-    "väntad": {
-      "rank": 628,
-      "count": 7,
-      "perMillion": 135
-    },
-    "dåligt": {
-      "rank": 629,
-      "count": 7,
-      "perMillion": 135
-    },
-    "förklarad": {
-      "rank": 630,
-      "count": 7,
-      "perMillion": 135
-    },
-    "politikerna": {
-      "rank": 631,
-      "count": 7,
-      "perMillion": 135
-    },
-    "pekade": {
-      "rank": 632,
-      "count": 7,
-      "perMillion": 135
-    },
-    "energikostnader": {
-      "rank": 633,
-      "count": 7,
-      "perMillion": 135
-    },
-    "visa": {
-      "rank": 634,
-      "count": 7,
-      "perMillion": 135
-    },
-    "slaget": {
-      "rank": 635,
-      "count": 7,
-      "perMillion": 135
-    },
-    "fördelades": {
-      "rank": 636,
-      "count": 7,
-      "perMillion": 135
-    },
-    "mellan": {
-      "rank": 637,
-      "count": 7,
-      "perMillion": 135
-    },
-    "drift": {
-      "rank": 638,
-      "count": 7,
-      "perMillion": 135
-    },
-    "underhåll": {
-      "rank": 639,
-      "count": 7,
-      "perMillion": 135
-    },
-    "åker": {
-      "rank": 640,
-      "count": 7,
-      "perMillion": 135
-    },
-    "fortfarande": {
-      "rank": 641,
-      "count": 7,
-      "perMillion": 135
-    },
-    "röstar": {
-      "rank": 642,
-      "count": 7,
-      "perMillion": 135
-    },
-    "sätt": {
-      "rank": 643,
-      "count": 7,
-      "perMillion": 135
-    },
-    "fem": {
-      "rank": 644,
-      "count": 7,
-      "perMillion": 135
-    },
-    "år": {
-      "rank": 645,
-      "count": 7,
-      "perMillion": 135
-    },
-    "insändare": {
-      "rank": 646,
-      "count": 7,
-      "perMillion": 135
-    },
-    "undertecknad": {
-      "rank": 647,
-      "count": 7,
-      "perMillion": 135
-    },
-    "läsare": {
-      "rank": 648,
-      "count": 7,
-      "perMillion": 135
-    },
-    "uppstod": {
-      "rank": 649,
-      "count": 7,
-      "perMillion": 135
-    },
-    "jobbkön": {
-      "rank": 650,
-      "count": 7,
-      "perMillion": 135
-    },
-    "dubbla": {
-      "rank": 651,
-      "count": 7,
-      "perMillion": 135
-    },
-    "meddelanden": {
-      "rank": 652,
-      "count": 7,
-      "perMillion": 135
-    },
-    "id": {
-      "rank": 653,
-      "count": 7,
-      "perMillion": 135
+      "rank": 500,
+      "count": 17,
+      "perMillion": 325
     },
     "in": {
-      "rank": 654,
-      "count": 7,
-      "perMillion": 135
+      "rank": 501,
+      "count": 17,
+      "perMillion": 325
     },
-    "unik": {
-      "rank": 655,
-      "count": 7,
-      "perMillion": 135
+    "avsnitt": {
+      "rank": 504,
+      "count": 14,
+      "perMillion": 267
     },
-    "nyckel": {
-      "rank": 656,
-      "count": 7,
-      "perMillion": 135
+    "sedan": {
+      "rank": 505,
+      "count": 14,
+      "perMillion": 267
     },
-    "databasen": {
-      "rank": 657,
-      "count": 7,
-      "perMillion": 135
-    },
-    "backade": {
-      "rank": 658,
-      "count": 7,
-      "perMillion": 135
-    },
-    "poster": {
-      "rank": 659,
-      "count": 7,
-      "perMillion": 135
-    },
-    "krockat": {
-      "rank": 660,
-      "count": 7,
-      "perMillion": 135
-    },
-    "deploy": {
-      "rank": 661,
-      "count": 7,
-      "perMillion": 135
-    },
-    "skedde": {
-      "rank": 662,
-      "count": 7,
-      "perMillion": 135
-    },
-    "övervakningen": {
-      "rank": 663,
-      "count": 7,
-      "perMillion": 135
-    },
-    "dubbletter": {
-      "rank": 664,
-      "count": 7,
-      "perMillion": 135
-    },
-    "följande": {
-      "rank": 665,
-      "count": 7,
-      "perMillion": 135
-    },
-    "sex": {
-      "rank": 666,
-      "count": 7,
-      "perMillion": 135
-    },
-    "timmarna": {
-      "rank": 667,
-      "count": 7,
-      "perMillion": 135
-    },
-    "releaseanteckning": {
-      "rank": 668,
-      "count": 7,
-      "perMillion": 135
-    },
-    "anbud": {
-      "rank": 669,
-      "count": 3,
-      "perMillion": 58
-    },
-    "kungörelse": {
-      "rank": 671,
-      "count": 2,
-      "perMillion": 39
-    },
-    "augusti": {
-      "rank": 672,
-      "count": 2,
-      "perMillion": 39
-    },
-    "00": {
-      "rank": 673,
-      "count": 2,
-      "perMillion": 39
-    },
-    "procent": {
-      "rank": 674,
-      "count": 2,
-      "perMillion": 39
-    },
-    "skriftligen": {
-      "rank": 675,
-      "count": 2,
-      "perMillion": 39
-    },
-    "pappa": {
-      "rank": 681,
-      "count": 1,
-      "perMillion": 19
-    },
-    "nyckeln": {
-      "rank": 682,
-      "count": 1,
-      "perMillion": 19
-    },
-    "frysen": {
-      "rank": 683,
-      "count": 1,
-      "perMillion": 19
-    },
-    "igen": {
-      "rank": 684,
-      "count": 1,
-      "perMillion": 19
-    },
-    "låna": {
-      "rank": 685,
-      "count": 1,
-      "perMillion": 19
-    },
-    "grannens": {
-      "rank": 686,
-      "count": 1,
-      "perMillion": 19
-    },
-    "hämta": {
-      "rank": 687,
-      "count": 1,
-      "perMillion": 19
-    },
-    "genom": {
-      "rank": 688,
-      "count": 1,
-      "perMillion": 19
-    },
-    "skadades": {
-      "rank": 689,
-      "count": 1,
-      "perMillion": 19
-    },
-    "arg": {
-      "rank": 690,
-      "count": 1,
-      "perMillion": 19
-    },
-    "städtjänster": {
-      "rank": 691,
-      "count": 1,
-      "perMillion": 19
-    },
-    "service": {
-      "rank": 692,
-      "count": 1,
-      "perMillion": 19
-    },
-    "exempelby": {
-      "rank": 693,
-      "count": 1,
-      "perMillion": 19
-    },
-    "kommun": {
-      "rank": 694,
-      "count": 1,
-      "perMillion": 19
-    },
-    "inbjuder": {
-      "rank": 695,
-      "count": 1,
-      "perMillion": 19
-    },
-    "anbudsgivare": {
-      "rank": 696,
-      "count": 1,
-      "perMillion": 19
-    },
-    "lämna": {
-      "rank": 697,
-      "count": 1,
-      "perMillion": 19
-    },
-    "denna": {
-      "rank": 698,
-      "count": 1,
-      "perMillion": 19
-    },
-    "uppdraget": {
-      "rank": 699,
-      "count": 1,
-      "perMillion": 19
-    },
-    "avser": {
-      "rank": 700,
-      "count": 1,
-      "perMillion": 19
-    },
-    "städning": {
-      "rank": 701,
-      "count": 1,
-      "perMillion": 19
-    },
-    "lokaler": {
-      "rank": 702,
-      "count": 1,
-      "perMillion": 19
-    },
-    "perioden": {
-      "rank": 703,
-      "count": 1,
-      "perMillion": 19
+    "hur": {
+      "rank": 506,
+      "count": 14,
+      "perMillion": 267
     },
     "september": {
-      "rank": 704,
-      "count": 1,
-      "perMillion": 19
+      "rank": 508,
+      "count": 11,
+      "perMillion": 210
     },
-    "ansökan": {
-      "rank": 705,
-      "count": 1,
-      "perMillion": 19
+    "välkommen": {
+      "rank": 510,
+      "count": 10,
+      "perMillion": 191
     },
-    "vara": {
-      "rank": 706,
-      "count": 1,
-      "perMillion": 19
+    "skördefesten": {
+      "rank": 511,
+      "count": 10,
+      "perMillion": 191
     },
-    "inkommen": {
-      "rank": 707,
-      "count": 1,
-      "perMillion": 19
+    "torget": {
+      "rank": 512,
+      "count": 10,
+      "perMillion": 191
     },
-    "upphandlingsenhet": {
-      "rank": 708,
-      "count": 1,
-      "perMillion": 19
+    "kl": {
+      "rank": 513,
+      "count": 10,
+      "perMillion": 191
     },
-    "sena": {
+    "lokala": {
+      "rank": 514,
+      "count": 10,
+      "perMillion": 191
+    },
+    "odlare": {
+      "rank": 515,
+      "count": 10,
+      "perMillion": 191
+    },
+    "säljer": {
+      "rank": 516,
+      "count": 10,
+      "perMillion": 191
+    },
+    "honung": {
+      "rank": 517,
+      "count": 10,
+      "perMillion": 191
+    },
+    "kan": {
+      "rank": 518,
+      "count": 10,
+      "perMillion": 191
+    },
+    "pumpor": {
+      "rank": 519,
+      "count": 10,
+      "perMillion": 191
+    },
+    "symbolisk": {
+      "rank": 520,
+      "count": 10,
+      "perMillion": 191
+    },
+    "avgift": {
+      "rank": 521,
+      "count": 10,
+      "perMillion": 191
+    },
+    "intäkten": {
+      "rank": 522,
+      "count": 10,
+      "perMillion": 191
+    },
+    "skolbiblioteket": {
+      "rank": 523,
+      "count": 10,
+      "perMillion": 191
+    },
+    "toaletter": {
+      "rank": 524,
+      "count": 10,
+      "perMillion": 191
+    },
+    "kulturhuset": {
+      "rank": 525,
+      "count": 10,
+      "perMillion": 191
+    },
+    "bredvid": {
+      "rank": 526,
+      "count": 10,
+      "perMillion": 191
+    },
+    "regn": {
+      "rank": 527,
+      "count": 10,
+      "perMillion": 191
+    },
+    "flyttas": {
+      "rank": 528,
+      "count": 10,
+      "perMillion": 191
+    },
+    "delar": {
+      "rank": 529,
+      "count": 10,
+      "perMillion": 191
+    },
+    "marknaden": {
+      "rank": 530,
+      "count": 10,
+      "perMillion": 191
+    },
+    "saluhallen": {
+      "rank": 531,
+      "count": 10,
+      "perMillion": 191
+    },
+    "evenemangstext": {
+      "rank": 532,
+      "count": 10,
+      "perMillion": 191
+    },
+    "kulturnämnd": {
+      "rank": 533,
+      "count": 10,
+      "perMillion": 191
+    },
+    "enligt": {
+      "rank": 536,
+      "count": 9,
+      "perMillion": 172
+    },
+    "senast": {
+      "rank": 537,
+      "count": 9,
+      "perMillion": 172
+    },
+    "klockan": {
+      "rank": 538,
+      "count": 9,
+      "perMillion": 172
+    },
+    "upphandling": {
+      "rank": 539,
+      "count": 9,
+      "perMillion": 172
+    },
+    "glömde": {
+      "rank": 543,
+      "count": 8,
+      "perMillion": 153
+    },
+    "ingen": {
+      "rank": 544,
+      "count": 8,
+      "perMillion": 153
+    },
+    "ska": {
+      "rank": 545,
+      "count": 8,
+      "perMillion": 153
+    },
+    "prövas": {
+      "rank": 546,
+      "count": 8,
+      "perMillion": 153
+    },
+    "framgår": {
+      "rank": 547,
+      "count": 8,
+      "perMillion": 153
+    },
+    "bilaga": {
+      "rank": 548,
+      "count": 8,
+      "perMillion": 153
+    },
+    "informationsmöte": {
+      "rank": 549,
+      "count": 8,
+      "perMillion": 153
+    },
+    "hålls": {
+      "rank": 550,
+      "count": 8,
+      "perMillion": 153
+    },
+    "stadshuset": {
+      "rank": 551,
+      "count": 8,
+      "perMillion": 153
+    },
+    "webbplats": {
+      "rank": 552,
+      "count": 8,
+      "perMillion": 153
+    },
+    "inom": {
+      "rank": 553,
+      "count": 8,
+      "perMillion": 153
+    },
+    "inte": {
+      "rank": 554,
+      "count": 8,
+      "perMillion": 153
+    },
+    "materialet": {
+      "rank": 559,
+      "count": 7,
+      "perMillion": 134
+    },
+    "består": {
+      "rank": 560,
+      "count": 7,
+      "perMillion": 134
+    },
+    "intervjuer": {
+      "rank": 561,
+      "count": 7,
+      "perMillion": 134
+    },
+    "lärare": {
+      "rank": 562,
+      "count": 7,
+      "perMillion": 134
+    },
+    "skolor": {
+      "rank": 563,
+      "count": 7,
+      "perMillion": 134
+    },
+    "transkriptionen": {
+      "rank": 564,
+      "count": 7,
+      "perMillion": 134
+    },
+    "kodades": {
+      "rank": 565,
+      "count": 7,
+      "perMillion": 134
+    },
+    "tematiskt": {
+      "rank": 566,
+      "count": 7,
+      "perMillion": 134
+    },
+    "metodbeskrivningen": {
+      "rank": 567,
+      "count": 7,
+      "perMillion": 134
+    },
+    "kapitel": {
+      "rank": 568,
+      "count": 7,
+      "perMillion": 134
+    },
+    "citat": {
+      "rank": 569,
+      "count": 7,
+      "perMillion": 134
+    },
+    "har": {
+      "rank": 570,
+      "count": 7,
+      "perMillion": 134
+    },
+    "strukits": {
+      "rank": 571,
+      "count": 7,
+      "perMillion": 134
+    },
+    "integritetsskäl": {
+      "rank": 572,
+      "count": 7,
+      "perMillion": 134
+    },
+    "resultatredogörelsen": {
+      "rank": 573,
+      "count": 7,
+      "perMillion": 134
+    },
+    "följer": {
+      "rank": 574,
+      "count": 7,
+      "perMillion": 134
+    },
+    "normativa": {
+      "rank": 575,
+      "count": 7,
+      "perMillion": 134
+    },
+    "slutsatser": {
+      "rank": 576,
+      "count": 7,
+      "perMillion": 134
+    },
+    "skolform": {
+      "rank": 577,
+      "count": 7,
+      "perMillion": 134
+    },
+    "metodnot": {
+      "rank": 578,
+      "count": 7,
+      "perMillion": 134
+    },
+    "träffas": {
+      "rank": 579,
+      "count": 7,
+      "perMillion": 134
+    },
+    "spåret": {
+      "rank": 580,
+      "count": 7,
+      "perMillion": 134
+    },
+    "försenat": {
+      "rank": 581,
+      "count": 7,
+      "perMillion": 134
+    },
+    "så": {
+      "rank": 582,
+      "count": 7,
+      "perMillion": 134
+    },
+    "satte": {
+      "rank": 583,
+      "count": 7,
+      "perMillion": 134
+    },
+    "oss": {
+      "rank": 584,
+      "count": 7,
+      "perMillion": 134
+    },
+    "bänken": {
+      "rank": 585,
+      "count": 7,
+      "perMillion": 134
+    },
+    "där": {
+      "rank": 586,
+      "count": 7,
+      "perMillion": 134
+    },
+    "torra": {
+      "rank": 587,
+      "count": 7,
+      "perMillion": 134
+    },
+    "kakorna": {
+      "rank": 588,
+      "count": 7,
+      "perMillion": 134
+    },
+    "maja": {
+      "rank": 589,
+      "count": 7,
+      "perMillion": 134
+    },
+    "jobbintervjun": {
+      "rank": 590,
+      "count": 7,
+      "perMillion": 134
+    },
+    "jackan": {
+      "rank": 591,
+      "count": 7,
+      "perMillion": 134
+    },
+    "hissen": {
+      "rank": 592,
+      "count": 7,
+      "perMillion": 134
+    },
+    "skrattade": {
+      "rank": 593,
+      "count": 7,
+      "perMillion": 134
+    },
+    "äldre": {
+      "rank": 594,
+      "count": 7,
+      "perMillion": 134
+    },
+    "man": {
+      "rank": 595,
+      "count": 7,
+      "perMillion": 134
+    },
+    "tittade": {
+      "rank": 596,
+      "count": 7,
+      "perMillion": 134
+    },
+    "log": {
+      "rank": 597,
+      "count": 7,
+      "perMillion": 134
+    },
+    "sms-tråd": {
+      "rank": 598,
+      "count": 7,
+      "perMillion": 134
+    },
+    "sammanställd": {
+      "rank": 599,
+      "count": 7,
+      "perMillion": 134
+    },
+    "ställde": {
+      "rank": 600,
+      "count": 7,
+      "perMillion": 134
+    },
+    "kaffemuggen": {
+      "rank": 601,
+      "count": 7,
+      "perMillion": 134
+    },
+    "räcket": {
+      "rank": 602,
+      "count": 7,
+      "perMillion": 134
+    },
+    "såg": {
+      "rank": 603,
+      "count": 7,
+      "perMillion": 134
+    },
+    "rörde": {
+      "rank": 604,
+      "count": 7,
+      "perMillion": 134
+    },
+    "sig": {
+      "rank": 605,
+      "count": 7,
+      "perMillion": 134
+    },
+    "långsammare": {
+      "rank": 606,
+      "count": 7,
+      "perMillion": 134
+    },
+    "än": {
+      "rank": 607,
+      "count": 7,
+      "perMillion": 134
+    },
+    "någon": {
+      "rank": 608,
+      "count": 7,
+      "perMillion": 134
+    },
+    "lagt": {
+      "rank": 609,
+      "count": 7,
+      "perMillion": 134
+    },
+    "cykel": {
+      "rank": 610,
+      "count": 7,
+      "perMillion": 134
+    },
+    "lås": {
+      "rank": 611,
+      "count": 7,
+      "perMillion": 134
+    },
+    "tänkte": {
+      "rank": 612,
+      "count": 7,
+      "perMillion": 134
+    },
+    "ringa": {
+      "rank": 613,
+      "count": 7,
+      "perMillion": 134
+    },
+    "det": {
+      "rank": 614,
+      "count": 7,
+      "perMillion": 134
+    },
+    "gick": {
+      "rank": 615,
+      "count": 7,
+      "perMillion": 134
+    },
+    "hem": {
+      "rank": 616,
+      "count": 7,
+      "perMillion": 134
+    },
+    "ljudet": {
+      "rank": 617,
+      "count": 7,
+      "perMillion": 134
+    },
+    "fläkten": {
+      "rank": 618,
+      "count": 7,
+      "perMillion": 134
+    },
+    "annonseras": {
+      "rank": 619,
+      "count": 7,
+      "perMillion": 134
+    },
+    "ansökningar": {
+      "rank": 620,
+      "count": 7,
+      "perMillion": 134
+    },
+    "kriterier": {
+      "rank": 621,
+      "count": 7,
+      "perMillion": 134
+    },
+    "sal": {
+      "rank": 622,
+      "count": 7,
+      "perMillion": 134
+    },
+    "b": {
+      "rank": 623,
+      "count": 7,
+      "perMillion": 134
+    },
+    "handlingarna": {
+      "rank": 624,
+      "count": 7,
+      "perMillion": 134
+    },
+    "rubriken": {
+      "rank": 625,
+      "count": 7,
+      "perMillion": 134
+    },
+    "diarienummer": {
+      "rank": 626,
+      "count": 7,
+      "perMillion": 134
+    },
+    "badhuset": {
+      "rank": 627,
+      "count": 7,
+      "perMillion": 134
+    },
+    "februari": {
+      "rank": 628,
+      "count": 7,
+      "perMillion": 134
+    },
+    "läckage": {
+      "rank": 629,
+      "count": 7,
+      "perMillion": 134
+    },
+    "filtret": {
+      "rank": 630,
+      "count": 7,
+      "perMillion": 134
+    },
+    "reparationen": {
+      "rank": 631,
+      "count": 7,
+      "perMillion": 134
+    },
+    "kostade": {
+      "rank": 632,
+      "count": 7,
+      "perMillion": 134
+    },
+    "000": {
+      "rank": 633,
+      "count": 7,
+      "perMillion": 134
+    },
+    "kronor": {
+      "rank": 634,
+      "count": 7,
+      "perMillion": 134
+    },
+    "elva": {
+      "rank": 635,
+      "count": 7,
+      "perMillion": 134
+    },
+    "besökarantalet": {
+      "rank": 636,
+      "count": 7,
+      "perMillion": 134
+    },
+    "fjärdedel": {
+      "rank": 637,
+      "count": 7,
+      "perMillion": 134
+    },
+    "stängningen": {
+      "rank": 638,
+      "count": 7,
+      "perMillion": 134
+    },
+    "nivå": {
+      "rank": 639,
+      "count": 7,
+      "perMillion": 134
+    },
+    "veckor": {
+      "rank": 640,
+      "count": 7,
+      "perMillion": 134
+    },
+    "öppning": {
+      "rank": 641,
+      "count": 7,
+      "perMillion": 134
+    },
+    "verksamhetschefen": {
+      "rank": 642,
+      "count": 7,
+      "perMillion": 134
+    },
+    "säger": {
+      "rank": 643,
+      "count": 7,
+      "perMillion": 134
+    },
+    "bytt": {
+      "rank": 644,
+      "count": 7,
+      "perMillion": 134
+    },
+    "leverantör": {
+      "rank": 645,
+      "count": 7,
+      "perMillion": 134
+    },
+    "reservdelar": {
+      "rank": 646,
+      "count": 7,
+      "perMillion": 134
+    },
+    "variant": {
+      "rank": 647,
+      "count": 7,
+      "perMillion": 134
+    },
+    "kontroller": {
+      "rank": 648,
+      "count": 7,
+      "perMillion": 134
+    },
+    "görs": {
+      "rank": 649,
+      "count": 7,
+      "perMillion": 134
+    },
+    "nu": {
+      "rank": 650,
+      "count": 7,
+      "perMillion": 134
+    },
+    "varje": {
+      "rank": 651,
+      "count": 7,
+      "perMillion": 134
+    },
+    "måndag": {
+      "rank": 652,
+      "count": 7,
+      "perMillion": 134
+    },
+    "tycker": {
+      "rank": 653,
+      "count": 7,
+      "perMillion": 134
+    },
+    "höjningen": {
+      "rank": 654,
+      "count": 7,
+      "perMillion": 134
+    },
+    "tunnelbanepriset": {
+      "rank": 655,
+      "count": 7,
+      "perMillion": 134
+    },
+    "väntad": {
+      "rank": 656,
+      "count": 7,
+      "perMillion": 134
+    },
+    "dåligt": {
+      "rank": 657,
+      "count": 7,
+      "perMillion": 134
+    },
+    "förklarad": {
+      "rank": 658,
+      "count": 7,
+      "perMillion": 134
+    },
+    "politikerna": {
+      "rank": 659,
+      "count": 7,
+      "perMillion": 134
+    },
+    "pekade": {
+      "rank": 660,
+      "count": 7,
+      "perMillion": 134
+    },
+    "energikostnader": {
+      "rank": 661,
+      "count": 7,
+      "perMillion": 134
+    },
+    "visa": {
+      "rank": 662,
+      "count": 7,
+      "perMillion": 134
+    },
+    "slaget": {
+      "rank": 663,
+      "count": 7,
+      "perMillion": 134
+    },
+    "fördelades": {
+      "rank": 664,
+      "count": 7,
+      "perMillion": 134
+    },
+    "mellan": {
+      "rank": 665,
+      "count": 7,
+      "perMillion": 134
+    },
+    "drift": {
+      "rank": 666,
+      "count": 7,
+      "perMillion": 134
+    },
+    "underhåll": {
+      "rank": 667,
+      "count": 7,
+      "perMillion": 134
+    },
+    "åker": {
+      "rank": 668,
+      "count": 7,
+      "perMillion": 134
+    },
+    "fortfarande": {
+      "rank": 669,
+      "count": 7,
+      "perMillion": 134
+    },
+    "röstar": {
+      "rank": 670,
+      "count": 7,
+      "perMillion": 134
+    },
+    "sätt": {
+      "rank": 671,
+      "count": 7,
+      "perMillion": 134
+    },
+    "fem": {
+      "rank": 672,
+      "count": 7,
+      "perMillion": 134
+    },
+    "år": {
+      "rank": 673,
+      "count": 7,
+      "perMillion": 134
+    },
+    "insändare": {
+      "rank": 674,
+      "count": 7,
+      "perMillion": 134
+    },
+    "undertecknad": {
+      "rank": 675,
+      "count": 7,
+      "perMillion": 134
+    },
+    "läsare": {
+      "rank": 676,
+      "count": 7,
+      "perMillion": 134
+    },
+    "uppstod": {
+      "rank": 677,
+      "count": 7,
+      "perMillion": 134
+    },
+    "jobbkön": {
+      "rank": 678,
+      "count": 7,
+      "perMillion": 134
+    },
+    "dubbla": {
+      "rank": 679,
+      "count": 7,
+      "perMillion": 134
+    },
+    "meddelanden": {
+      "rank": 680,
+      "count": 7,
+      "perMillion": 134
+    },
+    "id": {
+      "rank": 681,
+      "count": 7,
+      "perMillion": 134
+    },
+    "unik": {
+      "rank": 682,
+      "count": 7,
+      "perMillion": 134
+    },
+    "nyckel": {
+      "rank": 683,
+      "count": 7,
+      "perMillion": 134
+    },
+    "databasen": {
+      "rank": 684,
+      "count": 7,
+      "perMillion": 134
+    },
+    "backade": {
+      "rank": 685,
+      "count": 7,
+      "perMillion": 134
+    },
+    "poster": {
+      "rank": 686,
+      "count": 7,
+      "perMillion": 134
+    },
+    "krockat": {
+      "rank": 687,
+      "count": 7,
+      "perMillion": 134
+    },
+    "deploy": {
+      "rank": 688,
+      "count": 7,
+      "perMillion": 134
+    },
+    "skedde": {
+      "rank": 689,
+      "count": 7,
+      "perMillion": 134
+    },
+    "övervakningen": {
+      "rank": 690,
+      "count": 7,
+      "perMillion": 134
+    },
+    "dubbletter": {
+      "rank": 691,
+      "count": 7,
+      "perMillion": 134
+    },
+    "följande": {
+      "rank": 692,
+      "count": 7,
+      "perMillion": 134
+    },
+    "sex": {
+      "rank": 693,
+      "count": 7,
+      "perMillion": 134
+    },
+    "timmarna": {
+      "rank": 694,
+      "count": 7,
+      "perMillion": 134
+    },
+    "releaseanteckning": {
+      "rank": 695,
+      "count": 7,
+      "perMillion": 134
+    },
+    "anbud": {
+      "rank": 696,
+      "count": 3,
+      "perMillion": 57
+    },
+    "kungörelse": {
+      "rank": 699,
+      "count": 2,
+      "perMillion": 38
+    },
+    "augusti": {
+      "rank": 700,
+      "count": 2,
+      "perMillion": 38
+    },
+    "00": {
+      "rank": 701,
+      "count": 2,
+      "perMillion": 38
+    },
+    "procent": {
+      "rank": 702,
+      "count": 2,
+      "perMillion": 38
+    },
+    "skriftligen": {
+      "rank": 703,
+      "count": 2,
+      "perMillion": 38
+    },
+    "pappa": {
       "rank": 709,
       "count": 1,
       "perMillion": 19
     },
-    "bedömningsgrunder": {
+    "nyckeln": {
       "rank": 710,
       "count": 1,
       "perMillion": 19
     },
-    "ekonomiskt": {
+    "frysen": {
       "rank": 711,
       "count": 1,
       "perMillion": 19
     },
-    "mest": {
+    "igen": {
       "rank": 712,
       "count": 1,
       "perMillion": 19
     },
-    "fördelaktiga": {
+    "låna": {
       "rank": 713,
       "count": 1,
       "perMillion": 19
     },
-    "väljs": {
+    "grannens": {
       "rank": 714,
       "count": 1,
       "perMillion": 19
     },
-    "utifrån": {
+    "hämta": {
       "rank": 715,
       "count": 1,
       "perMillion": 19
     },
-    "pris": {
+    "genom": {
       "rank": 716,
       "count": 1,
       "perMillion": 19
     },
-    "kvalitet": {
+    "skadades": {
       "rank": 717,
       "count": 1,
       "perMillion": 19
     },
-    "referenser": {
+    "arg": {
       "rank": 718,
       "count": 1,
       "perMillion": 19
     },
-    "rum": {
+    "städtjänster": {
       "rank": 719,
       "count": 1,
       "perMillion": 19
     },
-    "närvaro": {
+    "service": {
       "rank": 720,
       "count": 1,
       "perMillion": 19
     },
-    "frivillig": {
+    "exempelby": {
       "rank": 721,
       "count": 1,
       "perMillion": 19
     },
-    "handlingar": {
+    "kommun": {
       "rank": 722,
       "count": 1,
       "perMillion": 19
     },
-    "fliken": {
+    "inbjuder": {
       "rank": 723,
       "count": 1,
       "perMillion": 19
     },
-    "frågor": {
+    "anbudsgivare": {
       "rank": 724,
       "count": 1,
       "perMillion": 19
     },
-    "besvaras": {
+    "lämna": {
       "rank": 725,
       "count": 1,
       "perMillion": 19
     },
-    "angivna": {
+    "denna": {
       "rank": 726,
       "count": 1,
       "perMillion": 19
     },
-    "kontaktvägen": {
+    "uppdraget": {
       "rank": 727,
       "count": 1,
       "perMillion": 19
     },
-    "före": {
+    "avser": {
       "rank": 728,
       "count": 1,
       "perMillion": 19
     },
-    "sista": {
+    "städning": {
       "rank": 729,
       "count": 1,
       "perMillion": 19
     },
-    "anbudsdag": {
+    "lokaler": {
       "rank": 730,
       "count": 1,
       "perMillion": 19
     },
-    "beslut": {
+    "perioden": {
       "rank": 731,
       "count": 1,
       "perMillion": 19
     },
-    "meddelas": {
+    "ansökan": {
       "rank": 732,
       "count": 1,
       "perMillion": 19
     },
-    "anbudsgivarna": {
+    "vara": {
       "rank": 733,
       "count": 1,
       "perMillion": 19
     },
-    "tio": {
+    "inkommen": {
       "rank": 734,
       "count": 1,
       "perMillion": 19
     },
-    "tilldelning": {
+    "upphandlingsenhet": {
       "rank": 735,
       "count": 1,
       "perMillion": 19
     },
-    "text": {
+    "sena": {
       "rank": 736,
       "count": 1,
       "perMillion": 19
     },
-    "original": {
+    "bedömningsgrunder": {
       "rank": 737,
       "count": 1,
       "perMillion": 19
     },
-    "testdata": {
+    "ekonomiskt": {
       "rank": 738,
       "count": 1,
       "perMillion": 19
     },
-    "förvaret": {
+    "mest": {
       "rank": 739,
       "count": 1,
       "perMillion": 19
     },
-    "mit-licens": {
+    "fördelaktiga": {
       "rank": 740,
+      "count": 1,
+      "perMillion": 19
+    },
+    "väljs": {
+      "rank": 741,
+      "count": 1,
+      "perMillion": 19
+    },
+    "utifrån": {
+      "rank": 742,
+      "count": 1,
+      "perMillion": 19
+    },
+    "pris": {
+      "rank": 743,
+      "count": 1,
+      "perMillion": 19
+    },
+    "kvalitet": {
+      "rank": 744,
+      "count": 1,
+      "perMillion": 19
+    },
+    "referenser": {
+      "rank": 745,
+      "count": 1,
+      "perMillion": 19
+    },
+    "rum": {
+      "rank": 746,
+      "count": 1,
+      "perMillion": 19
+    },
+    "närvaro": {
+      "rank": 747,
+      "count": 1,
+      "perMillion": 19
+    },
+    "frivillig": {
+      "rank": 748,
+      "count": 1,
+      "perMillion": 19
+    },
+    "handlingar": {
+      "rank": 749,
+      "count": 1,
+      "perMillion": 19
+    },
+    "fliken": {
+      "rank": 750,
+      "count": 1,
+      "perMillion": 19
+    },
+    "frågor": {
+      "rank": 751,
+      "count": 1,
+      "perMillion": 19
+    },
+    "besvaras": {
+      "rank": 752,
+      "count": 1,
+      "perMillion": 19
+    },
+    "angivna": {
+      "rank": 753,
+      "count": 1,
+      "perMillion": 19
+    },
+    "kontaktvägen": {
+      "rank": 754,
+      "count": 1,
+      "perMillion": 19
+    },
+    "före": {
+      "rank": 755,
+      "count": 1,
+      "perMillion": 19
+    },
+    "sista": {
+      "rank": 756,
+      "count": 1,
+      "perMillion": 19
+    },
+    "anbudsdag": {
+      "rank": 757,
+      "count": 1,
+      "perMillion": 19
+    },
+    "beslut": {
+      "rank": 758,
+      "count": 1,
+      "perMillion": 19
+    },
+    "meddelas": {
+      "rank": 759,
+      "count": 1,
+      "perMillion": 19
+    },
+    "anbudsgivarna": {
+      "rank": 760,
+      "count": 1,
+      "perMillion": 19
+    },
+    "tio": {
+      "rank": 761,
+      "count": 1,
+      "perMillion": 19
+    },
+    "tilldelning": {
+      "rank": 762,
+      "count": 1,
+      "perMillion": 19
+    },
+    "text": {
+      "rank": 763,
+      "count": 1,
+      "perMillion": 19
+    },
+    "original": {
+      "rank": 764,
+      "count": 1,
+      "perMillion": 19
+    },
+    "testdata": {
+      "rank": 765,
+      "count": 1,
+      "perMillion": 19
+    },
+    "förvaret": {
+      "rank": 766,
+      "count": 1,
+      "perMillion": 19
+    },
+    "mit-licens": {
+      "rank": 767,
       "count": 1,
       "perMillion": 19
     }

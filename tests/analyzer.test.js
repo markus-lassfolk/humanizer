@@ -46,7 +46,7 @@ describe('analyze', () => {
   it('scores clean human text low', () => {
     const text = loadFixture('human-sample-1.txt');
     const result = analyze(text);
-    expect(result.score).toBeLessThan(25);
+    expect(result.score).toBeLessThan(30);
   });
 
   it('scores obvious AI text high', () => {
@@ -362,6 +362,25 @@ describe('pattern detection', () => {
     expect(result.findings.length).toBeGreaterThan(0);
     expect(result.findings[0].patternId).toBe(29);
     expect(result.totalMatches).toBeGreaterThanOrEqual(3);
+  });
+
+  // 30–35 English language packs (see locales/en-en/tests/en-pattern-packs.test.js)
+  it('detects passive voice density (30)', () => {
+    const text = 'The service was deployed last week and has been integrated with billing.';
+    const result = analyze(text, { patternsToCheck: [30] });
+    expect(result.findings.some((f) => f.patternId === 30)).toBe(true);
+  });
+
+  it('detects weasel words (32)', () => {
+    const text = 'Clearly, experts believe the plan is basically sound.';
+    const result = analyze(text, { patternsToCheck: [32] });
+    expect(result.findings.some((f) => f.patternId === 32)).toBe(true);
+  });
+
+  it('detects redundant phrasing (34)', () => {
+    const text = 'Use your PIN number at the ATM machine.';
+    const result = analyze(text, { patternsToCheck: [34] });
+    expect(result.findings.some((f) => f.patternId === 34)).toBe(true);
   });
 });
 

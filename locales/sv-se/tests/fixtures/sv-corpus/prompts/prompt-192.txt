@@ -1,7 +1,7 @@
 ---
-genre: opinion
+genre: casual
 id: 192
 target_words: 150
 ---
 
-Skriv en insändare (20) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.
+Skriv ett informellt stycke (18) som vardaglig berättelse mellan vänner eller familj. Ca 120–180 ord.

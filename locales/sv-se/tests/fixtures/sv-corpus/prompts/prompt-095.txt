@@ -1,7 +1,7 @@
 ---
-genre: casual
+genre: academic
 id: 95
 target_words: 150
 ---
 
-Skriv ett informellt stycke (10) som vardaglig berättelse mellan vänner eller familj. Ca 120–180 ord.
+Skriv ett kort metod-/resultatstycke (9) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.

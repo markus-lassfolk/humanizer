@@ -1,7 +1,7 @@
 ---
-genre: email
+genre: academic
 id: 29
 target_words: 150
 ---
 
-Skriv ett kort affärsmejl (3) på svenska: tydlig begäran eller svar, utan onödig artighetsfyllnad. Ca 80–120 ord.
+Skriv ett kort metod-/resultatstycke (3) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.

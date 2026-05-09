@@ -1,7 +1,7 @@
 ---
-genre: fiction
+genre: news
 id: 133
 target_words: 150
 ---
 
-Skriv ett kort prosastycke (14) med scen, dialog eller inre monolog. Konkret sensorik, inga metaforhögar. Ca 120–180 ord.
+Skriv en kort nyhetsartikel (13) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.

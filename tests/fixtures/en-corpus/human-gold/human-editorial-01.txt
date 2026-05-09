@@ -1,0 +1,1 @@
+The outage lasted four hours. Engineers traced it to a misrouted config push at 03:12 UTC. Customers on the west coast saw errors first; EU traffic recovered sooner because caches still held the previous build. The incident review lists three action items and owners.

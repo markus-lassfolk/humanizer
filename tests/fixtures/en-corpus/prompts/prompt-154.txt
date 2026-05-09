@@ -1,0 +1,7 @@
+---
+genre: technical
+id: 154
+target_words: 150
+---
+
+Write a brief technical note (16) about a bug, deploy, or measurement. Include numbers and timestamps. No buzzwords. 120–180 words.

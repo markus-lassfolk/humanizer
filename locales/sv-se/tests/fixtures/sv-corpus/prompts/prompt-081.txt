@@ -1,7 +1,7 @@
 ---
-genre: news
+genre: technical
 id: 81
 target_words: 150
 ---
 
-Skriv en kort nyhetsartikel (9) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.
+Skriv en kort teknisk anteckning (8) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.

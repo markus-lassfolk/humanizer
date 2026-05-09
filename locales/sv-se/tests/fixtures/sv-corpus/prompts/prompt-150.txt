@@ -1,7 +1,7 @@
 ---
-genre: summary
+genre: academic
 id: 150
 target_words: 150
 ---
 
-Sammanfatta ett påhittat beslut eller protokollutdrag (15) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".
+Skriv ett kort metod-/resultatstycke (14) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.

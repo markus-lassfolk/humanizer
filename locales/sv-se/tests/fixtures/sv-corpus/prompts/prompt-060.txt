@@ -1,7 +1,7 @@
 ---
-genre: summary
+genre: casual
 id: 60
 target_words: 150
 ---
 
-Sammanfatta ett påhittat beslut eller protokollutdrag (6) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".
+Skriv ett informellt stycke (6) som vardaglig berättelse mellan vänner eller familj. Ca 120–180 ord.

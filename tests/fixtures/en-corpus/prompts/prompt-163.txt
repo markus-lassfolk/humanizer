@@ -1,0 +1,7 @@
+---
+genre: fiction
+id: 163
+target_words: 150
+---
+
+Write a short prose scene (17) with concrete detail. No metaphor piles. 120–180 words.

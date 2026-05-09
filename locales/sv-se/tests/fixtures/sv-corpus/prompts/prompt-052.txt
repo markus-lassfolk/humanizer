@@ -1,7 +1,7 @@
 ---
-genre: opinion
+genre: marketing
 id: 52
 target_words: 150
 ---
 
-Skriv en insändare (6) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.
+Skriv en saklig men värmande text (5) för en kommunal evenemangssida eller välgörenhetsinsamling: datum, plats, praktisk info. Undvik genrens mest slitna superlativ. Ca 100–160 ord.

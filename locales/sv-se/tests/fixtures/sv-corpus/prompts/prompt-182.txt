@@ -1,7 +1,7 @@
 ---
-genre: opinion
+genre: government
 id: 182
 target_words: 150
 ---
 
-Skriv en insändare (19) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.
+Skriv ett neutralt myndighetstextstycke (17): beslut, inbjudan eller information till medborgare. Klarspråk, inga engelska modeord. Ca 120–180 ord.

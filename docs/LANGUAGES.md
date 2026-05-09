@@ -9,7 +9,7 @@ Humanizer separates **runtime analyzer locales** from **agent skill bundles**.
 
 | Locale code | Language | Default? | Status | Notes |
 |---|---|---:|---|---|
-| `en` | English | Yes | Stable | Uses English vocabulary tiers, phrase packs, function words, and Flesch-Kincaid readability. |
+| `en` | English | Yes | Stable | Vocabulary tiers, prescriptive autofix codegen, empirical n-grams (Pattern 7), patterns 30–35, function words, Flesch-Kincaid; optional `--with-lm` uniformity. See `locales/en-en/docs/ENGLISH-EXTENSION.md`. |
 | `sv` | Swedish | No | Stable | Uses Swedish vocabulary tiers, Swedish pattern packs, Swedish abbreviations, LIX readability, empirical n-grams, and Svarta listan/Klarspråk autofixes. |
 
 Use `en` unless you explicitly know the text is Swedish.
@@ -48,7 +48,7 @@ Unknown locale "da". Supported locales: en, sv
 
 | Folder | Runtime locale | Purpose |
 |---|---:|---|
-| `locales/en-en/` | `en` | International English skill guidance and vocabulary references. |
+| `locales/en-en/` | `en` | International English skill guidance, references, **English empirical pipeline** (`scripts/`, `references/`). |
 | `locales/en-us/` | `en` | US English packaging/guidance. The runtime analyzer is still `en`. |
 | `locales/sv-se/` | `sv` | Swedish skill guidance, references, tests, corpus scripts, and empirical artifacts. |
 | `locales/generic/` | n/a | Shared pattern catalogue and style references. |

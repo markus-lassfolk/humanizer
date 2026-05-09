@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Humanizer API
-  description: AI writing detection and humanization API. Detects 29 patterns of AI-generated text and provides actionable suggestions. Supports English (en) and Swedish (sv) via the optional locale field.
+  description: AI writing detection and humanization API. Detects 36 pattern slots (35 regex detectors + optional LM uniformity) and provides actionable suggestions. Supports English (en) and Swedish (sv) via the optional locale field.
   version: 2.2.0
   contact:
     name: Brandon Wise

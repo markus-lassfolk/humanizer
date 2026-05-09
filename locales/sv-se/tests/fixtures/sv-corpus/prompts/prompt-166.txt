@@ -1,7 +1,7 @@
 ---
-genre: government
+genre: news
 id: 166
 target_words: 150
 ---
 
-Skriv ett neutralt myndighetstextstycke (17): beslut, inbjudan eller information till medborgare. Klarspråk, inga engelska modeord. Ca 120–180 ord.
+Skriv en kort nyhetsartikel (16) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.

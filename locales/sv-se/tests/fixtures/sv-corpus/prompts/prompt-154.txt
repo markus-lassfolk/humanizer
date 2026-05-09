@@ -1,7 +1,7 @@
 ---
-genre: technical
+genre: summary
 id: 154
 target_words: 150
 ---
 
-Skriv en kort teknisk anteckning (16) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.
+Sammanfatta ett påhittat beslut eller protokollutdrag (14) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".

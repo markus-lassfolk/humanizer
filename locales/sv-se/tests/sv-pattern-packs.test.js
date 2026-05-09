@@ -163,6 +163,57 @@ describe('Pattern 7 vs Patterns 19/21/24 dedup', () => {
   });
 });
 
+describe('Swedish Patterns 30–35', () => {
+  const neutral =
+    'Kommunen genomförde en utredning om tillgängligheten vid servicekontoret. Resultaten presenterades för kommunstyrelsen i april. Beslutet fattades den 14 maj. Två handläggare ansvarar för uppföljningen under hösten 2026. Detta gäller alla berörda enheter.';
+
+  it('Pattern 30 — passive / formal passive fires on Swedish', () => {
+    const text =
+      'Beslutet fattades av nämnden och dokumentet hanterades sedan av kansliet och blev godkänt.';
+    expect(findingFor(text, 30)).toBeDefined();
+  });
+
+  it('Pattern 31 — Swedish adverb density fires when hedges cluster', () => {
+    const text = `${neutral}\n\nUppenbarligen naturligtvis och självklart är det uppenbart att vi troligen antagligen förmodligen möjligen eventuellt måste agera konsekvent och uppenbarligen snabbt.`;
+    expect(findingFor(text, 31)).toBeDefined();
+  });
+
+  it('Pattern 32 — weasel fires on curated Swedish hedge', () => {
+    const text = 'Uppenbarligen menar många experter att studier visar att lösningen fungerar.';
+    expect(findingFor(text, 32)).toBeDefined();
+  });
+
+  it('Pattern 33 — cliché pack fires on Swedish buzzstack', () => {
+    const text =
+      'Trots utmaningarna fortsätter företaget att vädra stormen och tänka utanför boxen med sömlös integration.';
+    expect(findingFor(text, 33)).toBeDefined();
+  });
+
+  it('Pattern 34 — redundancy fires on Swedish tautology', () => {
+    const text = 'Vi behöver en PIN-kod kod och en ATM-maskin samt en helt unik lösning.';
+    const f = findingFor(text, 34);
+    expect(f).toBeDefined();
+    expect(f.matchCount).toBeGreaterThanOrEqual(2);
+  });
+
+  it('Pattern 35 — inclusive strict only with strict: true', () => {
+    const text = 'Listan innehöll en neger och en zigenare enligt gamla journalanteckningar.';
+    expect(findingFor(text, 35)).toBeUndefined();
+    const rStrict = analyze(text, { locale: 'sv', includeStats: false, strict: true });
+    expect(rStrict.findings.find((f) => f.patternId === 35)).toBeDefined();
+  });
+
+  it('Patterns 30–34 stay quiet on neutral Klarspråk-style prose', () => {
+    const r = analyze(neutral, { locale: 'sv', includeStats: false });
+    for (const id of [30, 31, 32, 33, 34]) {
+      expect(
+        r.findings.find((f) => f.patternId === id),
+        `pattern ${id}`,
+      ).toBeUndefined();
+    }
+  });
+});
+
 describe('English defaults unchanged by Swedish packs', () => {
   it('English text still triggers English Pattern 1 (significance inflation)', () => {
     const text = 'This serves as a testament to the evolving landscape of innovation.';

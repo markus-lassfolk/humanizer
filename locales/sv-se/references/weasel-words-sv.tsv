@@ -1,0 +1,97 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind weasel_word → Pattern 32
+uppenbarligen		weasel_word			Ge belägg eller ta bort utfyllnaden.		
+naturligtvis		weasel_word			Ge belägg eller ta bort utfyllnaden.		
+självklart		weasel_word			Ge belägg eller ta bort utfyllnaden.		
+klart och tydligt		weasel_word			Var konkret i stället för att betona tydlighet.		
+i grunden		weasel_word			Specificera vad som faktiskt gäller.		
+i princip		weasel_word			Specificera undantag eller omfattning.		
+i stort sett		weasel_word			Ange omfattning med siffror eller exempel.		
+på något sätt		weasel_word			Säg hur, eller stryk.		
+på ett eller annat sätt		weasel_word			Säg hur, eller stryk.		
+generellt sett		weasel_word			Vem gäller det för? När?		
+överlag		weasel_word			Specificera vad som återstår.		
+i allmänhet		weasel_word			För vem, i vilket sammanhang?		
+många anser		weasel_word			Namnge källor eller ta bort.		
+det är allmänt känt att		weasel_word			Ge källa eller formulera om.		
+forskare menar		weasel_word			Namnge studie eller person.		
+experter hävdar		weasel_word			Namnge expert och påstående.		
+branschen är överens om		weasel_word			Vem i branschen, och vad sägs exakt?		
+vissa påpekar		weasel_word			Vilka, och med vilket belägg?		
+det råder en samsyn		weasel_word			Beskriv konkret överenskommelse.		
+man kan anta		weasel_word			Säg vad ni faktiskt vet.		
+det verkar som att		weasel_word			Säg vad som observerats.		
+troligtvis		weasel_word			Ange sannolikhet eller belägg.		
+antagligen		weasel_word			Ange sannolikhet eller belägg.		
+förmodligen		weasel_word			Ange sannolikhet eller belägg.		
+möjligen		weasel_word			Ange sannolikhet eller belägg.		
+eventuellt		weasel_word			Ange villkor eller sannolikhet.		
+i många fall		weasel_word			Hur många — ungefär?		
+i flera avseenden		weasel_word			Vilka avseenden?		
+i viss utsträckning		weasel_word			Hur stor utsträckning?		
+i stor utsträckning		weasel_word			Mät eller ge exempel.		
+i hög grad		weasel_word			Mät eller ge exempel.		
+i betydande grad		weasel_word			Mät eller ge exempel.		
+i avsevärd grad		weasel_word			Mät eller ge exempel.		
+i nonchalant ordalag		weasel_word			Säg rakt ut.		
+i enlighet med gängse uppfattning		weasel_word			Namnge norm eller källa.		
+enligt uppgift		weasel_word			Namnge källa.		
+källor uppger		weasel_word			Namnge källa.		
+det spekuleras i		weasel_word			Säg vem som spekulerar eller utelämna.		
+det har sagts att		weasel_word			Vem sa det?		
+det har framhållits att		weasel_word			Vem och var?		
+allmänt erkänt		weasel_word			Av vem? Med vilket belägg?		
+det är uppenbart att		weasel_word			Visa varför det är uppenbart.		
+det är tydligt att		weasel_word			Visa varför det är tydligt.		
+det framgår att		weasel_word			Var framgår det?		
+det kan inte förnekas att		weasel_word			Argumentera i stället för att driva med pathos.		
+få kan ifrågasätta att		weasel_word			Namnge motståndare eller argument.		
+få skulle neka till att		weasel_word			Namnge motståndare eller argument.		
+i det stora hela		weasel_word			Vad ingår och vad utelämnas?		
+i slutändan		weasel_word			Säg vad som faktiskt händer.		
+i slutändan av dagen		weasel_word			Säg vad som faktiskt händer.		
+i praktiken		weasel_word			Beskriv praktiken konkret.		
+i teorin		weasel_word			Jämför med praktiken eller stryk.		
+i många avseenden		weasel_word			Vilka avseenden?		
+i stor utsträckning		weasel_word			Hur stor andel?		
+i viss mån		weasel_word			Hur stor mån?		
+i någon mån		weasel_word			Hur stor mån?		
+med viss sannolikhet		weasel_word			Ange sannolikhet.		
+med stor sannolikhet		weasel_word			Ange sannolikhet eller data.		
+utan tvekan		weasel_word			Ge belägg eller mjuka på formuleringen.		
+tvivelaktigt		weasel_word			Ge belägg eller mjuka på formuleringen.		
+onekligen		weasel_word			Ge belägg eller mjuka på formuleringen.		
+otvivelaktigt		weasel_word			Ge belägg eller mjuka på formuleringen.		
+självfallet		weasel_word			Ge belägg eller ta bort.		
+givetvis		weasel_word			Ge belägg eller ta bort.		
+förstås		weasel_word			Ge belägg eller ta bort.		
+så klart		weasel_word			Ge belägg eller ta bort.		
+såklart		weasel_word			Ge belägg eller ta bort.		
+javisst		weasel_word			Ge belägg eller ta bort.		
+i realiteten		weasel_word			Säg vad som gäller.		
+i verkligheten		weasel_word			Säg vad som gäller.		
+i praktiken sett		weasel_word			Säg vad som gäller.		
+i ett vidare perspektiv		weasel_word			Vilket perspektiv, och vad följer?		
+ur ett holistiskt perspektiv		weasel_word			Specificera aspekter i stället för etikett.		
+ur ett helhetsperspektiv		weasel_word			Specificera aspekter i stället för etikett.		
+i stora drag		weasel_word			Vilka drag — tre punkter.		
+i korta drag		weasel_word			Var kort med fakta.		
+kort sagt		weasel_word			Ofta onödig inledning — säg direkt.		
+lång historia kort		weasel_word			Säg poängen.		
+i enlighet med vedertagen praxis		weasel_word			Namnge praxis eller standard.		
+enligt vedertagen praxis		weasel_word			Namnge praxis eller standard.		
+i enlighet med branschstandard		weasel_word			Namnge standard.		
+branschstandard		weasel_word			Namnge vilken standard.		
+allmän konsensus		weasel_word			Vem är överens, om vad?		
+vitt spridd uppfattning		weasel_word			Namnge källa eller omfattning.		
+vitt spridd		weasel_word			Mät eller exemplifiera.		
+stämmande tongång		weasel_word			Vem säger vad?		
+det finns en uppfattning om att		weasel_word			Vems uppfattning?		
+det finns de som menar		weasel_word			Vilka?		
+det finns skäl att anta		weasel_word			Nämn skälen.		
+man skulle kunna hävda		weasel_word			Hävdar ni det? Säg det i så fall.		
+man skulle kunna argumentera för		weasel_word			Argumentera i så fall.		
+det är rimligt att anta		weasel_word			Varför är det rimligt?		
+det är orimligt att förneka		weasel_word			Argumentera i stället för att skuldbelägga.		
+få skulle säga emot		weasel_word			Namnge motpart.		
+få skulle neka		weasel_word			Namnge motpart.		

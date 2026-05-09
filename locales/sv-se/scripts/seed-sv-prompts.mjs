@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * seed-sv-prompts.mjs — Write ~200 Swedish generation prompts (YAML frontmatter + body).
+ * seed-sv-prompts.mjs — Write 230 Swedish generation prompts (YAML frontmatter + body).
  * Used by optional LLM corpus generation and to diversify synthetic seed when present.
  *
  * Run: node locales/sv-se/scripts/seed-sv-prompts.mjs
@@ -14,7 +14,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.join(__dirname, '..', '..', '..');
 const SV_FIX = path.join(REPO_ROOT, 'locales/sv-se/tests/fixtures');
 const outDir = path.join(SV_FIX, 'sv-corpus/prompts');
-const genres = ['news', 'opinion', 'fiction', 'technical', 'casual', 'government', 'academic'];
+const genres = [
+  'news',
+  'opinion',
+  'fiction',
+  'technical',
+  'casual',
+  'government',
+  'academic',
+  'marketing',
+];
 
 const bodies = {
   news: (i) =>
@@ -31,6 +40,8 @@ const bodies = {
     `Skriv ett neutralt myndighetstextstycke (${i}): beslut, inbjudan eller information till medborgare. Klarspråk, inga engelska modeord. Ca 120–180 ord.`,
   academic: (i) =>
     `Skriv ett kort metod-/resultatstycke (${i}) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.`,
+  marketing: (i) =>
+    `Skriv en saklig men värmande text (${i}) för en kommunal evenemangssida eller välgörenhetsinsamling: datum, plats, praktisk info. Undvik genrens mest slitna superlativ. Ca 100–160 ord.`,
   product: (i) =>
     `Skriv produkttext (${i}) för en tjänst eller vara: vad den gör, för vem, pris eller villkor om relevant. Direkt, utan floskler. Ca 80–140 ord.`,
   email: (i) =>
@@ -50,7 +61,7 @@ function main() {
   ensureDir(outDir);
   const manifest = { version: 1, prompts: [] };
   let n = 0;
-  while (n < 200) {
+  while (n < 230) {
     n++;
     const genre = allGenres[(n - 1) % allGenres.length];
     const fn = `prompt-${String(n).padStart(3, '0')}.txt`;

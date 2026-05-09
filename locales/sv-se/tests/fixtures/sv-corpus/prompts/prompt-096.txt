@@ -1,7 +1,7 @@
 ---
-genre: government
+genre: marketing
 id: 96
 target_words: 150
 ---
 
-Skriv ett neutralt myndighetstextstycke (10): beslut, inbjudan eller information till medborgare. Klarspråk, inga engelska modeord. Ca 120–180 ord.
+Skriv en saklig men värmande text (9) för en kommunal evenemangssida eller välgörenhetsinsamling: datum, plats, praktisk info. Undvik genrens mest slitna superlativ. Ca 100–160 ord.

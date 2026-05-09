@@ -1,7 +1,7 @@
 ---
-genre: product
+genre: opinion
 id: 68
 target_words: 150
 ---
 
-Skriv produkttext (7) för en tjänst eller vara: vad den gör, för vem, pris eller villkor om relevant. Direkt, utan floskler. Ca 80–140 ord.
+Skriv en insändare (7) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.

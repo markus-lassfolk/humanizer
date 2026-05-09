@@ -1,0 +1,7 @@
+---
+genre: casual
+id: 175
+target_words: 150
+---
+
+Write an informal vignette (18) between friends or family. 120–180 words.

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * seed-sv-corpus.mjs — Generate Swedish gold corpus for calibration (50 human + 50 AI).
+ * seed-sv-corpus.mjs — Generate Swedish gold corpus for calibration (60 human + 60 AI).
  * Human class: original plain Swedish without deliberate AI markers.
  * AI class: synthetic text rich in Swedish AI vocabulary patterns.
+ * Includes marketing genre (10 + 10) plus existing genres.
  *
  * Run from repo root: node locales/sv-se/scripts/seed-sv-corpus.mjs
  */
@@ -35,6 +36,8 @@ const humanBodies = {
     `Nämnden beslutade att upphandlingen ska annonseras senast den 12 juni. Ansökningar prövas mot de kriterier som framgår av bilaga 2. Ett informationsmöte hålls den 3 juni klockan 14 i stadshuset, sal B. Handlingarna finns på kommunens webbplats under rubriken Upphandling.\nDiarienummer ${i}.`,
   academic: (i) =>
     `Materialet består av 38 intervjuer med lärare i tre skolor. Transkriptionen kodades tematiskt enligt metodbeskrivningen i kapitel 3. Tre citat har strukits av integritetsskäl. Resultatredogörelsen följer i avsnitt 5 utan normativa slutsatser om skolform.\nMetodnot ${i}.`,
+  marketing: (i) =>
+    `Välkommen till skördefesten på torget lördag 14 september kl. 11–15. Lokala odlare säljer äpplen, potatis och honung. Barnen kan måla pumpor mot en symbolisk avgift; intäkten går till skolbiblioteket. Toaletter finns i kulturhuset bredvid. Vid regn flyttas delar av marknaden in i saluhallen.\nEvenemangstext ${i}, kommunens kulturnämnd.`,
 };
 
 const aiOpeners = [
@@ -43,13 +46,16 @@ const aiOpeners = [
   'I dagens moderna värld',
 ];
 
+const adverbPad =
+  ' Uppenbarligen naturligtvis självklart är det uppenbart att vi troligen antagligen förmodligen möjligen eventuellt successivt och uppenbarligen måste agera konsekvent.';
+
 const aiMiddles = [
   () =>
-    `det är viktigt att notera att organisationen behöver fördjupa sig i sömlös integration och banbrytande innovation. Det handlar inte bara om teknik, utan också om ett holistiskt perspektiv och ett transformativt ekosystem.`,
+    `det är viktigt att notera att organisationen behöver fördjupa sig i sömlös integration och banbrytande innovation. Det handlar inte bara om teknik, utan också om ett holistiskt perspektiv och ett transformativt ekosystem. Beslutet hanteras centralt och leveransen säkerställs genom att processen genomförs stegvis. Uppenbarligen menar flera experter att studier visar att lösningen är banbrytande. Vi anger PIN-kod kod och kontrollerar ATM-maskin i samma leverans.${adverbPad}`,
   () =>
-    `Genom att kombinera robusta ramverk, proaktiva strategier och värdeskapande processer kan vi möjliggöra synergier mellan stakeholders. Best practices och key takeaways understryker vikten av alignment.`,
+    `Genom att kombinera robusta ramverk, proaktiva strategier och värdeskapande processer kan vi möjliggöra synergier mellan stakeholders. Best practices och key takeaways understryker vikten av alignment. Arbetet utreds av teamet och resultaten implementeras när förändringen drivs av ledningen. Naturligtvis är det allmänt känt att branschen är överens om paradigmskiftet. Det är en kort sammanfattning av slutresultatet som är helt unikt.${adverbPad}`,
   () =>
-    `Låt oss dyka ner i hur helhetslösningen kan framtidssäkras genom kärnkompetenser och en kundresa som speglar organisationens mindset. Utan vidare omsvep är det värt att nämna att insikterna är mångfacetterade.`,
+    `Låt oss dyka ner i hur helhetslösningen kan framtidssäkras genom kärnkompetenser och en kundresa som speglar organisationens mindset. Utan vidare omsvep är det värt att nämna att insikterna är mångfacetterade. Uppenbarligen, naturligtvis och självklart är det uppenbart att vi måste agera snabbt och tydligt när utmaningarna hanteras proaktivt och strategin genomförs konsekvent. Många anser att det i stort sett är självklart att innovationen är transformativ och banbrytande.${adverbPad}`,
 ];
 
 const aiClosers = [
@@ -100,8 +106,22 @@ function main() {
   );
   fs.writeFileSync(path.join(outAi, 'ai-misc-50.txt'), buildAiText('misc', 50), 'utf8');
 
-  console.log(`Wrote 50 files to ${path.relative(REPO_ROOT, outHuman)}`);
-  console.log(`Wrote 50 files to ${path.relative(REPO_ROOT, outAi)}`);
+  for (let i = 1; i <= 10; i++) {
+    const id = String(i).padStart(2, '0');
+    fs.writeFileSync(
+      path.join(outHuman, `human-marketing-${id}.txt`),
+      humanBodies.marketing(i),
+      'utf8',
+    );
+    fs.writeFileSync(
+      path.join(outAi, `ai-marketing-${id}.txt`),
+      buildAiText('marketing', 50 + i),
+      'utf8',
+    );
+  }
+
+  console.log(`Wrote 60 files to ${path.relative(REPO_ROOT, outHuman)}`);
+  console.log(`Wrote 60 files to ${path.relative(REPO_ROOT, outAi)}`);
 }
 
 main();

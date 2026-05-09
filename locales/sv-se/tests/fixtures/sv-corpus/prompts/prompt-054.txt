@@ -1,7 +1,7 @@
 ---
-genre: technical
+genre: email
 id: 54
 target_words: 150
 ---
 
-Skriv en kort teknisk anteckning (6) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.
+Skriv ett kort affärsmejl (5) på svenska: tydlig begäran eller svar, utan onödig artighetsfyllnad. Ca 80–120 ord.

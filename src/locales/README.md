@@ -8,7 +8,8 @@ Each supported language uses the **same file names** under its own folder. Optio
 |------|------|
 | **`en/vocabulary.js`** | English tiers, phrases, function words |
 | **`en/pattern-packs.js`** | English `patternPacks` for detectors |
-| **`en/empirical-filter.js`** | No-op stubs (English has no `empiricalExtra`) |
+| **`en/empirical-filter.js`** | Gates for English corpus n-grams / Pattern 7 extras |
+| **`generated/en-prescriptive.js`** | Built from EN TSVs (prescriptive phrases + autofixes) |
 | **`en/index.js`** | English profile (`loadLocale('en')`) |
 | **`sv/vocabulary.js`** | Swedish tiers, phrases, abbreviations, autofixes, **`empiricalExtra`** build |
 | **`sv/pattern-packs.js`** | Swedish `patternPacks` (English baseline + Swedish rows) |

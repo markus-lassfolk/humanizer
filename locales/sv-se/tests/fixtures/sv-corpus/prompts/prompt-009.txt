@@ -1,7 +1,7 @@
 ---
-genre: email
+genre: product
 id: 9
 target_words: 150
 ---
 
-Skriv ett kort affärsmejl (1) på svenska: tydlig begäran eller svar, utan onödig artighetsfyllnad. Ca 80–120 ord.
+Skriv produkttext (1) för en tjänst eller vara: vad den gör, för vem, pris eller villkor om relevant. Direkt, utan floskler. Ca 80–140 ord.

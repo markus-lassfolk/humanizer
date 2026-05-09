@@ -1,7 +1,7 @@
 ---
-genre: news
+genre: product
 id: 31
 target_words: 150
 ---
 
-Skriv en kort nyhetsartikel (4) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.
+Skriv produkttext (3) för en tjänst eller vara: vad den gör, för vem, pris eller villkor om relevant. Direkt, utan floskler. Ca 80–140 ord.

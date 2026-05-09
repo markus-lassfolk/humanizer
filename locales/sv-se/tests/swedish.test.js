@@ -30,6 +30,22 @@ function loadFixture(name) {
   return fs.readFileSync(path.join(__dirname, '../../../tests/fixtures', name), 'utf-8');
 }
 
+describe('Swedish pattern packs 30–35 wiring', () => {
+  it('locale profile exposes merged pattern packs for new detectors', () => {
+    const { loadLocale } = require('../../../src/locales/index.js');
+    const sv = loadLocale('sv');
+    for (const id of [30, 31, 32, 33, 34, 35]) {
+      const p = sv.patternPacks[id];
+      expect(p, `patternPacks[${id}]`).toBeTruthy();
+      if (id === 31) {
+        expect(p.svAdverbDensity).toBe(true);
+      } else {
+        expect(Array.isArray(p) ? p.length : Object.keys(p).length).toBeGreaterThan(0);
+      }
+    }
+  });
+});
+
 describe('Swedish empirical bundle', () => {
   it('locale exposes non-empty empiricalExtra (multi-word n-grams only)', () => {
     const { loadLocale } = require('../../../src/locales/index.js');
@@ -42,9 +58,15 @@ describe('Swedish empirical bundle', () => {
     }
   });
 
-  it('English locale has empty empiricalExtra', () => {
+  it('English locale exposes empiricalExtra when en-frequencies is bundled', () => {
     const { loadLocale } = require('../../../src/locales/index.js');
-    expect(loadLocale('en').empiricalExtra).toEqual([]);
+    const en = loadLocale('en');
+    expect(Array.isArray(en.empiricalExtra)).toBe(true);
+    for (const entry of en.empiricalExtra) {
+      const w = typeof entry === 'string' ? entry : entry.word;
+      expect(typeof w).toBe('string');
+      expect(w.length).toBeGreaterThan(0);
+    }
   });
 });
 

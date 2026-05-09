@@ -1,7 +1,7 @@
 ---
-genre: news
+genre: academic
 id: 51
 target_words: 150
 ---
 
-Skriv en kort nyhetsartikel (6) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.
+Skriv ett kort metod-/resultatstycke (5) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.

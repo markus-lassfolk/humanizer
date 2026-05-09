@@ -4,7 +4,7 @@
  * Combines pattern detection with statistical analysis to produce a
  * comprehensive AI writing score. The score uses three signal types:
  *
- *   1. Pattern matches — vocabulary, phrases, structural patterns (29 detectors)
+ *   1. Pattern matches — vocabulary, phrases, structural patterns (36 detectors; 36 is LM-only)
  *   2. Text statistics — burstiness, sentence variation, type-token ratio
  *   3. Category breadth — how many different AI signal types are present
  *
@@ -15,9 +15,11 @@
  */
 
 const { patterns, wordCount } = require('./patterns');
-const { computeStats, computeUniformityScore } = require('./stats');
+const { computeStats, computeUniformityScore, computeLmUniformityBoost } = require('./stats');
 const { stripCodeSnippets } = require('./preprocess');
 const { loadLocale } = require('./locales');
+const { buildCalibrationFeatureVector } = require('./calibration-features');
+const { applyEnglishCalibrator } = require('./score-calibration-en');
 
 // ─── Category Labels ────────────────────────────────────
 
@@ -43,8 +45,12 @@ const RELIABILITY_RECOMMENDED_WORDS = 150;
  *   - includeStats {boolean}  Include full text statistics (default: true)
  *   - ignoreCode {boolean}  Ignore fenced/inline code snippets before analysis
  *   - locale {string}       Locale code: 'en' (default) or 'sv'
+ *   - strict {boolean}      Enable pattern 35 (inclusive-language hints) for en/sv
+ *   - withLm {boolean}      Add n-gram LM uniformity boost (en: en-ngram-lm.json, sv: sv-ngram-lm.json)
+ *   - skipCalibration {boolean}  If true, skip English ML calibrator (for training datasets)
  *   - config {object}       Custom config overrides
- * @returns {object}     — Full analysis result
+ * @returns {object}     — Full analysis result (`score` = heuristic, or ML-calibrated when
+ *                        HUMANIZER_ML_CALIBRATION=1 and en-calibrator.json exists; `rawScore` is always the heuristic composite)
  */
 function analyze(text, opts = {}) {
   const {
@@ -53,6 +59,9 @@ function analyze(text, opts = {}) {
     includeStats = true,
     ignoreCode = false,
     locale = 'en',
+    strict = false,
+    withLm = false,
+    skipCalibration = false,
   } = opts;
 
   // Load locale profile (throws on unknown locale codes)
@@ -71,8 +80,12 @@ function analyze(text, opts = {}) {
   // ── Compute text statistics ────────────────────────
   const stats = includeStats ? computeStats(trimmed, localeProfile) : null;
   // Only compute uniformity for text with enough structure to be meaningful
-  const uniformityScore =
+  let uniformityScore =
     stats && stats.wordCount >= 20 && stats.sentenceCount >= 3 ? computeUniformityScore(stats) : 0;
+  if (stats && withLm && (locale === 'en' || locale === 'sv') && uniformityScore > 0) {
+    const lb = computeLmUniformityBoost(trimmed, locale);
+    if (lb > 0) uniformityScore = Math.min(100, uniformityScore + lb);
+  }
 
   // ── Run pattern detectors ──────────────────────────
   const findings = [];
@@ -86,7 +99,7 @@ function analyze(text, opts = {}) {
     : patterns;
 
   // detectOpts is passed to every pattern; only pattern 7 uses localeProfile.
-  const detectOpts = { localeProfile };
+  const detectOpts = { localeProfile, strictInclusive: Boolean(strict) };
 
   for (const pattern of activePatterns) {
     const matches = pattern.detect(trimmed, detectOpts);
@@ -112,7 +125,8 @@ function analyze(text, opts = {}) {
 
   // ── Calculate composite score ──────────────────────
   const patternScore = calculatePatternScore(findings, words);
-  const compositeScore = calculateCompositeScore(patternScore, uniformityScore, findings);
+  const compositeHeuristic = calculateCompositeScore(patternScore, uniformityScore, findings);
+
   const reliability = buildReliability({
     words,
     stats,
@@ -135,8 +149,38 @@ function analyze(text, opts = {}) {
 
   const totalMatches = findings.reduce((sum, f) => sum + f.matchCount, 0);
 
+  let finalScore = compositeHeuristic;
+  if (locale === 'en' && !skipCalibration) {
+    const calibrated = applyEnglishCalibrator({
+      patternScore,
+      uniformityScore,
+      compositeHeuristic,
+      totalMatches,
+      wordCount: words,
+      findings,
+      stats,
+      categories,
+    });
+    if (calibrated !== null) finalScore = calibrated;
+  }
+
+  const calibrationFeatures =
+    locale === 'en'
+      ? buildCalibrationFeatureVector({
+          patternScore,
+          uniformityScore,
+          compositeHeuristic,
+          totalMatches,
+          words,
+          findingsCount: findings.length,
+          stats,
+          categories,
+        })
+      : null;
+
   return {
-    score: compositeScore,
+    score: finalScore,
+    rawScore: compositeHeuristic,
     patternScore,
     uniformityScore,
     reliability,
@@ -145,7 +189,8 @@ function analyze(text, opts = {}) {
     stats,
     categories,
     findings,
-    summary: buildSummary(compositeScore, totalMatches, findings, words, stats, reliability),
+    calibrationFeatures,
+    summary: buildSummary(finalScore, totalMatches, findings, words, stats, reliability),
   };
 }
 
@@ -518,6 +563,8 @@ function reliabilityLabel(level) {
 function emptyResult() {
   return {
     score: 0,
+    rawScore: 0,
+    calibrationFeatures: null,
     patternScore: 0,
     uniformityScore: 0,
     reliability: {

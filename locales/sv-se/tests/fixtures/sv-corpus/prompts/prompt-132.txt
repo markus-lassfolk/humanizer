@@ -1,7 +1,7 @@
 ---
-genre: opinion
+genre: summary
 id: 132
 target_words: 150
 ---
 
-Skriv en insändare (14) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.
+Sammanfatta ett påhittat beslut eller protokollutdrag (12) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".

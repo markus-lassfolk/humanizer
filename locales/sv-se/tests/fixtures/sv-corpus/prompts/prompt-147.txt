@@ -1,7 +1,7 @@
 ---
-genre: academic
+genre: technical
 id: 147
 target_words: 150
 ---
 
-Skriv ett kort metod-/resultatstycke (15) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.
+Skriv en kort teknisk anteckning (14) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.

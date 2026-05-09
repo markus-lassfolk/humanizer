@@ -2,6 +2,8 @@
  * locales/en/vocabulary.js — English AI vocabulary (tiers, phrases, function words).
  *
  * Loaded by `en/index.js`; `src/vocabulary.js` re-exports via the `en-vocabulary.js` shim.
+ * Prescriptive phrases/autofixes: `src/locales/generated/en-prescriptive.js` (npm run locale:prescriptive-en).
+ * Empirical weights: `locales/en-en/references/en-frequencies.json` (npm run corpus:logodds-en).
  *
  * 500+ words and phrases organized into detection tiers based on how strongly
  * they signal AI-generated text. Sourced from:
@@ -9,7 +11,16 @@
  *   - Copyleaks stylistic fingerprint research (arxiv 2503.01659v1)
  *   - godofprompt.ai comprehensive AI word analysis
  *   - Real-world pattern observation across ChatGPT, Claude, Gemini, Llama
- *
+ */
+
+const fs = require('fs');
+const path = require('path');
+const {
+  AUTOFIXES_EN_PRESCRIPTIVE,
+  AI_PHRASES_EN_PRESCRIPTIVE,
+} = require('../generated/en-prescriptive.js');
+
+/**
  * Tiers:
  *   1 — Dead giveaways. Almost never appear in natural human writing at these frequencies.
  *   2 — Suspicious when clustered. Fine alone, damning in groups.
@@ -19,7 +30,7 @@
 // ─── Tier 1: Dead Giveaways ─────────────────────────────
 // Words that appear 5-20x more often in AI text than human text.
 
-const TIER_1 = [
+const TIER_1_RAW = [
   'delve',
   'delving',
   'delved',
@@ -110,7 +121,7 @@ const TIER_1 = [
 // ─── Tier 2: Suspicious in Density ──────────────────────
 // Normal in isolation, but multiple occurrences signal AI authorship.
 
-const TIER_2 = [
+const TIER_2_RAW = [
   'furthermore',
   'moreover',
   'notably',
@@ -259,7 +270,7 @@ const TIER_2 = [
 // Common words that only become AI signals at high density or in
 // combination with other AI patterns. Flagged when density > 3%.
 
-const TIER_3 = [
+const TIER_3_RAW = [
   'significant',
   'significantly',
   'important',
@@ -336,7 +347,7 @@ const TIER_3 = [
 // Multi-word phrases that strongly signal AI authorship.
 // Each has a regex pattern and a severity weight.
 
-const AI_PHRASES = [
+const AI_PHRASES_EN_HAND = [
   // "In today's..." openers
   {
     pattern:
@@ -664,12 +675,80 @@ const FUNCTION_WORDS = [
   'us',
 ];
 
+// ─── Empirical weights (Pattern 7 extras) ─────────────────
+
+let EMPIRICAL_WEIGHTS = {};
+try {
+  const weightsPath = path.join(__dirname, '../../../locales/en-en/references/en-frequencies.json');
+  const raw = fs.readFileSync(weightsPath, 'utf8');
+  const data = JSON.parse(raw);
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    EMPIRICAL_WEIGHTS = data;
+  }
+} catch {
+  // optional until pipeline run
+}
+
+function weightForPhraseOrWord(key) {
+  const k = String(key).toLowerCase();
+  const entry = EMPIRICAL_WEIGHTS[k];
+  if (entry && typeof entry.weight === 'number' && entry.weight > 0) {
+    return entry.weight;
+  }
+  return 1;
+}
+
+function applyWeights(list) {
+  return list.map((w) => {
+    const wt = weightForPhraseOrWord(w);
+    return wt === 1 ? w : { word: w, weight: wt };
+  });
+}
+
+const { buildStopSet, shouldScoreEmpiricalExtra } = require('./empirical-filter');
+const EN_STOP_FOR_EMPIRICAL = buildStopSet(FUNCTION_WORDS);
+const TIER_KEYS_LOWER = new Set(
+  [...TIER_1_RAW, ...TIER_2_RAW, ...TIER_3_RAW].map((s) => String(s).toLowerCase()),
+);
+
+const EMPIRICAL_EXTRA_MAX = 100;
+
+function buildEmpiricalExtraList(weights) {
+  const rows = [];
+  for (const [key, v] of Object.entries(weights)) {
+    if (!v || typeof v.zscore !== 'number') continue;
+    if (!shouldScoreEmpiricalExtra(key, v.zscore, EN_STOP_FOR_EMPIRICAL, TIER_KEYS_LOWER)) {
+      continue;
+    }
+    const w = typeof v.weight === 'number' && v.weight > 0 ? v.weight : 1;
+    rows.push({ key, z: v.zscore, w });
+  }
+  rows.sort((a, b) => b.z - a.z);
+  return rows
+    .slice(0, EMPIRICAL_EXTRA_MAX)
+    .map(({ key, w }) => (Math.abs(w - 1) < 1e-9 ? key : { word: key, weight: w }));
+}
+
+const EMPIRICAL_EXTRA_EN = buildEmpiricalExtraList(EMPIRICAL_WEIGHTS);
+
+const TIER_1 = applyWeights(TIER_1_RAW);
+const TIER_2 = applyWeights(TIER_2_RAW);
+const TIER_3 = applyWeights(TIER_3_RAW);
+const AI_PHRASES = [...AI_PHRASES_EN_HAND, ...AI_PHRASES_EN_PRESCRIPTIVE];
+const AUTOFIXES_EN = [...AUTOFIXES_EN_PRESCRIPTIVE];
+
 // ─── Exports ─────────────────────────────────────────────
 
 module.exports = {
+  TIER_1_RAW,
+  TIER_2_RAW,
+  TIER_3_RAW,
   TIER_1,
   TIER_2,
   TIER_3,
   AI_PHRASES,
+  AI_PHRASES_EN_HAND,
   FUNCTION_WORDS,
+  AUTOFIXES_EN,
+  EMPIRICAL_EXTRA_EN,
 };

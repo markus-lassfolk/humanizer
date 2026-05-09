@@ -4,4 +4,4 @@ id: 111
 target_words: 150
 ---
 
-Skriv en kort nyhetsartikel (12) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.
+Skriv en kort nyhetsartikel (11) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.

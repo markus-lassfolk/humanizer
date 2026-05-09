@@ -1,0 +1,7 @@
+---
+genre: email
+id: 129
+target_words: 150
+---
+
+Write a short business email (13): clear ask or reply, minimal filler. 80–120 words.

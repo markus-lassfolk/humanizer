@@ -52,6 +52,19 @@ describe('Swedish relative scoring', () => {
   });
 });
 
+describe('Marketing ceiling', () => {
+  it('sv-marketing-pr-sample.txt stays below 40 (human municipal PR)', () => {
+    const text = loadFixture('sv-marketing-pr-sample.txt');
+    expect(score(text, svOpts)).toBeLessThan(40);
+  });
+
+  it('marketing PR sample scores below synthetic AI fixture', () => {
+    const pr = loadFixture('sv-marketing-pr-sample.txt');
+    const aiText = loadFixture('sv-ai-sample-1.txt');
+    expect(score(pr, svOpts)).toBeLessThan(score(aiText, svOpts));
+  });
+});
+
 describe('Swedish autoFix', () => {
   it('nyttja → använder in running text', () => {
     const { text } = autoFix('Vi ska nyttja det nya systemet i produktion.', svOpts);

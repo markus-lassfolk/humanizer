@@ -35,8 +35,19 @@ Humanizer currently ships two runtime analyzer locales:
 
 | Runtime locale | Language | Status | What it includes |
 |---|---|---|---|
-| `en` | English | Default / stable | 29 detectors, English vocabulary tiers, phrase packs, function words, Flesch-Kincaid readability |
-| `sv` | Swedish | Stable, explicit opt-in | Swedish vocabulary tiers, Swedish pattern packs, Svarta listan/Klarspråk autofixes, Swedish abbreviations, LIX readability, empirical n-grams |
+| `en` | English | Default / stable | **36** detectors (30–35: passive, -ly density, weasel, cliché, redundancy, strict inclusive); vocabulary tiers + **prescriptive TSV autofixes**; **empirical n-grams** (Pattern 7); function words; Flesch-Kincaid; optional **`--with-lm`** n-gram uniformity |
+| `sv` | Swedish | Stable, explicit opt-in | Same **36** detector family as `en` on the engine side: Swedish tiers + pattern packs, Svarta listan/Klarspråk + **TSV rule packs** (weasel/cliché/redundancy/passive/inclusive), LIX, empirical n-grams; calibration gates **AUC ≥ 0.95**, **marketing** human ceiling (mean ≤ 40); optional **`--with-lm`** via `sv-ngram-lm.json` |
+
+### Why this fork is different (vs black-box detectors)
+
+| | Humanizer (this fork) | Typical AI detectors (e.g. GPTZero-style) |
+|---|---|---|
+| **Transparency** | Every hit ties to a **named pattern** and suggestion | Often a single opaque probability |
+| **Fixes** | `humanize --autofix` + curated **rule packs** (EN TSV / SV Svarta listan) | Rarely editable; no local autofix |
+| **Locale depth** | **`en`** and **`sv`** both have empirical + prescriptive **pipelines** and committed calibration JSON | Usually English-only or undisclosed training |
+| **Optional LM** | **`--with-lm`** uses a **local** n-gram cache — no API, no model download by default | Cloud models / closed scores |
+
+See [`locales/en-en/docs/ENGLISH-EXTENSION.md`](locales/en-en/docs/ENGLISH-EXTENSION.md) and [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md).
 
 Agent skill bundles are packaged by BCP-47-style folder:
 
@@ -172,7 +183,7 @@ const suggestions = humanize(text, {
 
 Humanizer blends pattern detection with statistical text analysis:
 
-- **Pattern score** — 29 detectors for AI-ish content, language, style, communication, and filler patterns.
+- **Pattern score** — 36 registered detectors for AI-ish content, language, style, communication, and filler patterns (pattern 36 is LM-only / no direct hits).
 - **Vocabulary tiers** — per-locale words and phrases weighted by severity.
 - **Uniformity score** — burstiness, type-token ratio, sentence length variation, trigram repetition, and readability.
 - **Composite score** — pattern score weighted at 70% plus uniformity score weighted at 30%.
@@ -202,7 +213,7 @@ humanizer/
 │   ├── MCP.md                       # MCP server setup and tools
 │   └── INTEGRATIONS.md              # Other integrations / API / GPT notes
 ├── locales/
-│   ├── en-en/                       # English skill bundle
+│   ├── en-en/                       # English skill bundle + empirical pipeline scripts
 │   ├── en-us/                       # US English skill bundle
 │   ├── generic/                     # Shared pattern references
 │   └── sv-se/                       # Swedish docs, references, scripts, tests
@@ -239,7 +250,11 @@ After changing corpus or Wikipedia extended data, use `--with-extended` (include
 npm run corpus:refresh   # minimal: seed + log-odds + calibrate only
 ```
 
-`npm run check` also runs `locale:prescriptive --check` and `validate:sv-tiers`. See [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md) for the full Swedish empirical pipeline.
+`npm run check` also runs `locale:prescriptive --check`, **`locale:prescriptive-en --check`**, `validate:sv-tiers`, and **`validate:en-tiers`**.
+
+- English pipeline: [`locales/en-en/docs/ENGLISH-EXTENSION.md`](locales/en-en/docs/ENGLISH-EXTENSION.md), snapshot [`locales/en-en/references/PIPELINE-SNAPSHOT.md`](locales/en-en/references/PIPELINE-SNAPSHOT.md), `npm run en:pipeline`
+- Optional **ML calibration** (Wikipedia vs AI corpus): `npm run en:ml:dataset` → `npm run en:ml:train`, then `HUMANIZER_ML_CALIBRATION=1` — see English extension doc (off by default to avoid overfit on small sets)
+- Swedish pipeline: [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md), `npm run sv:pipeline`
 
 For **always-on** persona wiring (OpenClaw `SOUL.md`, Claude, ChatGPT) with locale-aware guidance, see [docs/AGENTS.md](docs/AGENTS.md) and the skill files under `locales/<tag>/skill/`.
 

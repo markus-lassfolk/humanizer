@@ -1,7 +1,7 @@
 ---
-genre: casual
+genre: product
 id: 185
 target_words: 150
 ---
 
-Skriv ett informellt stycke (19) som vardaglig berättelse mellan vänner eller familj. Ca 120–180 ord.
+Skriv produkttext (17) för en tjänst eller vara: vad den gör, för vem, pris eller villkor om relevant. Direkt, utan floskler. Ca 80–140 ord.

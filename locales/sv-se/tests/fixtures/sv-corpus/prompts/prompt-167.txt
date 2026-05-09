@@ -1,7 +1,7 @@
 ---
-genre: academic
+genre: opinion
 id: 167
 target_words: 150
 ---
 
-Skriv ett kort metod-/resultatstycke (17) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.
+Skriv en insändare (16) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.

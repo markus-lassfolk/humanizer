@@ -1,0 +1,2 @@
+The job queue accepted duplicate messages with the same id. We added a unique key and rolled back 140 rows that collided. Deploy was at 22:14 and monitoring showed no new duplicates in the following six hours.
+Notes 5.

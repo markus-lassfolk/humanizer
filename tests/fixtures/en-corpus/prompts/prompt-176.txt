@@ -1,0 +1,7 @@
+---
+genre: marketing
+id: 176
+target_words: 150
+---
+
+Write plain retail/service copy (18): hours, policy, facts. No hype adjectives. 80–140 words.

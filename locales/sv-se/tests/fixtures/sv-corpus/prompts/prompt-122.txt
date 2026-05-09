@@ -1,7 +1,7 @@
 ---
-genre: opinion
+genre: news
 id: 122
 target_words: 150
 ---
 
-Skriv en insändare (13) med tydlig ståndpunkt om en vardagsfråga (bostad, trafik eller skola). Håll tonen personlig men saklig. Ca 120–180 ord.
+Skriv en kort nyhetsartikel (12) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.

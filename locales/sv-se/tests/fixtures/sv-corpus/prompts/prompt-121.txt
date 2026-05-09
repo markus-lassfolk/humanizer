@@ -1,7 +1,7 @@
 ---
-genre: news
+genre: summary
 id: 121
 target_words: 150
 ---
 
-Skriv en kort nyhetsartikel (13) om en konkret händelse i en svensk kommun. Undvik modeord och konsultjargong. Ca 120–180 ord.
+Sammanfatta ett påhittat beslut eller protokollutdrag (11) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".

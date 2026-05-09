@@ -3,6 +3,13 @@
  */
 
 const { PATTERN_PACKS_EN } = require('../en/pattern-packs');
+const {
+  WEASELS_SV,
+  CLICHES_SV,
+  REDUNDANCY_SV,
+  PASSIVE_SV,
+  INCLUSIVE_SV,
+} = require('../generated/sv-prescriptive.js');
 
 // ─── Pattern packs (Swedish) ─────────────────────────────
 // Built on English packs so mixed Swenglish text still gets English signals;
@@ -300,6 +307,20 @@ const SV_PATTERN_PACKS = {
       'high',
     ),
   ],
+
+  /** Passive + formal passive clusters (Swedish + English for Swenglish). */
+  30: [...(PATTERN_PACKS_EN[30] || []), ...PASSIVE_SV],
+
+  /** Swedish hedge / -ligen / -vis density (see patterns.js). */
+  31: { svAdverbDensity: true, minWords: 50, threshold: 0.04 },
+
+  32: [...(PATTERN_PACKS_EN[32] || []), ...WEASELS_SV],
+
+  33: [...(PATTERN_PACKS_EN[33] || []), ...CLICHES_SV],
+
+  34: [...(PATTERN_PACKS_EN[34] || []), ...REDUNDANCY_SV],
+
+  35: [...(PATTERN_PACKS_EN[35] || []), ...INCLUSIVE_SV],
 };
 
 module.exports = { SV_PATTERN_PACKS };

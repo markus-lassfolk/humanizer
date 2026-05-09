@@ -1,7 +1,7 @@
 ---
-genre: summary
+genre: technical
 id: 180
 target_words: 150
 ---
 
-Sammanfatta ett påhittat beslut eller protokollutdrag (18) i fem meningar. Inga inledningsfraser som "sammanfattningsvis".
+Skriv en kort teknisk anteckning (17) om ett fel, en deploy eller en mätning. Siffror, tidpunkt, åtgärd — utan buzzwords. Ca 120–180 ord.

@@ -1,7 +1,7 @@
 ---
-genre: academic
+genre: casual
 id: 27
 target_words: 150
 ---
 
-Skriv ett kort metod-/resultatstycke (3) från en humanistisk eller samhällsvetenskaplig studie. Undvik hype och tomma abstraktioner. Ca 120–180 ord.
+Skriv ett informellt stycke (3) som vardaglig berättelse mellan vänner eller familj. Ca 120–180 ord.
