@@ -123,7 +123,8 @@ describe('Swedish reasoning / structure / confidence / acknowledgment (25-28)', 
   });
 
   it('Pattern 27 — Swedish confidence calibration fires', () => {
-    const text = 'Jag är säker på att detta fungerar. Det är värt att notera att resultaten varierar.';
+    const text =
+      'Jag är säker på att detta fungerar. Det är värt att notera att resultaten varierar.';
     expect(findingFor(text, 27)).toBeDefined();
   });
 
@@ -142,7 +143,9 @@ describe('Pattern 7 vs Patterns 19/21/24 dedup', () => {
     const p19 = r.findings.find((f) => f.patternId === 19);
     expect(p19).toBeDefined();
     if (p7) {
-      const matchedInP7 = p7.matches.some((m) => /hör gärna av dig|hjälper gärna till/i.test(m.match));
+      const matchedInP7 = p7.matches.some((m) =>
+        /hör gärna av dig|hjälper gärna till/i.test(m.match),
+      );
       expect(matchedInP7).toBe(false);
     }
   });
@@ -167,14 +170,16 @@ describe('English defaults unchanged by Swedish packs', () => {
   });
 
   it('English Pattern 19 still fires on "I hope this helps"', () => {
-    const text = 'Here is a brief overview of the topic. I hope this helps! Let me know if you need more.';
+    const text =
+      'Here is a brief overview of the topic. I hope this helps! Let me know if you need more.';
     const f = findingForEn(text, 19);
     expect(f).toBeDefined();
     expect(f.matchCount).toBeGreaterThanOrEqual(2);
   });
 
   it('English Pattern 22 (filler) still fires on "in order to" / "due to the fact that"', () => {
-    const text = 'In order to comply, due to the fact that the policy changed, we updated the form.';
+    const text =
+      'In order to comply, due to the fact that the policy changed, we updated the form.';
     expect(findingForEn(text, 22)).toBeDefined();
   });
 

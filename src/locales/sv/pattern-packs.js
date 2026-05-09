@@ -202,8 +202,7 @@ const SV_PATTERN_PACKS = {
     conjunction: 'och',
     abstractNounRegex:
       /\b(\w+(?:tion|het|ning|skap|else|isering)),\s+(\w+(?:tion|het|ning|skap|else|isering)),\s+och\s+(\w+(?:tion|het|ning|skap|else|isering))\b/gi,
-    abstractNounSuggestion:
-      'Abstrakt substantivtrio. Välj det som faktiskt spelar roll.',
+    abstractNounSuggestion: 'Abstrakt substantivtrio. Välj det som faktiskt spelar roll.',
     adjectiveSuggestion: 'Buzzy adjektivtrio. Välj ett och var konkret.',
   },
 

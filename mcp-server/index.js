@@ -10,6 +10,10 @@
  * tiers, LIX readability, and Swedish-aware sentence splitting.
  */
 
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
@@ -25,10 +29,29 @@ import { loadLocale } from '../src/locales/index.js';
 
 const LOCALE_DESCRIPTION = 'Language locale: "en" (default) or "sv" for Swedish. Use "sv" when the input text is in Swedish.';
 
+// Resolve the server name + version from the root package.json so the
+// reported server metadata can never drift from the published version.
+// We try the repository root first (the canonical source of truth for the
+// "humanizer" package) and fall back to mcp-server/package.json so the
+// server still starts when run from a partial install.
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+function readJson(path) {
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+const rootPkg = readJson(resolve(__dirname, '..', 'package.json'));
+const localPkg = readJson(resolve(__dirname, 'package.json'));
+const pkg = rootPkg ?? localPkg ?? { name: 'humanizer', version: '0.0.0' };
+
 const server = new Server(
   {
     name: 'humanizer',
-    version: '2.6.0',
+    version: pkg.version,
   },
   {
     capabilities: {

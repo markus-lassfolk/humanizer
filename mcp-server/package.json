@@ -1,6 +1,6 @@
 {
   "name": "@humanizer/mcp-server",
-  "version": "1.0.0",
+  "version": "2.6.0",
   "description": "Humanizer MCP Server - AI writing detection tools for Claude, ChatGPT, and other MCP clients",
   "type": "module",
   "main": "index.js",
