@@ -141,14 +141,13 @@ node src/cli.js analyze --json < input.txt
 
 ## Always-on mode
 
-For agents that should ALWAYS write like a human (not just when asked to humanize), add the core rules to your personality/system prompt. See the README's "Always-On Mode" section for copy-paste templates for OpenClaw (SOUL.md), Claude, and ChatGPT.
+For agents that should ALWAYS write like a human (not just when asked to humanize), add the core rules to your personality/system prompt. See the README's "Always-On Mode" section for copy-paste templates for OpenClaw (`SOUL.md`), Claude, and ChatGPT. Those templates **do not duplicate word lists** — they point at this repo's locale skill files so English, Swedish, and future locales stay in sync when the project updates.
 
 The key rules to internalize:
 
-- Ban Tier 1 vocabulary for your locale (English list: [locales/en-en/skill/en.md](locales/en-en/skill/en.md); Swedish: [locales/sv-se/skill/sv.md](locales/sv-se/skill/sv.md))
-- Kill filler phrases (English examples in [locales/en-en/skill/en.md](locales/en-en/skill/en.md))
-- No sycophancy, chatbot artifacts, or generic conclusions
-- Vary sentence length, have opinions, use concrete specifics
+- For each output language, follow Tier 1–3 vocabulary and phrases in the matching [locales/…/skill/…](locales/en-en/skill/en.md) file (English: [en.md](locales/en-en/skill/en.md); Swedish: [sv.md](locales/sv-se/skill/sv.md))
+- Apply locale rules per segment when mixing languages; do not English-only ban lists on non-English prose
+- No sycophancy, chatbot artifacts, or generic conclusions; vary sentence length and use concrete specifics
 - If you wouldn't say it in conversation, don't write it
 
 ## Process
