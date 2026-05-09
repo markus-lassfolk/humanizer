@@ -1,0 +1,691 @@
+{
+  "generatedAt": "2026-05-09T14:10:01.447Z",
+  "reports": [
+    {
+      "locale": "en",
+      "sampleCount": 101,
+      "counts": {
+        "human": 51,
+        "ai": 50
+      },
+      "windows": false,
+      "searchSize": 32000,
+      "baseline": {
+        "knobs": {
+          "densityCoef": 13,
+          "densityCap": 65,
+          "breadthMult": 2,
+          "breadthCap": 20,
+          "categoryMult": 3,
+          "categoryCap": 15,
+          "patternWeight": 0.7
+        },
+        "auc": 1,
+        "threshold": 37,
+        "fpr50": 0,
+        "perGenre": {
+          "ai:academic": {
+            "count": 7,
+            "mean": 65.29,
+            "median": 65,
+            "p95": 72,
+            "max": 72,
+            "recall@thr": 1
+          },
+          "ai:casual": {
+            "count": 7,
+            "mean": 64.43,
+            "median": 65,
+            "p95": 72,
+            "max": 72,
+            "recall@thr": 1
+          },
+          "ai:fiction": {
+            "count": 7,
+            "mean": 66.29,
+            "median": 65,
+            "p95": 72,
+            "max": 72,
+            "recall@thr": 1
+          },
+          "ai:marketing": {
+            "count": 7,
+            "mean": 66.29,
+            "median": 65,
+            "p95": 72,
+            "max": 72,
+            "recall@thr": 1
+          },
+          "ai:misc": {
+            "count": 1,
+            "mean": 59,
+            "median": 59,
+            "p95": 59,
+            "max": 59,
+            "recall@thr": 1
+          },
+          "ai:news": {
+            "count": 7,
+            "mean": 65.29,
+            "median": 65,
+            "p95": 72,
+            "max": 72,
+            "recall@thr": 1
+          },
+          "ai:opinion": {
+            "count": 7,
+            "mean": 64.43,
+            "median": 65,
+            "p95": 72,
+            "max": 72,
+            "recall@thr": 1
+          },
+          "ai:technical": {
+            "count": 7,
+            "mean": 65.29,
+            "median": 65,
+            "p95": 72,
+            "max": 72,
+            "recall@thr": 1
+          },
+          "human:academic": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:casual": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:editorial": {
+            "count": 1,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:fiction": {
+            "count": 7,
+            "mean": 3,
+            "median": 3,
+            "p95": 3,
+            "max": 3,
+            "fpr@thr": 0
+          },
+          "human:marketing": {
+            "count": 7,
+            "mean": 1,
+            "median": 1,
+            "p95": 1,
+            "max": 1,
+            "fpr@thr": 0
+          },
+          "human:misc": {
+            "count": 1,
+            "mean": 36,
+            "median": 36,
+            "p95": 36,
+            "max": 36,
+            "fpr@thr": 0
+          },
+          "human:news": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:opinion": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:technical": {
+            "count": 7,
+            "mean": 1,
+            "median": 1,
+            "p95": 1,
+            "max": 1,
+            "fpr@thr": 0
+          }
+        }
+      },
+      "best": {
+        "knobs": {
+          "densityCoef": 11,
+          "densityCap": 65,
+          "breadthMult": 3,
+          "breadthCap": 16,
+          "categoryMult": 5,
+          "categoryCap": 21,
+          "patternWeight": 0.8
+        },
+        "auc": 1,
+        "threshold": 34,
+        "fpr50": 0,
+        "precision": 1,
+        "recall": 1,
+        "medianAi": 83,
+        "medianHuman": 2,
+        "margin": 81,
+        "perGenre": {
+          "ai:academic": {
+            "count": 7,
+            "mean": 79.86,
+            "median": 83,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:casual": {
+            "count": 7,
+            "mean": 77.86,
+            "median": 83,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:fiction": {
+            "count": 7,
+            "mean": 80.29,
+            "median": 83,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:marketing": {
+            "count": 7,
+            "mean": 80.29,
+            "median": 83,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:misc": {
+            "count": 1,
+            "mean": 69,
+            "median": 69,
+            "p95": 69,
+            "max": 69,
+            "recall@thr": 1
+          },
+          "ai:news": {
+            "count": 7,
+            "mean": 79.86,
+            "median": 83,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:opinion": {
+            "count": 7,
+            "mean": 77.86,
+            "median": 83,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:technical": {
+            "count": 7,
+            "mean": 79.86,
+            "median": 83,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "human:academic": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:casual": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:editorial": {
+            "count": 1,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:fiction": {
+            "count": 7,
+            "mean": 3,
+            "median": 3,
+            "p95": 3,
+            "max": 3,
+            "fpr@thr": 0
+          },
+          "human:marketing": {
+            "count": 7,
+            "mean": 1,
+            "median": 1,
+            "p95": 1,
+            "max": 1,
+            "fpr@thr": 0
+          },
+          "human:misc": {
+            "count": 1,
+            "mean": 33,
+            "median": 33,
+            "p95": 33,
+            "max": 33,
+            "fpr@thr": 0
+          },
+          "human:news": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:opinion": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:technical": {
+            "count": 7,
+            "mean": 1,
+            "median": 1,
+            "p95": 1,
+            "max": 1,
+            "fpr@thr": 0
+          }
+        }
+      },
+      "bestRaw": {
+        "knobs": {
+          "densityCoef": 11,
+          "densityCap": 65,
+          "breadthMult": 3,
+          "breadthCap": 16,
+          "categoryMult": 5,
+          "categoryCap": 21,
+          "patternWeight": 0.8
+        },
+        "auc": 1,
+        "threshold": 34,
+        "fpr50": 0,
+        "medianAi": 83,
+        "medianHuman": 2
+      }
+    },
+    {
+      "locale": "sv",
+      "sampleCount": 195,
+      "counts": {
+        "human": 135,
+        "ai": 60
+      },
+      "windows": false,
+      "searchSize": 32000,
+      "baseline": {
+        "knobs": {
+          "densityCoef": 13,
+          "densityCap": 65,
+          "breadthMult": 2,
+          "breadthCap": 20,
+          "categoryMult": 3,
+          "categoryCap": 15,
+          "patternWeight": 0.7
+        },
+        "auc": 1,
+        "threshold": 51,
+        "fpr50": 0.02962962962962963,
+        "perGenre": {
+          "ai:academic": {
+            "count": 7,
+            "mean": 74.57,
+            "median": 76,
+            "p95": 78,
+            "max": 78,
+            "recall@thr": 1
+          },
+          "ai:casual": {
+            "count": 7,
+            "mean": 73.57,
+            "median": 76,
+            "p95": 78,
+            "max": 78,
+            "recall@thr": 1
+          },
+          "ai:fiction": {
+            "count": 7,
+            "mean": 74.86,
+            "median": 76,
+            "p95": 78,
+            "max": 78,
+            "recall@thr": 1
+          },
+          "ai:government": {
+            "count": 7,
+            "mean": 74.86,
+            "median": 76,
+            "p95": 78,
+            "max": 78,
+            "recall@thr": 1
+          },
+          "ai:marketing": {
+            "count": 10,
+            "mean": 74.7,
+            "median": 76,
+            "p95": 78,
+            "max": 78,
+            "recall@thr": 1
+          },
+          "ai:misc": {
+            "count": 1,
+            "mean": 69,
+            "median": 69,
+            "p95": 69,
+            "max": 69,
+            "recall@thr": 1
+          },
+          "ai:news": {
+            "count": 7,
+            "mean": 74.57,
+            "median": 76,
+            "p95": 78,
+            "max": 78,
+            "recall@thr": 1
+          },
+          "ai:opinion": {
+            "count": 7,
+            "mean": 73.57,
+            "median": 76,
+            "p95": 78,
+            "max": 78,
+            "recall@thr": 1
+          },
+          "ai:technical": {
+            "count": 7,
+            "mean": 74.57,
+            "median": 76,
+            "p95": 78,
+            "max": 78,
+            "recall@thr": 1
+          },
+          "human:academic": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:casual": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:fiction": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:government": {
+            "count": 8,
+            "mean": 26.38,
+            "median": 27,
+            "p95": 27,
+            "max": 27,
+            "fpr@thr": 0
+          },
+          "human:marketing": {
+            "count": 10,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:misc": {
+            "count": 75,
+            "mean": 23.23,
+            "median": 21,
+            "p95": 50,
+            "max": 50,
+            "fpr@thr": 0.053
+          },
+          "human:news": {
+            "count": 7,
+            "mean": 3,
+            "median": 3,
+            "p95": 3,
+            "max": 3,
+            "fpr@thr": 0
+          },
+          "human:opinion": {
+            "count": 7,
+            "mean": 3,
+            "median": 3,
+            "p95": 3,
+            "max": 3,
+            "fpr@thr": 0
+          },
+          "human:technical": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          }
+        }
+      },
+      "best": {
+        "knobs": {
+          "densityCoef": 11,
+          "densityCap": 70,
+          "breadthMult": 2,
+          "breadthCap": 20,
+          "categoryMult": 2,
+          "categoryCap": 12,
+          "patternWeight": 0.8
+        },
+        "auc": 1,
+        "threshold": 55,
+        "fpr50": 0.022222222222222223,
+        "precision": 1,
+        "recall": 1,
+        "medianAi": 84,
+        "medianHuman": 15,
+        "margin": 69,
+        "perGenre": {
+          "ai:academic": {
+            "count": 7,
+            "mean": 82.86,
+            "median": 84,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:casual": {
+            "count": 7,
+            "mean": 82,
+            "median": 84,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:fiction": {
+            "count": 7,
+            "mean": 83.14,
+            "median": 84,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:government": {
+            "count": 7,
+            "mean": 83.14,
+            "median": 84,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:marketing": {
+            "count": 10,
+            "mean": 83,
+            "median": 84,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:misc": {
+            "count": 1,
+            "mean": 78,
+            "median": 78,
+            "p95": 78,
+            "max": 78,
+            "recall@thr": 1
+          },
+          "ai:news": {
+            "count": 7,
+            "mean": 82.86,
+            "median": 84,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:opinion": {
+            "count": 7,
+            "mean": 82,
+            "median": 84,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "ai:technical": {
+            "count": 7,
+            "mean": 82.86,
+            "median": 84,
+            "p95": 86,
+            "max": 86,
+            "recall@thr": 1
+          },
+          "human:academic": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:casual": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:fiction": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:government": {
+            "count": 8,
+            "mean": 25.13,
+            "median": 26,
+            "p95": 26,
+            "max": 26,
+            "fpr@thr": 0
+          },
+          "human:marketing": {
+            "count": 10,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          },
+          "human:misc": {
+            "count": 75,
+            "mean": 21.49,
+            "median": 19,
+            "p95": 49,
+            "max": 54,
+            "fpr@thr": 0.04
+          },
+          "human:news": {
+            "count": 7,
+            "mean": 3,
+            "median": 3,
+            "p95": 3,
+            "max": 3,
+            "fpr@thr": 0
+          },
+          "human:opinion": {
+            "count": 7,
+            "mean": 3,
+            "median": 3,
+            "p95": 3,
+            "max": 3,
+            "fpr@thr": 0
+          },
+          "human:technical": {
+            "count": 7,
+            "mean": 2,
+            "median": 2,
+            "p95": 2,
+            "max": 2,
+            "fpr@thr": 0
+          }
+        }
+      },
+      "bestRaw": {
+        "knobs": {
+          "densityCoef": 11,
+          "densityCap": 70,
+          "breadthMult": 2,
+          "breadthCap": 20,
+          "categoryMult": 2,
+          "categoryCap": 12,
+          "patternWeight": 0.8
+        },
+        "auc": 1,
+        "threshold": 55,
+        "fpr50": 0.022222222222222223,
+        "medianAi": 84,
+        "medianHuman": 15
+      }
+    }
+  ]
+}

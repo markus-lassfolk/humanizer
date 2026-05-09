@@ -43,6 +43,9 @@
     "en:ml:train": "node locales/en-en/scripts/train-en-calibrator.mjs",
     "en:wiki:sample": "node locales/en-en/scripts/fetch-enwiki-human-sample.mjs",
     "prompts:seed": "node locales/sv-se/scripts/seed-sv-prompts.mjs",
+    "tune:scoring": "node scripts/tune-scoring.mjs",
+    "tune:scoring:quick": "node scripts/tune-scoring.mjs --quick",
+    "tune:scoring:windows": "node scripts/tune-scoring.mjs --windows",
     "build": "echo 'No build step needed — pure Node.js'"
   },
   "keywords": [
