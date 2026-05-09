@@ -141,7 +141,7 @@ node src/cli.js analyze --json < input.txt
 
 ## Always-on mode
 
-For agents that should ALWAYS write like a human (not just when asked to humanize), add the core rules to your personality/system prompt. See [docs/AGENTS.md](docs/AGENTS.md) for integration patterns; for copy-paste **locale-aware** persona blocks (OpenClaw `SOUL.md`, Claude, ChatGPT), use the tables and fenced examples in the locale skill files below — they **do not duplicate static word lists in the README** — so English, Swedish, and future locales stay in sync when the project updates.
+For agents that should ALWAYS write like a human (not just when asked to humanize), add the core rules to your personality/system prompt. See [docs/AGENTS.md](docs/AGENTS.md) for integration patterns, then fold in **locale-aware** vocabulary and phrases from the matching skill file under `locales/<tag>/skill/` (English: [en.md](locales/en-en/skill/en.md); Swedish: [sv.md](locales/sv-se/skill/sv.md)) so Tier lists stay in sync when the project updates instead of hardcoding bans in the README.
 
 The key rules to internalize:
 
