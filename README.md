@@ -16,7 +16,7 @@ No hosted API key is required for the core analyzer.
 ```bash
 git clone https://github.com/markus-lassfolk/humanizer.git
 cd humanizer
-npm install
+npm install   # Node.js 22+; package-lock.json is gitignored (CI uses npm install too)
 
 # English is the default locale
 echo "This serves as a testament to innovation." | node src/cli.js score
@@ -92,6 +92,8 @@ humanizer scan docs --baseline .humanizer-baseline.json --fail-on-regression
 ```
 
 See [docs/CLI.md](docs/CLI.md) for the full command reference, config file format, CI examples, and locale examples.
+
+**Long mixed documents:** whole-document scoring dilutes a short AI-like section across many neutral words. For `analyze`, `score`, `report`, and `humanize`, use **`--chunked`** (or rely on **auto** chunking for inputs ≥ ~600 words) to append **peak / median / low** chunk scores and a **severity** flag (`partial-ai` when a hot block stands out). Headline `score` is unchanged. Details: [docs/CHUNKED_SCORING.md](docs/CHUNKED_SCORING.md).
 
 ## MCP server
 
@@ -205,8 +207,12 @@ For the full detector catalogue, see [docs/PATTERNS.md](docs/PATTERNS.md) and `l
 humanizer/
 ├── README.md
 ├── SKILL.md                         # Agent skill entry point
+├── .github/
+│   ├── dependabot.yml               # Weekly dependency PRs
+│   └── workflows/                   # CI, CodeQL, nightly pipelines, npm release
 ├── docs/
 │   ├── AGENTS.md                    # OpenClaw and agent integration
+│   ├── CI.md                        # GitHub Actions, hooks, branch protection
 │   ├── CLI.md                       # CLI reference
 │   ├── EXTENDING_LOCALES.md         # Add a new language
 │   ├── LANGUAGES.md                 # Supported language matrix
@@ -230,6 +236,8 @@ humanizer/
 
 ## Development
 
+Use **Node.js 22 or newer** (matches `engines` and CI).
+
 ```bash
 npm install
 npm test
@@ -237,6 +245,8 @@ npm run lint
 npm run format:check
 npm run check
 ```
+
+GitHub Actions, Dependabot, release tagging, and recommended branch protection are described in [docs/CI.md](docs/CI.md). Local **pre-commit** linting is enabled when you run `bash scripts/setup-git-guards.sh`.
 
 Swedish locale maintainers can regenerate derived Swedish artifacts with:
 
@@ -256,7 +266,7 @@ npm run corpus:refresh   # minimal: seed + log-odds + calibrate only
 - Optional **ML calibration** (Wikipedia vs AI corpus): `npm run en:ml:dataset` → `npm run en:ml:train`, then `HUMANIZER_ML_CALIBRATION=1` — see English extension doc (off by default to avoid overfit on small sets)
 - Swedish pipeline: [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md), `npm run sv:pipeline`
 
-For **always-on** persona wiring (OpenClaw `SOUL.md`, Claude, ChatGPT) with locale-aware guidance, see [docs/AGENTS.md](docs/AGENTS.md) and the skill files under `locales/<tag>/skill/`.
+For **always-on** behavior, prefer loading **`SKILL.md` + the right `locales/<tag>/skill/` file per reply** instead of duplicating rules into a persona. **OpenClaw** users: minimal `SOUL.md` routing in [docs/SOUL.md](docs/SOUL.md); install and tools in [docs/AGENTS.md](docs/AGENTS.md).
 
 ## Contributing
 
@@ -264,7 +274,7 @@ For **always-on** persona wiring (OpenClaw `SOUL.md`, Claude, ChatGPT) with loca
 - Add language-specific runtime data under `src/locales/<code>/`.
 - Add agent-facing guidance under `locales/<tag>/skill/`.
 - Add tests for every detector, locale, and CLI behavior you change.
-- Run `npm run check` before opening a PR.
+- Run `npm run check` before opening a PR (or rely on the **pre-commit** hook after `scripts/setup-git-guards.sh`).
 
 This fork is configured to avoid pushing to the original parent repository. If needed, run:
 

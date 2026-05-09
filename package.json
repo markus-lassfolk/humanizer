@@ -14,7 +14,11 @@
     "lint:fix": "eslint src/ tests/ locales/ --fix",
     "format": "prettier --write 'src/**/*.js' 'tests/**/*.js' 'locales/**/*.js'",
     "format:check": "prettier --check 'src/**/*.js' 'tests/**/*.js' 'locales/**/*.js'",
-    "check": "npm run lint && npm run format:check && npm run locale:prescriptive -- --check && npm run locale:prescriptive-en -- --check && npm run validate:sv-tiers && npm run validate:en-tiers && npm test",
+    "check:lint": "npm run lint && npm run format:check",
+    "check:locale": "npm run locale:prescriptive -- --check && npm run locale:prescriptive-en -- --check && npm run validate:sv-tiers && npm run validate:en-tiers",
+    "check:test": "npm test",
+    "check": "npm run check:lint && npm run check:locale && npm run check:test",
+    "audit:production": "npm audit --omit=dev --audit-level=high",
     "locale:prescriptive": "node locales/sv-se/scripts/build-sv-locale-prescriptive.mjs",
     "locale:prescriptive-en": "node locales/en-en/scripts/build-en-locale-prescriptive.mjs",
     "validate:en-tiers": "node locales/en-en/scripts/validate-en-tiers.mjs",
@@ -82,7 +86,7 @@
     "vitest": "^3.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "files": [
     "src",

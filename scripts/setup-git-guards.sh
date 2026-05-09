@@ -18,7 +18,7 @@ cd "$(git rev-parse --show-toplevel)"
 forbidden_substring="brandonwise/humanizer"
 
 echo "==> Enabling tracked git hooks (.githooks/)"
-chmod +x .githooks/pre-push 2>/dev/null || true
+chmod +x .githooks/pre-push .githooks/pre-commit 2>/dev/null || true
 git config core.hooksPath .githooks
 
 echo "==> Pinning push defaults to origin"

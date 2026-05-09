@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Fast local gate: ESLint + Prettier (same as npm run check:lint).
+# Requires devDependencies (npm install). Enable hooks: scripts/setup-git-guards.sh
+
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+if [[ ! -f package.json ]]; then
+  exit 0
+fi
+
+if [[ ! -d node_modules ]]; then
+  echo "pre-commit: run npm install first (eslint and prettier are devDependencies)." >&2
+  exit 1
+fi
+
+npm run check:lint
