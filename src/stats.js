@@ -389,7 +389,7 @@ function emptyStats() {
     functionWordRatio: 0,
     trigramRepetition: 0,
     avgParagraphLength: 0,
-    fleschKincaid: 0,
+    fleschKincaid: null,
     lix: null,
     sentenceLengths: [],
   };
