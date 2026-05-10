@@ -433,14 +433,6 @@ async function runLocale(loc) {
   }
   process.stderr.write(`  searched ${count} (skipped for fpr>${FPR50_CEILING}: ${skipped})\n`);
 
-  // Fall back to bestRaw if no combo passed FPR gate
-  if (bestPenalized.auc === -1) {
-    process.stderr.write(
-      `  WARN: all combos exceeded FPR@50 > ${FPR50_CEILING}, falling back to bestRaw\n`,
-    );
-    bestPenalized = bestRaw;
-  }
-
   process.stderr.write(
     `  best (FPR-gated)  AUC=${bestPenalized.auc.toFixed(4)} margin=${bestPenalized.margin} aiMedian=${bestPenalized.medianAi} fpr@50=${bestPenalized.m50.fpr.toFixed(3)} J*=${bestPenalized.threshold}\n`,
   );
