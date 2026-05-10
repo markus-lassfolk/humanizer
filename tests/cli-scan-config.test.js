@@ -203,4 +203,27 @@ describe('scan config handling', () => {
     expect(payload.baselineComparison.summary.regressions).toBe(1);
     expect(payload.baselineComparison.regressions[0].relativePath).toBe('doc.md');
   });
+
+  it('passes locale through scan and fails on unknown locale', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-cli-config-'));
+    const target = path.join(tmp, 'notes.md');
+    fs.writeFileSync(target, 'Det här är en kort testtext för skanning.');
+
+    const run = runCli(['scan', target, '--locale', 'xx']);
+    expect(run.status).toBe(1);
+    expect(run.stderr).toContain('Unknown locale "xx"');
+  });
+
+  it('passes locale through compare and fails on unknown locale', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-cli-config-'));
+    const before = path.join(tmp, 'before.md');
+    const after = path.join(tmp, 'after.md');
+
+    fs.writeFileSync(before, 'Det här är första utkastet.');
+    fs.writeFileSync(after, 'Det här är andra utkastet.');
+
+    const run = runCli(['compare', '--before', before, '--after', after, '--locale', 'xx']);
+    expect(run.status).toBe(1);
+    expect(run.stderr).toContain('Unknown locale "xx"');
+  });
 });

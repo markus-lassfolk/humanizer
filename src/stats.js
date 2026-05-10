@@ -91,19 +91,34 @@ function splitSentences(text, localeProfile) {
     cleaned = protectAbbreviations(cleaned, abbreviations);
   } else {
     // English fallback (legacy behaviour)
-    cleaned = cleaned.replace(
-      /\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|etc|vs|approx|dept|est|vol)\./gi,
-      '$1\u2024',
-    );
+    cleaned = protectAbbreviations(cleaned, [
+      'Mr',
+      'Mrs',
+      'Ms',
+      'Dr',
+      'Prof',
+      'Sr',
+      'Jr',
+      'etc',
+      'e.g',
+      'i.e',
+      'fig',
+      'vs',
+      'approx',
+      'dept',
+      'est',
+      'vol',
+    ]);
   }
 
   // Language-agnostic: protect initials and numbered lists regardless of locale
   cleaned = cleaned
-    .replace(/\b([A-Z])\./g, '$1\u2024') // initials: "J. K. Rowling"
-    .replace(/\b(\d+)\./g, '$1\u2024'); // numbered lists: "1. First"
+    .replace(/(?<!\p{L})(\p{L})\./gu, '$1\u2024') // initials: "J. K. Rowling", "Å. Andersson", "e. e. cummings"
+    .replace(/(\d)\.(\d)/g, '$1\u2024$2') // decimals/time values: "14.30"
+    .replace(/(^|\n)(\s*)(\d+)\.(?=\s+\S)/g, '$1$2$3\u2024'); // numbered lists at line/string start: "1. First"
 
   const sentences = cleaned
-    .split(/(?<=[.!?])\s+(?=[A-Z"'\u201C])|(?<=[.!?])$/)
+    .split(/(?<=[.!?])\s+|(?<=[.!?])$/)
     .map((s) => s.replace(/\u2024/g, '.').trim())
     .filter((s) => s.length > 0);
 

@@ -164,6 +164,19 @@ describe('formatting', () => {
     expect(md).toContain('**Score:');
     expect(md).toContain('**Confidence:**');
   });
+
+  it('keeps raw match counts for truncated findings', () => {
+    const text = Array(8).fill('delve').join(' ');
+    const result = analyze(text, { patternsToCheck: [7] });
+    const finding = result.findings[0];
+
+    expect(finding.truncated).toBe(true);
+    expect(finding.rawMatchCount).toBe(8);
+    expect(finding.matches.length).toBe(5);
+
+    const report = formatReport(result);
+    expect(report).toContain('... and 3 more');
+  });
 });
 
 // ─── Individual Pattern Detection ────────────────────────
