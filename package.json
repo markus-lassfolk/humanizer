@@ -39,6 +39,8 @@
     "corpus:llm": "node locales/sv-se/scripts/generate-sv-llm-corpus.mjs",
     "corpus:refresh": "node locales/sv-se/scripts/seed-sv-corpus.mjs && node locales/sv-se/scripts/log-odds.mjs && node locales/sv-se/scripts/calibration-report.mjs",
     "sv:pipeline": "node locales/sv-se/scripts/sv-pipeline.mjs",
+    "sv:pipeline:lm": "node locales/sv-se/scripts/sv-pipeline.mjs --with-lm",
+    "lm:build-sv": "node locales/sv-se/scripts/build-sv-ngram-lm.mjs",
     "prompts:seed-en": "node locales/en-en/scripts/seed-en-prompts.mjs",
     "materialize:baseline-corpus-en": "node locales/en-en/scripts/materialize-baseline-corpus-en.mjs",
     "corpus:refresh-en": "node locales/en-en/scripts/seed-en-corpus.mjs && node locales/en-en/scripts/log-odds-en.mjs && node locales/en-en/scripts/calibration-report-en.mjs",

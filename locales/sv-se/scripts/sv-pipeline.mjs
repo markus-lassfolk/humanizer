@@ -10,6 +10,7 @@
  *   --force               Ignore saved state; re-run all phases
  *   --dry-run             Print phases only; do not execute
  *   --no-test             Skip `npm test` at the end
+ *   --with-lm             Build n-gram language model (sv-ngram-lm.json)
  *   --with-extended       Wikipedia fetch + merge into log-odds; also runs freq:baseline with
  *                         SV_FREQ_INCLUDE_EXTENDED=1 + validate-sv-tiers after extended/ exists
  *                         (unless --no-freq-include-extended). Skips a redundant baseline-only freq/validate.
@@ -40,6 +41,9 @@ const PROMPTS_DIR = path.join(SV_FIX, 'sv-corpus', 'prompts');
 const HUMAN_DIR = path.join(SV_FIX, 'sv-corpus', 'human');
 const AI_DIR = path.join(SV_FIX, 'sv-corpus', 'ai');
 const EXT_DIR = path.join(SV_FIX, 'sv-corpus-extended');
+const MIN_PROMPT_FILES = 200;
+const MIN_HUMAN_DOCS = 50;
+const MIN_AI_DOCS = 50;
 
 const SCRIPTS = {
   prescriptive: path.join(SV_SE, 'scripts', 'build-sv-locale-prescriptive.mjs'),
@@ -51,6 +55,7 @@ const SCRIPTS = {
   extended: path.join(SV_SE, 'scripts', 'build-corpus-extended.mjs'),
   logodds: path.join(SV_SE, 'scripts', 'log-odds.mjs'),
   calibrate: path.join(SV_SE, 'scripts', 'calibration-report.mjs'),
+  lm: path.join(SV_SE, 'scripts', 'build-sv-ngram-lm.mjs'),
 };
 
 const require = createRequire(import.meta.url);
@@ -67,6 +72,7 @@ function parseArgs(argv) {
     withExtended: argv.includes('--with-extended'),
     freqIncludeExtended: argv.includes('--freq-include-extended'),
     noFreqIncludeExtended: argv.includes('--no-freq-include-extended'),
+    withLm: argv.includes('--with-lm'),
   };
 }
 
@@ -117,7 +123,8 @@ function countTxt(dir) {
 function assertFile(p, minBytes = 1) {
   if (!fs.existsSync(p)) throw new Error(`Missing file: ${path.relative(REPO_ROOT, p)}`);
   const st = fs.statSync(p);
-  if (st.size < minBytes) throw new Error(`Too small (${st.size} B): ${path.relative(REPO_ROOT, p)}`);
+  if (st.size < minBytes)
+    throw new Error(`Too small (${st.size} B): ${path.relative(REPO_ROOT, p)}`);
 }
 
 function verifyPrescriptive() {
@@ -154,22 +161,45 @@ function verifyFreqJson() {
 
 function verifyPrompts() {
   if (!fs.existsSync(PROMPTS_DIR)) throw new Error('Missing prompts/ directory');
-  const prompts = fs.readdirSync(PROMPTS_DIR).filter((f) => /^prompt-\d{3}\.txt$/.test(f));
-  if (prompts.length !== 200) throw new Error(`Expected 200 prompt-NNN.txt, got ${prompts.length}`);
+  const promptPattern = /^prompt-(\d{3})\.txt$/;
+  const prompts = fs.readdirSync(PROMPTS_DIR).filter((f) => promptPattern.test(f));
+  if (prompts.length < MIN_PROMPT_FILES) {
+    throw new Error(
+      `Expected at least ${MIN_PROMPT_FILES} prompt-NNN.txt files, got ${prompts.length}`,
+    );
+  }
+  const promptSet = new Set(prompts);
+  for (let i = 1; i <= MIN_PROMPT_FILES; i++) {
+    const baseline = `prompt-${String(i).padStart(3, '0')}.txt`;
+    if (!promptSet.has(baseline)) throw new Error(`Missing baseline prompt file: ${baseline}`);
+  }
   const man = path.join(SV_FIX, 'sv-corpus', 'prompts-manifest.json');
   assertFile(man, 50);
   const m = JSON.parse(fs.readFileSync(man, 'utf8'));
-  if (!Array.isArray(m.prompts) || m.prompts.length !== 200) {
-    throw new Error(`prompts-manifest.json expected 200 entries, got ${m.prompts?.length}`);
+  if (!Array.isArray(m.prompts) || m.prompts.length < MIN_PROMPT_FILES) {
+    throw new Error(
+      `prompts-manifest.json expected at least ${MIN_PROMPT_FILES} entries, got ${m.prompts?.length}`,
+    );
   }
-  return { promptFiles: prompts.length };
+  for (const entry of m.prompts) {
+    if (typeof entry?.file !== 'string' || !promptPattern.test(entry.file)) {
+      throw new Error(
+        `prompts-manifest.json has invalid prompt file entry: ${JSON.stringify(entry)}`,
+      );
+    }
+    if (!promptSet.has(entry.file)) {
+      throw new Error(`prompts-manifest.json references missing file: ${entry.file}`);
+    }
+  }
+  return { promptFiles: prompts.length, promptManifestEntries: m.prompts.length };
 }
 
 function verifyCorpusSeed() {
   const h = countTxt(HUMAN_DIR);
   const a = countTxt(AI_DIR);
-  if (h !== 50) throw new Error(`Expected 50 human/*.txt, got ${h}`);
-  if (a !== 50) throw new Error(`Expected 50 ai/*.txt, got ${a}`);
+  if (h < MIN_HUMAN_DOCS)
+    throw new Error(`Expected at least ${MIN_HUMAN_DOCS} human/*.txt, got ${h}`);
+  if (a < MIN_AI_DOCS) throw new Error(`Expected at least ${MIN_AI_DOCS} ai/*.txt, got ${a}`);
   return { humanDocs: h, aiDocs: a };
 }
 
@@ -380,17 +410,26 @@ function main() {
   phases.push(
     {
       id: 'prompts',
-      label: '200 prompts + manifest',
+      label: '>=200 prompts + valid manifest',
       run: () => runNode(SCRIPTS.prompts, []),
       verify: () => verifyPrompts(),
     },
     {
       id: 'corpus_seed',
-      label: '50+50 synthetic corpus',
+      label: '>=50 human + >=50 AI synthetic corpus',
       run: () => runNode(SCRIPTS.seed, []),
       verify: () => verifyCorpusSeed(),
     },
   );
+
+  if (opts.withLm) {
+    phases.push({
+      id: 'lm_build',
+      label: 'build n-gram language model',
+      run: () => runNode(SCRIPTS.lm, []),
+      verify: () => ({}),
+    });
+  }
 
   if (opts.withExtended) {
     phases.push({

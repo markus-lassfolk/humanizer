@@ -1,0 +1,37 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind inclusive_strict → Pattern 35 (--strict only)
+handikappad		inclusive_strict		Säg person med funktionsnedsättning om det är relevant.		\bhandikappad\w*\b
+sinnessjuk		inclusive_strict		Uppdatera till modern terminologi; var saklig.		\bsinnessjuk\w*\b
+sinnesslö		inclusive_strict		Uppdatera till modern terminologi; var saklig.		\bsinnesslö\w*\b
+mongoloid		inclusive_strict		Använd inte som skällsord; Down syndrom om kliniskt relevant.		\bmongoloid\w*\b
+neger		inclusive_strict		Använd inte; säg svart person om etnicitet behövs.		\bneger\w*\b
+zigenare		inclusive_strict		Säg rom om relevant; undvik stereotyp.		\bzigenare\w*\b
+tattare		inclusive_strict		Arkaiskt och nedsättande — undvik.		\btattare\w*\b
+homo		inclusive_strict		I skällsordsbruk: undvik; i vetenskaplig kontext kan vara okej.		\bhomo\b
+slyna		inclusive_strict		Könsbaserat skällsord — undvik.		\bslyna\w*\b
+hora		inclusive_strict		Könsbaserat skällsord — undvik.		\bhora\w*\b
+mansgris		inclusive_strict		Var konkret om beteende i stället för etikett.		\bmansgris\w*\b
+kärring		inclusive_strict		Ofta nedsättande — var neutral.		\bkärring\w*\b
+gubbe		inclusive_strict		I nedsättande bruk: säg äldre man eller beskriv beteende.		\bgubbe\w*\b
+hysterisk		inclusive_strict		Ofta könsladdat — säg upprörd, intensiv, stressad.		\bhysterisk\w*\b
+emotional		inclusive_strict		I svenska "emotional" som skällsord — var konkret.		\bemotional\b
+PK-polis		inclusive_strict		Undvik politiserat skällsord; argumentera sakligt.		\bPK-polis\w*\b
+pk		inclusive_strict		Kontext: ofta skällsord — var saklig.		\bPK-(?:hysteri|krig|polis)\w*\b
+invandrare som belastning		inclusive_strict		Undvik kollektivisering; var saklig.		\binvandrare\s+som\s+belastning\b
+illegal invandrare		inclusive_strict		Säg papperslös eller person utan uppehållstillstånd om juridiskt relevant.		\billegal\s+invandrare\b
+illegala		inclusive_strict		Människor är inte illegala — precisera juridisk status.		\billegala\s+invandrare\b
+särskoleelever som		inclusive_strict		Respektera integritet; undvik nedvärderande generalisering.		\bsärskoleelever\s+som\s+problem\b
+psykiskt störd		inclusive_strict		Säg person med psykisk ohälsa om relevant.		\bpsykiskt störd\w*\b
+galen		inclusive_strict		I nedsättande bruk om personer: undvik.		\bgalen\b
+tokig		inclusive_strict		I nedsättande bruk om personer: var försiktig.		\btokig\w*\b
+europeiskt skönhetsideal		inclusive_strict		Undvik essentialisering; var konkret.		\beuropeiskt skönhetsideal\b
+exotisk		inclusive_strict		Ofta annorlundaskapande — beskriv konkret.		\bexotisk\w*\b
+orientalisk		inclusive_strict		Kan vara problematiskt om det essentialiserar — var konkret.		\borientalisk\w*\b
+ursprungsbefolkning som primitiv		inclusive_strict		Undvik primitiv-narrativ.		\bursprungsbefolkning\w*\s+primitiv\w*\b
+kulturellt mindre värdefull		inclusive_strict		Undvik hierarkisering av kulturer.		\bkulturellt mindre värdefull\w*\b
+rasblandning		inclusive_strict		Arkaiskt — säg relation mellan personer med olika bakgrund.		\brasblandning\w*\b
+ras		inclusive_strict		I biologisk essentialism om människor: använd etnicitet/hudfärg med omsorg.		\bras\s+är\b
+vit makt		inclusive_strict		Nazistisk kontext — markera om citat eller varning.		\bvit makt\b
+blatte		inclusive_strict		Slang som kan vara nedsättande — undvik.		\bblatte\w*\b
+svenne		inclusive_strict		Kan vara nedsättande i vissa sammanhang — var neutral.		\bsvenne\w*\b
+svennebanan		inclusive_strict		Kan vara nedsättande — var neutral.		\bsvennebanan\w*\b
