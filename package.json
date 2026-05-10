@@ -27,6 +27,9 @@
     "corpus:refresh": "node locales/sv-se/scripts/seed-sv-corpus.mjs && node locales/sv-se/scripts/log-odds.mjs && node locales/sv-se/scripts/calibration-report.mjs",
     "sv:pipeline": "node locales/sv-se/scripts/sv-pipeline.mjs",
     "prompts:seed": "node locales/sv-se/scripts/seed-sv-prompts.mjs",
+    "tune:scoring": "node scripts/tune-scoring.mjs",
+    "tune:scoring:quick": "node scripts/tune-scoring.mjs --quick",
+    "tune:scoring:windows": "node scripts/tune-scoring.mjs --windows",
     "build": "echo 'No build step needed — pure Node.js'"
   },
   "keywords": [
