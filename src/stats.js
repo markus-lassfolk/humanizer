@@ -16,33 +16,7 @@
  * locale-specific function words, abbreviations, and readability formula.
  */
 
-const fs = require('fs');
-const path = require('path');
 const { FUNCTION_WORDS } = require('./vocabulary');
-
-let _enLmCache;
-function loadEnglishLm() {
-  if (_enLmCache !== undefined) return _enLmCache;
-  try {
-    const p = path.join(__dirname, '../locales/en-en/references/en-ngram-lm.json');
-    _enLmCache = JSON.parse(fs.readFileSync(p, 'utf8'));
-  } catch {
-    _enLmCache = null;
-  }
-  return _enLmCache;
-}
-
-let _svLmCache;
-function loadSwedishLm() {
-  if (_svLmCache !== undefined) return _svLmCache;
-  try {
-    const p = path.join(__dirname, '../locales/sv-se/references/sv-ngram-lm.json');
-    _svLmCache = JSON.parse(fs.readFileSync(p, 'utf8'));
-  } catch {
-    _svLmCache = null;
-  }
-  return _svLmCache;
-}
 
 // ─── Sentence Splitting ─────────────────────────────────
 
@@ -65,10 +39,13 @@ function protectAbbreviations(text, abbreviations) {
     // Escape any dots within the abbreviation for regex use
     const escaped = abbr.replace(/\./g, '\\.');
     // Build pattern: word boundary + abbreviation + trailing dot
-    const regex = new RegExp(`\\b${escaped}\\.`, 'gi');
+    const regex = new RegExp(`\\b(${escaped})\\.`, 'gi');
     // Replace every dot (internal + trailing) with the placeholder
-    const placeholder = `${abbr.replace(/\./g, '\u2024')}\u2024`;
-    result = result.replace(regex, placeholder);
+    // Use $1 to preserve original casing from the matched text
+    result = result.replace(
+      regex,
+      (match, captured) => `${captured.replace(/\./g, '\u2024')}\u2024`,
+    );
   }
   return result;
 }
@@ -364,34 +341,6 @@ function computeUniformityScore(stats) {
   return Math.min(score, 100);
 }
 
-/**
- * Optional boost when text has unusually uniform per-token surprise under a human unigram LM.
- * Used with --with-lm for English or Swedish. Range ~0–28.
- * @param {string} text
- * @param {string} [locale='en']  'en' | 'sv'
- * @returns {number}
- */
-function computeLmUniformityBoost(text, locale = 'en') {
-  const lm = locale === 'sv' ? loadSwedishLm() : loadEnglishLm();
-  if (!lm || !lm.unigrams || !text) return 0;
-  const words = tokenize(text);
-  if (words.length < 40) return 0;
-  const nlls = [];
-  for (const w of words) {
-    const p = lm.unigrams[w] || lm.defaultUni || 1e-10;
-    nlls.push(-Math.log(p));
-  }
-  const mean = nlls.reduce((a, b) => a + b, 0) / nlls.length;
-  let v = 0;
-  for (const x of nlls) v += (x - mean) ** 2;
-  v /= nlls.length;
-  let boost = 0;
-  if (v < 0.28) boost += 12;
-  else if (v < 0.45) boost += 6;
-  if (mean < 6.8) boost += 10;
-  return Math.min(boost, 28);
-}
-
 function emptyStats() {
   return {
     wordCount: 0,
@@ -422,7 +371,6 @@ function round(n) {
 module.exports = {
   computeStats,
   computeUniformityScore,
-  computeLmUniformityBoost,
   computeNgramRepetition,
   splitSentences,
   tokenize,

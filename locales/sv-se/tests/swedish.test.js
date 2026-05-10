@@ -130,8 +130,8 @@ describe('splitSentences — Swedish abbreviations', () => {
   it('does split on normal sentence-ending periods', () => {
     const text = 'Mötet börjar kl. 14. Vi ses då. Ta med anteckningarna.';
     const sentences = splitSentences(text, svProfile);
-    // "kl. 14" should not split, then two real sentence breaks
-    expect(sentences.length).toBe(2);
+    // "kl." abbreviation is protected, but "14." ends the sentence, resulting in 3 sentences
+    expect(sentences.length).toBe(3);
   });
 
   it('English locale does not protect Swedish abbreviations', () => {

@@ -205,7 +205,7 @@ async function handleRequest(req, res) {
     sendJson(res, { error: 'Not found' }, 404);
   } catch (error) {
     console.error('Error:', error);
-    sendJson(res, { error: error.message }, 500);
+    sendJson(res, { error: error.message }, error.statusCode || 500);
   }
 }
 
