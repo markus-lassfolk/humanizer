@@ -52,18 +52,39 @@ describe('splitSentences', () => {
 
   it('handles abbreviations', () => {
     const result = splitSentences('Dr. Smith went home. Mr. Jones followed.');
-    // Should split into 2 sentences, not 4
-    expect(result.length).toBe(2);
+    expect(result).toEqual(['Dr. Smith went home.', 'Mr. Jones followed.']);
+  });
+
+  it('keeps common dotted abbreviations inside the sentence', () => {
+    const result = splitSentences(
+      'Use e.g. this pattern. See fig. 2 for details. Try i.e. that wording.',
+    );
+    expect(result).toEqual([
+      'Use e.g. this pattern.',
+      'See fig. 2 for details.',
+      'Try i.e. that wording.',
+    ]);
   });
 
   it('splits when next sentence starts lowercase', () => {
     const result = splitSentences('First sentence. second sentence starts lowercase.');
-    expect(result.length).toBe(2);
+    expect(result).toEqual(['First sentence.', 'second sentence starts lowercase.']);
   });
 
   it('splits with non-ASCII uppercase letters', () => {
     const result = splitSentences('Första meningen. Åter en mening.');
-    expect(result.length).toBe(2);
+    expect(result).toEqual(['Första meningen.', 'Åter en mening.']);
+  });
+
+  it('keeps Unicode and lowercase initials inside the sentence', () => {
+    const result = splitSentences(
+      'Å. Andersson arrived. e. e. cummings stayed lowercase. Next sentence.',
+    );
+    expect(result).toEqual([
+      'Å. Andersson arrived.',
+      'e. e. cummings stayed lowercase.',
+      'Next sentence.',
+    ]);
   });
 
   it('does not suppress sentence breaks after year-style numbers', () => {

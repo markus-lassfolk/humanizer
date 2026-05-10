@@ -82,12 +82,13 @@ function collectTextFiles(targetPath, opts = {}) {
     try {
       entries = fs.readdirSync(dir, { withFileTypes: true });
     } catch (err) {
-      if (typeof onError === 'function') {
-        onError({
-          path: dir,
-          reason: `read_dir_error: ${err.message}`,
-        });
+      if (typeof onError !== 'function') {
+        throw err;
       }
+      onError({
+        path: dir,
+        reason: `read_dir_error: ${err.message}`,
+      });
       continue;
     }
 
