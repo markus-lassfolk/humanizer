@@ -27,6 +27,10 @@ function shouldStoreFallback(key, n, z, stopSet) {
   return true;
 }
 
+function escapeMarkdownCell(value) {
+  return String(value).replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+}
+
 function readDirTxt(dir) {
   if (!fs.existsSync(dir)) return [];
   return fs
@@ -134,7 +138,7 @@ function main() {
       }
       if (rank <= 200) {
         md.push(
-          `| ${rank} | ${row.w.replace(/\|/g, '\\|')} | ${row.z.toFixed(2)} | ${row.c1} | ${row.c2} | ${weight.toFixed(2)} | ${store ? 'yes' : 'no'} |`,
+          `| ${rank} | ${escapeMarkdownCell(row.w)} | ${row.z.toFixed(2)} | ${row.c1} | ${row.c2} | ${weight.toFixed(2)} | ${store ? 'yes' : 'no'} |`,
         );
       }
     }

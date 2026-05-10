@@ -32,7 +32,7 @@ function escapeRegex(s) {
 }
 
 function escapeForRegexLiteralBody(s) {
-  return String(s).replace(/\//g, '\\/');
+  return String(s).replace(/\\/g, '\\\\').replace(/\//g, '\\/');
 }
 
 function parseTsvFile(filePath) {
