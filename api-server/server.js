@@ -146,13 +146,13 @@ async function handleRequest(req, res) {
       switch (route) {
         case '/api/score': {
           const s = score(body.text, { locale });
-          const badge = s <= 25 ? '🟢' : s <= 50 ? '🟡' : s <= 75 ? '🟠' : '🔴';
+          const badge = s <= 19 ? '🟢' : s <= 44 ? '🟡' : s <= 69 ? '🟠' : '🔴';
           const interpretation =
-            s <= 25
+            s <= 19
               ? 'Mostly human-sounding'
-              : s <= 50
+              : s <= 44
               ? 'Lightly AI-touched'
-              : s <= 75
+              : s <= 69
               ? 'Moderately AI-influenced'
               : 'Heavily AI-generated';
           sendJson(res, { score: s, badge, interpretation, locale });
