@@ -266,7 +266,7 @@ npm run corpus:refresh   # minimal: seed + log-odds + calibrate only
 - Optional **ML calibration** (Wikipedia vs AI corpus): `npm run en:ml:dataset` → `npm run en:ml:train`, then `HUMANIZER_ML_CALIBRATION=1` — see English extension doc (off by default to avoid overfit on small sets)
 - Swedish pipeline: [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md), `npm run sv:pipeline`
 
-For **always-on** behavior, prefer loading **`SKILL.md` + the right `locales/<tag>/skill/` file per reply** instead of duplicating rules into a persona. **OpenClaw** users: minimal `SOUL.md` routing in [docs/SOUL.md](docs/SOUL.md); install and tools in [docs/AGENTS.md](docs/AGENTS.md).
+For **always-on** behavior, prefer loading **`SKILL.md` + the right `locales/<tag>/skill/` file per reply** instead of duplicating rules into a persona. **OpenClaw** users: install and tool usage in [docs/AGENTS.md](docs/AGENTS.md).
 
 ## Contributing
 
