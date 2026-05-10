@@ -199,14 +199,7 @@ function analyze(text, opts = {}) {
     categories,
     findings,
     calibrationFeatures,
-    summary: buildSummary(
-      finalScore,
-      totalMatches,
-      findings,
-      reportWordCount,
-      stats,
-      reliability,
-    ),
+    summary: buildSummary(finalScore, totalMatches, findings, reportWordCount, stats, reliability),
   };
 }
 
