@@ -690,28 +690,35 @@ const patterns = [
       const synonymSets = pack;
 
       const results = [];
-      const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+      const sentenceMatches = [...text.matchAll(/[^.!?]+/g)]
+        .map((match) => ({
+          text: match[0],
+          index: match.index ?? 0,
+        }))
+        .filter((sentence) => sentence.text.trim().length > 0);
 
       for (const synonyms of synonymSets) {
-        for (let i = 0; i < sentences.length - 1; i++) {
+        for (let i = 0; i < sentenceMatches.length - 1; i++) {
           const found = [];
-          for (let j = i; j < Math.min(i + 4, sentences.length); j++) {
-            const lower = sentences[j].toLowerCase();
+          let firstHitIndex = null;
+          for (let j = i; j < Math.min(i + 4, sentenceMatches.length); j++) {
+            const lower = sentenceMatches[j].text.toLowerCase();
             for (const syn of synonyms) {
               if (lower.includes(syn) && !found.includes(syn)) {
                 found.push(syn);
+                firstHitIndex ??= j;
               }
             }
           }
           if (found.length >= 3) {
-            // Find the index of the sentence in the original text, handling cases where
-            // the sentence was trimmed during splitting. Use Math.max(0, ...) to handle
-            // -1 returns from indexOf, and approximate line number from sentence position.
-            const sentenceIdx = text.indexOf(sentences[i]);
-            const idx = sentenceIdx !== -1 ? sentenceIdx : 0;
-            const lineNum = sentenceIdx !== -1
-              ? text.substring(0, idx).split('\n').length
-              : i + 1; // fallback to sentence position + 1
+            // matchAll preserves the original offset for each sentence fragment, so
+            // repeated sentence text and punctuation without following whitespace do
+            // not send position reporting back to the first occurrence in the text.
+            // Report the first sentence in the window that actually contains a synonym.
+            const reportSentence = sentenceMatches[firstHitIndex ?? i];
+            const leadingWhitespace = reportSentence.text.match(/^\s*/)?.[0].length ?? 0;
+            const idx = reportSentence.index + leadingWhitespace;
+            const lineNum = text.substring(0, idx).split('\n').length;
             results.push({
               match: `Synonym cycling: ${found.join(' → ')}`,
               index: idx,

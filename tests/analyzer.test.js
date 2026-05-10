@@ -253,6 +253,22 @@ describe('pattern detection', () => {
     expect(result.findings.length).toBeGreaterThan(0);
   });
 
+  // 11. Synonym cycling
+  it('reports synonym cycling positions from the actual sentence offset', () => {
+    const text = [
+      'Intro sentence without synonyms.',
+      'The company changed direction.',
+      'The organization adapted.',
+      'The firm grew.',
+    ].join('\n');
+    const result = analyze(text, { patternsToCheck: [11], verbose: true });
+
+    expect(result.findings.length).toBeGreaterThan(0);
+    const match = result.findings[0].matches[0];
+    expect(match.index).toBe(text.indexOf('The company changed direction.'));
+    expect(match.line).toBe(2);
+  });
+
   // 13. Em dash overuse
   it('detects em dash overuse', () => {
     const text =
