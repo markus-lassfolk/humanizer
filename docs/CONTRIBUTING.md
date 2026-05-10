@@ -5,7 +5,7 @@ Thanks for your interest in improving AI writing detection.
 ## Getting started
 
 ```bash
-git clone https://github.com/brandonwise/humanizer.git
+git clone https://github.com/markus-lassfolk/humanizer.git
 cd humanizer
 npm install
 npm test

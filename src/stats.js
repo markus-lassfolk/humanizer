@@ -41,7 +41,7 @@ function protectAbbreviations(text, abbreviations) {
     // Build pattern: word boundary + abbreviation + trailing dot
     const regex = new RegExp(`\\b${escaped}\\.`, 'gi');
     // Replace every dot (internal + trailing) with the placeholder
-    const placeholder = abbr.replace(/\./g, '\u2024') + '\u2024';
+    const placeholder = `${abbr.replace(/\./g, '\u2024')}\u2024`;
     result = result.replace(regex, placeholder);
   }
   return result;

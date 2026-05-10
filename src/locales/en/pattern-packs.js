@@ -250,7 +250,11 @@ const PATTERN_PACKS_EN = {
     },
   ],
 
-  4: asRegexPack(PROMOTIONAL_WORDS, 'Replace promotional language with neutral, factual description.', 'high'),
+  4: asRegexPack(
+    PROMOTIONAL_WORDS,
+    'Replace promotional language with neutral, factual description.',
+    'high',
+  ),
 
   5: asRegexPack(
     VAGUE_ATTRIBUTION_PHRASES,
@@ -258,7 +262,11 @@ const PATTERN_PACKS_EN = {
     'high',
   ),
 
-  6: asRegexPack(CHALLENGES_PHRASES, 'Replace with specific challenges and concrete outcomes.', 'high'),
+  6: asRegexPack(
+    CHALLENGES_PHRASES,
+    'Replace with specific challenges and concrete outcomes.',
+    'high',
+  ),
 
   8: asRegexPack(COPULA_AVOIDANCE, 'Use simple "is", "are", or "has" instead.', 'high'),
 
@@ -312,7 +320,7 @@ const PATTERN_PACKS_EN = {
 
   25: asRegexPack(
     REASONING_PATTERNS_EN,
-    "Hide reasoning or make it natural: \"Here's my take:\" instead of \"Let me think step by step:\"",
+    'Hide reasoning or make it natural: "Here\'s my take:" instead of "Let me think step by step:"',
     'high',
   ),
 
@@ -326,11 +334,7 @@ const PATTERN_PACKS_EN = {
 
   27: CONFIDENCE_CALIBRATION_EN,
 
-  28: asRegexPack(
-    ACKNOWLEDGMENT_LOOPS_EN,
-    "Just answer. Don't restate the question.",
-    'high',
-  ),
+  28: asRegexPack(ACKNOWLEDGMENT_LOOPS_EN, "Just answer. Don't restate the question.", 'high'),
 };
 
 module.exports = {

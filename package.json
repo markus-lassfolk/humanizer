@@ -44,10 +44,17 @@
     "ai-detection"
   ],
   "author": "Brandon Wise",
+  "contributors": [
+    "Markus Lassfolk"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/brandonwise/humanizer"
+    "url": "https://github.com/markus-lassfolk/humanizer"
+  },
+  "homepage": "https://github.com/markus-lassfolk/humanizer#readme",
+  "bugs": {
+    "url": "https://github.com/markus-lassfolk/humanizer/issues"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

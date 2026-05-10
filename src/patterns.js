@@ -20,12 +20,7 @@
  *   - Default English vocabulary lives in locales/en/vocabulary.js (shim: en-vocabulary.js)
  */
 
-const {
-  TIER_1,
-  TIER_2,
-  TIER_3,
-  AI_PHRASES,
-} = require('./locales/en-vocabulary');
+const { TIER_1, TIER_2, TIER_3, AI_PHRASES } = require('./locales/en-vocabulary');
 const {
   SIGNIFICANCE_PHRASES,
   PROMOTIONAL_WORDS,
@@ -194,7 +189,10 @@ function scanRegexPack(text, pack, defaultSuggestion, defaultConfidence = 'mediu
       confidence = defaultConfidence;
     } else if (entry && entry.regex instanceof RegExp) {
       regex = entry.regex;
-      suggestion = entry.fix != null ? entry.fix : (entry.suggestion ?? defaultSuggestion);
+      suggestion =
+        entry.fix !== undefined && entry.fix !== null
+          ? entry.fix
+          : (entry.suggestion ?? defaultSuggestion);
       confidence = entry.confidence ?? defaultConfidence;
     } else {
       continue;
@@ -218,11 +216,7 @@ function inferPhraseCategory(p) {
   const src = p.pattern && p.pattern.source ? p.pattern.source : '';
 
   if (fix === '(remove)' || fix === '(remove — start with the content)') {
-    if (
-      src.includes('training') ||
-      src.includes('details are') ||
-      src.includes('available')
-    ) {
+    if (src.includes('training') || src.includes('details are') || src.includes('available')) {
       return 'cutoff';
     }
     if (
@@ -900,7 +894,7 @@ const patterns = [
       return scanRegexPack(
         text,
         pack,
-        "Hide reasoning or make it natural: \"Here's my take:\" instead of \"Let me think step by step:\"",
+        'Hide reasoning or make it natural: "Here\'s my take:" instead of "Let me think step by step:"',
         'high',
       );
     },
@@ -948,12 +942,7 @@ const patterns = [
 
       const pack = getPatternPack(opts, 26);
       results.push(
-        ...scanRegexPack(
-          text,
-          pack,
-          'Formulaic structure. Let content flow naturally.',
-          'medium',
-        ),
+        ...scanRegexPack(text, pack, 'Formulaic structure. Let content flow naturally.', 'medium'),
       );
 
       return results;
@@ -981,12 +970,7 @@ const patterns = [
     weight: 4,
     detect(text, opts = {}) {
       const pack = getPatternPack(opts, 28);
-      return scanRegexPack(
-        text,
-        pack,
-        "Just answer. Don't restate the question.",
-        'high',
-      );
+      return scanRegexPack(text, pack, "Just answer. Don't restate the question.", 'high');
     },
   },
 
