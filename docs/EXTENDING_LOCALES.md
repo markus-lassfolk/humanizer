@@ -8,9 +8,9 @@ This guide describes the shape of a new locale. Use `src/locales/en/` for the sm
 
 Use two related names:
 
-| Layer | Example | Purpose |
-|---|---|---|
-| Runtime locale | `sv` | CLI/API/MCP value: `--locale sv`, `locale: "sv"`. |
+| Layer               | Example | Purpose                                                  |
+| ------------------- | ------- | -------------------------------------------------------- |
+| Runtime locale      | `sv`    | CLI/API/MCP value: `--locale sv`, `locale: "sv"`.        |
 | Skill bundle folder | `sv-se` | Agent-facing docs and references under `locales/<tag>/`. |
 
 For a new language, prefer a short runtime code first (`da`, `de`, `fr`) unless you truly need separate runtime behavior per region.
@@ -47,6 +47,25 @@ const da = require('./da');
 
 const LOCALES = { en, sv, da };
 ```
+
+### Composite scoring (optional)
+
+New locales inherit `DEFAULT_SCORING_KNOBS` from
+[`src/locales/scoring-defaults.js`](../src/locales/scoring-defaults.js).
+
+When you have a labeled corpus, add an explicit profile override:
+
+```js
+module.exports = {
+  code: 'da',
+  scoring: {
+    densityCap: 68,
+    patternWeight: 0.75,
+  },
+};
+```
+
+Partial objects are merged over the default; omit `scoring` to use the global baseline.
 
 Add shims only if you need backwards-compatible require paths, for example:
 

@@ -4,6 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { analyze, score, formatReport, formatJSON, formatMarkdown } from '../src/analyzer.js';
+import { loadLocale } from '../src/locales/index.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -109,6 +110,60 @@ describe('analyze', () => {
     const result = analyze('...!!!???---');
     expect(result.stats.wordCount).toBe(0);
     expect(result.wordCount).toBe(0);
+  });
+
+  it('applies profile.scoring overrides to patternScore and score', () => {
+    const localeProfile = loadLocale('en');
+    const originalScoring = localeProfile.scoring;
+    const text = loadFixture('ai-sample-1.txt');
+    const baseline = analyze(text, { locale: 'en' });
+
+    try {
+      localeProfile.scoring = {
+        densityCoef: 1,
+        densityCap: 10,
+        breadthMult: 0,
+        breadthCap: 0,
+        categoryMult: 0,
+        categoryCap: 0,
+        patternWeight: 1,
+      };
+
+      const tuned = analyze(text, { locale: 'en' });
+      expect(tuned.patternScore).toBeLessThan(baseline.patternScore);
+      expect(tuned.score).toBeLessThan(baseline.score);
+    } finally {
+      localeProfile.scoring = originalScoring;
+    }
+  });
+
+  it('handles invalid profile.scoring knobs safely', () => {
+    const localeProfile = loadLocale('en');
+    const originalScoring = localeProfile.scoring;
+    const text = loadFixture('ai-sample-1.txt');
+    const baseline = analyze(text, { locale: 'en' });
+
+    try {
+      localeProfile.scoring = {
+        densityCoef: 'nope',
+        densityCap: Number.POSITIVE_INFINITY,
+        breadthMult: undefined,
+        breadthCap: NaN,
+        categoryMult: null,
+        categoryCap: {},
+        patternWeight: 9,
+      };
+
+      const safe = analyze(text, { locale: 'en' });
+      expect(Number.isFinite(safe.patternScore)).toBe(true);
+      expect(Number.isFinite(safe.score)).toBe(true);
+      expect(safe.patternScore).toBe(baseline.patternScore);
+      expect(safe.score).toBe(safe.patternScore);
+      expect(safe.score).toBeGreaterThanOrEqual(0);
+      expect(safe.score).toBeLessThanOrEqual(100);
+    } finally {
+      localeProfile.scoring = originalScoring;
+    }
   });
 
   it('can ignore code snippets during analysis', () => {
