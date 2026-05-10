@@ -371,7 +371,7 @@ async function runLocale(loc) {
   // This keeps healthy AI/human gap when AUC ties at 1.0 across many knob configs.
   const objective = (ev) =>
     Math.round(ev.auc * 10000) * 1e6 + Math.max(0, ev.margin) * 1000 + Math.max(0, ev.aiBuffer);
-  let bestPenalized = { auc: -1, margin: -Infinity, aiBuffer: -Infinity };
+  let bestPenalized = null;
   let bestRaw = { auc: -1, margin: -Infinity, aiBuffer: -Infinity };
   let count = 0;
   let skipped = 0;
@@ -383,8 +383,14 @@ async function runLocale(loc) {
       skipped++;
       continue;
     }
-    if (objective(ev) > objective(bestPenalized)) bestPenalized = ev;
+    if (!bestPenalized || objective(ev) > objective(bestPenalized)) bestPenalized = ev;
     if (count % 1000 === 0) process.stderr.write(`    ${count}/${total}\r`);
+  }
+  if (!bestPenalized) {
+    bestPenalized = bestRaw.auc >= 0 ? bestRaw : baseline;
+    process.stderr.write(
+      `  WARN: no knob combinations met FPR@50 <= ${FPR50_CEILING}; using fallback selection.\n`,
+    );
   }
   process.stderr.write(`  searched ${count} (skipped for fpr>${FPR50_CEILING}: ${skipped})\n`);
 
