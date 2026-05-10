@@ -14,6 +14,7 @@ GitHub Actions use the Node.js version from `package.json` `engines` via `action
 ### CI jobs
 
 - **lint** — `npm run check:lint` (ESLint)
+- **format** — `npm run check:format` (Prettier)
 - **locale** — Swedish prescriptive `--check` + Swedish tier validator
 - **test** — Vitest
 - **audit (non-blocking)** — `npm audit --omit=dev --audit-level=high` (failure does not fail the workflow)
@@ -54,7 +55,7 @@ That sets `core.hooksPath` to `.githooks/` and enables:
 In GitHub: **Settings → Branches → Add rule** for `main` and `v2`:
 
 - Require a pull request before merging (optional but typical)
-- Require status checks to pass: **lint**, **locale**, **test** (names match the CI job `name:` fields)
+- Require status checks to pass: **lint**, **format**, **locale**, **test** (names match the CI job `name:` fields)
 - Optionally require **CodeQL** / **Analyze**
 
 This prevents merges when tests or locale gates fail.

@@ -1,5 +1,5 @@
-# Lint, locale validation, and tests (Node from package.json engines). Three jobs so GitHub branch
-# protection can require each check name separately.
+# Lint, format, locale validation, and tests (Node from package.json engines). Four jobs so GitHub
+# branch protection can require each check name separately.
 name: CI
 
 on:
