@@ -114,6 +114,9 @@ function scanPath(targetPath, opts = {}) {
     ignoreDirs = null,
     includeDefaultIgnore = true,
     ignoreCode = false,
+    locale = 'en',
+    strict = false,
+    withLm = false,
   } = opts;
 
   const files = collectTextFiles(targetPath, { exts, ignoreDirs, includeDefaultIgnore });
@@ -137,7 +140,14 @@ function scanPath(targetPath, opts = {}) {
       continue;
     }
 
-    const result = analyze(text, { includeStats, verbose: false, ignoreCode });
+    const result = analyze(text, {
+      includeStats,
+      verbose: false,
+      ignoreCode,
+      locale,
+      strict,
+      withLm,
+    });
 
     for (const finding of result.findings) {
       const existing = patternHotspotMap.get(finding.patternId) || {
@@ -352,9 +362,23 @@ function toPatternHistogram(result) {
  * Compare two text drafts and show score + pattern deltas.
  */
 function compareTexts(beforeText, afterText, opts = {}) {
-  const { ignoreCode = false } = opts;
-  const before = analyze(beforeText, { verbose: true, includeStats: true, ignoreCode });
-  const after = analyze(afterText, { verbose: true, includeStats: true, ignoreCode });
+  const { ignoreCode = false, locale = 'en', strict = false, withLm = false } = opts;
+  const before = analyze(beforeText, {
+    verbose: true,
+    includeStats: true,
+    ignoreCode,
+    locale,
+    strict,
+    withLm,
+  });
+  const after = analyze(afterText, {
+    verbose: true,
+    includeStats: true,
+    ignoreCode,
+    locale,
+    strict,
+    withLm,
+  });
 
   const histogram = toPatternHistogram(before);
   for (const f of after.findings) {

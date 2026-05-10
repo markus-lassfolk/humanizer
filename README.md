@@ -93,7 +93,7 @@ humanizer scan docs --baseline .humanizer-baseline.json --fail-on-regression
 
 See [docs/CLI.md](docs/CLI.md) for the full command reference, config file format, CI examples, and locale examples.
 
-**Long mixed documents:** whole-document scoring dilutes a short AI-like section across many neutral words. For `analyze`, `score`, `report`, and `humanize`, use **`--chunked`** (or rely on **auto** chunking for inputs ≥ ~600 words) to append **peak / median / low** chunk scores and a **severity** flag (`partial-ai` when a hot block stands out). Headline `score` is unchanged. Details: [docs/CHUNKED_SCORING.md](docs/CHUNKED_SCORING.md).
+**Long mixed documents:** whole-document scoring can dilute a short AI-like section across many neutral words. If a score looks “too low” for a long doc, run `analyze --verbose` on the suspicious section, or use `scan` to locate high-scoring files first.
 
 ## MCP server
 

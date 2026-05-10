@@ -698,9 +698,9 @@ function formatColoredReport(result) {
         }
       }
       if (finding.truncated) {
-        lines.push(
-          `      ${color.dim(`... and ${finding.matchCount - finding.matches.length} more`)}`,
-        );
+        const total = finding.rawMatchCount ?? finding.matchCount ?? 0;
+        const remaining = Math.max(0, Math.round(total - finding.matches.length));
+        lines.push(`      ${color.dim(`... and ${remaining} more`)}`);
       }
     }
   }
@@ -1063,6 +1063,9 @@ async function main() {
 
       const result = compareFiles(flags.before, flags.after, {
         ignoreCode: opts.ignoreCode,
+        locale: opts.locale,
+        strict: opts.strict,
+        withLm: opts.withLm,
       });
       if (flags.json) {
         console.log(JSON.stringify(result, null, 2));
@@ -1089,6 +1092,9 @@ async function main() {
         ignoreDirs: scanOptions.ignoreDirs,
         includeDefaultIgnore: scanOptions.includeDefaultIgnore,
         ignoreCode: scanOptions.ignoreCode,
+        locale: opts.locale,
+        strict: opts.strict,
+        withLm: opts.withLm,
       });
 
       let baselineComparison = null;
