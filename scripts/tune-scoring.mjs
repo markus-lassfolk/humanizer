@@ -37,6 +37,7 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const { createRequire } = await import('node:module');
 const require = createRequire(import.meta.url);
 const { analyze } = require(path.join(REPO_ROOT, 'src/analyzer.js'));
+const { wordCount } = require(path.join(REPO_ROOT, 'src/patterns.js'));
 
 const argv = process.argv.slice(2);
 const localeArg = arg('--locale');
@@ -76,7 +77,6 @@ const LOCALES = [
 const WINDOW_WORDS = 200;
 const MIN_WORDS = 25;
 const FPR50_CEILING = 0.1; // best knobs must keep human FPR @ score >= 50 below this
-const GENRE_FPR50_CEILING = 0.25; // soft per-genre ceiling
 
 // ── Sample loading ───────────────────────────────────────
 
@@ -154,9 +154,8 @@ function analyzeAll(samples, locale) {
       genre: s.genre,
       file: s.file,
       dir: s.dir,
-      wordCount: r.wordCount,
+      wordCount: wordCount(s.text.trim()),
       uniformity: r.uniformityScore || 0,
-      defaultScore: typeof r.rawScore === 'number' ? r.rawScore : r.score,
       findings: r.findings.map((f) => ({
         id: f.patternId,
         category: f.category,
@@ -388,6 +387,15 @@ async function runLocale(loc) {
     if (count % 1000 === 0) process.stderr.write(`    ${count}/${total}\r`);
   }
   process.stderr.write(`  searched ${count} (skipped for fpr>${FPR50_CEILING}: ${skipped})\n`);
+
+  // Fall back to bestRaw if no combo passed FPR gate
+  if (bestPenalized.auc === -1) {
+    process.stderr.write(
+      `  WARN: all combos exceeded FPR@50 > ${FPR50_CEILING}, falling back to bestRaw\n`,
+    );
+    bestPenalized = bestRaw;
+  }
+
   process.stderr.write(
     `  best (FPR-gated)  AUC=${bestPenalized.auc.toFixed(4)} margin=${bestPenalized.margin} aiMedian=${bestPenalized.medianAi} fpr@50=${bestPenalized.m50.fpr.toFixed(3)} J*=${bestPenalized.threshold}\n`,
   );
