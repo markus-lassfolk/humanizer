@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * Humanizer HTTP API Server
- * 
+ *
  * Simple HTTP server for OpenAI Actions and other integrations.
  * Run with: node api-server/server.js
- * 
+ *
  * Endpoints:
  *   POST /api/score     - Quick AI score (0-100)
  *   POST /api/analyze   - Full analysis with patterns
@@ -13,19 +13,19 @@
  *   GET  /api/openapi   - OpenAPI spec
  */
 
-import http from 'http';
-import { readFile } from 'fs/promises';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+const http = require('http');
+const { readFile } = require('fs/promises');
+const path = require('path');
 
-// Import humanizer modules
-import { analyze, score } from '../src/analyzer.js';
-import { humanize } from '../src/humanizer.js';
-import { computeStats } from '../src/stats.js';
-import { loadLocale } from '../src/locales/index.js';
+const { analyze, score } = require('../src/analyzer.js');
+const { humanize } = require('../src/humanizer.js');
+const { computeStats } = require('../src/stats.js');
+const { loadLocale, SUPPORTED_LOCALES } = require('../src/locales');
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = require('../package.json');
+
 const PORT = process.env.PORT || 3000;
+const MAX_BODY_BYTES = Number(process.env.MAX_BODY_BYTES) || 1_000_000;
 
 // CORS headers for browser/GPT access
 const corsHeaders = {
@@ -37,13 +37,28 @@ const corsHeaders = {
 // Parse JSON body
 async function parseBody(req) {
   return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => body += chunk);
+    const chunks = [];
+    let total = 0;
+
+    req.on('data', (chunk) => {
+      total += chunk.length;
+      if (total > MAX_BODY_BYTES) {
+        const err = new Error('Request body too large');
+        err.statusCode = 413;
+        reject(err);
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
     req.on('end', () => {
       try {
+        const body = Buffer.concat(chunks).toString('utf8');
         resolve(body ? JSON.parse(body) : {});
       } catch (e) {
-        reject(new Error('Invalid JSON'));
+        const err = new Error('Invalid JSON');
+        err.statusCode = 400;
+        reject(err);
       }
     });
     req.on('error', reject);
@@ -52,11 +67,15 @@ async function parseBody(req) {
 
 // Send JSON response
 function sendJson(res, data, status = 200) {
-  res.writeHead(status, { 
+  res.writeHead(status, {
     ...corsHeaders,
-    'Content-Type': 'application/json' 
+    'Content-Type': 'application/json',
   });
   res.end(JSON.stringify(data));
+}
+
+function isSupportedLocale(locale) {
+  return typeof locale === 'string' && SUPPORTED_LOCALES.includes(locale);
 }
 
 // Request handler
@@ -68,28 +87,30 @@ async function handleRequest(req, res) {
     return;
   }
 
-  const url = new URL(req.url, `http://${req.headers.host}`);
-  const path = url.pathname;
+  const host = req.headers.host || 'localhost';
+  const url = new URL(req.url, `http://${host}`);
+  const route = url.pathname;
 
   try {
     // GET /api/openapi - Return OpenAPI spec
-    if (req.method === 'GET' && path === '/api/openapi') {
-      const spec = await readFile(join(__dirname, 'openapi.yaml'), 'utf-8');
-      res.writeHead(200, { 
+    if (req.method === 'GET' && route === '/api/openapi') {
+      const spec = await readFile(path.join(__dirname, 'openapi.yaml'), 'utf-8');
+      res.writeHead(200, {
         ...corsHeaders,
-        'Content-Type': 'application/yaml' 
+        'Content-Type': 'application/yaml',
       });
       res.end(spec);
       return;
     }
 
     // GET / - Health check
-    if (req.method === 'GET' && path === '/') {
-      sendJson(res, { 
-        status: 'ok', 
+    if (req.method === 'GET' && route === '/') {
+      sendJson(res, {
+        status: 'ok',
         name: 'humanizer-api',
-        version: '2.1.0',
-        endpoints: ['/api/score', '/api/analyze', '/api/humanize', '/api/stats', '/api/openapi']
+        version: pkg.version,
+        supportedLocales: SUPPORTED_LOCALES,
+        endpoints: ['/api/score', '/api/analyze', '/api/humanize', '/api/stats', '/api/openapi'],
       });
       return;
     }
@@ -97,7 +118,7 @@ async function handleRequest(req, res) {
     // POST endpoints
     if (req.method === 'POST') {
       const body = await parseBody(req);
-      
+
       if (!body.text) {
         sendJson(res, { error: 'Missing required field: text' }, 400);
         return;
@@ -105,18 +126,27 @@ async function handleRequest(req, res) {
 
       // Optional locale field: 'en' (default) or 'sv'
       const locale = body.locale || 'en';
+      if (!isSupportedLocale(locale)) {
+        sendJson(
+          res,
+          { error: `Invalid locale "${locale}". Supported locales: ${SUPPORTED_LOCALES.join(', ')}` },
+          400,
+        );
+        return;
+      }
 
-      switch (path) {
+      switch (route) {
         case '/api/score': {
           const s = score(body.text, { locale });
           const badge = s <= 25 ? '🟢' : s <= 50 ? '🟡' : s <= 75 ? '🟠' : '🔴';
-          const interpretation = s <= 25
-            ? 'Mostly human-sounding'
-            : s <= 50
-            ? 'Lightly AI-touched'
-            : s <= 75
-            ? 'Moderately AI-influenced'
-            : 'Heavily AI-generated';
+          const interpretation =
+            s <= 25
+              ? 'Mostly human-sounding'
+              : s <= 50
+              ? 'Lightly AI-touched'
+              : s <= 75
+              ? 'Moderately AI-influenced'
+              : 'Heavily AI-generated';
           sendJson(res, { score: s, badge, interpretation, locale });
           return;
         }
@@ -132,7 +162,7 @@ async function handleRequest(req, res) {
         }
 
         case '/api/humanize': {
-          const suggestions = humanize(body.text, { 
+          const suggestions = humanize(body.text, {
             autofix: body.autofix || false,
             locale,
           });
@@ -156,7 +186,8 @@ async function handleRequest(req, res) {
     sendJson(res, { error: 'Not found' }, 404);
   } catch (error) {
     console.error('Error:', error);
-    sendJson(res, { error: error.message }, 500);
+    const status = error && typeof error.statusCode === 'number' ? error.statusCode : 500;
+    sendJson(res, { error: error.message }, status);
   }
 }
 
