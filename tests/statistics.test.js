@@ -201,11 +201,12 @@ describe('computeStats', () => {
     expect(stats.avgSentenceLength).toBeGreaterThan(0);
   });
 
-  it('uses sample variance (n-1) for sentence length standard deviation', () => {
+  it('computes population standard deviation for sentence lengths', () => {
     const text = 'One two three four five six. One two three.';
     const stats = computeStats(text);
-    // After Bessel-adjustment to preserve threshold calibration, std dev is scaled
-    // back to population-equivalent: sqrt(4.5) * sqrt(1/2) = 1.5
+    // Population std dev: sentence lengths [6, 3], mean 4.5
+    // SS = (6-4.5)² + (3-4.5)² = 2.25 + 2.25 = 4.5
+    // population variance = 4.5/2 = 2.25, population σ = 1.5
     expect(stats.sentenceLengthStdDev).toBe(1.5);
   });
 
