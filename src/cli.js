@@ -65,9 +65,9 @@ const color = {
  * @returns {string} Colored badge string
  */
 function scoreBadge(s) {
-  if (s <= 25) return color.green(`🟢 ${s}/100`);
-  if (s <= 50) return color.yellow(`🟡 ${s}/100`);
-  if (s <= 75) return color.magenta(`🟠 ${s}/100`);
+  if (s <= 19) return color.green(`🟢 ${s}/100`);
+  if (s <= 44) return color.yellow(`🟡 ${s}/100`);
+  if (s <= 69) return color.magenta(`🟠 ${s}/100`);
   return color.red(`🔴 ${s}/100`);
 }
 
@@ -623,11 +623,11 @@ function formatColoredReport(result) {
   // Score bar with color
   const filled = Math.round(result.score / 5);
   const barColor =
-    result.score <= 25
+    result.score <= 19
       ? color.green
-      : result.score <= 50
+      : result.score <= 44
         ? color.yellow
-        : result.score <= 75
+        : result.score <= 69
           ? color.magenta
           : color.red;
   const bar = barColor('█'.repeat(filled)) + color.dim('░'.repeat(20 - filled));
@@ -698,9 +698,10 @@ function formatColoredReport(result) {
         }
       }
       if (finding.truncated) {
-        const total = finding.rawMatchCount ?? finding.matchCount ?? 0;
-        const remaining = Math.max(0, Math.round(total - finding.matches.length));
-        lines.push(`      ${color.dim(`... and ${remaining} more`)}`);
+        const totalRaw = finding.rawMatchCount ?? finding.matchCount ?? finding.matches.length;
+        lines.push(
+          `      ${color.dim(`... and ${Math.max(0, totalRaw - finding.matches.length)} more`)}`,
+        );
       }
     }
   }

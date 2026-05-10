@@ -447,9 +447,8 @@ function formatReport(result) {
         }
       }
       if (finding.truncated) {
-        const total = finding.rawMatchCount ?? finding.matchCount ?? 0;
-        const remaining = Math.max(0, Math.round(total - finding.matches.length));
-        lines.push(`      ... and ${remaining} more`);
+        const totalRaw = finding.rawMatchCount ?? finding.matchCount ?? finding.matches.length;
+        lines.push(`      ... and ${Math.max(0, totalRaw - finding.matches.length)} more`);
       }
     }
   }

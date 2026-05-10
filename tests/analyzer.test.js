@@ -178,6 +178,19 @@ describe('formatting', () => {
     expect(md).toContain('**Score:');
     expect(md).toContain('**Confidence:**');
   });
+
+  it('keeps raw match counts for truncated findings', () => {
+    const text = Array(8).fill('delve').join(' ');
+    const result = analyze(text, { patternsToCheck: [7] });
+    const finding = result.findings[0];
+
+    expect(finding.truncated).toBe(true);
+    expect(finding.rawMatchCount).toBe(8);
+    expect(finding.matches.length).toBe(5);
+
+    const report = formatReport(result);
+    expect(report).toContain('... and 3 more');
+  });
 });
 
 // ─── Individual Pattern Detection ────────────────────────
@@ -277,6 +290,22 @@ describe('pattern detection', () => {
       'The event promotes innovation, inspiration, and collaboration for increased motivation, dedication, and education.';
     const result = analyze(text, { patternsToCheck: [10] });
     expect(result.findings.length).toBeGreaterThan(0);
+  });
+
+  // 11. Synonym cycling
+  it('reports synonym cycling positions from the actual sentence offset', () => {
+    const text = [
+      'Intro sentence without synonyms.',
+      'The company changed direction.',
+      'The organization adapted.',
+      'The firm grew.',
+    ].join('\n');
+    const result = analyze(text, { patternsToCheck: [11], verbose: true });
+
+    expect(result.findings.length).toBeGreaterThan(0);
+    const match = result.findings[0].matches[0];
+    expect(match.index).toBe(text.indexOf('The company changed direction.'));
+    expect(match.line).toBe(2);
   });
 
   // 13. Em dash overuse
