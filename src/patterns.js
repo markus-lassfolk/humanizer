@@ -28,7 +28,7 @@ const {
   CHALLENGES_PHRASES,
   COPULA_AVOIDANCE,
 } = require('./locales/en-pattern-packs');
-const { tokenize } = require('./stats');
+const { tokenize, splitSentences } = require('./stats');
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -71,7 +71,10 @@ function countMatches(text, regex) {
 
 /** Word count. */
 function wordCount(text) {
-  return text.trim().split(/\s+/).filter(Boolean).length;
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((token) => token && /[\p{L}\p{N}]/u.test(token)).length;
 }
 
 // ─── Vocabulary Detection Helpers ────────────────────────
@@ -690,12 +693,30 @@ const patterns = [
       const synonymSets = pack;
 
       const results = [];
-      const sentenceMatches = [...text.matchAll(/[^.!?]+/g)]
-        .map((match) => ({
-          text: match[0],
-          index: match.index ?? 0,
-        }))
-        .filter((sentence) => sentence.text.trim().length > 0);
+      const sentenceMatches = [];
+      let searchFrom = 0;
+      for (const sentence of splitSentences(text, opts.localeProfile)) {
+        const content = sentence.trim();
+        if (!content) continue;
+
+        const foundIndex = text.indexOf(content, searchFrom);
+        if (foundIndex !== -1) {
+          sentenceMatches.push({
+            text: content,
+            index: foundIndex,
+          });
+          searchFrom = foundIndex + content.length;
+          continue;
+        }
+
+        // Fallback when sentence normalization prevents exact indexOf.
+        // Keep advancing to prevent duplicate offsets on repeated fallback.
+        sentenceMatches.push({
+          text: content,
+          index: searchFrom,
+        });
+        searchFrom += content.length + 1;
+      }
 
       for (const synonyms of synonymSets) {
         for (let i = 0; i < sentenceMatches.length - 1; i++) {
@@ -711,9 +732,6 @@ const patterns = [
             }
           }
           if (found.length >= 3) {
-            // matchAll preserves the original offset for each sentence fragment, so
-            // repeated sentence text and punctuation without following whitespace do
-            // not send position reporting back to the first occurrence in the text.
             // Report the first sentence in the window that actually contains a synonym.
             const reportSentence = sentenceMatches[firstHitIndex ?? i];
             const leadingWhitespace = reportSentence.text.match(/^\s*/)?.[0].length ?? 0;
@@ -871,11 +889,12 @@ const patterns = [
     description: 'Decorating headings or bullet points with emojis in professional/technical text.',
     weight: 2,
     detect(text) {
-      const emojiCount = countMatches(text, /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}]/gu);
+      const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}]/gu;
+      const emojiCount = countMatches(text, emojiRegex);
       if (emojiCount >= 3) {
         return findMatches(
           text,
-          /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}]/gu,
+          emojiRegex,
           'Remove emoji decoration from professional text.',
           'high',
         );

@@ -308,6 +308,23 @@ describe('pattern detection', () => {
     expect(match.line).toBe(2);
   });
 
+  it('detects synonym cycling across abbreviation-heavy sentences', () => {
+    const text =
+      'The company met Dr. Adams at Acme Inc. headquarters. The firm prepared revisions with Prof. Lee. The organization approved the plan.';
+    const result = analyze(text, { patternsToCheck: [11] });
+    expect(result.findings.length).toBeGreaterThan(0);
+  });
+
+  it('tracks synonym cycling offsets for repeated sentence text', () => {
+    const repeated = 'The company launched a plan.';
+    const text = `Prelude one. Prelude two. ${repeated} Bridge sentence. ${repeated} The firm reviewed it. The organization approved it.`;
+    const result = analyze(text, { patternsToCheck: [11], verbose: true });
+    expect(result.findings.length).toBeGreaterThan(0);
+    const first = text.indexOf(repeated);
+    const second = text.indexOf(repeated, first + 1);
+    expect(result.findings[0].matches[0].index).toBe(second);
+  });
+
   // 13. Em dash overuse
   it('detects em dash overuse', () => {
     const text =
@@ -346,6 +363,13 @@ describe('pattern detection', () => {
       '🚀 Launch phase complete\n💡 Key insights discovered\n✅ Next steps defined\n🎯 Goals aligned';
     const result = analyze(text, { patternsToCheck: [17] });
     expect(result.findings.length).toBeGreaterThan(0);
+  });
+
+  it('counts and matches the same extended emoji set for thresholding', () => {
+    const text = '⭐ Priority aligned\n⌛ Timeline reviewed\n⏰ Deadline confirmed';
+    const result = analyze(text, { patternsToCheck: [17], verbose: true });
+    expect(result.findings.length).toBeGreaterThan(0);
+    expect(result.findings[0].matches).toHaveLength(3);
   });
 
   // 18. Curly quotes
