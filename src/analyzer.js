@@ -15,7 +15,12 @@
  */
 
 const { patterns, wordCount } = require('./patterns');
-const { computeStats, computeUniformityScore, computeLmUniformityBoost } = require('./stats');
+const {
+  computeStats,
+  computeUniformityScore,
+  computeLmUniformityBoost,
+  tokenize,
+} = require('./stats');
 const { stripCodeSnippets } = require('./preprocess');
 const { loadLocale } = require('./locales');
 const { DEFAULT_SCORING_KNOBS, mergeScoringKnobs } = require('./locales/scoring-defaults');
@@ -77,11 +82,13 @@ function analyze(text, opts = {}) {
   const localeProfile = loadLocale(locale);
   const scoringKnobs = mergeScoringKnobs(localeProfile);
 
-  const words = wordCount(trimmed);
+  // Keep whitespace-based count for calibrated scoring thresholds.
+  const calibratedWords = wordCount(trimmed);
 
   // ── Compute text statistics ────────────────────────
   const stats = includeStats ? computeStats(trimmed, localeProfile) : null;
-  const reportWordCount = stats?.wordCount ?? words;
+  // Report/display count should be Unicode-aware and consistent with stats/tokenization.
+  const reportWordCount = stats ? stats.wordCount : tokenize(trimmed).length;
   // Only compute uniformity for text with enough structure to be meaningful
   let uniformityScore =
     stats && stats.wordCount >= 20 && stats.sentenceCount >= 3 ? computeUniformityScore(stats) : 0;
@@ -128,7 +135,7 @@ function analyze(text, opts = {}) {
   }
 
   // ── Calculate composite score (knobs from locale profile; see scoring-defaults.js) ──
-  const patternScore = calculatePatternScore(findings, words, scoringKnobs);
+  const patternScore = calculatePatternScore(findings, calibratedWords, scoringKnobs);
   const compositeHeuristic = calculateCompositeScore(
     patternScore,
     uniformityScore,
@@ -137,7 +144,7 @@ function analyze(text, opts = {}) {
   );
 
   const reliability = buildReliability({
-    words: reportWordCount,
+    words: calibratedWords,
     stats,
     findings,
     patternScore,
@@ -165,7 +172,7 @@ function analyze(text, opts = {}) {
       uniformityScore,
       compositeHeuristic,
       totalMatches,
-      wordCount: words,
+      wordCount: calibratedWords,
       findings,
       stats,
       categories,
@@ -180,7 +187,7 @@ function analyze(text, opts = {}) {
           uniformityScore,
           compositeHeuristic,
           totalMatches,
-          words,
+          words: calibratedWords,
           findingsCount: findings.length,
           stats,
           categories,

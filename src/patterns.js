@@ -71,7 +71,10 @@ function countMatches(text, regex) {
 
 /** Word count. */
 function wordCount(text) {
-  return text.trim().split(/\s+/).filter(Boolean).length;
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((token) => token.length > 0 && /[\p{L}\p{N}]/u.test(token)).length;
 }
 
 // ─── Vocabulary Detection Helpers ────────────────────────
