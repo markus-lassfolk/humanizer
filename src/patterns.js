@@ -704,10 +704,18 @@ const patterns = [
             }
           }
           if (found.length >= 3) {
+            // Find the index of the sentence in the original text, handling cases where
+            // the sentence was trimmed during splitting. Use Math.max(0, ...) to handle
+            // -1 returns from indexOf, and approximate line number from sentence position.
+            const sentenceIdx = text.indexOf(sentences[i]);
+            const idx = sentenceIdx !== -1 ? sentenceIdx : 0;
+            const lineNum = sentenceIdx !== -1
+              ? text.substring(0, idx).split('\n').length
+              : i + 1; // fallback to sentence position + 1
             results.push({
               match: `Synonym cycling: ${found.join(' → ')}`,
-              index: text.indexOf(sentences[i]),
-              line: text.substring(0, text.indexOf(sentences[i])).split('\n').length,
+              index: idx,
+              line: lineNum,
               column: 1,
               suggestion: `Pick one term and stick with it. Found "${found.join('", "')}" used as synonyms in nearby sentences.`,
               confidence: 'medium',
