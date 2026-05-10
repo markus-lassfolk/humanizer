@@ -43,6 +43,17 @@ describe('analyze', () => {
     expect(analyze(undefined).score).toBe(0);
   });
 
+  it('returns empty result for null/empty input before locale validation', () => {
+    expect(() => analyze(null, { locale: 'xx' })).not.toThrow();
+    expect(() => analyze('', { locale: 'xx' })).not.toThrow();
+    expect(() => analyze('   \n\t', { locale: 'xx' })).not.toThrow();
+    expect(analyze('', { locale: 'xx' }).score).toBe(0);
+  });
+
+  it('still throws on invalid locale for non-empty text', () => {
+    expect(() => analyze('Hello world.', { locale: 'xx' })).toThrow(/Unknown locale/);
+  });
+
   it('scores clean human text low', () => {
     const text = loadFixture('human-sample-1.txt');
     const result = analyze(text);
@@ -72,6 +83,12 @@ describe('analyze', () => {
     expect(result.stats).toHaveProperty('typeTokenRatio');
   });
 
+  it('uses stats tokenization for result wordCount when stats are included', () => {
+    const result = analyze('...!!!???---');
+    expect(result.stats.wordCount).toBe(0);
+    expect(result.wordCount).toBe(0);
+  });
+
   it('can ignore code snippets during analysis', () => {
     const text = [
       'Release notes:',
@@ -93,6 +110,29 @@ describe('analyze', () => {
     expect(result.reliability.level).toBe('low');
     expect(result.reliability.score).toBeLessThan(45);
     expect(result.reliability.reasons.length).toBeGreaterThan(0);
+  });
+
+  it('uses explicit no-findings reliability wording', () => {
+    const text = Array(12).fill('The same line repeats in a very predictable structure.').join(' ');
+    const result = analyze(text, { patternsToCheck: [] });
+
+    expect(result.findings.length).toBe(0);
+    expect(result.reliability.reasons).toContain('No AI pattern families were detected.');
+    expect(result.reliability.reasons).not.toContain('Only one AI pattern family was detected.');
+  });
+
+  it('uses a uniformity summary when score is non-trivial with zero matches', () => {
+    const sentence =
+      'alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu nu xi omicron.';
+    const text = Array(14).fill(sentence).join(' ');
+    const result = analyze(text, { patternsToCheck: [] });
+
+    expect(result.totalMatches).toBe(0);
+    expect(result.score).toBeGreaterThanOrEqual(10);
+    expect(result.summary).toContain(
+      'No AI pattern families were detected, but sentence-level uniformity signals were elevated',
+    );
+    expect(result.summary).not.toContain('Found 0 matches across 0 pattern types');
   });
 
   it('marks longer multi-paragraph text as higher confidence', () => {
@@ -163,6 +203,47 @@ describe('formatting', () => {
     expect(md).toContain('# AI writing pattern analysis');
     expect(md).toContain('**Score:');
     expect(md).toContain('**Confidence:**');
+  });
+
+  it('rounds weighted match counts in display output', () => {
+    const result = {
+      score: 33,
+      patternScore: 24,
+      uniformityScore: 11,
+      reliability: { level: 'medium', score: 60 },
+      totalMatches: 2.6,
+      wordCount: 120,
+      stats: null,
+      categories: {
+        style: {
+          label: 'Style patterns',
+          matches: 1.4,
+          weightedScore: 0,
+          patternsDetected: ['Demo pattern'],
+        },
+      },
+      findings: [
+        {
+          patternId: 42,
+          patternName: 'Demo pattern',
+          description: 'Demo description',
+          weight: 2,
+          matchCount: 1.6,
+          matches: [],
+          truncated: false,
+        },
+      ],
+      summary: 'Synthetic summary.',
+    };
+
+    const report = formatReport(result);
+    const markdown = formatMarkdown(result);
+
+    expect(report).toContain('Matches: 3');
+    expect(report).toContain('(×2, weight: 2)');
+    expect(report).toContain('Style patterns: 1 matches');
+    expect(markdown).toContain('Matches: 3');
+    expect(markdown).toContain('### 42. Demo pattern (×2)');
   });
 
   it('formatReport truncation uses raw match count', () => {
