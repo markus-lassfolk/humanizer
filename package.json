@@ -14,7 +14,7 @@
     "lint:fix": "eslint src/ tests/ locales/ --fix",
     "format": "prettier --write 'src/**/*.js' 'tests/**/*.js' 'locales/**/*.js'",
     "format:check": "prettier --check 'src/**/*.js' 'tests/**/*.js' 'locales/**/*.js'",
-    "check:lint": "npm run lint",
+    "check:lint": "npm run lint && npm run format:check",
     "check:locale": "npm run locale:prescriptive -- --check && npm run validate:sv-tiers",
     "check:test": "npm test",
     "check": "npm run check:lint && npm run check:locale && npm run check:test",
