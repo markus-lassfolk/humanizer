@@ -9,7 +9,6 @@
 const fs = require('fs');
 const path = require('path');
 const { analyze } = require('./analyzer');
-const { roundDisplayCount } = require('./utils');
 
 const DEFAULT_SCAN_EXTENSIONS = ['.md', '.txt', '.rst', '.adoc'];
 const DEFAULT_IGNORE_DIRS = new Set([
@@ -381,7 +380,7 @@ function compareTexts(beforeText, afterText, opts = {}) {
 
   const deltas = [...histogram.values()].map((p) => ({
     ...p,
-    delta: roundDisplayCount(p.afterCount) - roundDisplayCount(p.beforeCount),
+    delta: p.afterCount - p.beforeCount,
   }));
 
   const improvements = deltas.filter((d) => d.delta < 0).sort((a, b) => a.delta - b.delta);
