@@ -57,9 +57,9 @@ describe('analyze', () => {
     expect(() => analyze('', { locale: 'xx' })).toThrow(/Unknown locale/);
     expect(() => analyze('   \n\t', { locale: 'xx' })).toThrow(/Unknown locale/);
     expect(() => analyze('Hello world.', { locale: 'xx' })).toThrow(/Unknown locale/);
-    expect(() =>
-      analyze('```js\nconst x = 1;\n```', { locale: 'xx', ignoreCode: true }),
-    ).toThrow(/Unknown locale/);
+    expect(() => analyze('```js\nconst x = 1;\n```', { locale: 'xx', ignoreCode: true })).toThrow(
+      /Unknown locale/,
+    );
   });
 
   it('scores clean human text low', () => {

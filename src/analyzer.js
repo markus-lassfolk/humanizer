@@ -60,7 +60,7 @@ function analyze(text, opts = {}) {
     withLm = false,
   } = opts;
 
-  if ((text === null || text === undefined) || typeof text !== 'string') {
+  if (text === null || text === undefined || typeof text !== 'string') {
     return emptyResult();
   }
 
