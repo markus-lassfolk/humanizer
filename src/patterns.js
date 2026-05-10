@@ -640,14 +640,20 @@ const patterns = [
       }
 
       for (const synonyms of synonymSets) {
+        const compiledSynonyms = synonyms.map((syn) => ({
+          value: syn,
+          regex: synonymRegex(syn),
+        }));
+
         for (let i = 0; i < sentences.length - 1; i++) {
           const found = [];
+          const foundSet = new Set();
           for (let j = i; j < Math.min(i + 4, sentences.length); j++) {
             const lower = sentences[j].lower;
-            for (const syn of synonyms) {
-              const synRegex = synonymRegex(syn);
-              if (synRegex.test(lower) && !found.includes(syn)) {
-                found.push(syn);
+            for (const { value, regex } of compiledSynonyms) {
+              if (regex.test(lower) && !foundSet.has(value)) {
+                foundSet.add(value);
+                found.push(value);
               }
             }
           }
