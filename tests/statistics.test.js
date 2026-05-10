@@ -66,9 +66,14 @@ describe('splitSentences', () => {
     ]);
   });
 
-  it('keeps unknown short abbreviations with lowercase or numeric continuations', () => {
+  it('keeps known short abbreviations with lowercase or numeric continuations', () => {
     const result = splitSentences('See no. 2 for details. Acme Inc. filed today. Done.');
     expect(result).toEqual(['See no. 2 for details.', 'Acme Inc. filed today.', 'Done.']);
+  });
+
+  it('does not merge normal short words before lowercase or numeric sentence starts', () => {
+    expect(splitSentences('Stop now. second sentence.')).toEqual(['Stop now.', 'second sentence.']);
+    expect(splitSentences('We can go. 2024 was wild.')).toEqual(['We can go.', '2024 was wild.']);
   });
 
   it('splits when next sentence starts lowercase', () => {

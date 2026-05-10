@@ -103,6 +103,8 @@ function splitSentences(text, localeProfile) {
       'e.g',
       'i.e',
       'fig',
+      'no',
+      'Inc',
       'vs',
       'approx',
       'dept',
@@ -117,25 +119,10 @@ function splitSentences(text, localeProfile) {
     .replace(/(\d)\.(\d)/g, '$1\u2024$2') // decimals/time values: "14.30"
     .replace(/(^|\n)(\s*)(\d+)\.(?=\s+\S)/g, '$1$2$3\u2024'); // numbered lists at line/string start: "1. First"
 
-  const fragments = cleaned
+  return cleaned
     .split(/(?<=[.!?])\s+|(?<=[.!?])$/)
-    .map((s) => s.trim())
+    .map((s) => s.replace(/\u2024/g, '.').trim())
     .filter((s) => s.length > 0);
-
-  const sentences = [];
-  for (const fragment of fragments) {
-    const previous = sentences[sentences.length - 1];
-    const previousShortToken = previous?.match(/(?:^|\s)(\p{L}{1,3})\.$/u)?.[1];
-    const nextStartsLikeContinuation = /^[\p{Ll}\p{N}]/u.test(fragment);
-
-    if (previousShortToken && nextStartsLikeContinuation) {
-      sentences[sentences.length - 1] = `${previous} ${fragment}`;
-    } else {
-      sentences.push(fragment);
-    }
-  }
-
-  return sentences.map((s) => s.replace(/\u2024/g, '.'));
 }
 
 // ─── Core Statistics ─────────────────────────────────────
