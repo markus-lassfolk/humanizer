@@ -179,6 +179,19 @@ describe('scanPath', () => {
 
     expect(regular.files[0].score).toBeGreaterThan(ignoreCode.files[0].score);
   });
+
+  it('propagates locale options through scanPath', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+    const content = 'Detta säkerställer robusta resultat och möjliggör effektiv implementering.';
+
+    fs.writeFileSync(path.join(tmp, 'sv.md'), content);
+
+    const english = scanPath(tmp, { exts: ['md'], minWords: 3, locale: 'en' });
+    const swedish = scanPath(tmp, { exts: ['md'], minWords: 3, locale: 'sv' });
+
+    expect(swedish.files[0].totalMatches).toBeGreaterThan(english.files[0].totalMatches);
+    expect(swedish.files[0].score).toBeGreaterThan(english.files[0].score);
+  });
 });
 
 describe('compareTexts and compareFiles', () => {
@@ -217,6 +230,17 @@ describe('compareTexts and compareFiles', () => {
     const codeAware = compareTexts(before, after, { ignoreCode: true });
 
     expect(regular.before.score).toBeGreaterThan(codeAware.before.score);
+  });
+
+  it('propagates locale options through compareTexts', () => {
+    const before = 'Detta säkerställer robusta resultat och möjliggör effektiv implementering.';
+    const after = 'Detta är en fråga med tydlig effekt.';
+
+    const english = compareTexts(before, after, { locale: 'en' });
+    const swedish = compareTexts(before, after, { locale: 'sv' });
+
+    expect(swedish.before.totalMatches).toBeGreaterThan(english.before.totalMatches);
+    expect(swedish.delta.matches).toBeLessThan(english.delta.matches);
   });
 });
 

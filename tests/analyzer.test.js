@@ -149,6 +149,20 @@ describe('formatting', () => {
     expect(report).toContain('Confidence:');
   });
 
+  it('formatReport uses raw match count for truncated weighted findings', () => {
+    const text = Array(6).fill('deep dive').join('. ');
+    const result = analyze(text, { patternsToCheck: [7] });
+    const finding = result.findings.find((f) => f.patternId === 7);
+
+    expect(finding.rawMatchCount).toBe(12);
+    expect(finding.matches.length).toBe(5);
+    expect(finding.matchCount).toBe(finding.rawMatchCount);
+
+    const report = formatReport(result);
+    expect(report).toContain('... and 7 more');
+    expect(report).not.toMatch(/\.\.\. and -\d+ more/);
+  });
+
   it('formatJSON produces valid JSON', () => {
     const result = analyze('This is a testament to great things.');
     const json = formatJSON(result);
@@ -226,6 +240,18 @@ describe('pattern detection', () => {
     const result = analyze(text, { patternsToCheck: [7] });
     expect(result.findings.length).toBeGreaterThan(0);
     expect(result.totalMatches).toBeGreaterThanOrEqual(4);
+  });
+
+  it('matches multi-word AI vocabulary across variable whitespace', () => {
+    const result = analyze('The team took a deep	dive before another deep  dive.', {
+      patternsToCheck: [7],
+      verbose: true,
+    });
+
+    expect(result.findings.some((f) => f.patternId === 7)).toBe(true);
+    const matches = result.findings.flatMap((f) => f.matches.map((m) => m.match));
+    expect(matches).toContain('deep	dive');
+    expect(matches).toContain('deep  dive');
   });
 
   // 8. Copula avoidance
