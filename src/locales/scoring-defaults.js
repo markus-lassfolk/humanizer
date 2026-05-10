@@ -27,12 +27,39 @@ const DEFAULT_SCORING_KNOBS = {
 const SCORING_KNOBS_EN = { ...DEFAULT_SCORING_KNOBS };
 const SCORING_KNOBS_SV = { ...DEFAULT_SCORING_KNOBS };
 
+function coerceFiniteNumber(value, fallback) {
+  if (value === null || value === undefined) return fallback;
+  const coerced = Number(value);
+  return Number.isFinite(coerced) ? coerced : fallback;
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
 /**
  * @param {object} profile locale profile from loadLocale()
  * @returns {ScoringKnobs}
  */
 function mergeScoringKnobs(profile) {
-  return { ...DEFAULT_SCORING_KNOBS, ...(profile?.scoring || {}) };
+  const scoring = profile?.scoring;
+  if (!scoring || typeof scoring !== 'object') {
+    return { ...DEFAULT_SCORING_KNOBS };
+  }
+
+  return {
+    densityCoef: coerceFiniteNumber(scoring.densityCoef, DEFAULT_SCORING_KNOBS.densityCoef),
+    densityCap: coerceFiniteNumber(scoring.densityCap, DEFAULT_SCORING_KNOBS.densityCap),
+    breadthMult: coerceFiniteNumber(scoring.breadthMult, DEFAULT_SCORING_KNOBS.breadthMult),
+    breadthCap: coerceFiniteNumber(scoring.breadthCap, DEFAULT_SCORING_KNOBS.breadthCap),
+    categoryMult: coerceFiniteNumber(scoring.categoryMult, DEFAULT_SCORING_KNOBS.categoryMult),
+    categoryCap: coerceFiniteNumber(scoring.categoryCap, DEFAULT_SCORING_KNOBS.categoryCap),
+    patternWeight: clamp(
+      coerceFiniteNumber(scoring.patternWeight, DEFAULT_SCORING_KNOBS.patternWeight),
+      0,
+      1,
+    ),
+  };
 }
 
 module.exports = {

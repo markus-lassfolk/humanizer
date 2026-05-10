@@ -37,7 +37,6 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const { createRequire } = await import('node:module');
 const require = createRequire(import.meta.url);
 const { analyze } = require(path.join(REPO_ROOT, 'src/analyzer.js'));
-const { wordCount } = require(path.join(REPO_ROOT, 'src/patterns.js'));
 
 const argv = process.argv.slice(2);
 const localeArg = arg('--locale');
@@ -148,13 +147,13 @@ function analyzeAll(samples, locale) {
   const out = [];
   for (let i = 0; i < samples.length; i++) {
     const s = samples[i];
-    const r = analyze(s.text, { locale, includeStats: true, skipCalibration: true });
+    const r = analyze(s.text, { locale, includeStats: true });
     out.push({
       label: s.label,
       genre: s.genre,
       file: s.file,
       dir: s.dir,
-      wordCount: wordCount(s.text.trim()),
+      wordCount: r.calibratedWordCount,
       uniformity: r.uniformityScore || 0,
       findings: r.findings.map((f) => ({
         id: f.patternId,
@@ -212,16 +211,43 @@ function computeAuc(scored) {
   return (sumRanksPos - (np * (np + 1)) / 2) / (np * nn);
 }
 
-function metrics(scored, threshold) {
-  let tp = 0,
-    fn = 0,
-    fp = 0,
-    tn = 0;
+function buildThresholdStats(scored) {
+  const aiAtScore = Array.from({ length: 101 }, () => 0);
+  const humanAtScore = Array.from({ length: 101 }, () => 0);
+  let aiTotal = 0;
+  let humanTotal = 0;
+
   for (const s of scored) {
-    const positive = s.score >= threshold;
-    if (s.label === 1) positive ? tp++ : fn++;
-    else positive ? fp++ : tn++;
+    const score = Math.max(0, Math.min(100, Math.trunc(s.score)));
+    if (s.label === 1) {
+      aiAtScore[score]++;
+      aiTotal++;
+    } else {
+      humanAtScore[score]++;
+      humanTotal++;
+    }
   }
+
+  const tpAtThreshold = Array.from({ length: 101 }, () => 0);
+  const fpAtThreshold = Array.from({ length: 101 }, () => 0);
+  let runningAi = 0;
+  let runningHuman = 0;
+  for (let t = 100; t >= 0; t--) {
+    runningAi += aiAtScore[t];
+    runningHuman += humanAtScore[t];
+    tpAtThreshold[t] = runningAi;
+    fpAtThreshold[t] = runningHuman;
+  }
+
+  return { aiTotal, humanTotal, tpAtThreshold, fpAtThreshold };
+}
+
+function metricsAtThreshold(thresholdStats, threshold) {
+  const t = Math.max(0, Math.min(100, Math.trunc(threshold)));
+  const tp = thresholdStats.tpAtThreshold[t];
+  const fp = thresholdStats.fpAtThreshold[t];
+  const fn = thresholdStats.aiTotal - tp;
+  const tn = thresholdStats.humanTotal - fp;
   return {
     tp,
     fn,
@@ -233,10 +259,10 @@ function metrics(scored, threshold) {
   };
 }
 
-function bestThreshold(scored) {
+function bestThreshold(thresholdStats) {
   let best = { threshold: 50, j: -1 };
   for (let t = 0; t <= 100; t++) {
-    const m = metrics(scored, t);
+    const m = metricsAtThreshold(thresholdStats, t);
     const tpr = m.tp / Math.max(1, m.tp + m.fn);
     const j = tpr - m.fpr;
     if (j > best.j) best = { threshold: t, j };
@@ -323,13 +349,21 @@ function totalCombos(space) {
 // ── Eval per knob ────────────────────────────────────────
 
 function evaluate(enriched, knobs) {
-  const scored = enriched.map((s) => ({ ...s, score: recomputeScore(s, knobs) }));
+  const scored = [];
+  const aiScores = [];
+  const humanScores = [];
+  for (const s of enriched) {
+    const score = recomputeScore(s, knobs);
+    scored.push({ label: s.label, score });
+    if (s.label === 1) aiScores.push(score);
+    else humanScores.push(score);
+  }
+
   const auc = computeAuc(scored);
-  const m50 = metrics(scored, 50);
-  const t = bestThreshold(scored);
-  const mt = metrics(scored, t.threshold);
-  const aiScores = scored.filter((s) => s.label === 1).map((s) => s.score);
-  const humanScores = scored.filter((s) => s.label === 0).map((s) => s.score);
+  const thresholdStats = buildThresholdStats(scored);
+  const m50 = metricsAtThreshold(thresholdStats, 50);
+  const t = bestThreshold(thresholdStats);
+  const mt = metricsAtThreshold(thresholdStats, t.threshold);
   const median = (xs) => {
     if (xs.length === 0) return 0;
     const a = xs.slice().sort((p, q) => p - q);

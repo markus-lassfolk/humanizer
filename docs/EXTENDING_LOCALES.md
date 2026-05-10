@@ -56,12 +56,9 @@ New locales inherit `DEFAULT_SCORING_KNOBS` from
 When you have a labeled corpus, add an explicit profile override:
 
 ```js
-const { DEFAULT_SCORING_KNOBS } = require('../scoring-defaults');
-
 module.exports = {
   code: 'da',
   scoring: {
-    ...DEFAULT_SCORING_KNOBS,
     densityCap: 68,
     patternWeight: 0.75,
   },
