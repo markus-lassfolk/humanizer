@@ -1105,7 +1105,13 @@ async function main() {
       if (shouldUseChunkedAnalysis(text, flags)) {
         const chunked = analyzeChunked(text, opts);
         if (flags.json) {
-          console.log(JSON.stringify({ ...result, chunks: chunked.chunks, aggregate: chunked.aggregate }, null, 2));
+          console.log(
+            JSON.stringify(
+              { ...result, chunks: chunked.chunks, aggregate: chunked.aggregate },
+              null,
+              2,
+            ),
+          );
         } else {
           console.log(formatSuggestions(result));
           if (flags.autofix && result.autofix) {
@@ -1153,7 +1159,13 @@ async function main() {
       if (shouldUseChunkedAnalysis(text, flags)) {
         const chunked = analyzeChunked(text, opts);
         if (flags.json) {
-          console.log(JSON.stringify({ ...result, chunks: chunked.chunks, aggregate: chunked.aggregate }, null, 2));
+          console.log(
+            JSON.stringify(
+              { ...result, chunks: chunked.chunks, aggregate: chunked.aggregate },
+              null,
+              2,
+            ),
+          );
         } else {
           console.log(formatGroupedSuggestions(result));
           console.log(formatChunkedTextAppendix(chunked));

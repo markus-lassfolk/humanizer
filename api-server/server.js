@@ -282,7 +282,9 @@ async function handleRequest(req, res) {
 // Start server
 const server = http.createServer(handleRequest);
 server.listen(PORT, () => {
-  console.log(`Humanizer API server running on http://localhost:${PORT}`);
+  const addr = server.address();
+  const actualPort = addr && typeof addr === 'object' ? addr.port : PORT;
+  console.log(`Humanizer API server running on http://localhost:${actualPort}`);
   console.log('Endpoints:');
   console.log('  POST /api/score     - Quick AI score');
   console.log('  POST /api/analyze   - Full analysis');
