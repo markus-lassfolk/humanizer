@@ -55,6 +55,11 @@ describe('splitSentences', () => {
     // Should split into 2 sentences, not 4
     expect(result.length).toBe(2);
   });
+
+  it('splits when the next sentence starts with lowercase', () => {
+    const result = splitSentences('First sentence. second sentence. third sentence.');
+    expect(result.length).toBe(3);
+  });
 });
 
 // ─── Syllable Estimation ─────────────────────────────────

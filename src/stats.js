@@ -103,7 +103,7 @@ function splitSentences(text, localeProfile) {
     .replace(/\b(\d+)\./g, '$1\u2024'); // numbered lists: "1. First"
 
   const sentences = cleaned
-    .split(/(?<=[.!?])\s+(?=[A-Z"'\u201C])|(?<=[.!?])$/)
+    .split(/(?<=[.!?])\s+|(?<=[.!?])$/)
     .map((s) => s.replace(/\u2024/g, '.').trim())
     .filter((s) => s.length > 0);
 
