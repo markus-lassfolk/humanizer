@@ -647,11 +647,11 @@ function formatColoredReport(result) {
   // Score bar with color
   const filled = Math.round(result.score / 5);
   const barColor =
-    result.score <= 25
+    result.score <= 19
       ? color.green
-      : result.score <= 50
+      : result.score <= 44
         ? color.yellow
-        : result.score <= 75
+        : result.score <= 69
           ? color.magenta
           : color.red;
   const bar = barColor('█'.repeat(filled)) + color.dim('░'.repeat(20 - filled));
