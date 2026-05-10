@@ -58,6 +58,35 @@ const color = {
   dim: (s) => (supportsColor ? `\x1b[2m${s}\x1b[0m` : s),
 };
 
+const SCORE_BUCKETS = Object.freeze([
+  { max: 19, icon: '🟢', label: 'Mostly human-sounding', tone: 'green' },
+  { max: 44, icon: '🟡', label: 'Lightly AI-touched', tone: 'yellow' },
+  { max: 69, icon: '🟠', label: 'Moderately AI-influenced', tone: 'magenta' },
+  { max: 100, icon: '🔴', label: 'Heavily AI-generated', tone: 'red' },
+]);
+
+const LAST_SCORE_BUCKET = SCORE_BUCKETS[SCORE_BUCKETS.length - 1];
+
+/**
+ * @param {number} s
+ * @returns {{max:number, icon:string, label:string, tone:string}}
+ */
+function scoreBucket(s) {
+  return SCORE_BUCKETS.find((bucket) => s <= bucket.max) || LAST_SCORE_BUCKET;
+}
+
+/**
+ * @returns {string}
+ */
+function formatScoreBadgeHelpLines() {
+  let min = 0;
+  return SCORE_BUCKETS.map((bucket) => {
+    const range = `${min}-${bucket.max}`;
+    min = bucket.max + 1;
+    return `  ${bucket.icon} ${range.padEnd(8)}${bucket.label}`;
+  }).join('\n');
+}
+
 /**
  * Get a colored score badge based on score value.
  *
@@ -65,10 +94,8 @@ const color = {
  * @returns {string} Colored badge string
  */
 function scoreBadge(s) {
-  if (s <= 19) return color.green(`🟢 ${s}/100`);
-  if (s <= 44) return color.yellow(`🟡 ${s}/100`);
-  if (s <= 69) return color.magenta(`🟠 ${s}/100`);
-  return color.red(`🔴 ${s}/100`);
+  const bucket = scoreBucket(s);
+  return color[bucket.tone](`${bucket.icon} ${s}/100`);
 }
 
 /**
@@ -78,10 +105,7 @@ function scoreBadge(s) {
  * @returns {string} Human-readable label
  */
 function scoreLabel(s) {
-  if (s <= 19) return 'Mostly human-sounding';
-  if (s <= 44) return 'Lightly AI-touched';
-  if (s <= 69) return 'Moderately AI-influenced';
-  return 'Heavily AI-generated';
+  return scoreBucket(s).label;
 }
 
 /**
@@ -138,16 +162,6 @@ if (fileIdx !== -1 && args[fileIdx + 1]) {
 // Parse positional file argument (command <file>) by scanning all args after the
 // command so positional targets can appear after value flags.
 if (!flags.file) {
-  const commands = [
-    'analyze',
-    'score',
-    'humanize',
-    'report',
-    'suggest',
-    'stats',
-    'scan',
-    'compare',
-  ];
   const valueFlagSet = new Set([
     '-f',
     '--file',
@@ -175,7 +189,6 @@ if (!flags.file) {
       continue;
     }
     if (args[i].startsWith('-')) continue;
-    if (commands.includes(args[i])) continue;
     flags.file = args[i];
     break;
   }
@@ -518,10 +531,7 @@ ${color.bold('Examples:')}
   HUMANIZER_LOCALE=sv humanizer score article.txt
 
 ${color.bold('Score badges:')}
-  🟢 0-19    Mostly human-sounding
-  🟡 20-44   Lightly AI-touched
-  🟠 45-69   Moderately AI-influenced
-  🔴 70-100  Heavily AI-generated
+${formatScoreBadgeHelpLines()}
 `);
 }
 
@@ -658,14 +668,7 @@ function formatColoredReport(result) {
 
   // Score bar with color
   const filled = Math.round(result.score / 5);
-  const barColor =
-    result.score <= 19
-      ? color.green
-      : result.score <= 44
-        ? color.yellow
-        : result.score <= 69
-          ? color.magenta
-          : color.red;
+  const barColor = color[scoreBucket(result.score).tone];
   const bar = barColor('█'.repeat(filled)) + color.dim('░'.repeat(20 - filled));
   lines.push(`  Score: ${scoreBadge(result.score)}  [${bar}]`);
   lines.push(

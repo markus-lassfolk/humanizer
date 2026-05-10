@@ -32,6 +32,31 @@ describe('cli parsing and help', () => {
     expect(payload.files[0].file.endsWith('doc.md')).toBe(true);
   });
 
+  it('accepts positional targets named like commands', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-cli-parse-cmd-'));
+
+    const scanDir = path.join(tmp, 'scan');
+    fs.mkdirSync(scanDir);
+    fs.writeFileSync(
+      path.join(scanDir, 'doc.md'),
+      'This document is long enough to pass scan minimum words without any issue.',
+    );
+    const scanRun = runCli(['scan', '--ext', 'md', scanDir, '--json']);
+    expect(scanRun.status).toBe(0);
+    expect(scanRun.stderr).toBe('');
+
+    const scanPayload = JSON.parse(scanRun.stdout);
+    expect(scanPayload.targetPath).toBe(scanDir);
+    expect(scanPayload.summary.scannedFiles).toBe(1);
+
+    const scoreFile = path.join(tmp, 'score');
+    fs.writeFileSync(scoreFile, 'A short but valid sentence that can be scored.');
+    const scoreRun = runCli(['score', scoreFile, '--json']);
+    expect(scoreRun.status).toBe(0);
+    expect(scoreRun.stderr).toBe('');
+    expect(JSON.parse(scoreRun.stdout)).toHaveProperty('score');
+  });
+
   it('shows help badge ranges that match scoreBadge thresholds', () => {
     const run = runCli(['--help']);
 
