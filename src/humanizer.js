@@ -14,7 +14,7 @@
  *   - Opinion injection (humans have preferences, AI is neutral)
  */
 
-const { analyze } = require('./analyzer');
+const { analyze, roundDisplayCount } = require('./analyzer');
 const { loadLocale } = require('./locales');
 
 const HIDDEN_UNICODE_CHARS = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/;
@@ -537,10 +537,6 @@ function formatSuggestions(result) {
 
   lines.push('════════════════════════════════════════════════════');
   return lines.join('\n');
-}
-
-function roundDisplayCount(value) {
-  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }
 
 function truncate(str, len) {

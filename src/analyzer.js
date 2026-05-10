@@ -636,4 +636,5 @@ module.exports = {
   formatMarkdown,
   formatJSON,
   CATEGORY_LABELS,
+  roundDisplayCount,
 };

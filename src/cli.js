@@ -21,7 +21,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { analyze, score, formatMarkdown, formatJSON } = require('./analyzer');
+const { analyze, score, formatMarkdown, formatJSON, roundDisplayCount } = require('./analyzer');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
 const { scanPath, compareScanResults, compareFiles, normalizeExtensions } = require('./workflows');
@@ -82,10 +82,6 @@ function scoreLabel(s) {
   if (s <= 44) return 'Lightly AI-touched';
   if (s <= 69) return 'Moderately AI-influenced';
   return 'Heavily AI-generated';
-}
-
-function roundDisplayCount(value) {
-  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }
 
 function roundSigned(value) {
