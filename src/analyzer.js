@@ -99,13 +99,14 @@ function analyze(text, opts = {}) {
         description: pattern.description,
         weight: pattern.weight,
         matchCount: weightedCount,
+        rawMatchCount: matches.length,
         matches: verbose ? matches : matches.slice(0, 5),
         truncated: !verbose && matches.length > 5,
       };
 
       findings.push(finding);
       categoryScores[pattern.category].matches += weightedCount;
-      categoryScores[pattern.category].weightedScore += matches.length * pattern.weight;
+      categoryScores[pattern.category].weightedScore += weightedCount * pattern.weight;
       categoryScores[pattern.category].patterns.push(pattern.name);
     }
   }
@@ -387,7 +388,9 @@ function formatReport(result) {
         }
       }
       if (finding.truncated) {
-        lines.push(`      ... and ${finding.matchCount - finding.matches.length} more`);
+        lines.push(
+          `      ... and ${(finding.rawMatchCount ?? finding.matchCount) - finding.matches.length} more`,
+        );
       }
     }
   }

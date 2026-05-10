@@ -649,7 +649,11 @@ function formatColoredReport(result) {
       `  Type-token ratio: ${s.typeTokenRatio}  ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
     );
     lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
-    lines.push(`  Readability: ${s.fleschKincaid} grade level`);
+    if (s.lix !== null) {
+      lines.push(`  Readability: LIX ${s.lix}`);
+    } else {
+      lines.push(`  Readability: ${s.fleschKincaid} grade level`);
+    }
     lines.push('');
   }
 
@@ -690,7 +694,7 @@ function formatColoredReport(result) {
       }
       if (finding.truncated) {
         lines.push(
-          `      ${color.dim(`... and ${finding.matchCount - finding.matches.length} more`)}`,
+          `      ${color.dim(`... and ${(finding.rawMatchCount ?? finding.matchCount) - finding.matches.length} more`)}`,
         );
       }
     }
@@ -1078,6 +1082,7 @@ async function main() {
         ignoreDirs: scanOptions.ignoreDirs,
         includeDefaultIgnore: scanOptions.includeDefaultIgnore,
         ignoreCode: scanOptions.ignoreCode,
+        locale: opts.locale,
       });
 
       let baselineComparison = null;

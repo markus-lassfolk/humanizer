@@ -55,6 +55,13 @@ describe('splitSentences', () => {
     // Should split into 2 sentences, not 4
     expect(result.length).toBe(2);
   });
+
+  it('supports Swedish uppercase letters at sentence starts', () => {
+    const result = splitSentences(
+      'Första meningen. Åter står allt klart. Över tid blir det bättre.',
+    );
+    expect(result.length).toBe(3);
+  });
 });
 
 // ─── Syllable Estimation ─────────────────────────────────

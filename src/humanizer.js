@@ -144,9 +144,15 @@ function autoFix(text, opts = {}) {
  * @returns {object}       — Suggestions report
  */
 function humanize(text, opts = {}) {
-  const { autofix = false, includeStats = true, ignoreCode = false, locale = 'en' } = opts;
+  const {
+    autofix = false,
+    includeStats = true,
+    ignoreCode = false,
+    locale = 'en',
+    verbose = false,
+  } = opts;
 
-  const analysis = analyze(text, { verbose: true, includeStats, ignoreCode, locale });
+  const analysis = analyze(text, { verbose, includeStats, ignoreCode, locale });
 
   // Group by priority
   const critical = []; // weight 4-5: dead giveaways
