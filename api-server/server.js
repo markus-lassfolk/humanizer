@@ -13,20 +13,18 @@
  *   GET  /api/openapi   - OpenAPI spec
  */
 
-import http from 'http';
-import { readFile } from 'fs/promises';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+const http = require('http');
+const { readFile } = require('fs/promises');
+const path = require('path');
 
-// Import humanizer modules
-import { analyze, score } from '../src/analyzer.js';
-import { humanize } from '../src/humanizer.js';
-import { computeStats } from '../src/stats.js';
-import { loadLocale } from '../src/locales/index.js';
+const { analyze, score } = require('../src/analyzer.js');
+const { humanize } = require('../src/humanizer.js');
+const { computeStats } = require('../src/stats.js');
+const { loadLocale, SUPPORTED_LOCALES } = require('../src/locales');
+const pkg = require('../package.json');
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
-const MAX_BODY_BYTES = 1024 * 1024;
+const MAX_BODY_BYTES = Number(process.env.MAX_BODY_BYTES) || 1_000_000;
 
 // CORS headers for browser/GPT access
 const corsHeaders = {
@@ -107,6 +105,10 @@ function sendJson(res, data, status = 200) {
   res.end(JSON.stringify(data));
 }
 
+function isSupportedLocale(locale) {
+  return typeof locale === 'string' && SUPPORTED_LOCALES.includes(locale);
+}
+
 // Request handler
 async function handleRequest(req, res) {
   // Handle CORS preflight
@@ -116,13 +118,14 @@ async function handleRequest(req, res) {
     return;
   }
 
-  const url = new URL(req.url, `http://${req.headers.host}`);
-  const path = url.pathname;
+  const host = req.headers.host || 'localhost';
+  const url = new URL(req.url, `http://${host}`);
+  const route = url.pathname;
 
   try {
     // GET /api/openapi - Return OpenAPI spec
-    if (req.method === 'GET' && path === '/api/openapi') {
-      const spec = await readFile(join(__dirname, 'openapi.yaml'), 'utf-8');
+    if (req.method === 'GET' && route === '/api/openapi') {
+      const spec = await readFile(path.join(__dirname, 'openapi.yaml'), 'utf-8');
       res.writeHead(200, {
         ...corsHeaders,
         'Content-Type': 'application/yaml',
@@ -132,11 +135,12 @@ async function handleRequest(req, res) {
     }
 
     // GET / - Health check
-    if (req.method === 'GET' && path === '/') {
+    if (req.method === 'GET' && route === '/') {
       sendJson(res, {
         status: 'ok',
         name: 'humanizer-api',
-        version: '2.1.0',
+        version: pkg.version,
+        supportedLocales: SUPPORTED_LOCALES,
         endpoints: ['/api/score', '/api/analyze', '/api/humanize', '/api/stats', '/api/openapi'],
       });
       return;
@@ -153,17 +157,27 @@ async function handleRequest(req, res) {
 
       // Optional locale field: 'en' (default) or 'sv'
       const locale = body.locale || 'en';
+      if (!isSupportedLocale(locale)) {
+        sendJson(
+          res,
+          {
+            error: `Invalid locale "${locale}". Supported locales: ${SUPPORTED_LOCALES.join(', ')}`,
+          },
+          400,
+        );
+        return;
+      }
 
-      switch (path) {
+      switch (route) {
         case '/api/score': {
           const s = score(body.text, { locale });
-          const badge = s <= 25 ? '🟢' : s <= 50 ? '🟡' : s <= 75 ? '🟠' : '🔴';
+          const badge = s <= 19 ? '🟢' : s <= 44 ? '🟡' : s <= 69 ? '🟠' : '🔴';
           const interpretation =
-            s <= 25
+            s <= 19
               ? 'Mostly human-sounding'
-              : s <= 50
+              : s <= 44
                 ? 'Lightly AI-touched'
-                : s <= 75
+                : s <= 69
                   ? 'Moderately AI-influenced'
                   : 'Heavily AI-generated';
           sendJson(res, { score: s, badge, interpretation, locale });
@@ -205,7 +219,8 @@ async function handleRequest(req, res) {
     sendJson(res, { error: 'Not found' }, 404);
   } catch (error) {
     console.error('Error:', error);
-    sendJson(res, { error: error.message }, error.statusCode || 500);
+    const status = error && typeof error.statusCode === 'number' ? error.statusCode : 500;
+    sendJson(res, { error: error.message }, status);
   }
 }
 
