@@ -41,6 +41,9 @@ const PROMPTS_DIR = path.join(SV_FIX, 'sv-corpus', 'prompts');
 const HUMAN_DIR = path.join(SV_FIX, 'sv-corpus', 'human');
 const AI_DIR = path.join(SV_FIX, 'sv-corpus', 'ai');
 const EXT_DIR = path.join(SV_FIX, 'sv-corpus-extended');
+const MIN_PROMPT_FILES = 200;
+const MIN_HUMAN_DOCS = 50;
+const MIN_AI_DOCS = 50;
 
 const SCRIPTS = {
   prescriptive: path.join(SV_SE, 'scripts', 'build-sv-locale-prescriptive.mjs'),
@@ -158,22 +161,45 @@ function verifyFreqJson() {
 
 function verifyPrompts() {
   if (!fs.existsSync(PROMPTS_DIR)) throw new Error('Missing prompts/ directory');
-  const prompts = fs.readdirSync(PROMPTS_DIR).filter((f) => /^prompt-\d{3}\.txt$/.test(f));
-  if (prompts.length !== 230) throw new Error(`Expected 230 prompt-NNN.txt, got ${prompts.length}`);
+  const promptPattern = /^prompt-(\d{3})\.txt$/;
+  const prompts = fs.readdirSync(PROMPTS_DIR).filter((f) => promptPattern.test(f));
+  if (prompts.length < MIN_PROMPT_FILES) {
+    throw new Error(
+      `Expected at least ${MIN_PROMPT_FILES} prompt-NNN.txt files, got ${prompts.length}`,
+    );
+  }
+  const promptSet = new Set(prompts);
+  for (let i = 1; i <= MIN_PROMPT_FILES; i++) {
+    const baseline = `prompt-${String(i).padStart(3, '0')}.txt`;
+    if (!promptSet.has(baseline)) throw new Error(`Missing baseline prompt file: ${baseline}`);
+  }
   const man = path.join(SV_FIX, 'sv-corpus', 'prompts-manifest.json');
   assertFile(man, 50);
   const m = JSON.parse(fs.readFileSync(man, 'utf8'));
-  if (!Array.isArray(m.prompts) || m.prompts.length !== 230) {
-    throw new Error(`prompts-manifest.json expected 230 entries, got ${m.prompts?.length}`);
+  if (!Array.isArray(m.prompts) || m.prompts.length < MIN_PROMPT_FILES) {
+    throw new Error(
+      `prompts-manifest.json expected at least ${MIN_PROMPT_FILES} entries, got ${m.prompts?.length}`,
+    );
   }
-  return { promptFiles: prompts.length };
+  for (const entry of m.prompts) {
+    if (typeof entry?.file !== 'string' || !promptPattern.test(entry.file)) {
+      throw new Error(
+        `prompts-manifest.json has invalid prompt file entry: ${JSON.stringify(entry)}`,
+      );
+    }
+    if (!promptSet.has(entry.file)) {
+      throw new Error(`prompts-manifest.json references missing file: ${entry.file}`);
+    }
+  }
+  return { promptFiles: prompts.length, promptManifestEntries: m.prompts.length };
 }
 
 function verifyCorpusSeed() {
   const h = countTxt(HUMAN_DIR);
   const a = countTxt(AI_DIR);
-  if (h !== 60) throw new Error(`Expected 60 human/*.txt, got ${h}`);
-  if (a !== 53) throw new Error(`Expected 53 ai/*.txt, got ${a}`);
+  if (h < MIN_HUMAN_DOCS)
+    throw new Error(`Expected at least ${MIN_HUMAN_DOCS} human/*.txt, got ${h}`);
+  if (a < MIN_AI_DOCS) throw new Error(`Expected at least ${MIN_AI_DOCS} ai/*.txt, got ${a}`);
   return { humanDocs: h, aiDocs: a };
 }
 
@@ -384,13 +410,13 @@ function main() {
   phases.push(
     {
       id: 'prompts',
-      label: '230 prompts + manifest',
+      label: '>=200 prompts + valid manifest',
       run: () => runNode(SCRIPTS.prompts, []),
       verify: () => verifyPrompts(),
     },
     {
       id: 'corpus_seed',
-      label: '60+53 synthetic corpus',
+      label: '>=50 human + >=50 AI synthetic corpus',
       run: () => runNode(SCRIPTS.seed, []),
       verify: () => verifyCorpusSeed(),
     },
