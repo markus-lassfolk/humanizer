@@ -90,13 +90,13 @@ function wordRegex(word) {
   return new RegExp(`\\b${escaped}\\b`, 'gi');
 }
 
-function escapeRegexLiteral(value) {
+function escapeForRegexPattern(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function synonymRegex(syn) {
   const normalized = String(syn).toLowerCase();
-  const escaped = escapeRegexLiteral(normalized);
+  const escaped = escapeForRegexPattern(normalized);
   if (normalized.includes(' ')) {
     return new RegExp(`(^|[^\\p{L}\\p{N}_])${escaped}([^\\p{L}\\p{N}_]|$)`, 'iu');
   }
