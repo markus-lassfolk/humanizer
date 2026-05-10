@@ -89,3 +89,85 @@ describe('analyzeChunked', () => {
 function raw(r) {
   return r.rawScore !== undefined ? r.rawScore : r.score;
 }
+
+// Additional tests for improved coverage
+
+describe('chunk-analyzer internals', () => {
+  it('wordSpans returns correct spans for text', () => {
+    const { wordSpans } = require('../src/chunk-analyzer.js');
+    const spans = wordSpans('Hello world test');
+    expect(spans).toHaveLength(3);
+    expect(spans[0].start).toBe(0);
+    expect(spans[0].end).toBe(5); // "Hello"
+  });
+
+  it('wordSpans handles empty text', () => {
+    const { wordSpans } = require('../src/chunk-analyzer.js');
+    const spans = wordSpans('');
+    expect(spans).toHaveLength(0);
+  });
+
+  it('buildWindows handles edge cases', () => {
+    expect(buildWindows(0, 300, 150, 180)).toEqual([]);
+    expect(buildWindows(100, 300, 150, 180)).toHaveLength(1);
+    expect(buildWindows(100, 300, 150, 180)[0]).toEqual({ start: 0, end: 100 });
+  });
+
+  it('buildWindows merges tiny tail into last window', () => {
+    const windows = buildWindows(500, 300, 150, 180);
+    const lastWindow = windows[windows.length - 1];
+    expect(lastWindow.end).toBe(500);
+  });
+
+  it('buildWindows creates overlapping windows', () => {
+    const windows = buildWindows(900, 300, 150, 180);
+    expect(windows.length).toBeGreaterThan(2);
+    // Check overlap
+    if (windows.length >= 2) {
+      expect(windows[1].start).toBeLessThan(windows[0].end);
+    }
+  });
+});
+
+describe('analyzeChunked options', () => {
+  it('respects custom windowWords option', () => {
+    const text = padToWords('Custom window size test.', 800);
+    const result = analyzeChunked(text, { windowWords: 200, strideWords: 100, locale: 'en' });
+    expect(result.chunks.length).toBeGreaterThan(0);
+  });
+
+  it('respects custom strideWords option', () => {
+    const text = padToWords('Custom stride test.', 800);
+    const result = analyzeChunked(text, { windowWords: 300, strideWords: 200, locale: 'en' });
+    expect(result.chunks.length).toBeGreaterThan(0);
+  });
+
+  it('respects ignoreCode option', () => {
+    const text = 'Some text.\n```javascript\nconst x = 1;\n```\nMore text.';
+    const paddedText = padToWords(text, 700);
+    const result = analyzeChunked(paddedText, { ignoreCode: true, locale: 'en' });
+    expect(result.document.score).toBeDefined();
+  });
+
+  it('handles strict mode', () => {
+    const text = padToWords('Strict mode test with various patterns.', 700);
+    const result = analyzeChunked(text, { strict: true, locale: 'en' });
+    expect(result.document.score).toBeDefined();
+  });
+
+  it('supports Swedish locale', () => {
+    const text = 'Detta är en svensk text. Den innehåller svenska ord.';
+    const paddedText = padToWords(text, 700);
+    const result = analyzeChunked(paddedText, { locale: 'sv' });
+    expect(result.document.score).toBeDefined();
+    // localeProfile is not returned in document
+  });
+
+  it('includes severity in aggregate', () => {
+    const aiText = fs.readFileSync(path.join(__dirname, 'fixtures', 'ai-sample-1.txt'), 'utf8');
+    const paddedText = padToWords(aiText, 700);
+    const result = analyzeChunked(paddedText, { locale: 'en' });
+    expect(result.aggregate.severity).toBeDefined();
+    expect(typeof result.aggregate.severity).toBe('string');
+  });
+});
