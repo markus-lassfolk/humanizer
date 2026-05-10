@@ -93,8 +93,13 @@
     "locales",
     "reports",
     "scripts",
+    "api-server",
+    "mcp-server",
     "SKILL.md",
     "README.md",
     "LICENSE"
-  ]
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
 }

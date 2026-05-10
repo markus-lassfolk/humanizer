@@ -98,7 +98,7 @@ function wordRegex(word) {
 function normalizeWordEntry(entry) {
   if (entry === null || entry === undefined) return { word: '', weight: 1 };
   if (typeof entry === 'string') return { word: entry, weight: 1 };
-  const w = entry.word;
+  const w = entry.word || '';
   const weight = typeof entry.weight === 'number' && entry.weight > 0 ? entry.weight : 1;
   return { word: w, weight };
 }

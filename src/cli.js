@@ -185,8 +185,15 @@ if (afterIdx !== -1 && args[afterIdx + 1]) {
 
 // Parse --ext flag (scan command)
 const extIdx = args.indexOf('--ext');
-if (extIdx !== -1 && args[extIdx + 1]) {
-  flags.extensions = normalizeExtensions(args[extIdx + 1].split(','));
+if (extIdx !== -1) {
+  const extValue = args[extIdx + 1];
+  if (!extValue || extValue.startsWith('-')) {
+    console.error(
+      'Error: --ext requires a comma-separated extension list (for example: --ext md,txt).',
+    );
+    process.exit(1);
+  }
+  flags.extensions = normalizeExtensions(extValue.split(','));
 }
 
 // Parse --min-words flag (scan command)

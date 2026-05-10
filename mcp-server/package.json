@@ -13,6 +13,9 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
+  "peerDependencies": {
+    "humanizer": "^2.6.0"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
