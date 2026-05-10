@@ -468,7 +468,7 @@ function formatSuggestions(result) {
   const bar = '█'.repeat(filled) + '░'.repeat(20 - filled);
   lines.push(`  AI Score: ${result.score}/100  [${bar}]`);
   lines.push(
-    `  Issues: ${result.totalIssues}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
+    `  Issues: ${roundDisplayCount(result.totalIssues)}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
   );
   if (result.reliability) {
     lines.push(
@@ -537,6 +537,10 @@ function formatSuggestions(result) {
 
   lines.push('════════════════════════════════════════════════════');
   return lines.join('\n');
+}
+
+function roundDisplayCount(value) {
+  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }
 
 function truncate(str, len) {
