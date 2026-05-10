@@ -1047,6 +1047,43 @@ const patterns = [
       return results;
     },
   },
+
+  {
+    id: 35,
+    name: 'Inclusive-language hints (strict mode)',
+    category: 'language',
+    description:
+      'Optional strict-mode hints for exclusionary or outdated wording such as "guys", "manpower", and "chairman".',
+    weight: 1,
+    detect(text, opts = {}) {
+      if (!opts.strict) return [];
+
+      const hints = [
+        {
+          regex: /\bguys\b/gi,
+          suggestion: 'Use "everyone", "folks", or another inclusive group term.',
+        },
+        {
+          regex: /\bmanpower\b/gi,
+          suggestion: 'Use "staffing", "workforce", or "personnel".',
+        },
+        {
+          regex: /\bchairman\b/gi,
+          suggestion: 'Use "chair", "chairperson", or the role title.',
+        },
+        {
+          regex: /\bmaster\/slave\b/gi,
+          suggestion: 'Use "primary/replica" or "leader/follower".',
+        },
+      ];
+
+      const results = [];
+      for (const { regex, suggestion } of hints) {
+        results.push(...findMatches(text, regex, suggestion, 'low'));
+      }
+      return results;
+    },
+  },
 ];
 
 // ─── Pattern Registry ────────────────────────────────────

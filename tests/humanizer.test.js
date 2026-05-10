@@ -31,7 +31,7 @@ describe('autoFix', () => {
 
   it('replaces "in order to" with "to"', () => {
     const { text } = autoFix('In order to succeed, we must work hard.');
-    expect(text).toContain('to succeed');
+    expect(text).toMatch(/to succeed/i);
     expect(text).not.toContain('In order to');
   });
 
@@ -43,12 +43,12 @@ describe('autoFix', () => {
 
   it('replaces "at this point in time" with "now"', () => {
     const { text } = autoFix('At this point in time, we are ready.');
-    expect(text).toContain('now');
+    expect(text).toMatch(/now/i);
   });
 
   it('replaces "in the event that" with "if"', () => {
     const { text } = autoFix('In the event that you need help, call us.');
-    expect(text).toContain('if');
+    expect(text).toMatch(/if/i);
     expect(text).not.toContain('In the event that');
   });
 
@@ -91,6 +91,29 @@ describe('autoFix', () => {
     expect(fixes.length).toBeGreaterThanOrEqual(3);
     expect(text).not.toContain('In order to');
     expect(text).not.toContain('\u2019');
+  });
+
+  it('preserves sentence-start capitalization in replacements', () => {
+    const { text } = autoFix('Due to the fact that we shipped early, customers noticed.');
+    expect(text).toContain('Because we shipped early');
+  });
+
+  it('preserves sentence-start capitalization for locale autofixes', () => {
+    const { text } = autoFix('I dagsläget saknar vi en tydlig strategi.', { locale: 'sv' });
+    expect(text.startsWith('Nu')).toBe(true);
+    expect(text).not.toContain('i dagsläget');
+    expect(text).not.toContain('I dagsläget');
+  });
+
+  it('locale prescriptive autofixes are applied on repeated autoFix calls', () => {
+    // Verifies that module-level regex lastIndex state doesn't cause misses across calls.
+    const input = 'I dagsläget saknar vi en tydlig strategi.';
+    const first = autoFix(input, { locale: 'sv' });
+    const second = autoFix(input, { locale: 'sv' });
+    expect(first.text).toBe(second.text);
+    expect(first.fixes).toEqual(second.fixes);
+    expect(first.text).toContain('Nu');
+    expect(first.text).not.toContain('dagsläget');
   });
 });
 
@@ -169,6 +192,27 @@ describe('humanize', () => {
 
     expect(compact.minor.length).toBe(5);
     expect(verbose.minor.length).toBeGreaterThan(compact.minor.length);
+  });
+
+  it('passes strict option through to analysis', () => {
+    const text = 'Guys, we need more manpower. The chairman approved this.';
+    const resultDefault = humanize(text);
+    const resultStrict = humanize(text, { strict: true });
+    expect(resultStrict.totalIssues).toBeGreaterThan(resultDefault.totalIssues);
+    expect(
+      [...resultStrict.critical, ...resultStrict.important, ...resultStrict.minor].some(
+        (s) => s.patternId === 35,
+      ),
+    ).toBe(true);
+  });
+
+  it('withLm adds optional n-gram uniformity boost for repetitive text', () => {
+    const text =
+      'This process is very clear and very clear and very clear. This process is very clear and very clear and very clear. This process is very clear and very clear and very clear.';
+    const resultDefault = humanize(text);
+    const resultWithLm = humanize(text, { withLm: true });
+    expect(resultWithLm.lmUniformityBoost).toBeGreaterThan(0);
+    expect(resultWithLm.uniformityScore).toBeGreaterThanOrEqual(resultDefault.uniformityScore);
   });
 });
 

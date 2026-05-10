@@ -325,8 +325,10 @@ describe('autoFix — Swedish locale', () => {
 
   it('replaces "i dagsläget" with "nu"', () => {
     const { text } = autoFix('I dagsläget saknar vi en tydlig strategi.', { locale: 'sv' });
-    expect(text).toContain('nu');
+    // Sentence-initial match → replacement is capitalized ("Nu", not "nu").
+    expect(text).toContain('Nu');
     expect(text).not.toContain('i dagsläget');
+    expect(text).not.toContain('I dagsläget');
   });
 
   it('replaces "på grund av det faktum att" with "eftersom"', () => {

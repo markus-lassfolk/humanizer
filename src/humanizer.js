@@ -85,7 +85,7 @@ function autoFix(text, opts = {}) {
 
   for (const { from, to, label } of safeFills) {
     if (from.test(result)) {
-      result = result.replace(from, to);
+      result = result.replace(from, (match) => preserveReplacementCase(match, to));
       fixes.push(label);
     }
   }
@@ -94,7 +94,7 @@ function autoFix(text, opts = {}) {
   if (localeProfile.autofixes && localeProfile.autofixes.length > 0) {
     for (const { pattern, replacement, label } of localeProfile.autofixes) {
       if (pattern.test(result)) {
-        result = result.replace(pattern, replacement);
+        result = result.replace(pattern, (match) => preserveReplacementCase(match, replacement));
         fixes.push(label);
       }
     }
@@ -129,6 +129,20 @@ function autoFix(text, opts = {}) {
   return { text: result, fixes };
 }
 
+function preserveReplacementCase(match, replacement) {
+  if (!match || !replacement) return replacement;
+
+  if (match === match.toUpperCase()) {
+    return replacement.toUpperCase();
+  }
+
+  if (/^\p{Lu}/u.test(match)) {
+    return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+  }
+
+  return replacement;
+}
+
 // ─── Suggestion Engine ───────────────────────────────────
 
 /**
@@ -141,6 +155,8 @@ function autoFix(text, opts = {}) {
  *   - includeStats {boolean}  Include statistical suggestions
  *   - ignoreCode {boolean}  Ignore fenced/inline code snippets during analysis
  *   - locale {string}     Locale code: 'en' (default) or 'sv'
+ *   - strict {boolean}    Enable pattern 35 (inclusive-language hints)
+ *   - withLm {boolean}    Add n-gram LM uniformity boost
  * @returns {object}       — Suggestions report
  */
 function humanize(text, opts = {}) {
@@ -150,9 +166,18 @@ function humanize(text, opts = {}) {
     ignoreCode = false,
     locale = 'en',
     verbose = false,
+    strict = false,
+    withLm = false,
   } = opts;
 
-  const analysis = analyze(text, { verbose, includeStats, ignoreCode, locale });
+  const analysis = analyze(text, {
+    verbose,
+    includeStats,
+    ignoreCode,
+    locale,
+    strict,
+    withLm,
+  });
 
   // Group by priority
   const critical = []; // weight 4-5: dead giveaways
@@ -194,6 +219,7 @@ function humanize(text, opts = {}) {
     score: analysis.score,
     patternScore: analysis.patternScore,
     uniformityScore: analysis.uniformityScore,
+    lmUniformityBoost: analysis.lmUniformityBoost || 0,
     reliability: analysis.reliability,
     wordCount: analysis.wordCount,
     totalIssues: analysis.totalMatches,
