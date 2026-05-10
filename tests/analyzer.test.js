@@ -43,15 +43,23 @@ describe('analyze', () => {
     expect(analyze(undefined).score).toBe(0);
   });
 
-  it('returns empty result for null/empty input before locale validation', () => {
+  it('returns empty result for null/undefined input before locale validation', () => {
     expect(() => analyze(null, { locale: 'xx' })).not.toThrow();
-    expect(() => analyze('', { locale: 'xx' })).not.toThrow();
-    expect(() => analyze('   \n\t', { locale: 'xx' })).not.toThrow();
-    expect(analyze('', { locale: 'xx' }).score).toBe(0);
+    expect(() => analyze(undefined, { locale: 'xx' })).not.toThrow();
   });
 
-  it('still throws on invalid locale for non-empty text', () => {
+  it('returns empty result for empty/whitespace strings with a valid locale', () => {
+    expect(analyze('', { locale: 'en' }).score).toBe(0);
+    expect(analyze('   \n\t', { locale: 'en' }).score).toBe(0);
+  });
+
+  it('throws on invalid locale for any string input', () => {
+    expect(() => analyze('', { locale: 'xx' })).toThrow(/Unknown locale/);
+    expect(() => analyze('   \n\t', { locale: 'xx' })).toThrow(/Unknown locale/);
     expect(() => analyze('Hello world.', { locale: 'xx' })).toThrow(/Unknown locale/);
+    expect(() =>
+      analyze('```js\nconst x = 1;\n```', { locale: 'xx', ignoreCode: true }),
+    ).toThrow(/Unknown locale/);
   });
 
   it('scores clean human text low', () => {
@@ -133,6 +141,13 @@ describe('analyze', () => {
       'No AI pattern families were detected, but sentence-level uniformity signals were elevated',
     );
     expect(result.summary).not.toContain('Found 0 matches across 0 pattern types');
+  });
+
+  it('uses singular wording for pattern type in summary', () => {
+    const result = analyze('This serves as a testament to progress.', { patternsToCheck: [7] });
+    expect(result.findings.length).toBe(1);
+    expect(result.summary).toContain('1 pattern type');
+    expect(result.summary).not.toContain('1 pattern types');
   });
 
   it('marks longer multi-paragraph text as higher confidence', () => {

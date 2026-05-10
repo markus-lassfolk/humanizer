@@ -60,16 +60,16 @@ function analyze(text, opts = {}) {
     withLm = false,
   } = opts;
 
-  if (!text || typeof text !== 'string') {
+  if ((text === null || text === undefined) || typeof text !== 'string') {
     return emptyResult();
   }
+
+  // Validate locale for all string inputs to keep configuration errors consistent.
+  const localeProfile = loadLocale(locale);
 
   const preparedText = ignoreCode ? stripCodeSnippets(text) : text;
   const trimmed = preparedText.trim();
   if (trimmed.length === 0) return emptyResult();
-
-  // Load locale profile (throws on unknown locale codes)
-  const localeProfile = loadLocale(locale);
 
   const words = wordCount(trimmed);
 
@@ -321,7 +321,10 @@ function buildSummary(finalScore, totalMatches, findings, words, stats, reliabil
     .slice(0, 3)
     .map((f) => f.patternName);
 
-  let summary = `Score: ${finalScore}/100 (${level}). Found ${roundDisplayCount(totalMatches)} matches across ${findings.length} pattern types in ${words} words.`;
+  const displayMatches = roundDisplayCount(totalMatches);
+  const matchWord = displayMatches === 1 ? 'match' : 'matches';
+  const patternTypeWord = findings.length === 1 ? 'pattern type' : 'pattern types';
+  let summary = `Score: ${finalScore}/100 (${level}). Found ${displayMatches} ${matchWord} across ${findings.length} ${patternTypeWord} in ${words} words.`;
 
   if (topPatterns.length > 0) {
     summary += ` Top issues: ${topPatterns.join(', ')}.`;

@@ -825,8 +825,11 @@ function formatComparisonReport(result) {
   if (result.improvements.length > 0) {
     lines.push(color.green(color.bold('  Top improvements:')));
     for (const item of result.improvements.slice(0, 5)) {
+      const displayBefore = roundDisplayCount(item.beforeCount);
+      const displayAfter = roundDisplayCount(item.afterCount);
+      const displayDelta = displayAfter - displayBefore;
       lines.push(
-        `  ${color.green('•')} ${item.patternName}: ${roundDisplayCount(item.beforeCount)} → ${roundDisplayCount(item.afterCount)} (${roundSigned(item.delta)})`,
+        `  ${color.green('•')} ${item.patternName}: ${displayBefore} → ${displayAfter} (${roundSigned(displayDelta)})`,
       );
     }
     lines.push('');
@@ -835,8 +838,11 @@ function formatComparisonReport(result) {
   if (result.regressions.length > 0) {
     lines.push(color.red(color.bold('  New regressions:')));
     for (const item of result.regressions.slice(0, 5)) {
+      const displayBefore = roundDisplayCount(item.beforeCount);
+      const displayAfter = roundDisplayCount(item.afterCount);
+      const displayDelta = displayAfter - displayBefore;
       lines.push(
-        `  ${color.red('•')} ${item.patternName}: ${roundDisplayCount(item.beforeCount)} → ${roundDisplayCount(item.afterCount)} (+${Math.abs(roundSigned(item.delta))})`,
+        `  ${color.red('•')} ${item.patternName}: ${displayBefore} → ${displayAfter} (+${Math.abs(roundSigned(displayDelta))})`,
       );
     }
     lines.push('');
