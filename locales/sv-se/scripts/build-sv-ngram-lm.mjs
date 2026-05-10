@@ -46,11 +46,17 @@ function main() {
   }
 
   const nu = Object.keys(uni).length;
-  const unigramP = {};
-  for (const [t, c] of Object.entries(uni)) {
-    unigramP[t] = (c + alpha) / (nTok + alpha * nu);
+  const denom = nTok + alpha * nu;
+  if (!Number.isFinite(denom) || denom <= 0) {
+    throw new Error(
+      `Invalid denominator for LM probabilities (nTok=${nTok}, nu=${nu}, alpha=${alpha})`,
+    );
   }
-  const defaultUni = alpha / (nTok + alpha * nu);
+  const unigramP = {};
+  for (const [t, c] of Object.entries(uni).sort(([a], [b]) => a.localeCompare(b, 'sv'))) {
+    unigramP[t] = (c + alpha) / denom;
+  }
+  const defaultUni = alpha / denom;
 
   const out = {
     _meta: { generatedAt: new Date().toISOString(), tokens: nTok, unigramTypes: nu, locale: 'sv' },
@@ -58,7 +64,7 @@ function main() {
     unigrams: unigramP,
   };
   const outPath = path.join(SV_REF, 'sv-ngram-lm.json');
-  fs.writeFileSync(outPath, JSON.stringify(out), 'utf8');
+  fs.writeFileSync(outPath, JSON.stringify(out, null, 2) + '\n', 'utf8');
   console.log(`Wrote ${path.relative(REPO_ROOT, outPath)}`);
 }
 
