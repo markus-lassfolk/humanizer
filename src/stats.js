@@ -116,12 +116,25 @@ function splitSentences(text, localeProfile) {
     .replace(/\b([A-Z])\./g, '$1\u2024') // initials: "J. K. Rowling"
     .replace(/\b(\d+)\./g, '$1\u2024'); // numbered lists: "1. First"
 
-  const sentences = cleaned
+  const fragments = cleaned
     .split(/(?<=[.!?])\s+|(?<=[.!?])$/)
-    .map((s) => s.replace(/\u2024/g, '.').trim())
+    .map((s) => s.trim())
     .filter((s) => s.length > 0);
 
-  return sentences;
+  const sentences = [];
+  for (const fragment of fragments) {
+    const previous = sentences[sentences.length - 1];
+    const previousShortToken = previous?.match(/(?:^|\s)(\p{L}{1,3})\.$/u)?.[1];
+    const nextStartsLikeContinuation = /^[\p{Ll}\p{N}]/u.test(fragment);
+
+    if (previousShortToken && nextStartsLikeContinuation) {
+      sentences[sentences.length - 1] = `${previous} ${fragment}`;
+    } else {
+      sentences.push(fragment);
+    }
+  }
+
+  return sentences.map((s) => s.replace(/\u2024/g, '.'));
 }
 
 // ─── Core Statistics ─────────────────────────────────────

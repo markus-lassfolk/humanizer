@@ -66,6 +66,11 @@ describe('splitSentences', () => {
     ]);
   });
 
+  it('keeps unknown short abbreviations with lowercase or numeric continuations', () => {
+    const result = splitSentences('See no. 2 for details. Acme Inc. filed today. Done.');
+    expect(result).toEqual(['See no. 2 for details.', 'Acme Inc. filed today.', 'Done.']);
+  });
+
   it('splits when the next sentence starts with lowercase', () => {
     const result = splitSentences('First sentence. second sentence. third sentence.');
     expect(result).toEqual(['First sentence.', 'second sentence.', 'third sentence.']);
