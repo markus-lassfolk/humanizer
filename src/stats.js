@@ -112,8 +112,12 @@ function splitSentences(text, localeProfile) {
     ]);
   }
 
-  // Language-agnostic: protect initials and numbered lists regardless of locale
+  // Language-agnostic: protect initials, contextual number abbreviations,
+  // decimals, and numbered lists regardless of locale. Keep "no." sentence-ending
+  // when it is not followed by a number, but preserve common "no. 2" / "No. 10"
+  // references as a single sentence.
   cleaned = cleaned
+    .replace(/\bno\.(?=\s*\d)/giu, (match) => `${match.slice(0, -1)}\u2024`)
     .replace(/(?<!\p{L})(\p{L})\./gu, '$1\u2024') // initials: "J. K. Rowling", "Å. Andersson", "e. e. cummings"
     .replace(/(\d)\.(\d)/g, '$1\u2024$2') // decimals/time values: "14.30"
     .replace(/(^|\n)(\s*)(\d+)\.(?=\s+\S)/g, '$1$2$3\u2024'); // numbered lists at line/string start: "1. First"

@@ -71,9 +71,16 @@ describe('splitSentences', () => {
     expect(result).toEqual(['Acme Inc. filed today.', 'Done.']);
   });
 
-  it('splits sentences ending with "no" as a regular word', () => {
-    expect(splitSentences('The answer is no. Next sentence.')).toEqual(['The answer is no.', 'Next sentence.']);
+  it('splits sentences ending with "no" as a regular word unless no. is followed by a number', () => {
+    expect(splitSentences('The answer is no. Next sentence.')).toEqual([
+      'The answer is no.',
+      'Next sentence.',
+    ]);
     expect(splitSentences('I said no. She said yes.')).toEqual(['I said no.', 'She said yes.']);
+    expect(splitSentences('See no. 2 for details.')).toEqual(['See no. 2 for details.']);
+    expect(splitSentences('Compare No. 10 with no. 11 before deciding.')).toEqual([
+      'Compare No. 10 with no. 11 before deciding.',
+    ]);
   });
 
   it('does not merge normal short words before lowercase or numeric sentence starts', () => {

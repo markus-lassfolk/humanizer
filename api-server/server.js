@@ -39,21 +39,36 @@ async function parseBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
     let total = 0;
-    let rejected = false;
+    let settled = false;
+
+    const cleanup = () => {
+      req.removeListener('data', onData);
+      req.removeListener('end', onEnd);
+      req.removeListener('error', onError);
+    };
+
+    const settleResolve = (value) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(value);
+    };
+
+    const settleReject = (err) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(err);
+    };
 
     const onData = (chunk) => {
-      if (rejected) return;
+      if (settled) return;
 
       total += chunk.length;
       if (total > MAX_BODY_BYTES) {
-        rejected = true;
         const err = new Error('Request body too large');
         err.statusCode = 413;
-        reject(err);
-        // Remove listeners to prevent any further processing
-        req.removeListener('data', onData);
-        req.removeListener('end', onEnd);
-        req.removeListener('error', onError);
+        settleReject(err);
         req.destroy();
         return;
       }
@@ -61,23 +76,20 @@ async function parseBody(req) {
     };
 
     const onEnd = () => {
-      if (rejected) return;
+      if (settled) return;
 
       try {
         const body = Buffer.concat(chunks).toString('utf8');
-        resolve(body ? JSON.parse(body) : {});
-      } catch (e) {
+        settleResolve(body ? JSON.parse(body) : {});
+      } catch {
         const err = new Error('Invalid JSON');
         err.statusCode = 400;
-        reject(err);
+        settleReject(err);
       }
     };
 
     const onError = (err) => {
-      if (!rejected) {
-        rejected = true;
-        reject(err);
-      }
+      settleReject(err);
     };
 
     req.on('data', onData);
@@ -150,7 +162,9 @@ async function handleRequest(req, res) {
       if (!isSupportedLocale(locale)) {
         sendJson(
           res,
-          { error: `Invalid locale "${locale}". Supported locales: ${SUPPORTED_LOCALES.join(', ')}` },
+          {
+            error: `Invalid locale "${locale}". Supported locales: ${SUPPORTED_LOCALES.join(', ')}`,
+          },
           400,
         );
         return;
@@ -164,10 +178,10 @@ async function handleRequest(req, res) {
             s <= 19
               ? 'Mostly human-sounding'
               : s <= 44
-              ? 'Lightly AI-touched'
-              : s <= 69
-              ? 'Moderately AI-influenced'
-              : 'Heavily AI-generated';
+                ? 'Lightly AI-touched'
+                : s <= 69
+                  ? 'Moderately AI-influenced'
+                  : 'Heavily AI-generated';
           sendJson(res, { score: s, badge, interpretation, locale });
           return;
         }
