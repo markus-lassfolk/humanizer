@@ -14,7 +14,7 @@
  *   - StyloAI 31-feature stylometric analysis
  */
 
-const { patterns, wordCount } = require('./patterns');
+const { patterns } = require('./patterns');
 const { computeStats, computeUniformityScore, computeLmUniformityBoost } = require('./stats');
 const { stripCodeSnippets } = require('./preprocess');
 const { loadLocale } = require('./locales');
@@ -53,6 +53,10 @@ const RELIABILITY_RECOMMENDED_WORDS = 150;
  * @returns {object}     — Full analysis result (`score` = heuristic, or ML-calibrated when
  *                        HUMANIZER_ML_CALIBRATION=1 and en-calibrator.json exists; `rawScore` is always the heuristic composite)
  */
+function whitespaceWordCount(text) {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
 function analyze(text, opts = {}) {
   const {
     verbose = false,
@@ -78,7 +82,7 @@ function analyze(text, opts = {}) {
   const trimmed = preparedText.trim();
   if (trimmed.length === 0) return emptyResult();
 
-  const words = wordCount(trimmed);
+  const words = whitespaceWordCount(trimmed);
 
   // ── Compute text statistics ────────────────────────
   const stats = includeStats ? computeStats(trimmed, localeProfile) : null;

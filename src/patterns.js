@@ -731,10 +731,9 @@ const patterns = [
             }
           }
           if (found.length >= 3) {
-            // matchAll preserves the original offset for each sentence fragment, so
-            // repeated sentence text and punctuation without following whitespace do
-            // not send position reporting back to the first occurrence in the text.
             // Report the first sentence in the window that actually contains a synonym.
+            // sentenceMatches indexes are tracked with a moving search cursor so repeated
+            // sentence text does not collapse to the first occurrence in the source text.
             const reportSentence = sentenceMatches[firstHitIndex ?? i];
             const leadingWhitespace = reportSentence.text.match(/^\s*/)?.[0].length ?? 0;
             const idx = reportSentence.index + leadingWhitespace;
