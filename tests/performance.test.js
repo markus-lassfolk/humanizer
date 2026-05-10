@@ -38,6 +38,9 @@ describe('performance', () => {
     const wordCount = text.split(/\s+/).filter(Boolean).length;
     expect(wordCount).toBeGreaterThanOrEqual(9000);
 
+    // Warm up JIT so the threshold reflects steady-state analyzer speed.
+    analyze(text);
+
     const start = performance.now();
     const result = analyze(text);
     const elapsed = performance.now() - start;
