@@ -195,15 +195,23 @@ describe('humanize', () => {
   });
 
   it('passes strict option through to analysis', () => {
-    // strict enables pattern 35 (inclusive language). Without strict, it is skipped.
-    // We can't guarantee a fixture triggers pattern 35, but we can at least verify
-    // that the option is accepted and produces a valid result without throwing.
-    const text = loadFixture('ai-sample-1.txt');
+    // strict enables pattern 35 (inclusive language). Assert the option toggles
+    // the strict-only detector directly instead of assuming calibrated score
+    // monotonicity.
+    const text = 'The chairman explained the manpower plan to the team.';
     const resultDefault = humanize(text);
     const resultStrict = humanize(text, { strict: true });
-    expect(resultStrict).toHaveProperty('score');
-    // Strict mode can add detections but never suppress them, so score must not decrease.
-    expect(resultStrict.score).toBeGreaterThanOrEqual(resultDefault.score);
+
+    const resultBuckets = ['critical', 'important', 'minor'];
+    const defaultPatternIds = resultBuckets.flatMap((bucket) =>
+      resultDefault[bucket].map((pattern) => pattern.patternId),
+    );
+    const strictPatternIds = resultBuckets.flatMap((bucket) =>
+      resultStrict[bucket].map((pattern) => pattern.patternId),
+    );
+
+    expect(defaultPatternIds).not.toContain(35);
+    expect(strictPatternIds).toContain(35);
   });
 
   it('accepts withLm option without throwing', () => {
