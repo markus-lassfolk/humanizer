@@ -120,7 +120,8 @@ function countTxt(dir) {
 function assertFile(p, minBytes = 1) {
   if (!fs.existsSync(p)) throw new Error(`Missing file: ${path.relative(REPO_ROOT, p)}`);
   const st = fs.statSync(p);
-  if (st.size < minBytes) throw new Error(`Too small (${st.size} B): ${path.relative(REPO_ROOT, p)}`);
+  if (st.size < minBytes)
+    throw new Error(`Too small (${st.size} B): ${path.relative(REPO_ROOT, p)}`);
 }
 
 function verifyPrescriptive() {
@@ -158,12 +159,12 @@ function verifyFreqJson() {
 function verifyPrompts() {
   if (!fs.existsSync(PROMPTS_DIR)) throw new Error('Missing prompts/ directory');
   const prompts = fs.readdirSync(PROMPTS_DIR).filter((f) => /^prompt-\d{3}\.txt$/.test(f));
-  if (prompts.length !== 200) throw new Error(`Expected 200 prompt-NNN.txt, got ${prompts.length}`);
+  if (prompts.length !== 230) throw new Error(`Expected 230 prompt-NNN.txt, got ${prompts.length}`);
   const man = path.join(SV_FIX, 'sv-corpus', 'prompts-manifest.json');
   assertFile(man, 50);
   const m = JSON.parse(fs.readFileSync(man, 'utf8'));
-  if (!Array.isArray(m.prompts) || m.prompts.length !== 200) {
-    throw new Error(`prompts-manifest.json expected 200 entries, got ${m.prompts?.length}`);
+  if (!Array.isArray(m.prompts) || m.prompts.length !== 230) {
+    throw new Error(`prompts-manifest.json expected 230 entries, got ${m.prompts?.length}`);
   }
   return { promptFiles: prompts.length };
 }
@@ -171,8 +172,8 @@ function verifyPrompts() {
 function verifyCorpusSeed() {
   const h = countTxt(HUMAN_DIR);
   const a = countTxt(AI_DIR);
-  if (h !== 50) throw new Error(`Expected 50 human/*.txt, got ${h}`);
-  if (a !== 50) throw new Error(`Expected 50 ai/*.txt, got ${a}`);
+  if (h !== 60) throw new Error(`Expected 60 human/*.txt, got ${h}`);
+  if (a !== 53) throw new Error(`Expected 53 ai/*.txt, got ${a}`);
   return { humanDocs: h, aiDocs: a };
 }
 
@@ -383,13 +384,13 @@ function main() {
   phases.push(
     {
       id: 'prompts',
-      label: '200 prompts + manifest',
+      label: '230 prompts + manifest',
       run: () => runNode(SCRIPTS.prompts, []),
       verify: () => verifyPrompts(),
     },
     {
       id: 'corpus_seed',
-      label: '50+50 synthetic corpus',
+      label: '60+53 synthetic corpus',
       run: () => runNode(SCRIPTS.seed, []),
       verify: () => verifyCorpusSeed(),
     },
