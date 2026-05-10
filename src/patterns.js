@@ -85,7 +85,7 @@ function wordRegex(word) {
   // For multi-word phrases, escape internal spaces but don't rely on \b
   // between words (word boundaries fail on whitespace boundaries).
   if (word.includes(' ')) {
-    return new RegExp(`\\b${escaped.replace(/\\ /g, '\\s+')}\\b`, 'gi');
+    return new RegExp(`\\b${escaped.replace(/\s+/g, '\\s+')}\\b`, 'gi');
   }
   return new RegExp(`\\b${escaped}\\b`, 'gi');
 }
