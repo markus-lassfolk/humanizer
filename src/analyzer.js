@@ -549,5 +549,6 @@ module.exports = {
   formatReport,
   formatMarkdown,
   formatJSON,
+  scoreLabel,
   CATEGORY_LABELS,
 };

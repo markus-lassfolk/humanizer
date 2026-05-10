@@ -107,11 +107,13 @@ describe('autoFix', () => {
 
   it('locale prescriptive autofixes are applied on repeated autoFix calls', () => {
     // Verifies that module-level regex lastIndex state doesn't cause misses across calls.
-    const input = 'With regard to the plan, we agree.';
-    const first = autoFix(input);
-    const second = autoFix(input);
+    const input = 'I dagsläget saknar vi en tydlig strategi.';
+    const first = autoFix(input, { locale: 'sv' });
+    const second = autoFix(input, { locale: 'sv' });
     expect(first.text).toBe(second.text);
     expect(first.fixes).toEqual(second.fixes);
+    expect(first.text).toContain('Nu');
+    expect(first.text).not.toContain('dagsläget');
   });
 });
 

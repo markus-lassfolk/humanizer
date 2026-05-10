@@ -19,20 +19,13 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 
 // Import humanizer modules
-import { analyze } from '../src/analyzer.js';
+import { analyze, scoreLabel } from '../src/analyzer.js';
 import { humanize, autoFix } from '../src/humanizer.js';
 import { computeStats } from '../src/stats.js';
 import { loadLocale } from '../src/locales/index.js';
 
 const LOCALE_DESCRIPTION =
   'Language locale: "en" (default) or "sv" for Swedish. Use "sv" when the input text is in Swedish.';
-
-function scoreLabel(s) {
-  if (s <= 19) return 'Mostly human-sounding';
-  if (s <= 44) return 'Lightly AI-touched';
-  if (s <= 69) return 'Moderately AI-influenced';
-  return 'Heavily AI-generated';
-}
 
 // Resolve the server name + version from the root package.json so the
 // reported server metadata can never drift from the published version.
