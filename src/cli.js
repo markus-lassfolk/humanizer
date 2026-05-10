@@ -26,6 +26,7 @@ const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
 const { scanPath, compareScanResults, compareFiles, normalizeExtensions } = require('./workflows');
 const { stripCodeSnippets } = require('./preprocess');
+const { roundDisplayCount } = require('./utils');
 
 // ─── Tiny Color Helper (no chalk dependency) ─────────────
 
@@ -82,10 +83,6 @@ function scoreLabel(s) {
   if (s <= 44) return 'Lightly AI-touched';
   if (s <= 69) return 'Moderately AI-influenced';
   return 'Heavily AI-generated';
-}
-
-function roundDisplayCount(value) {
-  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }
 
 function roundSigned(value) {

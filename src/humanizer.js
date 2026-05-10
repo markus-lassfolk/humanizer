@@ -16,6 +16,7 @@
 
 const { analyze } = require('./analyzer');
 const { loadLocale } = require('./locales');
+const { roundDisplayCount } = require('./utils');
 
 const HIDDEN_UNICODE_CHARS = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/;
 const HIDDEN_UNICODE_CHARS_GLOBAL = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/g;
@@ -555,10 +556,6 @@ function formatSuggestions(result) {
 
   lines.push('════════════════════════════════════════════════════');
   return lines.join('\n');
-}
-
-function roundDisplayCount(value) {
-  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }
 
 function truncate(str, len) {

@@ -18,6 +18,7 @@ const { patterns, wordCount } = require('./patterns');
 const { computeStats, computeUniformityScore } = require('./stats');
 const { stripCodeSnippets } = require('./preprocess');
 const { loadLocale } = require('./locales');
+const { roundDisplayCount } = require('./utils');
 
 // ─── Category Labels ────────────────────────────────────
 
@@ -281,10 +282,6 @@ function calculateCompositeScore(patternScore, uniformityScore, findings) {
   // Weighted blend: patterns dominate, stats supplement
   const blended = patternScore * 0.7 + uniformityScore * 0.3;
   return Math.min(Math.round(blended), 100);
-}
-
-function roundDisplayCount(value) {
-  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }
 
 /**
