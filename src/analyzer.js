@@ -328,7 +328,7 @@ function buildSummary(finalScore, totalMatches, findings, words, stats, reliabil
           ? 'lightly AI-touched'
           : 'mostly human-sounding';
 
-  const topPatterns = findings
+  const topPatterns = [...findings]
     .sort((a, b) => b.matchCount * b.weight - a.matchCount * a.weight)
     .slice(0, 3)
     .map((f) => f.patternName);
@@ -409,7 +409,7 @@ function formatReport(result) {
     lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
     if (s.lix !== null) {
       lines.push(`  Readability (LIX): ${s.lix}`);
-    } else {
+    } else if (s.fleschKincaid !== null) {
       lines.push(`  Readability (FK grade): ${s.fleschKincaid}`);
     }
     lines.push('');
@@ -509,7 +509,7 @@ function formatMarkdown(result) {
                 ? 'Easy'
                 : 'Very easy';
       lines.push(`| Readability | LIX ${s.lix} | ${lixLabel} |`);
-    } else {
+    } else if (s.fleschKincaid !== null) {
       lines.push(
         `| Readability | FK grade ${s.fleschKincaid} | ${s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`,
       );

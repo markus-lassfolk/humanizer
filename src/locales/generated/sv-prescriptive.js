@@ -25,7 +25,7 @@ module.exports.AUTOFIXES_SV_PRESCRIPTIVE = [
   { pattern: /\binnehaft\b/gi, replacement: "haft", label: "\"innehaft\" → \"haft\"" },
   { pattern: /\bföreligga\b/gi, replacement: "finnas", label: "\"föreligga\" → \"finnas\"" },
   { pattern: /\bföreligger\b/gi, replacement: "finns", label: "\"föreligger\" → \"finns\"" },
-  { pattern: /\bförelegat\b/gi, replacement: "funits", label: "\"förelegat\" → \"funits\"" },
+  { pattern: /\bförelegat\b/gi, replacement: "funnits", label: "\"förelegat\" → \"funnits\"" },
   { pattern: /\bvidmakthålla\b/gi, replacement: "behålla", label: "\"vidmakthålla\" → \"behålla\"" },
   { pattern: /\bvidmakthåller\b/gi, replacement: "behåller", label: "\"vidmakthåller\" → \"behåller\"" },
   { pattern: /\bvidmakthållit\b/gi, replacement: "behållit", label: "\"vidmakthållit\" → \"behållit\"" },

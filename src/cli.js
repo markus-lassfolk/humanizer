@@ -565,7 +565,7 @@ function formatStatsReport(stats) {
   lines.push(color.bold('  ── Readability ────────────────────────────────'));
   if (stats.lix !== null) {
     lines.push(`    LIX:              ${stats.lix}`);
-  } else {
+  } else if (stats.fleschKincaid !== null) {
     lines.push(`    Flesch-Kincaid:   ${stats.fleschKincaid} grade level`);
   }
   lines.push(
@@ -654,7 +654,11 @@ function formatColoredReport(result) {
       `  Type-token ratio: ${s.typeTokenRatio}  ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
     );
     lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
-    lines.push(`  Readability: ${s.fleschKincaid} grade level`);
+    if (s.lix !== null) {
+      lines.push(`  Readability: LIX ${s.lix}`);
+    } else if (s.fleschKincaid !== null) {
+      lines.push(`  Readability: ${s.fleschKincaid} grade level`);
+    }
     lines.push('');
   }
 
