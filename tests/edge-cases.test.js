@@ -140,6 +140,16 @@ describe('malformed input', () => {
     expect(result.score).toBeLessThanOrEqual(15);
   });
 
+  it('reports zero words for punctuation-only input', () => {
+    const result = analyze('--- ... !!!');
+    expect(result.wordCount).toBe(0);
+  });
+
+  it('does not count punctuation-only tokens as words', () => {
+    const result = analyze('Hello --- world !!!');
+    expect(result.wordCount).toBe(2);
+  });
+
   it('handles extremely long single word', () => {
     const word = 'a'.repeat(10000);
     const result = analyze(word);

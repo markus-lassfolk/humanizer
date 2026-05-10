@@ -28,8 +28,7 @@ const {
   CHALLENGES_PHRASES,
   COPULA_AVOIDANCE,
 } = require('./locales/en-pattern-packs');
-// Stats imported for cross-module analysis when needed
-// const { tokenize } = require('./stats');
+const { splitSentences } = require('./stats');
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -72,7 +71,10 @@ function countMatches(text, regex) {
 
 /** Word count. */
 function wordCount(text) {
-  return text.trim().split(/\s+/).filter(Boolean).length;
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((token) => token && /[\p{L}\p{N}]/u.test(token)).length;
 }
 
 // ─── Vocabulary Detection Helpers ────────────────────────
@@ -623,20 +625,30 @@ const patterns = [
 
       const results = [];
       const sentences = [];
-      const sentenceRegex = /[^.!?]+[.!?]*/g;
-      let sentenceMatch;
-      while ((sentenceMatch = sentenceRegex.exec(text)) !== null) {
-        const raw = sentenceMatch[0];
-        const firstNonWs = raw.search(/\S/);
-        if (firstNonWs === -1) continue;
-        const index = sentenceMatch.index + firstNonWs;
-        const content = raw.slice(firstNonWs).trim();
+      let searchFrom = 0;
+      for (const sentence of splitSentences(text, opts.localeProfile)) {
+        const content = sentence.trim();
         if (!content) continue;
+
+        const foundIndex = text.indexOf(content, searchFrom);
+        if (foundIndex !== -1) {
+          sentences.push({
+            text: content,
+            lower: content.toLowerCase(),
+            index: foundIndex,
+          });
+          searchFrom = foundIndex + content.length;
+          continue;
+        }
+
+        // Fallback when splitter normalization prevents an exact indexOf hit.
+        // Advance searchFrom to avoid duplicate offsets on repeated fallback.
         sentences.push({
           text: content,
           lower: content.toLowerCase(),
-          index,
+          index: searchFrom,
         });
+        searchFrom += content.length + 1;
       }
 
       for (const synonyms of synonymSets) {
@@ -648,17 +660,19 @@ const patterns = [
         for (let i = 0; i < sentences.length - 1; i++) {
           const found = [];
           const foundSet = new Set();
+          let firstHitIndex = null;
           for (let j = i; j < Math.min(i + 4, sentences.length); j++) {
             const lower = sentences[j].lower;
             for (const { value, regex } of compiledSynonyms) {
               if (regex.test(lower) && !foundSet.has(value)) {
                 foundSet.add(value);
                 found.push(value);
+                if (firstHitIndex === null) firstHitIndex = j;
               }
             }
           }
           if (found.length >= 3) {
-            const startIndex = sentences[i].index;
+            const startIndex = sentences[firstHitIndex ?? i].index;
             results.push({
               match: `Synonym cycling: ${found.join(' → ')}`,
               index: startIndex,
@@ -811,11 +825,12 @@ const patterns = [
     description: 'Decorating headings or bullet points with emojis in professional/technical text.',
     weight: 2,
     detect(text) {
-      const emojiCount = countMatches(text, /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}]/gu);
+      const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}]/gu;
+      const emojiCount = countMatches(text, emojiRegex);
       if (emojiCount >= 3) {
         return findMatches(
           text,
-          /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}]/gu,
+          emojiRegex,
           'Remove emoji decoration from professional text.',
           'high',
         );
