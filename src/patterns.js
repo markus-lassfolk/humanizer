@@ -694,8 +694,14 @@ const patterns = [
 
       const results = [];
       const sentenceMatches = [];
+      const localeSentences = splitSentences(text, opts.localeProfile);
+      const compactPunctuation = /[.!?](?=\S)/.test(text);
+      const sentenceSource =
+        localeSentences.length <= 1 && compactPunctuation
+          ? (text.match(/[^.!?]+(?:[.!?]+|$)/g) ?? [])
+          : localeSentences;
       let searchFrom = 0;
-      for (const sentence of splitSentences(text, opts.localeProfile)) {
+      for (const sentence of sentenceSource) {
         const content = sentence.trim();
         if (!content) continue;
 

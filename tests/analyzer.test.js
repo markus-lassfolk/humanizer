@@ -315,6 +315,12 @@ describe('pattern detection', () => {
     expect(result.findings.length).toBeGreaterThan(0);
   });
 
+  it('detects synonym cycling when sentence punctuation has no trailing spaces', () => {
+    const text = 'The company launched.The firm reviewed.The organization approved.';
+    const result = analyze(text, { patternsToCheck: [11] });
+    expect(result.findings.length).toBeGreaterThan(0);
+  });
+
   it('tracks synonym cycling offsets for repeated sentence text', () => {
     const repeated = 'The company launched a plan.';
     const text = `Prelude one. Prelude two. ${repeated} Bridge sentence. ${repeated} The firm reviewed it. The organization approved it.`;
