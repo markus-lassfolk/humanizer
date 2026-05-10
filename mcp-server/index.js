@@ -188,17 +188,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       case 'score': {
         const s = score(args.text, { locale });
-        const badge = s <= 25 ? '🟢' : s <= 50 ? '🟡' : s <= 75 ? '🟠' : '🔴';
+        const badge = s <= 19 ? '🟢' : s <= 44 ? '🟡' : s <= 69 ? '🟠' : '🔴';
         return {
           content: [
             {
               type: 'text',
               text: `${badge} AI Score: ${s}/100\n\n${
-                s <= 25
+                s <= 19
                   ? 'Mostly human-sounding'
-                  : s <= 50
+                  : s <= 44
                   ? 'Lightly AI-touched'
-                  : s <= 75
+                  : s <= 69
                   ? 'Moderately AI-influenced'
                   : 'Heavily AI-generated'
               }${locale !== 'en' ? `\n\nLocale: ${locale}` : ''}`,

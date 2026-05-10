@@ -56,7 +56,12 @@ function normalizeIgnoreDirs(ignoreDirs, includeDefaultIgnore = true) {
  * If target is a file, returns that file only (if extension matches).
  */
 function collectTextFiles(targetPath, opts = {}) {
-  const { exts = DEFAULT_SCAN_EXTENSIONS, ignoreDirs = null, includeDefaultIgnore = true } = opts;
+  const {
+    exts = DEFAULT_SCAN_EXTENSIONS,
+    ignoreDirs = null,
+    includeDefaultIgnore = true,
+    onError = null,
+  } = opts;
   const normalizedExts = new Set(normalizeExtensions(exts));
   const ignoreDirSet = normalizeIgnoreDirs(ignoreDirs, includeDefaultIgnore);
 
@@ -73,7 +78,18 @@ function collectTextFiles(targetPath, opts = {}) {
 
   while (stack.length > 0) {
     const dir = stack.pop();
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch (err) {
+      if (typeof onError === 'function') {
+        onError({
+          path: dir,
+          reason: `read_dir_error: ${err.message}`,
+        });
+      }
+      continue;
+    }
 
     for (const entry of entries) {
       const full = path.join(dir, entry.name);
@@ -114,12 +130,19 @@ function scanPath(targetPath, opts = {}) {
     ignoreDirs = null,
     includeDefaultIgnore = true,
     ignoreCode = false,
+    locale = 'en',
+    strict = false,
+    withLm = false,
   } = opts;
-
-  const files = collectTextFiles(targetPath, { exts, ignoreDirs, includeDefaultIgnore });
 
   const results = [];
   const skipped = [];
+  const files = collectTextFiles(targetPath, {
+    exts,
+    ignoreDirs,
+    includeDefaultIgnore,
+    onError: (item) => skipped.push({ file: item.path, reason: item.reason }),
+  });
   const patternHotspotMap = new Map();
 
   for (const file of files) {
@@ -137,7 +160,14 @@ function scanPath(targetPath, opts = {}) {
       continue;
     }
 
-    const result = analyze(text, { includeStats, verbose: false, ignoreCode });
+    const result = analyze(text, {
+      includeStats,
+      verbose: false,
+      ignoreCode,
+      locale,
+      strict,
+      withLm,
+    });
 
     for (const finding of result.findings) {
       const existing = patternHotspotMap.get(finding.patternId) || {
@@ -352,9 +382,10 @@ function toPatternHistogram(result) {
  * Compare two text drafts and show score + pattern deltas.
  */
 function compareTexts(beforeText, afterText, opts = {}) {
-  const { ignoreCode = false } = opts;
-  const before = analyze(beforeText, { verbose: true, includeStats: true, ignoreCode });
-  const after = analyze(afterText, { verbose: true, includeStats: true, ignoreCode });
+  const { ignoreCode = false, locale = 'en', strict = false, withLm = false } = opts;
+  const analyzeOpts = { verbose: true, includeStats: true, ignoreCode, locale, strict, withLm };
+  const before = analyze(beforeText, analyzeOpts);
+  const after = analyze(afterText, analyzeOpts);
 
   const histogram = toPatternHistogram(before);
   for (const f of after.findings) {

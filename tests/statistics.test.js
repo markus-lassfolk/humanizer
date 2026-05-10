@@ -55,6 +55,21 @@ describe('splitSentences', () => {
     // Should split into 2 sentences, not 4
     expect(result.length).toBe(2);
   });
+
+  it('splits when next sentence starts lowercase', () => {
+    const result = splitSentences('First sentence. second sentence starts lowercase.');
+    expect(result.length).toBe(2);
+  });
+
+  it('splits with non-ASCII uppercase letters', () => {
+    const result = splitSentences('Första meningen. Åter en mening.');
+    expect(result.length).toBe(2);
+  });
+
+  it('does not suppress sentence breaks after year-style numbers', () => {
+    const result = splitSentences('The year was 2024. We shipped the patch.');
+    expect(result.length).toBe(2);
+  });
 });
 
 // ─── Syllable Estimation ─────────────────────────────────
