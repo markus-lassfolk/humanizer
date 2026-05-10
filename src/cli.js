@@ -186,7 +186,11 @@ if (afterIdx !== -1 && args[afterIdx + 1]) {
 // Parse --ext flag (scan command)
 const extIdx = args.indexOf('--ext');
 if (extIdx !== -1 && args[extIdx + 1]) {
-  flags.extensions = normalizeExtensions(args[extIdx + 1].split(','));
+  const extValue = args[extIdx + 1];
+  // Validate that the value doesn't look like another flag
+  if (!extValue.startsWith('--')) {
+    flags.extensions = normalizeExtensions(extValue.split(','));
+  }
 }
 
 // Parse --min-words flag (scan command)

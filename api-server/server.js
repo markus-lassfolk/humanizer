@@ -39,10 +39,14 @@ async function parseBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
     let total = 0;
+    let rejected = false;
 
     req.on('data', (chunk) => {
+      if (rejected) return;
+
       total += chunk.length;
       if (total > MAX_BODY_BYTES) {
+        rejected = true;
         const err = new Error('Request body too large');
         err.statusCode = 413;
         reject(err);
@@ -52,6 +56,8 @@ async function parseBody(req) {
       chunks.push(chunk);
     });
     req.on('end', () => {
+      if (rejected) return;
+
       try {
         const body = Buffer.concat(chunks).toString('utf8');
         resolve(body ? JSON.parse(body) : {});
@@ -61,7 +67,9 @@ async function parseBody(req) {
         reject(err);
       }
     });
-    req.on('error', reject);
+    req.on('error', (err) => {
+      if (!rejected) reject(err);
+    });
   });
 }
 

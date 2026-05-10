@@ -93,6 +93,8 @@
     "locales",
     "reports",
     "scripts",
+    "api-server",
+    "mcp-server",
     "SKILL.md",
     "README.md",
     "LICENSE"

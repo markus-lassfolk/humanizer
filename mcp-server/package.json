@@ -13,8 +13,16 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
+  "peerDependencies": {
+    "humanizer": "^2.6.0"
+  },
+  "peerDependenciesMeta": {
+    "humanizer": {
+      "optional": true
+    }
+  },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "license": "MIT"
 }

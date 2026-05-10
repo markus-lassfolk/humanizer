@@ -1,0 +1,24 @@
+{
+  "name": "@humanizer/api-server",
+  "version": "2.6.0",
+  "description": "Humanizer HTTP API Server - REST API for AI writing detection and humanization",
+  "main": "server.js",
+  "bin": {
+    "humanizer-api": "server.js"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "peerDependencies": {
+    "humanizer": "^2.6.0"
+  },
+  "peerDependenciesMeta": {
+    "humanizer": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "license": "MIT"
+}
