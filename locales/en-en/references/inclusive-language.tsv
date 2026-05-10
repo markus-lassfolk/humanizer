@@ -1,0 +1,12 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+chairman	chair	autofix				alex-inspired
+chairwoman	chair	autofix				
+manpower	workforce	autofix				
+mankind	humanity	autofix				
+guys	everyone	phrase_flag	3	in formal writing		alex-inspired
+crazy	wild	phrase_flag	3	avoid ableist slang in docs		alex-inspired
+insane	extreme	phrase_flag	3			alex-inspired
+slave	follower	phrase_flag	3	in technical metaphor		alex-inspired
+master branch	main branch	phrase_flag	3	prefer inclusive naming		alex-inspired

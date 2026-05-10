@@ -1,0 +1,18 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+utilize	use	autofix				MS style
+leverage	use	phrase_flag	2	prefer concrete verb		MS style
+enablement	support	phrase_flag	2	plain noun		MS style
+actionable		phrase_flag	2	say what to do		MS style
+deliverable	output	phrase_flag	2			MS style
+best-in-breed	best	phrase_flag	1	be specific		MS style
+best-of-breed	best	phrase_flag	1			MS style
+mission-critical	essential	phrase_flag	2			MS style
+world-ready	global	phrase_flag	2			MS style
+click on	select	autofix				UI writing
+user name	username	autofix				
+e-mail	email	autofix				
+log into	sign in to	autofix				
+login to	sign in to	autofix				
+as well as	and	phrase_flag	3	often wordy		MS style

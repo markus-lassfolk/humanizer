@@ -1,0 +1,10 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+could potentially	could	autofix				
+might possibly	might	autofix				
+may potentially	may	autofix				
+quite possibly	possibly	phrase_flag	2			hedge
+somewhat unique	rare	autofix				
+rather unique	unusual	autofix				
+very unique	unique	autofix				

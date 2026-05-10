@@ -1,0 +1,9 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+PIN number	PIN	autofix				
+ATM machine	ATM	autofix				
+LCD display	LCD	autofix				
+UPC code	UPC	autofix				
+please RSVP	RSVP	autofix				
+null and void	void	phrase_flag	2			legal tone

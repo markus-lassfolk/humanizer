@@ -1,0 +1,17 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+clearly		phrase_flag	2	show evidence or delete		weasel
+obviously		phrase_flag	2			weasel
+certainly		phrase_flag	2			weasel
+basically		phrase_flag	2			weasel
+arguably		phrase_flag	2			weasel
+undoubtedly		phrase_flag	2			weasel
+generally speaking		phrase_flag	2			weasel
+it could be argued		phrase_flag	1	cite or remove		weasel
+many experts believe		phrase_flag	1	name sources		weasel
+studies have shown		phrase_flag	1	cite study		weasel
+research suggests		phrase_flag	1	cite		weasel
+it is widely believed		phrase_flag	1			weasel
+most people agree		phrase_flag	1			weasel
+some would say		phrase_flag	2			weasel

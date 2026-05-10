@@ -1,0 +1,134 @@
+{
+  "crucial": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.763,
+    "weight": 1.553
+  },
+  "navigate": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.763,
+    "weight": 1.553
+  },
+  "complexities": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.763,
+    "weight": 1.553
+  },
+  "document": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.763,
+    "weight": 1.553
+  },
+  "template": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.763,
+    "weight": 1.553
+  },
+  "question": {
+    "ai": 34,
+    "human": 0,
+    "zscore": 2.489,
+    "weight": 1.498
+  },
+  "hope": {
+    "ai": 33,
+    "human": 0,
+    "zscore": 2.468,
+    "weight": 1.494
+  },
+  "future": {
+    "ai": 33,
+    "human": 0,
+    "zscore": 2.468,
+    "weight": 1.494
+  },
+  "transformative": {
+    "ai": 33,
+    "human": 0,
+    "zscore": 2.468,
+    "weight": 1.494
+  },
+  "groundbreaking": {
+    "ai": 32,
+    "human": 0,
+    "zscore": 2.446,
+    "weight": 1.489
+  },
+  "innovation": {
+    "ai": 32,
+    "human": 0,
+    "zscore": 2.446,
+    "weight": 1.489
+  },
+  "holistic": {
+    "ai": 32,
+    "human": 0,
+    "zscore": 2.446,
+    "weight": 1.489
+  },
+  "quality": {
+    "ai": 32,
+    "human": 0,
+    "zscore": 2.446,
+    "weight": 1.489
+  },
+  "it is": {
+    "ai": 149,
+    "human": 0,
+    "zscore": 3.529,
+    "weight": 1.706
+  },
+  "it is crucial": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.745,
+    "weight": 1.549
+  },
+  "is crucial that": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.745,
+    "weight": 1.549
+  },
+  "crucial that we": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.745,
+    "weight": 1.549
+  },
+  "that we navigate": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.745,
+    "weight": 1.549
+  },
+  "we navigate the": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.745,
+    "weight": 1.549
+  },
+  "navigate the complexities": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.745,
+    "weight": 1.549
+  },
+  "the complexities within": {
+    "ai": 50,
+    "human": 0,
+    "zscore": 2.745,
+    "weight": 1.549
+  },
+  "it is not": {
+    "ai": 33,
+    "human": 0,
+    "zscore": 2.45,
+    "weight": 1.49
+  }
+}
