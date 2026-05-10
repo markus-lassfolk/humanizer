@@ -71,10 +71,11 @@ async function mcpRequest(request, timeout = 5000) {
 
     child.on('close', (code) => {
       if (settled) return;
-      clearTimeout(timer);
-      if (code !== 0 && code !== null) {
-        finishReject(new Error(`MCP server exited with code ${code}`));
-      }
+      finishReject(
+        new Error(
+          `MCP server exited (code ${code}) before JSON-RPC response with id ${request.id}`,
+        ),
+      );
     });
 
     // Send JSON-RPC request

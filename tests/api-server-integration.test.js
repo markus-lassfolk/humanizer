@@ -79,7 +79,10 @@ describe('API Server Integration Tests', () => {
     });
 
     serverPort = await new Promise((resolve, reject) => {
-      const t = setTimeout(() => reject(new Error('timeout waiting for server listen line')), 10000);
+      const t = setTimeout(
+        () => reject(new Error('timeout waiting for server listen line')),
+        10000,
+      );
       const onData = (data) => {
         const m = String(data).match(/running on http:\/\/localhost:(\d+)/);
         if (!m) return;
