@@ -40,6 +40,11 @@ function main() {
       nTok++;
     }
   }
+
+  if (nTok === 0) {
+    throw new Error('No corpus data found: cannot build language model from empty corpus');
+  }
+
   const nu = Object.keys(uni).length;
   const unigramP = {};
   for (const [t, c] of Object.entries(uni)) {

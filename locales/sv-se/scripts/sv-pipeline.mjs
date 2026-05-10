@@ -10,6 +10,7 @@
  *   --force               Ignore saved state; re-run all phases
  *   --dry-run             Print phases only; do not execute
  *   --no-test             Skip `npm test` at the end
+ *   --with-lm             Build n-gram language model (sv-ngram-lm.json)
  *   --with-extended       Wikipedia fetch + merge into log-odds; also runs freq:baseline with
  *                         SV_FREQ_INCLUDE_EXTENDED=1 + validate-sv-tiers after extended/ exists
  *                         (unless --no-freq-include-extended). Skips a redundant baseline-only freq/validate.
@@ -51,6 +52,7 @@ const SCRIPTS = {
   extended: path.join(SV_SE, 'scripts', 'build-corpus-extended.mjs'),
   logodds: path.join(SV_SE, 'scripts', 'log-odds.mjs'),
   calibrate: path.join(SV_SE, 'scripts', 'calibration-report.mjs'),
+  lm: path.join(SV_SE, 'scripts', 'build-sv-ngram-lm.mjs'),
 };
 
 const require = createRequire(import.meta.url);
@@ -67,6 +69,7 @@ function parseArgs(argv) {
     withExtended: argv.includes('--with-extended'),
     freqIncludeExtended: argv.includes('--freq-include-extended'),
     noFreqIncludeExtended: argv.includes('--no-freq-include-extended'),
+    withLm: argv.includes('--with-lm'),
   };
 }
 
@@ -391,6 +394,15 @@ function main() {
       verify: () => verifyCorpusSeed(),
     },
   );
+
+  if (opts.withLm) {
+    phases.push({
+      id: 'lm_build',
+      label: 'build n-gram language model',
+      run: () => runNode(SCRIPTS.lm, []),
+      verify: () => ({}),
+    });
+  }
 
   if (opts.withExtended) {
     phases.push({
