@@ -1,0 +1,183 @@
+/**
+ * cli-integration.test.js — Integration tests for CLI using child process execution
+ */
+
+import { describe, it, expect } from 'vitest';
+import { spawn } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CLI_PATH = path.join(__dirname, '..', 'src', 'cli.js');
+const FIXTURE_PATH = path.join(__dirname, 'fixtures', 'ai-sample-1.txt');
+
+/**
+ * Helper function to run CLI commands
+ */
+async function runCLI(args, options = {}) {
+  const { stdin, timeout = 5000 } = options;
+
+  return new Promise((resolve, reject) => {
+    const child = spawn('node', [CLI_PATH, ...args], {
+      stdio: stdin ? 'pipe' : ['pipe', 'pipe', 'pipe'],
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    if (child.stdout) {
+      child.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+    }
+
+    if (child.stderr) {
+      child.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+    }
+
+    const timer = setTimeout(() => {
+      child.kill();
+      reject(new Error(`CLI command timed out after ${timeout}ms`));
+    }, timeout);
+
+    child.on('error', (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      // Combine stdout and stderr for output checking
+      const output = stdout + stderr;
+      resolve({ code, stdout, stderr, output });
+    });
+
+    if (stdin) {
+      child.stdin.write(stdin);
+      child.stdin.end();
+    }
+  });
+}
+
+describe('CLI Integration Tests', () => {
+  describe('help and version', () => {
+    it('shows help with --help flag', async () => {
+      const result = await runCLI(['--help']);
+      expect(result.code).toBe(0);
+      expect(result.output).toContain('humanizer');
+    });
+
+    it('shows usage information', async () => {
+      const result = await runCLI(['--help']);
+      expect(result.output).toContain('Commands');
+      expect(result.output).toContain('Options');
+    });
+  });
+
+  describe('analyze command', () => {
+    it('analyzes a file and returns results', async () => {
+      if (!fs.existsSync(FIXTURE_PATH)) {
+        console.log('Skipping test - fixture not found');
+        return;
+      }
+
+      const result = await runCLI(['analyze', FIXTURE_PATH]);
+      expect(result.code).toBe(0);
+      expect(result.output).toContain('Score');
+    });
+
+    it('analyzes text from stdin', async () => {
+      const result = await runCLI(['analyze'], {
+        stdin: 'This is a test sentence.',
+      });
+      expect(result.code).toBe(0);
+      expect(result.output).toContain('Score');
+    });
+
+    it('outputs JSON with --json flag', async () => {
+      const result = await runCLI(['analyze', '--json'], {
+        stdin: 'Test text for JSON output.',
+      });
+      expect(result.code).toBe(0);
+      expect(() => JSON.parse(result.output)).not.toThrow();
+    });
+  });
+
+  describe('score command', () => {
+    it('returns numeric score', async () => {
+      const result = await runCLI(['score'], {
+        stdin: 'Simple test text.',
+      });
+
+      // Score output includes emoji prefix like "🟢 0/100"
+      const match = result.output.match(/(\d+)\/100/);
+      expect(match).toBeDefined();
+      const score = parseInt(match[1], 10);
+      expect(score).toBeGreaterThanOrEqual(0);
+      expect(score).toBeLessThanOrEqual(100);
+    });
+
+    it('works with stdin input', async () => {
+      const result = await runCLI(['score'], {
+        stdin: 'It is important to note that this is crucial.',
+      });
+
+      const match = result.output.match(/(\d+)\/100/);
+      expect(match).toBeDefined();
+      const score = parseInt(match[1], 10);
+      expect(score).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('humanize command', () => {
+    it('provides humanization suggestions', async () => {
+      const result = await runCLI(['humanize'], {
+        stdin: 'It is important to note that this is crucial.',
+      });
+
+      expect(result.output).toContain('Score');
+    });
+  });
+
+  describe('stats command', () => {
+    it('shows statistical analysis', async () => {
+      const testFile = path.join(__dirname, 'fixtures', 'human-sample-1.txt');
+      if (!fs.existsSync(testFile)) {
+        console.log('Skipping test - fixture not found');
+        return;
+      }
+
+      const result = await runCLI(['stats', testFile]);
+      expect(result.output).toContain('words');
+    });
+  });
+
+  describe('Error handling', () => {
+    it('handles nonexistent files gracefully', async () => {
+      const result = await runCLI(['analyze', '/nonexistent/file.txt']);
+      expect(result.code).not.toBe(0);
+      expect(result.output).toContain('Error');
+    });
+
+    it('handles invalid commands', async () => {
+      const result = await runCLI(['invalidcommand']);
+      expect(result.code).not.toBe(0);
+      expect(result.output.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Swedish locale support', () => {
+    it('analyzes Swedish text with --locale sv', async () => {
+      const testFile = path.join(__dirname, 'fixtures', 'sv-human-sample-1.txt');
+      if (!fs.existsSync(testFile)) {
+        console.log('Skipping test - fixture not found');
+        return;
+      }
+
+      const result = await runCLI(['analyze', testFile, '--locale', 'sv']);
+      expect(result.output).toContain('Score');
+    });
+  });
+});

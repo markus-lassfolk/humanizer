@@ -377,4 +377,10 @@ module.exports = {
   DEFAULTS,
   buildWindows,
   wordSpans,
+  // Export additional internal functions for testing
+  severityFromDocumentScore,
+  classifyMultiChunkSeverity,
+  topPatternsFromFindings,
+  medianSorted,
+  percentileSorted,
 };

@@ -136,6 +136,61 @@ describe('chunk-analyzer internals', () => {
       expect(windows[1].start).toBeLessThan(windows[0].end);
     }
   });
+
+  it('severityFromDocumentScore classifies correctly', () => {
+    const { severityFromDocumentScore } = require('../src/chunk-analyzer.js');
+    expect(severityFromDocumentScore(10).severity).toBe('mostly-human');
+    expect(severityFromDocumentScore(30).severity).toBe('lightly-ai');
+    expect(severityFromDocumentScore(60).severity).toBe('lightly-ai');
+    expect(severityFromDocumentScore(80).severity).toBe('heavily-ai');
+  });
+
+  it('classifyMultiChunkSeverity handles all cases', () => {
+    const { classifyMultiChunkSeverity } = require('../src/chunk-analyzer.js');
+
+    // All low scores
+    let result = classifyMultiChunkSeverity([10, 12, 15], DEFAULTS);
+    expect(result.severity).toBe('mostly-human');
+
+    // High peak and median
+    result = classifyMultiChunkSeverity([55, 60, 65], DEFAULTS);
+    expect(result.severity).toBe('heavily-ai');
+
+    // High peak, low median (partial AI)
+    result = classifyMultiChunkSeverity([15, 20, 70], DEFAULTS);
+    expect(result.severity).toBe('partial-ai');
+
+    // Lightly elevated
+    result = classifyMultiChunkSeverity([30, 35, 40], DEFAULTS);
+    expect(result.severity).toBe('lightly-ai');
+  });
+
+  it('topPatternsFromFindings returns top patterns by signal', () => {
+    const { topPatternsFromFindings } = require('../src/chunk-analyzer.js');
+    const findings = [
+      { patternId: 1, patternName: 'Pattern 1', matchCount: 5, weight: 3 },
+      { patternId: 2, patternName: 'Pattern 2', matchCount: 10, weight: 2 },
+      { patternId: 3, patternName: 'Pattern 3', matchCount: 2, weight: 5 },
+    ];
+    const top = topPatternsFromFindings(findings, 2);
+    expect(top).toHaveLength(2);
+    expect(top[0].patternId).toBe(2); // 10*2 = 20
+    expect(top[1].patternId).toBe(1); // 5*3 = 15
+  });
+
+  it('medianSorted calculates median correctly', () => {
+    const { medianSorted } = require('../src/chunk-analyzer.js');
+    expect(medianSorted([1, 2, 3, 4, 5])).toBe(3);
+    expect(medianSorted([1, 2, 3, 4])).toBe(3); // Rounds average
+    expect(medianSorted([10])).toBe(10);
+  });
+
+  it('percentileSorted calculates percentiles correctly', () => {
+    const { percentileSorted } = require('../src/chunk-analyzer.js');
+    const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    expect(percentileSorted(data, 0.5)).toBe(5); // Uses decimal 0-1
+    expect(percentileSorted(data, 0.95)).toBe(9); // floor((9) * 0.95) = 8, returns data[8] = 9
+  });
 });
 
 describe('analyzeChunked options', () => {

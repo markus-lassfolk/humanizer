@@ -58,6 +58,10 @@ module.exports = [
         process: 'readonly',
         console: 'readonly',
         performance: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
       },
     },
     rules: {
