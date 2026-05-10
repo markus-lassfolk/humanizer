@@ -103,6 +103,8 @@ function splitSentences(text, localeProfile) {
       'e.g',
       'i.e',
       'fig',
+      'no',
+      'Inc',
       'vs',
       'approx',
       'dept',
@@ -117,12 +119,10 @@ function splitSentences(text, localeProfile) {
     .replace(/(\d)\.(\d)/g, '$1\u2024$2') // decimals/time values: "14.30"
     .replace(/(^|\n)(\s*)(\d+)\.(?=\s+\S)/g, '$1$2$3\u2024'); // numbered lists at line/string start: "1. First"
 
-  const sentences = cleaned
+  return cleaned
     .split(/(?<=[.!?])\s+|(?<=[.!?])$/)
     .map((s) => s.replace(/\u2024/g, '.').trim())
     .filter((s) => s.length > 0);
-
-  return sentences;
 }
 
 // ─── Core Statistics ─────────────────────────────────────

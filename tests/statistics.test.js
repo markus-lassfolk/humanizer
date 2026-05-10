@@ -66,6 +66,16 @@ describe('splitSentences', () => {
     ]);
   });
 
+  it('keeps known short abbreviations with lowercase or numeric continuations', () => {
+    const result = splitSentences('See no. 2 for details. Acme Inc. filed today. Done.');
+    expect(result).toEqual(['See no. 2 for details.', 'Acme Inc. filed today.', 'Done.']);
+  });
+
+  it('does not merge normal short words before lowercase or numeric sentence starts', () => {
+    expect(splitSentences('Stop now. second sentence.')).toEqual(['Stop now.', 'second sentence.']);
+    expect(splitSentences('We can go. 2024 was wild.')).toEqual(['We can go.', '2024 was wild.']);
+  });
+
   it('splits when next sentence starts lowercase', () => {
     const result = splitSentences('First sentence. second sentence starts lowercase.');
     expect(result).toEqual(['First sentence.', 'second sentence starts lowercase.']);
@@ -89,7 +99,7 @@ describe('splitSentences', () => {
 
   it('does not suppress sentence breaks after year-style numbers', () => {
     const result = splitSentences('The year was 2024. We shipped the patch.');
-    expect(result.length).toBe(2);
+    expect(result).toEqual(['The year was 2024.', 'We shipped the patch.']);
   });
 });
 

@@ -41,6 +41,8 @@ module.exports = {
     'e.g',
     'i.e',
     'fig',
+    'no',
+    'Inc',
     'vs',
     'approx',
     'dept',
