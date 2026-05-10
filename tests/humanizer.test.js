@@ -92,6 +92,29 @@ describe('autoFix', () => {
     expect(text).not.toContain('In order to');
     expect(text).not.toContain('\u2019');
   });
+
+  it('preserves sentence-start capitalization in replacements', () => {
+    const { text } = autoFix('Due to the fact that we shipped early, customers noticed.');
+    expect(text).toContain('Because we shipped early');
+  });
+
+  it('preserves sentence-start capitalization for locale prescriptive autofixes', () => {
+    // "With regard to" is in AUTOFIXES_EN_PRESCRIPTIVE, not in safeFills.
+    // It must be capitalized when it starts a sentence.
+    const { text } = autoFix('With regard to the new policy, everyone must comply.');
+    expect(text.startsWith('About')).toBe(true);
+    expect(text).not.toContain('with regard to');
+    expect(text).not.toContain('With regard to');
+  });
+
+  it('locale prescriptive autofixes are applied on repeated autoFix calls', () => {
+    // Verifies that module-level regex lastIndex state doesn't cause misses across calls.
+    const input = 'With regard to the plan, we agree.';
+    const first = autoFix(input);
+    const second = autoFix(input);
+    expect(first.text).toBe(second.text);
+    expect(first.fixes).toEqual(second.fixes);
+  });
 });
 
 // ─── humanize ────────────────────────────────────────────
@@ -169,6 +192,26 @@ describe('humanize', () => {
 
     expect(compact.minor.length).toBe(5);
     expect(verbose.minor.length).toBeGreaterThan(compact.minor.length);
+  });
+
+  it('passes strict option through to analysis', () => {
+    // strict enables pattern 35 (inclusive language). Without strict, it is skipped.
+    // We can't guarantee a fixture triggers pattern 35, but we can at least verify
+    // that the option is accepted and produces a valid result without throwing.
+    const text = loadFixture('ai-sample-1.txt');
+    const resultDefault = humanize(text);
+    const resultStrict = humanize(text, { strict: true });
+    expect(resultStrict).toHaveProperty('score');
+    // Score must not be lower than without strict (strict can only add detections).
+    expect(resultStrict.score).toBeGreaterThanOrEqual(resultDefault.score);
+  });
+
+  it('accepts withLm option without throwing', () => {
+    // withLm requires an LM file; when absent it degrades gracefully.
+    const text = loadFixture('ai-sample-1.txt');
+    expect(() => humanize(text, { withLm: true })).not.toThrow();
+    const result = humanize(text, { withLm: true });
+    expect(result).toHaveProperty('score');
   });
 });
 
