@@ -1,0 +1,7 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+web page	webpage	phrase_flag	3	pick house style		Mozilla
+plugin	plug-in	phrase_flag	3			Mozilla
+homepage	home page	phrase_flag	3			Mozilla
+JavaScript	JavaScript	skip				

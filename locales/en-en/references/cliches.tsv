@@ -1,0 +1,257 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+think outside the box		phrase_flag	2	say it plainly		proselint clichés
+at the end of the day		phrase_flag	2	say it plainly		proselint clichés
+low-hanging fruit		phrase_flag	2	say it plainly		proselint clichés
+par for the course		phrase_flag	2	say it plainly		proselint clichés
+the whole nine yards		phrase_flag	2	say it plainly		proselint clichés
+avoid like the plague		phrase_flag	2	say it plainly		proselint clichés
+read between the lines		phrase_flag	2	say it plainly		proselint clichés
+when life gives you lemons		phrase_flag	2	say it plainly		proselint clichés
+the best of both worlds		phrase_flag	2	say it plainly		proselint clichés
+time will tell		phrase_flag	2	say it plainly		proselint clichés
+every cloud has a silver lining		phrase_flag	2	say it plainly		proselint clichés
+better late than never		phrase_flag	2	say it plainly		proselint clichés
+actions speak louder than words		phrase_flag	2	say it plainly		proselint clichés
+the calm before the storm		phrase_flag	2	say it plainly		proselint clichés
+beat around the bush		phrase_flag	2	say it plainly		proselint clichés
+ballpark figure		phrase_flag	2	say it plainly		proselint clichés
+back to the drawing board		phrase_flag	2	say it plainly		proselint clichés
+barking up the wrong tree		phrase_flag	2	say it plainly		proselint clichés
+cry over spilled milk		phrase_flag	2	say it plainly		proselint clichés
+cut corners		phrase_flag	2	say it plainly		proselint clichés
+hit the nail on the head		phrase_flag	2	say it plainly		proselint clichés
+let sleeping dogs lie		phrase_flag	2	say it plainly		proselint clichés
+on the ball		phrase_flag	2	say it plainly		proselint clichés
+spill the beans		phrase_flag	2	say it plainly		proselint clichés
+steal someone's thunder		phrase_flag	2	say it plainly		proselint clichés
+take with a grain of salt		phrase_flag	2	say it plainly		proselint clichés
+the ball is in your court		phrase_flag	2	say it plainly		proselint clichés
+the elephant in the room		phrase_flag	2	say it plainly		proselint clichés
+tip of the iceberg		phrase_flag	2	say it plainly		proselint clichés
+under the weather		phrase_flag	2	say it plainly		proselint clichés
+wake-up call		phrase_flag	2	say it plainly		proselint clichés
+wild goose chase		phrase_flag	2	say it plainly		proselint clichés
+writing on the wall		phrase_flag	2	say it plainly		proselint clichés
+ace in the hole		phrase_flag	2	say it plainly		proselint clichés
+add insult to injury		phrase_flag	2	say it plainly		proselint clichés
+against all odds		phrase_flag	2	say it plainly		proselint clichés
+all bets are off		phrase_flag	2	say it plainly		proselint clichés
+armed to the teeth		phrase_flag	2	say it plainly		proselint clichés
+axe to grind		phrase_flag	2	say it plainly		proselint clichés
+bad blood		phrase_flag	2	say it plainly		proselint clichés
+ballpark estimate		phrase_flag	2	say it plainly		proselint clichés
+basket case		phrase_flag	2	say it plainly		proselint clichés
+beat a dead horse		phrase_flag	2	say it plainly		proselint clichés
+bend over backwards		phrase_flag	2	say it plainly		proselint clichés
+between a rock and a hard place		phrase_flag	2	say it plainly		proselint clichés
+beyond the pale		phrase_flag	2	say it plainly		proselint clichés
+big cheese		phrase_flag	2	say it plainly		proselint clichés
+bite the bullet		phrase_flag	2	say it plainly		proselint clichés
+blessing in disguise		phrase_flag	2	say it plainly		proselint clichés
+blind leading the blind		phrase_flag	2	say it plainly		proselint clichés
+bolt from the blue		phrase_flag	2	say it plainly		proselint clichés
+break the ice		phrase_flag	2	say it plainly		proselint clichés
+bring home the bacon		phrase_flag	2	say it plainly		proselint clichés
+burn bridges		phrase_flag	2	say it plainly		proselint clichés
+burn the midnight oil		phrase_flag	2	say it plainly		proselint clichés
+bury the hatchet		phrase_flag	2	say it plainly		proselint clichés
+busy as a bee		phrase_flag	2	say it plainly		proselint clichés
+can of worms		phrase_flag	2	say it plainly		proselint clichés
+cast iron stomach		phrase_flag	2	say it plainly		proselint clichés
+chew the fat		phrase_flag	2	say it plainly		proselint clichés
+chip off the old block		phrase_flag	2	say it plainly		proselint clichés
+clean bill of health		phrase_flag	2	say it plainly		proselint clichés
+cold shoulder		phrase_flag	2	say it plainly		proselint clichés
+come hell or high water		phrase_flag	2	say it plainly		proselint clichés
+cost an arm and a leg		phrase_flag	2	say it plainly		proselint clichés
+cross that bridge when you come to it		phrase_flag	2	say it plainly		proselint clichés
+cry wolf		phrase_flag	2	say it plainly		proselint clichés
+curiosity killed the cat		phrase_flag	2	say it plainly		proselint clichés
+cut the mustard		phrase_flag	2	say it plainly		proselint clichés
+dark horse		phrase_flag	2	say it plainly		proselint clichés
+dead as a doornail		phrase_flag	2	say it plainly		proselint clichés
+devil is in the details		phrase_flag	2	say it plainly		proselint clichés
+dog eat dog		phrase_flag	2	say it plainly		proselint clichés
+don't count your chickens		phrase_flag	2	say it plainly		proselint clichés
+down for the count		phrase_flag	2	say it plainly		proselint clichés
+down the drain		phrase_flag	2	say it plainly		proselint clichés
+drag your feet		phrase_flag	2	say it plainly		proselint clichés
+drop in the bucket		phrase_flag	2	say it plainly		proselint clichés
+eager beaver		phrase_flag	2	say it plainly		proselint clichés
+earshot		phrase_flag	2	say it plainly		proselint clichés
+easy as pie		phrase_flag	2	say it plainly		proselint clichés
+eat humble pie		phrase_flag	2	say it plainly		proselint clichés
+eleventh hour		phrase_flag	2	say it plainly		proselint clichés
+every dog has its day		phrase_flag	2	say it plainly		proselint clichés
+fair weather friend		phrase_flag	2	say it plainly		proselint clichés
+feather in your cap		phrase_flag	2	say it plainly		proselint clichés
+fifth wheel		phrase_flag	2	say it plainly		proselint clichés
+fish out of water		phrase_flag	2	say it plainly		proselint clichés
+fit as a fiddle		phrase_flag	2	say it plainly		proselint clichés
+flash in the pan		phrase_flag	2	say it plainly		proselint clichés
+flat as a pancake		phrase_flag	2	say it plainly		proselint clichés
+flesh and blood		phrase_flag	2	say it plainly		proselint clichés
+fly on the wall		phrase_flag	2	say it plainly		proselint clichés
+foot in the door		phrase_flag	2	say it plainly		proselint clichés
+fortune favors the bold		phrase_flag	2	say it plainly		proselint clichés
+from rags to riches		phrase_flag	2	say it plainly		proselint clichés
+full steam ahead		phrase_flag	2	say it plainly		proselint clichés
+get a leg up		phrase_flag	2	say it plainly		proselint clichés
+get cold feet		phrase_flag	2	say it plainly		proselint clichés
+get your act together		phrase_flag	2	say it plainly		proselint clichés
+give the benefit of the doubt		phrase_flag	2	say it plainly		proselint clichés
+go the extra mile		phrase_flag	2	say it plainly		proselint clichés
+good things come to those who wait		phrase_flag	2	say it plainly		proselint clichés
+greased lightning		phrase_flag	2	say it plainly		proselint clichés
+green with envy		phrase_flag	2	say it plainly		proselint clichés
+growing like a weed		phrase_flag	2	say it plainly		proselint clichés
+hair of the dog		phrase_flag	2	say it plainly		proselint clichés
+hand over fist		phrase_flag	2	say it plainly		proselint clichés
+hang in there		phrase_flag	2	say it plainly		proselint clichés
+hard pill to swallow		phrase_flag	2	say it plainly		proselint clichés
+head honcho		phrase_flag	2	say it plainly		proselint clichés
+hear it on the grapevine		phrase_flag	2	say it plainly		proselint clichés
+heart of gold		phrase_flag	2	say it plainly		proselint clichés
+high on the hog		phrase_flag	2	say it plainly		proselint clichés
+hit the books		phrase_flag	2	say it plainly		proselint clichés
+hit the sack		phrase_flag	2	say it plainly		proselint clichés
+hold your horses		phrase_flag	2	say it plainly		proselint clichés
+hook line and sinker		phrase_flag	2	say it plainly		proselint clichés
+in hot water		phrase_flag	2	say it plainly		proselint clichés
+in the nick of time		phrase_flag	2	say it plainly		proselint clichés
+it takes two to tango		phrase_flag	2	say it plainly		proselint clichés
+jump on the bandwagon		phrase_flag	2	say it plainly		proselint clichés
+jump the gun		phrase_flag	2	say it plainly		proselint clichés
+keep your chin up		phrase_flag	2	say it plainly		proselint clichés
+kick the bucket		phrase_flag	2	say it plainly		proselint clichés
+kill two birds with one stone		phrase_flag	2	say it plainly		proselint clichés
+kiss of death		phrase_flag	2	say it plainly		proselint clichés
+knock on wood		phrase_flag	2	say it plainly		proselint clichés
+know the ropes		phrase_flag	2	say it plainly		proselint clichés
+last straw		phrase_flag	2	say it plainly		proselint clichés
+let the cat out of the bag		phrase_flag	2	say it plainly		proselint clichés
+like a kid in a candy store		phrase_flag	2	say it plainly		proselint clichés
+like shooting fish in a barrel		phrase_flag	2	say it plainly		proselint clichés
+lion's share		phrase_flag	2	say it plainly		proselint clichés
+live and learn		phrase_flag	2	say it plainly		proselint clichés
+long in the tooth		phrase_flag	2	say it plainly		proselint clichés
+loose cannon		phrase_flag	2	say it plainly		proselint clichés
+loud and clear		phrase_flag	2	say it plainly		proselint clichés
+luck of the draw		phrase_flag	2	say it plainly		proselint clichés
+make a long story short		phrase_flag	2	say it plainly		proselint clichés
+method to my madness		phrase_flag	2	say it plainly		proselint clichés
+miss the boat		phrase_flag	2	say it plainly		proselint clichés
+moment of truth		phrase_flag	2	say it plainly		proselint clichés
+money doesn't grow on trees		phrase_flag	2	say it plainly		proselint clichés
+monkey see monkey do		phrase_flag	2	say it plainly		proselint clichés
+more than meets the eye		phrase_flag	2	say it plainly		proselint clichés
+music to my ears		phrase_flag	2	say it plainly		proselint clichés
+neck and neck		phrase_flag	2	say it plainly		proselint clichés
+needle in a haystack		phrase_flag	2	say it plainly		proselint clichés
+no pain no gain		phrase_flag	2	say it plainly		proselint clichés
+not playing with a full deck		phrase_flag	2	say it plainly		proselint clichés
+off the hook		phrase_flag	2	say it plainly		proselint clichés
+off the record		phrase_flag	2	say it plainly		proselint clichés
+old hat		phrase_flag	2	say it plainly		proselint clichés
+on cloud nine		phrase_flag	2	say it plainly		proselint clichés
+on pins and needles		phrase_flag	2	say it plainly		proselint clichés
+on the fence		phrase_flag	2	say it plainly		proselint clichés
+on the same page		phrase_flag	2	say it plainly		proselint clichés
+once bitten twice shy		phrase_flag	2	say it plainly		proselint clichés
+out of left field		phrase_flag	2	say it plainly		proselint clichés
+out of the frying pan		phrase_flag	2	say it plainly		proselint clichés
+over the moon		phrase_flag	2	say it plainly		proselint clichés
+panic button		phrase_flag	2	say it plainly		proselint clichés
+picture is worth a thousand words		phrase_flag	2	say it plainly		proselint clichés
+piece of cake		phrase_flag	2	say it plainly		proselint clichés
+pipe dream		phrase_flag	2	say it plainly		proselint clichés
+play devil's advocate		phrase_flag	2	say it plainly		proselint clichés
+play it by ear		phrase_flag	2	say it plainly		proselint clichés
+plenty of fish in the sea		phrase_flag	2	say it plainly		proselint clichés
+point of no return		phrase_flag	2	say it plainly		proselint clichés
+pot calling the kettle black		phrase_flag	2	say it plainly		proselint clichés
+pull yourself up by your bootstraps		phrase_flag	2	say it plainly		proselint clichés
+puppy love		phrase_flag	2	say it plainly		proselint clichés
+put all eggs in one basket		phrase_flag	2	say it plainly		proselint clichés
+put the cart before the horse		phrase_flag	2	say it plainly		proselint clichés
+put your foot down		phrase_flag	2	say it plainly		proselint clichés
+rain on your parade		phrase_flag	2	say it plainly		proselint clichés
+raining cats and dogs		phrase_flag	2	say it plainly		proselint clichés
+read the riot act		phrase_flag	2	say it plainly		proselint clichés
+reinvent the wheel		phrase_flag	2	say it plainly		proselint clichés
+rise and shine		phrase_flag	2	say it plainly		proselint clichés
+road hog		phrase_flag	2	say it plainly		proselint clichés
+rob Peter to pay Paul		phrase_flag	2	say it plainly		proselint clichés
+rock the boat		phrase_flag	2	say it plainly		proselint clichés
+roll with the punches		phrase_flag	2	say it plainly		proselint clichés
+rule of thumb		phrase_flag	2	say it plainly		proselint clichés
+run of the mill		phrase_flag	2	say it plainly		proselint clichés
+sad sack		phrase_flag	2	say it plainly		proselint clichés
+saved by the bell		phrase_flag	2	say it plainly		proselint clichés
+say uncle		phrase_flag	2	say it plainly		proselint clichés
+second to none		phrase_flag	2	say it plainly		proselint clichés
+see eye to eye		phrase_flag	2	say it plainly		proselint clichés
+sell like hotcakes		phrase_flag	2	say it plainly		proselint clichés
+shape up or ship out		phrase_flag	2	say it plainly		proselint clichés
+skeleton in the closet		phrase_flag	2	say it plainly		proselint clichés
+slippery slope		phrase_flag	2	say it plainly		proselint clichés
+smell a rat		phrase_flag	2	say it plainly		proselint clichés
+smooth sailing		phrase_flag	2	say it plainly		proselint clichés
+snowball's chance		phrase_flag	2	say it plainly		proselint clichés
+spick and span		phrase_flag	2	say it plainly		proselint clichés
+spill one's guts		phrase_flag	2	say it plainly		proselint clichés
+spin a yarn		phrase_flag	2	say it plainly		proselint clichés
+split hairs		phrase_flag	2	say it plainly		proselint clichés
+square peg in a round hole		phrase_flag	2	say it plainly		proselint clichés
+start from scratch		phrase_flag	2	say it plainly		proselint clichés
+stick your neck out		phrase_flag	2	say it plainly		proselint clichés
+still waters run deep		phrase_flag	2	say it plainly		proselint clichés
+storm in a teacup		phrase_flag	2	say it plainly		proselint clichés
+straight from the horse's mouth		phrase_flag	2	say it plainly		proselint clichés
+strike while the iron is hot		phrase_flag	2	say it plainly		proselint clichés
+take the bull by the horns		phrase_flag	2	say it plainly		proselint clichés
+take the cake		phrase_flag	2	say it plainly		proselint clichés
+talk turkey		phrase_flag	2	say it plainly		proselint clichés
+the apple doesn't fall far from the tree		phrase_flag	2	say it plainly		proselint clichés
+the early bird catches the worm		phrase_flag	2	say it plainly		proselint clichés
+the lion's den		phrase_flag	2	say it plainly		proselint clichés
+the plot thickens		phrase_flag	2	say it plainly		proselint clichés
+the proof is in the pudding		phrase_flag	2	say it plainly		proselint clichés
+the sky is the limit		phrase_flag	2	say it plainly		proselint clichés
+the straw that broke the camel's back		phrase_flag	2	say it plainly		proselint clichés
+thick as thieves		phrase_flag	2	say it plainly		proselint clichés
+thin as a rail		phrase_flag	2	say it plainly		proselint clichés
+third time's the charm		phrase_flag	2	say it plainly		proselint clichés
+throw caution to the wind		phrase_flag	2	say it plainly		proselint clichés
+throw in the towel		phrase_flag	2	say it plainly		proselint clichés
+tie the knot		phrase_flag	2	say it plainly		proselint clichés
+till the cows come home		phrase_flag	2	say it plainly		proselint clichés
+time flies		phrase_flag	2	say it plainly		proselint clichés
+too many cooks spoil the broth		phrase_flag	2	say it plainly		proselint clichés
+top dog		phrase_flag	2	say it plainly		proselint clichés
+tough cookie		phrase_flag	2	say it plainly		proselint clichés
+turn a blind eye		phrase_flag	2	say it plainly		proselint clichés
+twist someone's arm		phrase_flag	2	say it plainly		proselint clichés
+two peas in a pod		phrase_flag	2	say it plainly		proselint clichés
+under the gun		phrase_flag	2	say it plainly		proselint clichés
+until the cows come home		phrase_flag	2	say it plainly		proselint clichés
+up in arms		phrase_flag	2	say it plainly		proselint clichés
+vanishing act		phrase_flag	2	say it plainly		proselint clichés
+wait for the other shoe to drop		phrase_flag	2	say it plainly		proselint clichés
+wake-up call		phrase_flag	2	say it plainly		proselint clichés
+warm the bench		phrase_flag	2	say it plainly		proselint clichés
+wash your hands of it		phrase_flag	2	say it plainly		proselint clichés
+water under the bridge		phrase_flag	2	say it plainly		proselint clichés
+wear your heart on your sleeve		phrase_flag	2	say it plainly		proselint clichés
+when pigs fly		phrase_flag	2	say it plainly		proselint clichés
+wild card		phrase_flag	2	say it plainly		proselint clichés
+wolf in sheep's clothing		phrase_flag	2	say it plainly		proselint clichés
+word to the wise		phrase_flag	2	say it plainly		proselint clichés
+work like a dog		phrase_flag	2	say it plainly		proselint clichés
+world is your oyster		phrase_flag	2	say it plainly		proselint clichés
+worth its weight in gold		phrase_flag	2	say it plainly		proselint clichés
+yoke around your neck		phrase_flag	2	say it plainly		proselint clichés
+you can lead a horse to water		phrase_flag	2	say it plainly		proselint clichés
+zero hour		phrase_flag	2	say it plainly		proselint clichés

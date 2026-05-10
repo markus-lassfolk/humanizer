@@ -1,0 +1,27 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+circle back	follow up	autofix				
+reach out	contact	phrase_flag	2			jargon
+touch base	talk	autofix				
+synergy	cooperation	phrase_flag	2			jargon
+bandwidth	time	phrase_flag	2	if non-technical		jargon
+drill down	examine	autofix				
+level set	align	phrase_flag	2			jargon
+operationalize	implement	autofix				
+incentivize	motivate	phrase_flag	2			jargon
+right-size	reduce	phrase_flag	2			jargon
+bleeding edge	experimental	phrase_flag	2			jargon
+drinking the Kool-Aid	believing the hype	phrase_flag	2			jargon
+run it up the flagpole	propose it	phrase_flag	1			jargon
+boil the ocean	overreach	phrase_flag	1			jargon
+move the needle	make progress	phrase_flag	2			jargon
+low-hanging fruit	easy wins	autofix				
+thought leadership	expertise	phrase_flag	2			jargon
+value proposition	benefit	phrase_flag	2			jargon
+core competency	strength	phrase_flag	2			jargon
+stakeholder alignment	agreement	phrase_flag	2			jargon
+strategic initiative	project	phrase_flag	2			jargon
+360-degree view	full picture	phrase_flag	2			jargon
+ducks in a row	ready	phrase_flag	2			jargon
+open the kimono	share details	phrase_flag	1			jargon

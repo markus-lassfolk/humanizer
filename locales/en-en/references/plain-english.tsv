@@ -1,0 +1,46 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+in order to	to	autofix				
+due to the fact that	because	autofix				
+at this point in time	now	autofix				
+in the event that	if	autofix				
+for the purpose of	to	autofix				
+in light of the fact that	because	autofix				
+with regard to	about	autofix				
+with respect to	about	autofix				
+prior to	before	autofix				
+subsequent to	after	autofix				
+in the vicinity of	near	autofix				
+a large number of	many	autofix				
+a great deal of	much	autofix				
+in the absence of	without	autofix				
+until such time as	until	autofix				
+in the case that	if	autofix				
+notwithstanding the fact that	although	autofix				
+in spite of the fact that	although	autofix				
+on a daily basis	daily	autofix				
+on an annual basis	yearly	autofix				
+give consideration to	consider	autofix				
+make a decision	decide	autofix				
+come to a realization	realize	autofix				
+take into consideration	consider	autofix				
+conduct an investigation	investigate	autofix				
+provide assistance	help	autofix				
+implement improvements	improve	autofix				
+effectuate change	change	autofix				
+it is necessary that		phrase_flag	2	say what must happen		
+it is important that		phrase_flag	2	state the requirement plainly		
+there is a need for	need	phrase_flag	2	use active subject		
+the reason is because	because	autofix				
+whether or not	whether	autofix				
+each and every	each	autofix				
+any and all	all	autofix				
+basic fundamentals	basics	autofix				
+close proximity	near	autofix				
+end result	result	autofix				
+free gift	gift	autofix				
+past history	history	autofix				
+future plans	plans	autofix				
+unexpected surprise	surprise	autofix				
+consensus of opinion	consensus	autofix				
