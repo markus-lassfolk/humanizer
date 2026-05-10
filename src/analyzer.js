@@ -18,6 +18,7 @@ const { patterns, wordCount } = require('./patterns');
 const { computeStats, computeUniformityScore, tokenize } = require('./stats');
 const { stripCodeSnippets } = require('./preprocess');
 const { loadLocale } = require('./locales');
+const { roundDisplayCount } = require('./utils');
 
 // ─── Category Labels ────────────────────────────────────
 
@@ -59,12 +60,12 @@ function analyze(text, opts = {}) {
     withLm = false,
   } = opts;
 
-  // Load locale profile (throws on unknown locale codes)
-  const localeProfile = loadLocale(locale);
-
-  if (!text || typeof text !== 'string') {
+  if ((text === null || text === undefined) || typeof text !== 'string') {
     return emptyResult();
   }
+
+  // Validate locale for all string inputs to keep configuration errors consistent.
+  const localeProfile = loadLocale(locale);
 
   const preparedText = ignoreCode ? stripCodeSnippets(text) : text;
   const trimmed = preparedText.trim();
@@ -204,7 +205,10 @@ function buildReliability({ words, stats, findings, patternScore, uniformityScor
     reasons.push('Sentence count is low, so statistical signals are weaker.');
   }
 
-  if (findings.length <= 1) {
+  if (findings.length === 0) {
+    confidenceScore -= 15;
+    reasons.push('No AI pattern families were detected.');
+  } else if (findings.length === 1) {
     confidenceScore -= 15;
     reasons.push('Only one AI pattern family was detected.');
   }
@@ -303,12 +307,26 @@ function buildSummary(finalScore, totalMatches, findings, words, stats, reliabil
           ? 'lightly AI-touched'
           : 'mostly human-sounding';
 
-  const topPatterns = findings
+  if (totalMatches === 0) {
+    let summary = `Score: ${finalScore}/100 (${level}). No AI pattern families were detected, but sentence-level uniformity signals were elevated across ${words} words.`;
+    if (stats && stats.sentenceCount > 3 && stats.burstiness < 0.25) {
+      summary += ' Sentence rhythm is very uniform (low burstiness) — typical of AI text.';
+    }
+    if (reliability && reliability.level !== 'high') {
+      summary += ` Confidence: ${reliability.level}. ${reliability.recommendation}`;
+    }
+    return summary;
+  }
+
+  const topPatterns = [...findings]
     .sort((a, b) => b.matchCount * b.weight - a.matchCount * a.weight)
     .slice(0, 3)
     .map((f) => f.patternName);
 
-  let summary = `Score: ${finalScore}/100 (${level}). Found ${totalMatches} matches across ${findings.length} pattern types in ${words} words.`;
+  const displayMatches = roundDisplayCount(totalMatches);
+  const matchWord = displayMatches === 1 ? 'match' : 'matches';
+  const patternTypeWord = findings.length === 1 ? 'pattern type' : 'pattern types';
+  let summary = `Score: ${finalScore}/100 (${level}). Found ${displayMatches} ${matchWord} across ${findings.length} ${patternTypeWord} in ${words} words.`;
 
   if (topPatterns.length > 0) {
     summary += ` Top issues: ${topPatterns.join(', ')}.`;
@@ -359,7 +377,7 @@ function formatReport(result) {
   const bar = '█'.repeat(filled) + '░'.repeat(20 - filled);
   lines.push(`  Score: ${result.score}/100  [${bar}]`);
   lines.push(
-    `  Words: ${result.wordCount}  |  Matches: ${result.totalMatches}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
+    `  Words: ${result.wordCount}  |  Matches: ${roundDisplayCount(result.totalMatches)}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
   );
   if (result.reliability) {
     lines.push(
@@ -394,7 +412,9 @@ function formatReport(result) {
   lines.push('── Categories ──────────────────────────────────────');
   for (const [, data] of Object.entries(result.categories)) {
     if (data.matches > 0) {
-      lines.push(`  ${data.label}: ${data.matches} matches (${data.patternsDetected.join(', ')})`);
+      lines.push(
+        `  ${data.label}: ${roundDisplayCount(data.matches)} matches (${data.patternsDetected.join(', ')})`,
+      );
     }
   }
   lines.push('');
@@ -405,7 +425,7 @@ function formatReport(result) {
     for (const finding of result.findings) {
       lines.push('');
       lines.push(
-        `  [${finding.patternId}] ${finding.patternName} (×${finding.matchCount}, weight: ${finding.weight})`,
+        `  [${finding.patternId}] ${finding.patternName} (×${roundDisplayCount(finding.matchCount)}, weight: ${finding.weight})`,
       );
       lines.push(`      ${finding.description}`);
       for (const match of finding.matches) {
@@ -421,8 +441,9 @@ function formatReport(result) {
         }
       }
       if (finding.truncated) {
+        const totalRaw = finding.rawMatchCount ?? finding.matchCount ?? finding.matches.length;
         lines.push(
-          `      ... and ${(finding.rawMatchCount ?? finding.matchCount) - finding.matches.length} more`,
+          `      ... and ${Math.max(0, roundDisplayCount(totalRaw) - finding.matches.length)} more`,
         );
       }
     }
@@ -449,7 +470,7 @@ function formatMarkdown(result) {
   }
   lines.push('');
   lines.push(
-    `Words: ${result.wordCount} | Matches: ${result.totalMatches} | Pattern score: ${result.patternScore} | Uniformity score: ${result.uniformityScore}`,
+    `Words: ${result.wordCount} | Matches: ${roundDisplayCount(result.totalMatches)} | Pattern score: ${result.patternScore} | Uniformity score: ${result.uniformityScore}`,
   );
   lines.push('');
   lines.push(result.summary);
@@ -498,7 +519,9 @@ function formatMarkdown(result) {
     lines.push('## Findings');
     lines.push('');
     for (const finding of result.findings) {
-      lines.push(`### ${finding.patternId}. ${finding.patternName} (×${finding.matchCount})`);
+      lines.push(
+        `### ${finding.patternId}. ${finding.patternName} (×${roundDisplayCount(finding.matchCount)})`,
+      );
       lines.push(`*${finding.description}*`);
       lines.push('');
       for (const match of finding.matches) {
