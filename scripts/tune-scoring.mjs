@@ -49,7 +49,7 @@ function arg(flag) {
   return argv[i + 1];
 }
 
-const LOCALES = [
+const ALL_LOCALES = [
   {
     code: 'en',
     humanDirs: [
@@ -71,7 +71,12 @@ const LOCALES = [
       'locales/sv-se/tests/fixtures/sv-corpus/ai-llm',
     ],
   },
-].filter((l) => !localeArg || l.code === localeArg);
+];
+const LOCALES = ALL_LOCALES.filter((l) => !localeArg || l.code === localeArg);
+if (localeArg && LOCALES.length === 0) {
+  const supported = ALL_LOCALES.map((l) => l.code).join(', ');
+  throw new Error(`Unknown --locale "${localeArg}". Supported locales: ${supported}`);
+}
 
 const WINDOW_WORDS = 200;
 const MIN_WORDS = 25;
