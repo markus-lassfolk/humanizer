@@ -67,8 +67,13 @@ describe('splitSentences', () => {
   });
 
   it('keeps known short abbreviations with lowercase or numeric continuations', () => {
-    const result = splitSentences('See no. 2 for details. Acme Inc. filed today. Done.');
-    expect(result).toEqual(['See no. 2 for details.', 'Acme Inc. filed today.', 'Done.']);
+    const result = splitSentences('Acme Inc. filed today. Done.');
+    expect(result).toEqual(['Acme Inc. filed today.', 'Done.']);
+  });
+
+  it('splits sentences ending with "no" as a regular word', () => {
+    expect(splitSentences('The answer is no. Next sentence.')).toEqual(['The answer is no.', 'Next sentence.']);
+    expect(splitSentences('I said no. She said yes.')).toEqual(['I said no.', 'She said yes.']);
   });
 
   it('does not merge normal short words before lowercase or numeric sentence starts', () => {

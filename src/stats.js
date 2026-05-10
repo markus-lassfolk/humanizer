@@ -103,7 +103,6 @@ function splitSentences(text, localeProfile) {
       'e.g',
       'i.e',
       'fig',
-      'no',
       'Inc',
       'vs',
       'approx',
