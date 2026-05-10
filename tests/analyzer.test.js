@@ -91,7 +91,21 @@ describe('analyze', () => {
     expect(result.stats).toHaveProperty('typeTokenRatio');
   });
 
-  it('uses stats tokenization for result wordCount when stats are included', () => {
+  it('reports tokenize-based word count (Unicode-aware) instead of raw whitespace splits', () => {
+    const text = 'foo_bar baz';
+    const result = analyze(text);
+    expect(result.wordCount).toBe(3);
+    expect(result.stats.wordCount).toBe(3);
+  });
+
+  it('keeps tokenize-based word count even when stats are disabled', () => {
+    const text = 'foo_bar baz';
+    const result = analyze(text, { includeStats: false });
+    expect(result.wordCount).toBe(3);
+    expect(result.stats).toBeNull();
+  });
+
+  it('uses stats tokenization for punctuation-only input', () => {
     const result = analyze('...!!!???---');
     expect(result.stats.wordCount).toBe(0);
     expect(result.wordCount).toBe(0);

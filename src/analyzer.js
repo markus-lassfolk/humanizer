@@ -15,7 +15,7 @@
  */
 
 const { patterns, wordCount } = require('./patterns');
-const { computeStats, computeUniformityScore } = require('./stats');
+const { computeStats, computeUniformityScore, tokenize } = require('./stats');
 const { stripCodeSnippets } = require('./preprocess');
 const { loadLocale } = require('./locales');
 const { roundDisplayCount } = require('./utils');
@@ -71,11 +71,13 @@ function analyze(text, opts = {}) {
   const trimmed = preparedText.trim();
   if (trimmed.length === 0) return emptyResult();
 
-  const words = wordCount(trimmed);
+  // Keep whitespace-based count for calibrated scoring thresholds.
+  const calibratedWords = wordCount(trimmed);
 
   // ── Compute text statistics ────────────────────────
   const stats = includeStats ? computeStats(trimmed, localeProfile) : null;
-  const reportWordCount = stats?.wordCount ?? words;
+  // Report/display count should be Unicode-aware and consistent with stats/tokenization.
+  const reportWordCount = stats ? stats.wordCount : tokenize(trimmed).length;
   // Only compute uniformity for text with enough structure to be meaningful
   const baseUniformityScore =
     stats && stats.wordCount >= 20 && stats.sentenceCount >= 3 ? computeUniformityScore(stats) : 0;
@@ -120,10 +122,10 @@ function analyze(text, opts = {}) {
   }
 
   // ── Calculate composite score ──────────────────────
-  const patternScore = calculatePatternScore(findings, words);
+  const patternScore = calculatePatternScore(findings, calibratedWords);
   const compositeScore = calculateCompositeScore(patternScore, uniformityScore, findings);
   const reliability = buildReliability({
-    words: reportWordCount,
+    words: calibratedWords,
     stats,
     findings,
     patternScore,
