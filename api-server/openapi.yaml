@@ -1,7 +1,8 @@
 openapi: 3.1.0
 info:
   title: Humanizer API
-  description: AI writing detection and humanization API with actionable suggestions. Supports English (en) and Swedish (sv) via the optional locale field.
+  description: AI writing detection and humanization API with actionable suggestions. Supports English (en) and Swedish (sv) via the optional locale field. Optional overlapping-window (chunk) scores for long documents; see docs/CHUNKED_SCORING.md.
+  # On-disk fallback; GET /api/openapi replaces this version line from the loaded package.json.
   version: 2.6.0
   contact:
     name: Brandon Wise
@@ -19,12 +20,67 @@ components:
       default: en
       description: Language locale. Use "sv" for Swedish text (Swedish vocabulary tiers, LIX readability, Swedish abbreviation handling).
 
+    ChunkedParam:
+      type: boolean
+      description: |
+        Overlapping-window scoring (peak/median/low chunk scores + severity).
+        true = always run; false = never; omit = auto when text has ≥600 words (after optional ignoreCode masking).
+
+    ChunkTopPattern:
+      type: object
+      properties:
+        patternId: { type: integer }
+        patternName: { type: string }
+
+    ChunkItem:
+      type: object
+      properties:
+        index: { type: integer }
+        startWord: { type: integer }
+        endWord: { type: integer }
+        wordCount: { type: integer }
+        score: { type: integer }
+        rawScore: { type: integer }
+        patternScore: { type: integer }
+        uniformityScore: { type: integer }
+        topPatterns:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChunkTopPattern'
+
+    ChunkAggregate:
+      type: object
+      properties:
+        chunkCount: { type: integer }
+        windowWords: { type: integer }
+        strideWords: { type: integer }
+        peak:
+          type: object
+          properties:
+            score: { type: integer }
+            index: { type: integer }
+        median:
+          type: object
+          properties:
+            score: { type: integer }
+            index: { type: integer }
+        low:
+          type: object
+          properties:
+            score: { type: integer }
+            index: { type: integer }
+        p95: { type: integer }
+        severity:
+          type: string
+          enum: [mostly-human, lightly-ai, partial-ai, heavily-ai]
+        severityReason: { type: string }
+
 paths:
   /score:
     post:
       operationId: scoreText
       summary: Quick AI score
-      description: Returns a score from 0-100 indicating how AI-like the text appears. 0-25 human, 26-50 light AI, 51-75 moderate, 76-100 heavy AI.
+      description: Returns a score from 0-100 indicating how AI-like the text appears (badges align with CLI bands; roughly 0-19 human, 20-44 light, 45-69 moderate, 70+ heavy).
       requestBody:
         required: true
         content:
@@ -39,6 +95,12 @@ paths:
                   description: Text to analyze
                 locale:
                   $ref: '#/components/schemas/LocaleEnum'
+                chunked:
+                  $ref: '#/components/schemas/ChunkedParam'
+                ignoreCode:
+                  type: boolean
+                  default: false
+                  description: Mask fenced/inline code before word count and analysis
       responses:
         '200':
           description: Score result
@@ -58,6 +120,12 @@ paths:
                     type: string
                   locale:
                     type: string
+                  chunks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChunkItem'
+                  aggregate:
+                    $ref: '#/components/schemas/ChunkAggregate'
 
   /analyze:
     post:
@@ -82,9 +150,14 @@ paths:
                   description: Include all pattern matches
                 locale:
                   $ref: '#/components/schemas/LocaleEnum'
+                chunked:
+                  $ref: '#/components/schemas/ChunkedParam'
+                ignoreCode:
+                  type: boolean
+                  default: false
       responses:
         '200':
-          description: Analysis result
+          description: Analysis result (when chunked is used, includes chunks and aggregate alongside standard analyze fields)
           content:
             application/json:
               schema:
@@ -105,6 +178,12 @@ paths:
                     type: array
                     items:
                       type: object
+                  chunks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChunkItem'
+                  aggregate:
+                    $ref: '#/components/schemas/ChunkAggregate'
 
   /humanize:
     post:
@@ -129,6 +208,11 @@ paths:
                   description: Apply safe mechanical fixes
                 locale:
                   $ref: '#/components/schemas/LocaleEnum'
+                chunked:
+                  $ref: '#/components/schemas/ChunkedParam'
+                ignoreCode:
+                  type: boolean
+                  default: false
       responses:
         '200':
           description: Humanization suggestions
@@ -166,6 +250,12 @@ paths:
                         type: array
                         items:
                           type: string
+                  chunks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChunkItem'
+                  aggregate:
+                    $ref: '#/components/schemas/ChunkAggregate'
 
   /stats:
     post:

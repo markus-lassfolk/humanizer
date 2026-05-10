@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { analyze } from '../src/analyzer.js';
+import { analyze, analyzeChunked } from '../src/analyzer.js';
 import { computeStats } from '../src/stats.js';
 
 /**
@@ -67,6 +67,18 @@ describe('performance', () => {
 
     expect(elapsed).toBeLessThan(5000);
     expect(result.score).toBeGreaterThanOrEqual(0);
+  });
+
+  it('analyzeChunked on 20K words completes within budget', () => {
+    const text = generateLargeText(20000);
+
+    const start = performance.now();
+    const r = analyzeChunked(text, { locale: 'en' });
+    const elapsed = performance.now() - start;
+
+    expect(elapsed).toBeLessThan(8000);
+    expect(r.chunks.length).toBeGreaterThan(1);
+    expect(r.document.score).toBeGreaterThanOrEqual(0);
   });
 
   it('many short analyses complete quickly (batch)', () => {

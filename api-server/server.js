@@ -17,10 +17,13 @@ const http = require('http');
 const { readFile } = require('fs/promises');
 const path = require('path');
 
-const { analyze, score } = require('../src/analyzer.js');
+const { analyze, score, analyzeChunked } = require('../src/analyzer.js');
+const { mergeChunkedForJSON, DEFAULTS } = require('../src/chunk-analyzer.js');
 const { humanize } = require('../src/humanizer.js');
 const { computeStats } = require('../src/stats.js');
 const { loadLocale, SUPPORTED_LOCALES } = require('../src/locales');
+const { wordCount } = require('../src/patterns.js');
+const { stripCodeSnippets } = require('../src/preprocess.js');
 
 function loadPackageMetadata() {
   try {
@@ -32,6 +35,7 @@ function loadPackageMetadata() {
 
 const PORT = process.env.PORT || 3000;
 const pkg = loadPackageMetadata();
+const PKG_VERSION = typeof pkg.version === 'string' ? pkg.version : '0.0.0';
 
 function parseMaxBodyBytes(rawValue, fallback = 1_000_000) {
   if (rawValue == null || rawValue === '') {
@@ -129,6 +133,16 @@ function isSupportedLocale(locale) {
   return typeof locale === 'string' && SUPPORTED_LOCALES.includes(locale);
 }
 
+/** Auto-chunk when word count ≥ 2× windowWords (600 with defaults), unless body.chunked overrides. */
+function shouldRunChunked(body, text) {
+  const ignoreCode = body.ignoreCode === true;
+  const prepared = ignoreCode ? stripCodeSnippets(text) : text;
+  const w = wordCount(prepared.trim());
+  if (body.chunked === true) return true;
+  if (body.chunked === false) return false;
+  return w >= 2 * DEFAULTS.windowWords;
+}
+
 // Request handler
 async function handleRequest(req, res) {
   // Handle CORS preflight
@@ -145,7 +159,8 @@ async function handleRequest(req, res) {
   try {
     // GET /api/openapi - Return OpenAPI spec
     if (req.method === 'GET' && route === '/api/openapi') {
-      const spec = await readFile(path.join(__dirname, 'openapi.yaml'), 'utf-8');
+      const specRaw = await readFile(path.join(__dirname, 'openapi.yaml'), 'utf-8');
+      const spec = specRaw.replace(/^  version: .+$/m, `  version: ${PKG_VERSION}`);
       res.writeHead(200, {
         ...corsHeaders,
         'Content-Type': 'application/yaml',
@@ -190,7 +205,8 @@ async function handleRequest(req, res) {
 
       switch (route) {
         case '/api/score': {
-          const s = score(body.text, { locale });
+          const opts = { locale, ignoreCode: body.ignoreCode === true };
+          const s = score(body.text, opts);
           const badge = s <= 19 ? '🟢' : s <= 44 ? '🟡' : s <= 69 ? '🟠' : '🔴';
           const interpretation =
             s <= 19
@@ -200,17 +216,29 @@ async function handleRequest(req, res) {
                 : s <= 69
                   ? 'Moderately AI-influenced'
                   : 'Heavily AI-generated';
-          sendJson(res, { score: s, badge, interpretation, locale });
+          const payload = { score: s, badge, interpretation, locale };
+          if (shouldRunChunked(body, body.text)) {
+            const chunked = analyzeChunked(body.text, opts);
+            payload.chunks = chunked.chunks;
+            payload.aggregate = chunked.aggregate;
+          }
+          sendJson(res, payload);
           return;
         }
 
         case '/api/analyze': {
-          const result = analyze(body.text, {
+          const opts = {
             verbose: body.verbose || false,
             includeStats: true,
             locale,
-          });
-          sendJson(res, result);
+            ignoreCode: body.ignoreCode === true,
+          };
+          if (shouldRunChunked(body, body.text)) {
+            const chunked = analyzeChunked(body.text, opts);
+            sendJson(res, mergeChunkedForJSON(chunked));
+          } else {
+            sendJson(res, analyze(body.text, opts));
+          }
           return;
         }
 
@@ -218,8 +246,15 @@ async function handleRequest(req, res) {
           const suggestions = humanize(body.text, {
             autofix: body.autofix || false,
             locale,
+            ignoreCode: body.ignoreCode === true,
           });
-          sendJson(res, suggestions);
+          const chunkOpts = { locale, ignoreCode: body.ignoreCode === true };
+          if (shouldRunChunked(body, body.text)) {
+            const chunked = analyzeChunked(body.text, chunkOpts);
+            sendJson(res, { ...suggestions, chunks: chunked.chunks, aggregate: chunked.aggregate });
+          } else {
+            sendJson(res, suggestions);
+          }
           return;
         }
 

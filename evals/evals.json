@@ -1,0 +1,35 @@
+{
+  "skill_name": "humanizer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Humanize this English paragraph: \"In today's rapidly evolving landscape, it is worth noting that sustainable innovation serves as a crucial cornerstone, underscoring our commitment to excellence. I hope this helps!\"",
+      "expected_output": "Rewritten prose without chatbot fillers or stock AI vocabulary; meaning preserved; notes what changed.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Review only (no full rewrite): score and list top AI tells in this Swedish line: \"I dagens snabbt föränderliga digitala landskap är det viktigt att organisationer fördjupar sig i sömlös integration.\"",
+      "expected_output": "Qualitative or tool-backed assessment; uses locale sv if CLI/MCP invoked; no fabricated statistics.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "We need a CI-style scan of docs/*.md; what humanizer command and thresholds would you suggest?",
+      "expected_output": "humanizer scan example with --ext and fail threshold; points to docs/AGENTS.md CI section.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Mixed paragraph: first sentence English, second Swedish. How should Humanizer locale be chosen?",
+      "expected_output": "Segment by language or pick primary language; explain runtime locale en vs sv; warn not to pass sv-se to API.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "No CLI available in this environment. Improve this draft using the skill only.",
+      "expected_output": "Manual application of patterns + locale file if present; states no numeric score available.",
+      "files": []
+    }
+  ]
+}

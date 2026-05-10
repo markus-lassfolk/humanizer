@@ -67,4 +67,10 @@ describe('cli parsing and help', () => {
     expect(run.stdout).toContain('🟠 45-69   Moderately AI-influenced');
     expect(run.stdout).toContain('🔴 70-100  Heavily AI-generated');
   });
+
+  it('errors when --ext is missing a value', () => {
+    const run = runCli(['scan', '.', '--ext', '--json']);
+    expect(run.status).toBe(1);
+    expect(run.stderr).toContain('--ext requires');
+  });
 });

@@ -21,7 +21,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const { analyze, score, formatMarkdown, formatJSON } = require('./analyzer');
+const { analyze, analyzeChunked, score, formatMarkdown, formatJSON } = require('./analyzer');
+const {
+  mergeChunkedForJSON,
+  formatChunkedTextAppendix,
+  DEFAULTS: CHUNK_DEFAULTS,
+} = require('./chunk-analyzer');
+const { wordCount } = require('./patterns');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
 const { scanPath, compareScanResults, compareFiles, normalizeExtensions } = require('./workflows');
@@ -130,6 +136,9 @@ const flags = {
   includeDefaultIgnore: null,
   ignoreCode: null,
   locale: process.env.HUMANIZER_LOCALE || 'en',
+  strict: args.includes('--strict'),
+  withLm: args.includes('--with-lm'),
+  chunked: args.includes('--no-chunked') ? false : args.includes('--chunked') ? true : null,
 };
 
 // Parse -f / --file flag
@@ -206,8 +215,15 @@ if (afterIdx !== -1 && args[afterIdx + 1]) {
 
 // Parse --ext flag (scan command)
 const extIdx = args.indexOf('--ext');
-if (extIdx !== -1 && args[extIdx + 1]) {
-  flags.extensions = normalizeExtensions(args[extIdx + 1].split(','));
+if (extIdx !== -1) {
+  const extValue = args[extIdx + 1];
+  if (!extValue || extValue.startsWith('-')) {
+    console.error(
+      'Error: --ext requires a comma-separated extension list (for example: --ext md,txt).',
+    );
+    process.exit(1);
+  }
+  flags.extensions = normalizeExtensions(extValue.split(','));
 }
 
 // Parse --min-words flag (scan command)
@@ -453,6 +469,10 @@ ${color.bold('Options:')}
   --no-default-ignore     Disable built-in ignores (.git,node_modules,dist,...)
   --ignore-code           Ignore fenced/inline code snippets during analysis
   --locale <code>         Language locale: en (default) or sv. Also HUMANIZER_LOCALE env.
+  --strict                English: enable inclusive-language hints (pattern 35)
+  --with-lm               Add n-gram LM uniformity boost (see locale extension docs)
+  --chunked               Overlapping-window scores (peak/median/low + severity); auto for long docs
+  --no-chunked            Disable chunked analysis even for long input
   --config <file>         Load scan defaults from JSON (scan section)
   --help, -h              Show this help
 
@@ -493,6 +513,9 @@ ${color.bold('Examples:')}
 
   ${color.gray('# Compare two drafts')}
   humanizer compare --before draft-v1.md --after draft-v2.md
+
+  ${color.gray('# Long document: overlapping windows (auto ≥600 words, or --chunked)')}
+  humanizer analyze -f long-article.md
 
   ${color.gray('# Swedish text analysis')}
   echo "I dagens snabbt föränderliga digitala landskap..." | humanizer analyze --locale sv
@@ -583,7 +606,7 @@ function formatStatsReport(stats) {
   lines.push(color.bold('  ── Readability ────────────────────────────────'));
   if (stats.lix !== null) {
     lines.push(`    LIX:              ${stats.lix}`);
-  } else {
+  } else if (stats.fleschKincaid !== null) {
     lines.push(`    Flesch-Kincaid:   ${stats.fleschKincaid} grade level`);
   }
   lines.push(
@@ -592,6 +615,16 @@ function formatStatsReport(stats) {
   lines.push('');
 
   return lines.join('\n');
+}
+
+/** Auto-chunk when word count ≥ minDocWordsForChunking (after optional ignore-code masking). */
+function shouldUseChunkedAnalysis(text, cliFlags) {
+  const ignoreCode = cliFlags.ignoreCode === true;
+  const prepared = ignoreCode ? stripCodeSnippets(text) : text;
+  const w = wordCount(prepared.trim());
+  if (cliFlags.chunked === true) return true;
+  if (cliFlags.chunked === false) return false;
+  return w >= CHUNK_DEFAULTS.minDocWordsForChunking;
 }
 
 /**
@@ -674,7 +707,7 @@ function formatColoredReport(result) {
     lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
     if (s.lix !== null) {
       lines.push(`  Readability: LIX ${s.lix}`);
-    } else {
+    } else if (s.fleschKincaid !== null) {
       lines.push(`  Readability: ${s.fleschKincaid} grade level`);
     }
     lines.push('');
@@ -1004,25 +1037,58 @@ async function main() {
     patternsToCheck: flags.patterns,
     ignoreCode: flags.ignoreCode === true,
     locale: flags.locale,
+    strict: flags.strict,
+    withLm: flags.withLm,
   };
 
   switch (command) {
     case 'analyze': {
-      const result = analyze(text, opts);
-      if (flags.json) {
-        console.log(formatJSON(result));
+      if (shouldUseChunkedAnalysis(text, flags)) {
+        const chunked = analyzeChunked(text, opts);
+        if (flags.json) {
+          console.log(JSON.stringify(mergeChunkedForJSON(chunked), null, 2));
+        } else {
+          console.log(formatColoredReport(chunked.document));
+          console.log(formatChunkedTextAppendix(chunked));
+        }
       } else {
-        console.log(formatColoredReport(result));
+        const result = analyze(text, opts);
+        if (flags.json) {
+          console.log(formatJSON(result));
+        } else {
+          console.log(formatColoredReport(result));
+        }
       }
       break;
     }
 
     case 'score': {
-      const s = score(text, opts);
-      if (flags.json) {
-        console.log(JSON.stringify({ score: s }));
+      if (shouldUseChunkedAnalysis(text, flags)) {
+        const chunked = analyzeChunked(text, opts);
+        if (flags.json) {
+          console.log(
+            JSON.stringify(
+              {
+                score: chunked.document.score,
+                locale: opts.locale,
+                chunks: chunked.chunks,
+                aggregate: chunked.aggregate,
+              },
+              null,
+              2,
+            ),
+          );
+        } else {
+          console.log(scoreBadge(chunked.document.score));
+          console.log(formatChunkedTextAppendix(chunked));
+        }
       } else {
-        console.log(scoreBadge(s));
+        const s = score(text, opts);
+        if (flags.json) {
+          console.log(JSON.stringify({ score: s }));
+        } else {
+          console.log(scoreBadge(s));
+        }
       }
       break;
     }
@@ -1033,8 +1099,23 @@ async function main() {
         verbose: flags.verbose,
         ignoreCode: opts.ignoreCode,
         locale: opts.locale,
+        strict: opts.strict,
+        withLm: opts.withLm,
       });
-      if (flags.json) {
+      if (shouldUseChunkedAnalysis(text, flags)) {
+        const chunked = analyzeChunked(text, opts);
+        if (flags.json) {
+          console.log(JSON.stringify({ ...result, chunks: chunked.chunks, aggregate: chunked.aggregate }, null, 2));
+        } else {
+          console.log(formatSuggestions(result));
+          if (flags.autofix && result.autofix) {
+            console.log(`\n${color.bold('── AUTO-FIXED TEXT ──────────────────────────────')}\n`);
+            console.log(result.autofix.text);
+            console.log(`\n${color.dim('════════════════════════════════════════════════')}`);
+          }
+          console.log(formatChunkedTextAppendix(chunked));
+        }
+      } else if (flags.json) {
         console.log(JSON.stringify(result, null, 2));
       } else {
         console.log(formatSuggestions(result));
@@ -1048,8 +1129,16 @@ async function main() {
     }
 
     case 'report': {
-      const result = analyze(text, { ...opts, verbose: true });
-      console.log(formatMarkdown(result));
+      if (shouldUseChunkedAnalysis(text, flags)) {
+        const chunked = analyzeChunked(text, { ...opts, verbose: true });
+        console.log(formatMarkdown(chunked.document));
+        console.log('\n### Chunk distribution\n');
+        const appendix = formatChunkedTextAppendix(chunked).replace(/^\n/, '').trimEnd();
+        console.log(`\n\`\`\`\n${appendix}\n\`\`\`\n`);
+      } else {
+        const result = analyze(text, { ...opts, verbose: true });
+        console.log(formatMarkdown(result));
+      }
       break;
     }
 
@@ -1058,8 +1147,18 @@ async function main() {
         verbose: flags.verbose,
         ignoreCode: opts.ignoreCode,
         locale: opts.locale,
+        strict: opts.strict,
+        withLm: opts.withLm,
       });
-      if (flags.json) {
+      if (shouldUseChunkedAnalysis(text, flags)) {
+        const chunked = analyzeChunked(text, opts);
+        if (flags.json) {
+          console.log(JSON.stringify({ ...result, chunks: chunked.chunks, aggregate: chunked.aggregate }, null, 2));
+        } else {
+          console.log(formatGroupedSuggestions(result));
+          console.log(formatChunkedTextAppendix(chunked));
+        }
+      } else if (flags.json) {
         console.log(JSON.stringify(result, null, 2));
       } else {
         console.log(formatGroupedSuggestions(result));

@@ -614,8 +614,11 @@ function emptyResult() {
 
 // ─── Exports ─────────────────────────────────────────────
 
+const { analyzeChunked } = require('./chunk-analyzer');
+
 module.exports = {
   analyze,
+  analyzeChunked,
   score,
   calculatePatternScore,
   calculateCompositeScore,
