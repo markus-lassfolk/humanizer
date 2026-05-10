@@ -704,11 +704,17 @@ const patterns = [
         const trimmedSentence = sentence.trim();
         if (!trimmedSentence) continue;
         const idx = text.indexOf(trimmedSentence, searchFrom);
-        sentenceMatches.push({
-          text: trimmedSentence,
-          index: idx !== -1 ? idx : searchFrom,
-        });
-        if (idx !== -1) searchFrom = idx + trimmedSentence.length;
+        if (idx !== -1) {
+          sentenceMatches.push({ text: trimmedSentence, index: idx });
+          searchFrom = idx + trimmedSentence.length;
+        } else {
+          // Sentence content could not be found at the expected position (e.g. due to
+          // whitespace normalisation differences). Use the current cursor as the best
+          // available approximation and advance past the sentence length so subsequent
+          // lookups do not all collapse to the same offset.
+          sentenceMatches.push({ text: trimmedSentence, index: searchFrom });
+          searchFrom += trimmedSentence.length + 1;
+        }
       }
 
       for (const synonyms of synonymSets) {

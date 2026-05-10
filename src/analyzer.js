@@ -191,6 +191,8 @@ function analyze(text, opts = {}) {
   // Unicode-aware (tokenize) and consistent with stats.wordCount. The internal
   // `words` variable (simple whitespace split) is still used for scoring and
   // calibration to preserve the trained calibrator's feature expectations.
+  // When includeStats is false, stats is null so we fall back to `words`;
+  // in that case result.wordCount and the summary will use the whitespace-split count.
   const reportWordCount = stats ? stats.wordCount : words;
 
   return {
@@ -320,8 +322,9 @@ function calculateCompositeScore(
 
 /**
  * Build human-readable summary.
+ * @param {number} displayWords — Word count to show in output (stats-based when available)
  */
-function buildSummary(finalScore, totalMatches, findings, words, stats, reliability = null) {
+function buildSummary(finalScore, totalMatches, findings, displayWords, stats, reliability = null) {
   if (totalMatches === 0 && finalScore < 10) {
     let summary = 'No significant AI writing patterns detected. The text looks human-written.';
     if (reliability && reliability.level !== 'high') {
@@ -348,9 +351,9 @@ function buildSummary(finalScore, totalMatches, findings, words, stats, reliabil
   if (totalMatches === 0) {
     // Score is driven entirely by statistical uniformity — no lexical pattern hits.
     // Saying "Found 0 matches across 0 pattern types" would be misleading here.
-    summary = `Score: ${finalScore}/100 (${level}). No pattern matches detected, but the text shows statistically uniform structure typical of AI prose. Analysis based on ${words} words.`;
+    summary = `Score: ${finalScore}/100 (${level}). No pattern matches detected, but the text shows statistically uniform structure typical of AI prose. Analysis based on ${displayWords} words.`;
   } else {
-    summary = `Score: ${finalScore}/100 (${level}). Found ${Math.round(totalMatches)} matches across ${findings.length} pattern types in ${words} words.`;
+    summary = `Score: ${finalScore}/100 (${level}). Found ${Math.round(totalMatches)} matches across ${findings.length} pattern types in ${displayWords} words.`;
   }
 
   if (topPatterns.length > 0) {
@@ -361,7 +364,7 @@ function buildSummary(finalScore, totalMatches, findings, words, stats, reliabil
     if (stats.burstiness < 0.25) {
       summary += ' Sentence rhythm is very uniform (low burstiness) — typical of AI text.';
     }
-    if (stats.typeTokenRatio < 0.4 && words > 100) {
+    if (stats.typeTokenRatio < 0.4 && displayWords > 100) {
       summary += ' Vocabulary diversity is low.';
     }
   }
