@@ -16,11 +16,16 @@ const EN_FIX = path.join(REPO_ROOT, 'tests/fixtures/en-corpus');
 const require = createRequire(import.meta.url);
 const { tokenize } = require(path.join(REPO_ROOT, 'src/stats.js'));
 const { functionWords } = require(path.join(REPO_ROOT, 'src/locales/en/index.js'));
-const {
-  buildStopSet,
-  shouldStoreEnFrequencyKey,
-} = require(path.join(REPO_ROOT, 'src/locales/en-empirical-filter.js'));
+const { buildStopSet, shouldStoreEnFrequencyKey } = require(
+  path.join(REPO_ROOT, 'src/locales/en-empirical-filter.js'),
+);
 const enStopSet = buildStopSet(functionWords);
+
+function shouldStoreFallback(key, n, z, stopSet) {
+  if (!Number.isFinite(z) || z < 2) return false;
+  if (n === 1 && stopSet.has(key)) return false;
+  return true;
+}
 
 function readDirTxt(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -118,7 +123,9 @@ function main() {
         zscore: Math.round(row.z * 1000) / 1000,
         weight: Math.round(weight * 1000) / 1000,
       };
-      const store = shouldStoreEnFrequencyKey(row.w, n, row.z, enStopSet);
+      const store =
+        shouldStoreEnFrequencyKey(row.w, n, row.z, enStopSet) ||
+        shouldStoreFallback(row.w, n, row.z, enStopSet);
       if (store) {
         const prev = outJson[row.w];
         if (!prev || prev.zscore < entry.zscore) {

@@ -1,26 +1,26 @@
 # English empirical + prescriptive extension (Maeve fork)
 
-Fork baseline: [brandonwise/humanizer](https://github.com/brandonwise/humanizer). The default **`en`** locale now mirrors the Swedish pipeline: prescriptive TSV codegen, human frequency ranks, log-odds empirical n-grams (Pattern 7 extras), calibration reports, and optional **n-gram LM** uniformity (`--with-lm`).
+Fork baseline: [brandonwise/humanizer](https://github.com/brandonwise/humanizer). This split PR adds English assets/tooling under `locales/en-en/`; runtime wiring stays conservative on `main` unless explicitly enabled in separate runtime changes.
 
 ## Coverage model
 
-| Layer | Mechanism | Source |
-|-------|-----------|--------|
-| Mechanical replace | `autofixes` | TSV → `src/locales/generated/en-prescriptive.js` |
-| Phrase / regex flags | `phrases` | Hand scaffolds + prescriptive TSV merge in `en/vocabulary.js` |
-| Weighted tiers | `tier1`–`tier3` | `en/vocabulary.js` + empirical weights from `en-frequencies.json` |
-| Empirical n-grams | `empiricalExtra` (Pattern 7) | `locales/en-en/references/en-frequencies.json` (log-odds, filtered) |
-| Style packs | `patternPacks` | `en/pattern-packs.js` (incl. patterns 30–35) |
-| LM uniformity | `--with-lm` | `locales/en-en/references/en-ngram-lm.json` (unigram cache) |
+| Layer                | Mechanism                                       | Source                                                            |
+| -------------------- | ----------------------------------------------- | ----------------------------------------------------------------- |
+| Mechanical replace   | `autofixes`                                     | TSV → `src/locales/generated/en-prescriptive.js`                  |
+| Phrase / regex flags | `phrases`                                       | Hand scaffolds + prescriptive TSV merge in `en/vocabulary.js`     |
+| Weighted tiers       | `tier1`–`tier3`                                 | `en/vocabulary.js` + empirical weights from `en-frequencies.json` |
+| Empirical n-grams    | Tooling artifact (not runtime-wired by default) | `locales/en-en/references/en-frequencies.json` (log-odds output)  |
+| Style packs          | `patternPacks`                                  | `en/pattern-packs.js` (incl. patterns 30–35)                      |
+| LM uniformity        | Optional artifact for future/runtime tuning     | `locales/en-en/references/en-ngram-lm.json` (unigram cache)       |
 
 ## Layout
 
-| Path | Role |
-|------|------|
-| `locales/en-en/references/` | TSV sources, `en-human-frequency-ranks.json`, `en-frequencies.json`, `empirical-en-tiers.md`, `PIPELINE-SNAPSHOT.md`, `LICENSES.md` |
-| `locales/en-en/scripts/` | `build-en-locale-prescriptive.mjs`, `log-odds-en.mjs`, `calibration-report-en.mjs`, `en-pipeline.mjs`, … |
-| `locales/en-en/tests/` | Calibration + regression + prescriptive `--check` |
-| `tests/fixtures/en-corpus/` | Seeded human/ai docs, prompts, genres, `human-gold/` |
+| Path                                   | Role                                                                                                                                |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `locales/en-en/references/`            | TSV sources, `en-human-frequency-ranks.json`, `en-frequencies.json`, `empirical-en-tiers.md`, `PIPELINE-SNAPSHOT.md`, `LICENSES.md` |
+| `locales/en-en/scripts/`               | `build-en-locale-prescriptive.mjs`, `log-odds-en.mjs`, `calibration-report-en.mjs`, `en-pipeline.mjs`, …                            |
+| `tests/` + `tests/fixtures/en-corpus/` | Existing project tests and EN corpus fixtures                                                                                       |
+| `tests/fixtures/en-corpus/`            | Seeded human/ai docs, prompts, genres, `human-gold/`                                                                                |
 
 ## CLI / API
 
@@ -65,11 +65,11 @@ The default **0–100 score** is a hand-tuned heuristic (`rawScore` in `analyze(
 
 Training scripts use `analyze(..., { skipCalibration: true })` so labels are not leaked from an old calibrator.
 
-## Regression gates
+## Regression gates (current)
 
-- `locales/en-en/tests/calibration.en.test.js` — fixture thresholds.
-- `locales/en-en/tests/calibration.en.regression.test.js` — `reports/calibration-en-latest.json` (AUC ≥ 0.95, macro-F1 ≥ 0.80, marketing human ceiling ≤ 40, per-pattern precision ≥ 0.85 when ≥ 5 hits).
-- `locales/en-en/tests/en-prescriptive-uptodate.test.js` — TSV / `en-prescriptive.js` in sync.
+- `npm run locale:prescriptive-en -- --check` — EN TSV/codegen consistency.
+- `npm run validate:en-tiers` — Tier-1 frequency guard.
+- `npm test` — repo-wide test suite.
 
 ## Pattern catalogue
 

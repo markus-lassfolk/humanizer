@@ -20,7 +20,14 @@ function flattenTier(arr) {
 }
 
 function main() {
-  const maxRank = parseInt(process.env.EN_TIER_FREQ_MAX_RANK || '8000', 10);
+  const maxRankRaw = process.env.EN_TIER_FREQ_MAX_RANK;
+  const maxRank = maxRankRaw === undefined ? 8000 : parseInt(maxRankRaw, 10);
+  if (!Number.isFinite(maxRank) || Number.isNaN(maxRank) || maxRank <= 0) {
+    console.error(
+      `EN_TIER_FREQ_MAX_RANK must be a positive integer; got ${JSON.stringify(maxRankRaw)}.`,
+    );
+    process.exit(1);
+  }
   const ranksPath = path.join(EN_REF, 'en-human-frequency-ranks.json');
   if (!fs.existsSync(ranksPath)) {
     console.error(`Missing ${path.relative(REPO_ROOT, ranksPath)} — run: npm run freq:baseline-en`);
@@ -32,9 +39,7 @@ function main() {
   const overrides = fs.existsSync(overridesPath)
     ? JSON.parse(fs.readFileSync(overridesPath, 'utf8'))
     : {};
-  const ignore = new Set(
-    (overrides.ignoreFrequencyRank || []).map((w) => String(w).toLowerCase()),
-  );
+  const ignore = new Set((overrides.ignoreFrequencyRank || []).map((w) => String(w).toLowerCase()));
 
   const tier1 = flattenTier(en.tier1);
   const unigrams = tier1.filter((w) => !/\s/.test(String(w).trim()));

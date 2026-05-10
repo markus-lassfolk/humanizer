@@ -39,12 +39,23 @@ function main() {
       nTok++;
     }
   }
+  if (nTok === 0) {
+    console.error(
+      'No EN corpus tokens found. Generate baseline/corpus first (materialize-baseline-corpus-en + corpus seeds).',
+    );
+    process.exit(1);
+  }
   const nu = Object.keys(uni).length;
+  const denom = nTok + alpha * nu;
+  if (!Number.isFinite(denom) || denom <= 0) {
+    console.error(`Invalid EN LM denominator (nTok=${nTok}, nu=${nu}, alpha=${alpha}).`);
+    process.exit(1);
+  }
   const unigramP = {};
   for (const [t, c] of Object.entries(uni)) {
-    unigramP[t] = (c + alpha) / (nTok + alpha * nu);
+    unigramP[t] = (c + alpha) / denom;
   }
-  const defaultUni = alpha / (nTok + alpha * nu);
+  const defaultUni = alpha / denom;
 
   const out = {
     _meta: { generatedAt: new Date().toISOString(), tokens: nTok, unigramTypes: nu },
@@ -52,7 +63,7 @@ function main() {
     unigrams: unigramP,
   };
   const outPath = path.join(EN_REF, 'en-ngram-lm.json');
-  fs.writeFileSync(outPath, JSON.stringify(out), 'utf8');
+  fs.writeFileSync(outPath, JSON.stringify(out, null, 2) + '\n', 'utf8');
   console.log(`Wrote ${path.relative(REPO_ROOT, outPath)}`);
 }
 

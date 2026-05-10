@@ -29,6 +29,16 @@ const SCRIPTS = {
   calibrate: path.join(EN_SE, 'scripts', 'calibration-report-en.mjs'),
 };
 
+const BOOTSTRAP_OUTPUTS = [
+  'plain-english.tsv',
+  'weasel-words.tsv',
+  'cliches.tsv',
+  'redundancy.tsv',
+  'hedging.tsv',
+  'corporate-jargon.tsv',
+  'inclusive-language.tsv',
+];
+
 function parseArgs(argv) {
   return {
     resume: argv.includes('--resume'),
@@ -81,6 +91,10 @@ function phaseDone(state, id) {
   saveState(state);
 }
 
+function needsBootstrap() {
+  return BOOTSTRAP_OUTPUTS.some((name) => !fs.existsSync(path.join(EN_SE, 'references', name)));
+}
+
 function writeSnapshot(metrics) {
   const body = `<!-- en-pipeline:snapshot:start -->
 > **Auto-generated** by \`locales/en-en/scripts/en-pipeline.mjs\`. Do not edit between markers.
@@ -127,6 +141,7 @@ async function main() {
   }
 
   const state = loadState();
+  const bootstrapNeeded = needsBootstrap();
   const phases = [
     ['bootstrap', () => runNode(SCRIPTS.bootstrap)],
     ['prescriptive', () => runNode(SCRIPTS.prescriptive)],
@@ -150,13 +165,20 @@ async function main() {
       logLine(`skip ${id} (resume)`);
       continue;
     }
+    if (id === 'bootstrap' && !opts.force && !bootstrapNeeded) {
+      logLine('skip bootstrap (TSV sources already exist)');
+      phaseDone(state, id);
+      continue;
+    }
     logLine(`phase ${id}...`);
     fn();
     phaseDone(state, id);
   }
 
   const gen = path.join(REPO_ROOT, 'src/locales/generated/en-prescriptive.js');
-  const genUrl = path.isAbsolute(gen) ? pathToFileURL(gen).href : pathToFileURL(path.resolve(gen)).href;
+  const genUrl = path.isAbsolute(gen)
+    ? pathToFileURL(gen).href
+    : pathToFileURL(path.resolve(gen)).href;
   const mod = await import(genUrl);
   const autofixes = mod.AUTOFIXES_EN_PRESCRIPTIVE?.length ?? 0;
   const phrases = mod.AI_PHRASES_EN_PRESCRIPTIVE?.length ?? 0;
@@ -167,8 +189,12 @@ async function main() {
   const freqData = JSON.parse(
     fs.readFileSync(path.join(EN_SE, 'references/en-human-frequency-ranks.json'), 'utf8'),
   );
-  const cal = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'reports/calibration-en-latest.json'), 'utf8'));
-  const ef = JSON.parse(fs.readFileSync(path.join(EN_SE, 'references/en-frequencies.json'), 'utf8'));
+  const cal = JSON.parse(
+    fs.readFileSync(path.join(REPO_ROOT, 'reports/calibration-en-latest.json'), 'utf8'),
+  );
+  const ef = JSON.parse(
+    fs.readFileSync(path.join(EN_SE, 'references/en-frequencies.json'), 'utf8'),
+  );
 
   writeSnapshot({
     generatedAt: new Date().toISOString(),

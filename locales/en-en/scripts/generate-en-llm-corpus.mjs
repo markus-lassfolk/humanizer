@@ -13,12 +13,11 @@ const outDir = path.join(REPO_ROOT, 'tests/fixtures/en-corpus/ai-llm');
 
 function main() {
   if (!process.env.OPENAI_API_KEY) {
-    console.error('Set OPENAI_API_KEY to use generate-en-llm-corpus.mjs');
-    process.exit(1);
+    console.log('OPENAI_API_KEY not set; skipping optional EN LLM corpus generation.');
+    return;
   }
   fs.mkdirSync(outDir, { recursive: true });
-  console.error('LLM corpus generation is not wired in this repo snapshot; add API calls as needed.');
-  process.exit(1);
+  console.log('EN LLM corpus generation is not implemented in this split PR; no files generated.');
 }
 
 main();

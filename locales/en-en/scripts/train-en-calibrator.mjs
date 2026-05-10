@@ -47,10 +47,22 @@ function main() {
   const lines = fs.readFileSync(DATA, 'utf8').trim().split('\n').filter(Boolean);
   const rows = lines.map((ln) => JSON.parse(ln));
   const n = rows.length;
+  if (n === 0) {
+    console.error(`Dataset has no rows: ${DATA}. Rebuild with: npm run en:ml:dataset`);
+    process.exit(1);
+  }
   const d = CALIBRATION_FEATURE_NAMES.length;
 
   const X = rows.map((r) => CALIBRATION_FEATURE_NAMES.map((k) => r.features[k] ?? 0));
   const y = rows.map((r) => r.y);
+  const hasHuman = y.includes(0);
+  const hasAi = y.includes(1);
+  if (!hasHuman || !hasAi) {
+    console.error(
+      `Dataset must include both classes (human=0, ai=1). Found human=${hasHuman}, ai=${hasAi}.`,
+    );
+    process.exit(1);
+  }
 
   const mean = new Array(d).fill(0);
   for (let j = 0; j < d; j++) {
@@ -121,8 +133,12 @@ function main() {
   };
 
   fs.writeFileSync(OUT, JSON.stringify(artifact, null, 2), 'utf8');
-  console.error(`Wrote ${OUT} (n=${n}, aucCalibrated≈${auc.toFixed(3)}, aucRaw≈${rawAuc.toFixed(3)})`);
-  console.error('Enable at runtime: HUMANIZER_ML_CALIBRATION=1 (validate on held-out human text first).');
+  console.error(
+    `Wrote ${OUT} (n=${n}, aucCalibrated≈${auc.toFixed(3)}, aucRaw≈${rawAuc.toFixed(3)})`,
+  );
+  console.error(
+    'Enable at runtime: HUMANIZER_ML_CALIBRATION=1 (validate on held-out human text first).',
+  );
 }
 
 main();
