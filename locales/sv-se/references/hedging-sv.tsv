@@ -1,0 +1,98 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind hedging_phrase → Pattern 23 (category hedging)
+kan möjligen potentiellt		hedging_phrase	2		Välj en kvalificering.		
+skulle kunna eventuellt		hedging_phrase	2		Säg vad som gäller eller sannolikhet.		
+det kan möjligen vara så att		hedging_phrase	2		Korta ner till fakta eller sannolikhet.		
+det skulle kunna tänkas att		hedging_phrase	2		Säg vad ni tror och varför.		
+det är möjligt att kanske		hedging_phrase	2		Välj: möjligt eller troligt.		
+det är tänkbart att möjligen		hedging_phrase	2		Välj en kvalificering.		
+möjligen skulle man kunna		hedging_phrase	2		Säg vem som gör vad.		
+eventuellt kan det hända att		hedging_phrase	2		Säg sannolikhet eller villkor.		
+i vissa fall kan det vara så att		hedging_phrase	2		Nämn fallen.		
+under vissa omständigheter kan det		hedging_phrase	2		Nämn omständigheterna.		
+det är inte omöjligt att		hedging_phrase	2		Säg sannolikhet tydligare.		
+det är inte otänkbart att		hedging_phrase	2		Säg sannolikhet tydligare.		
+det kan inte uteslutas att		hedging_phrase	2		Säg risk eller sannolikhet.		
+det kan inte förnekas att det kan		hedging_phrase	2		Förenkla argumentationen.		
+vi kan inte helt utesluta att		hedging_phrase	2		Ange sannolikhet eller scenario.		
+vi utesluter inte att		hedging_phrase	2		Ange sannolikhet eller scenario.		
+det finns en möjlighet att eventuellt		hedging_phrase	2		Lista möjligheter eller sannolikheter.		
+det finns skäl att anta att möjligen		hedging_phrase	2		Nämn skälen.		
+man skulle med viss sannolikhet kunna		hedging_phrase	2		Ange sannolikhet.		
+med viss reservation kan man säga		hedging_phrase	2		Nämn reservationen.		
+med förbehåll för att		hedging_phrase	2		Nämn förbehållet.		
+om än inte helt säkert		hedging_phrase	2		Säg vad ni vet.		
+någorlunda säkert		hedging_phrase	2		Precisera osäkerhet.		
+ungefär lika sannolikt		hedging_phrase	2		Ange sannolikhet.		
+troligen möjligen		hedging_phrase	2		Välj en grad.		
+förmodligen antagligen		hedging_phrase	2		Välj en grad.		
+antagligen troligen		hedging_phrase	2		Välj en grad.		
+kanske möjligen		hedging_phrase	2		Välj en grad.		
+kanske eventuellt		hedging_phrase	2		Välj en grad.		
+eventuellt möjligen		hedging_phrase	2		Välj en grad.		
+möjligen kanske		hedging_phrase	2		Välj en grad.		
+kan tänkas att möjligen		hedging_phrase	2		Förenkla.		
+skulle eventuellt kunna		hedging_phrase	2		Säg beslut eller villkor.		
+skulle potentiellt kunna		hedging_phrase	2		Säg beslut eller villkor.		
+skulle möjligen kunna		hedging_phrase	2		Säg beslut eller villkor.		
+kan potentiellt tänkas		hedging_phrase	2		Förenkla.		
+kan i vissa fall eventuellt		hedging_phrase	2		Nämn fallen.		
+i många fall möjligen		hedging_phrase	2		Nämn fallen.		
+i en del fall kan det		hedging_phrase	2		Nämn fallen.		
+det är svårt att med säkerhet säga		hedging_phrase	2		Beskriv osäkerhet och data som saknas.		
+det är för tidigt att säga om		hedging_phrase	2		Säg vad som krävs för att veta.		
+det återstår att se om		hedging_phrase	2		Nämn villkor för utfall.		
+får anses vara		hedging_phrase	2		Säg vad som gäller eller under vilken lag.		
+kan antas vara		hedging_phrase	2		Nämn antagande och källa.		
+förmodas vara		hedging_phrase	2		Nämn antagande och källa.		
+presumeras vara		hedging_phrase	2		Nämn antagande och källa.		
+till synes		hedging_phrase	2		Säg vad observationen grundas på.		
+så vitt känt		hedging_phrase	2		Nämn källa.		
+så vitt vi vet		hedging_phrase	2		Bra om följt av begränsning.		
+i den mån det är möjligt		hedging_phrase	2		Säg vad som hindrar.		
+i den utsträckning det är möjligt		hedging_phrase	2		Säg vad som hindrar.		
+i möjligaste mån		hedging_phrase	2		Säg konkret vad som görs.		
+så långt möjligt		hedging_phrase	2		Säg konkret vad som görs.		
+i den mån det går		hedging_phrase	2		Säg begränsning.		
+i den utsträckning det går		hedging_phrase	2		Säg begränsning.		
+med begränsad säkerhet		hedging_phrase	2		Kvantifiera osäkerhet.		
+med viss osäkerhet		hedging_phrase	2		Beskriv osäkerheten.		
+med stor osäkerhet		hedging_phrase	2		Beskriv osäkerheten.		
+under förutsättning att möjligen		hedging_phrase	2		Lista förutsättningar.		
+om förutsättningarna infrias kan det		hedging_phrase	2		Beskriv scenario.		
+beroende på hur det utvecklas		hedging_phrase	2		Nämn indikatorer.		
+beroende på omständigheterna		hedging_phrase	2		Nämn omständigheter.		
+i ett sådant scenario skulle det kunna		hedging_phrase	2		Beskriv scenario tydligare.		
+i ett worst case-scenario		hedging_phrase	2		Kvantifiera risk.		
+i ett bästa fall		hedging_phrase	2		Kvantifiera nytta.		
+i ett troligt fall		hedging_phrase	2		Kvantifiera sannolikhet.		
+i ett osannolikt fall		hedging_phrase	2		Kvantifiera sannolikhet.		
+det är inte givet att		hedging_phrase	2		Säg vad som är oklart.		
+det är långt ifrån säkert att		hedging_phrase	2		Beskriv osäkerhet.		
+det är inte helt klart om		hedging_phrase	2		Säg vad som saknas.		
+det är oklart huruvida		hedging_phrase	2		Säg vad som saknas.		
+det råder oklarhet om huruvida		hedging_phrase	2		Säg vad som saknas.		
+det finns en risk att möjligen		hedging_phrase	2		Beskriv risk och sannolikhet.		
+det kan finnas en möjlig risk att		hedging_phrase	2		Beskriv risk.		
+risken är inte helt försumbar att		hedging_phrase	2		Kvantifiera risk.		
+vi utesluter inte risken att		hedging_phrase	2		Beskriv risk.		
+vi kan inte garantera att		hedging_phrase	2		Säj vad som garanteras.		
+vi kan inte lova att		hedging_phrase	2		Säj vad som lovas.		
+det är ingen garanti för att		hedging_phrase	2		Säj villkor.		
+utan garanti för att		hedging_phrase	2		Säj villkor.		
+med reservation för att		hedging_phrase	2		Nämn reservation.		
+med förbehåll om att		hedging_phrase	2		Nämn förbehåll.		
+om inte annat anges kan det antas		hedging_phrase	2		Gör antagandet explicit.		
+i avsaknad av annan information		hedging_phrase	2		Säg vilken info som saknas.		
+så länge inget annat framkommer		hedging_phrase	2		Säg vilken info som saknas.		
+i nuläget bedöms det som		hedging_phrase	2		Säg underlag för bedömning.		
+för närvarande verkar det som att		hedging_phrase	2		Säg observation och osäkerhet.		
+just nu ser det ut som att		hedging_phrase	2		Säg observation och osäkerhet.		
+preliminärt kan man säga att		hedging_phrase	2		Säg vad som återstår för att fastställa.		
+preliminärt sett		hedging_phrase	2		Säg vad som återstår.		
+tillfälligt sett		hedging_phrase	2		Säg tidsplan.		
+tills vidare kan antas		hedging_phrase	2		Säg när besked kommer.		
+under överskådlig tid		hedging_phrase	2		Säg tidshorisont.		
+på sikt kan det		hedging_phrase	2		Säg tidshorisont.		
+på kort sikt kan det		hedging_phrase	2		Säg tidshorisont.		
+på lång sikt kan det		hedging_phrase	2		Säg tidshorisont.		

@@ -1,0 +1,7 @@
+---
+genre: marketing
+id: 217
+target_words: 150
+---
+
+Skriv en saklig men värmande text (20) för en kommunal evenemangssida eller välgörenhetsinsamling: datum, plats, praktisk info. Undvik genrens mest slitna superlativ. Ca 100–160 ord.

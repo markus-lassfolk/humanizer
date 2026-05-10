@@ -1,0 +1,7 @@
+---
+genre: email
+id: 208
+target_words: 150
+---
+
+Skriv ett kort affärsmejl (19) på svenska: tydlig begäran eller svar, utan onödig artighetsfyllnad. Ca 80–120 ord.

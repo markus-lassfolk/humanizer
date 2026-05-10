@@ -1,0 +1,165 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind cliche_phrase → Pattern 33
+vädra stormen		cliche_phrase			Säg vad som faktiskt gjordes.		
+lågt hängande frukt		cliche_phrase			Namnge konkret åtgärd.		
+lyfta på alla stenar		cliche_phrase			Beskriv vad ni kontrollerat.		
+tänka utanför boxen		cliche_phrase			Beskriv idén, inte metaforen.		
+sätta agendan		cliche_phrase			Säg vad som beslutats.		
+banar väg för		cliche_phrase			Säg vad som möjliggörs.		
+paradigmskifte		cliche_phrase			Beskriv förändringen konkret.		
+höja ribban		cliche_phrase			Säg vilket krav som gäller.		
+ta det till nästa nivå		cliche_phrase			Beskriv nästa steg.		
+ta ett helhetsgrepp		cliche_phrase			Vilka delar ingår?		
+ta ett samlat grepp		cliche_phrase			Vilka delar ingår?		
+sömlös integration		cliche_phrase			Beskriv hur system möts.		
+banbrytande		cliche_phrase			Specificera nyheten.		
+transformativ		cliche_phrase			Specificera vad som förändras.		
+holistiskt perspektiv		cliche_phrase			Lista aspekter.		
+värdeskapande		cliche_phrase			För vem, hur mätt?		
+mångfacetterad		cliche_phrase			Vilka aspekter?		
+digitala landskapet		cliche_phrase			Beskriv kontext utan metafor.		
+snabbt föränderliga		cliche_phrase			Vad förändras, och hur snabbt?		
+en win-win-situation		cliche_phrase			Beskriv ömsesidig nytta konkret.		
+synergier		cliche_phrase			Beskriv effekten i siffror eller fakta.		
+best practices		cliche_phrase			Namnge metod eller källa.		
+key takeaways		cliche_phrase			Lista slutsatserna.		
+low-hanging fruit		cliche_phrase			Svenska: säg konkret åtgärd.		
+deep dive		cliche_phrase			Säg "fördjupning" eller beskriv innehåll.		
+touchpoints		cliche_phrase			Säg kontaktpunkter.		
+leverage		cliche_phrase			Säg nyttja / dra nytta av.		
+disruptiv		cliche_phrase			Beskriv förändringen.		
+i framkant		cliche_phrase			Jämför med vad, enligt vem?		
+state of the art		cliche_phrase			Namnge tekniknivå eller standard.		
+världsledande		cliche_phrase			Enligt vilken mätning?		
+i världsklass		cliche_phrase			Enligt vilken mätning?		
+next level		cliche_phrase			Beskriv nivån.		
+game changer		cliche_phrase			Beskriv effekten.		
+no-brainer		cliche_phrase			Argumentera varför valet är enkelt.		
+tänka stort		cliche_phrase			Beskriv ambition i fakta.		
+skala upp		cliche_phrase			Beskriv volym, tid, resurs.		
+skalbar lösning		cliche_phrase			Beskriv hur skalning fungerar.		
+agil organisation		cliche_phrase			Beskriv arbetssätt.		
+kundresan		cliche_phrase			Beskriv steg och mål.		
+kundcentrerad		cliche_phrase			Ge exempel på hur.		
+datadriven		cliche_phrase			Vilken data, vilket beslut?		
+AI-driven		cliche_phrase			Vad gör modellen, mänsklig kontroll?		
+framtidssäkra		cliche_phrase			Beskriv risker och åtgärder.		
+bygga in hållbarhet		cliche_phrase			Konkreta mål och mätetal.		
+grön omställning		cliche_phrase			Vad, när, hur finansierat?		
+tänka hållbart		cliche_phrase			Mätetal och beslut.		
+innovationskraft		cliche_phrase			Vilka innovationer, med vilket utfall?		
+innovationshub		cliche_phrase			Beskriv funktion och målgrupp.		
+ekosystem av partners		cliche_phrase			Namnge aktörer och roller.		
+öppna dörrar		cliche_phrase			Säg vad som möjliggjorts.		
+öppna upp för		cliche_phrase			Säg vad som möjliggjorts.		
+tänka nytt		cliche_phrase			Beskriv idén.		
+tänka om		cliche_phrase			Beskriv förändringen.		
+tänka långsiktigt		cliche_phrase			Horisonter och beslut.		
+långsiktigt hållbar		cliche_phrase			Tidsplan och mätetal.		
+kortsiktiga vinster		cliche_phrase			Balansera med siffror.		
+snabba vinster		cliche_phrase			Lista vad som levererats.		
+quick wins		cliche_phrase			Lista vad som levererats.		
+långsiktig vision		cliche_phrase			Konkret målbild.		
+visionär ledning		cliche_phrase			Beskriv beslut och riktning.		
+strategisk överenskommelse		cliche_phrase			Vad ingår, vem ansvarar?		
+strategisk allians		cliche_phrase			Villkor och mål.		
+gemensam nämnare		cliche_phrase			Ofta tom — säg vad som förenar.		
+samma sida		cliche_phrase			Beskriv överenskommelse.		
+dra åt samma håll		cliche_phrase			Beskriv konkret samarbete.		
+sjunger från samma sångblad		cliche_phrase			Beskriv överensstämmelse i fakta.		
+i harmoni med		cliche_phrase			Beskriv relationen.		
+i linje med		cliche_phrase			Namnge policy eller beslut.		
+i enlighet med vår strategi		cliche_phrase			Citera strategin.		
+följa strömmen		cliche_phrase			Beskriv trend eller avvikelse.		
+rida på vågen		cliche_phrase			Beskriv timing och skäl.		
+surfa på trenden		cliche_phrase			Beskriv trend med data.		
+rätt läge		cliche_phrase			Timing och skäl.		
+rätt person på rätt plats		cliche_phrase			Beskriv rekrytering.		
+rätt kompetens på rätt plats		cliche_phrase			Beskriv behov och tillsättning.		
+rätt verktyg för jobbet		cliche_phrase			Namnge verktyg och kriterier.		
+en resa		cliche_phrase			Beskriv faser och mål.		
+en förändringsresa		cliche_phrase			Beskriv faser och mål.		
+förändringsledning		cliche_phrase			Konkreta aktiviteter och mål.		
+kultur som driver		cliche_phrase			Beteenden och beslut.		
+företagskultur		cliche_phrase			Beskriv beteenden, inte etikett.		
+värderingsdriven		cliche_phrase			Vilka värderingar, hur i praktiken?		
+meningsfull		cliche_phrase			För vem, enligt vad?		
+meningsfullt arbete		cliche_phrase			Beskriv innehåll och villkor.		
+engagerande		cliche_phrase			Hur mäts engagemang?		
+inspirerande		cliche_phrase			Vad i innehållet inspirerar?		
+motiverande		cliche_phrase			Vilka incitament eller budskap?		
+kraftfull		cliche_phrase			Mät effekt.		
+kraftfullt budskap		cliche_phrase			Säg vad budskapet gör.		
+tydligt budskap		cliche_phrase			Säg själva budskapet.		
+tydlig riktning		cliche_phrase			Beskriv riktning.		
+tydlig vision		cliche_phrase			Konkret målbild.		
+gemensam vision		cliche_phrase			Konkret målbild.		
+gemensamma värderingar		cliche_phrase			Lista beteenden.		
+gemensamt mål		cliche_phrase			Mätetal och deadline.		
+gemensam nämnare		cliche_phrase			Säg vad som förenar.		
+en enad front		cliche_phrase			Beskriv positioner.		
+enad organisation		cliche_phrase			Beskriv styrning och roller.		
+stämma väl överens		cliche_phrase			Beskriv överensstämmelse.		
+gå hand i hand		cliche_phrase			Beskriv samband.		
+två sidor av samma mynt		cliche_phrase			Beskriv avvägning.		
+balans mellan		cliche_phrase			Säg vilka avvägningar och val.		
+hitta balansen		cliche_phrase			Säg vilka avvägningar och val.		
+navigera i komplexitet		cliche_phrase			Beskriv beslut och osäkerhet.		
+hantera komplexitet		cliche_phrase			Beskriv metod.		
+reducera komplexitet		cliche_phrase			Beskriv förenkling.		
+förenkla resonemanget		cliche_phrase			Korta ner till fakta.		
+förenklad bild		cliche_phrase			Ange antaganden.		
+stor bild		cliche_phrase			Säg vad som ingår i bilden.		
+helicopter view		cliche_phrase			Lista nivåer och beslut.		
+duvhöjd		cliche_phrase			Lista nivåer och beslut.		
+överblick		cliche_phrase			Ofta tom — ge innehåll.		
+öka medvetenheten		cliche_phrase			Vem, om vad, hur?		
+öka förståelsen		cliche_phrase			Vad ska förstås?		
+skapa förståelse		cliche_phrase			Vad ska förstås?		
+skapa engagemang		cliche_phrase			Hur mäts det?		
+öka engagemanget		cliche_phrase			Hur mäts det?		
+stärka varumärket		cliche_phrase			Konkreta aktiviteter och KPI.		
+positionera oss		cliche_phrase			Mot vad, för vem?		
+positionering		cliche_phrase			Beskriv målgrupp och löfte.		
+differentiera oss		cliche_phrase			Namnge unika egenskaper.		
+unik position		cliche_phrase			Bevisa med jämförelse.		
+unikt erbjudande		cliche_phrase			Bevisa med jämförelse.		
+unik möjlighet		cliche_phrase			Tidsfönster och villkor.		
+unikt tillfälle		cliche_phrase			Tidsfönster och villkor.		
+historiskt tillfälle		cliche_phrase			Varför nu?		
+vändpunkt		cliche_phrase			Vad vänder, enligt vad?		
+milstolpe		cliche_phrase			Namnge leverans och datum.		
+miljö som präglas av		cliche_phrase			Beskriv faktorer.		
+landskap som förändras		cliche_phrase			Beskriv förändring.		
+i ett skifte		cliche_phrase			Vad skiftar?		
+i ett teknikskifte		cliche_phrase			Vilken teknik, vilka effekter?		
+i en tid av förändring		cliche_phrase			Vad förändras?		
+oroliga tider		cliche_phrase			Specificera risker.		
+osäkra tider		cliche_phrase			Specificera risker.		
+utmanande tider		cliche_phrase			Specificera utmaning.		
+spännande tider		cliche_phrase			Ofta tomt — säg vad som händer.		
+möjligheternas marknad		cliche_phrase			Vilka möjligheter, för vem?		
+möjligheternas tid		cliche_phrase			Vilka möjligheter, för vem?		
+tiden är inne		cliche_phrase			Varför nu?		
+tiden är mogen		cliche_phrase			Varför nu?		
+det är nu det gäller		cliche_phrase			Varför nu?		
+nu eller aldrig		cliche_phrase			Riskanalys i stället för panik.		
+det handlar om att		cliche_phrase			Säg vad det handlar om.		
+i grund och botten		cliche_phrase			Säg kärnan.		
+när allt kommer omkring		cliche_phrase			Säg kärnan.		
+i slutändan		cliche_phrase			Säg slutsatsen.		
+sammanfattningsvis kan man säga		cliche_phrase			Säg slutsatsen utan ram.		
+det finns ingen väg tillbaka		cliche_phrase			Argumentera i stället för dramatik.		
+det är nu eller aldrig		cliche_phrase			Riskanalys.		
+det är dags att agera		cliche_phrase			Vad ska göras, av vem?		
+det är hög tid att		cliche_phrase			Vad ska göras, av vem?		
+vi står inför		cliche_phrase			Beskriv utmaning konkret.		
+vi står handfallna		cliche_phrase			Beskriv problem och åtgärd.		
+vi har en utmaning		cliche_phrase			Beskriv mål och hinder.		
+en gemensam utmaning		cliche_phrase			Beskriv mål och hinder.		
+en komplex utmaning		cliche_phrase			Bryt ner i delar.		
+en mångfacetterad utmaning		cliche_phrase			Bryt ner i delar.		
+en komplex frågeställning		cliche_phrase			Bryt ner i delar.		
+en komplex verklighet		cliche_phrase			Bryt ner i delar.		
+en komplex omvärld		cliche_phrase			Bryt ner i delar.		
+en alltmer komplex		cliche_phrase			Bryt ner i delar.		

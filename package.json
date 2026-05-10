@@ -26,6 +26,8 @@
     "corpus:llm": "node locales/sv-se/scripts/generate-sv-llm-corpus.mjs",
     "corpus:refresh": "node locales/sv-se/scripts/seed-sv-corpus.mjs && node locales/sv-se/scripts/log-odds.mjs && node locales/sv-se/scripts/calibration-report.mjs",
     "sv:pipeline": "node locales/sv-se/scripts/sv-pipeline.mjs",
+    "sv:pipeline:lm": "node locales/sv-se/scripts/sv-pipeline.mjs --with-lm",
+    "lm:build-sv": "node locales/sv-se/scripts/build-sv-ngram-lm.mjs",
     "prompts:seed": "node locales/sv-se/scripts/seed-sv-prompts.mjs",
     "build": "echo 'No build step needed — pure Node.js'"
   },
