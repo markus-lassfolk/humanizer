@@ -1,0 +1,697 @@
+# avoid	prefer	kind	tier	fix_hint	pattern	notes
+# kind: autofix | phrase_flag | tier1_phrase | template | skip
+
+plays a critical role		phrase_flag	2	say how it matters		bulk
+plays a critical factor		phrase_flag	2	say how it matters		bulk
+plays a critical element		phrase_flag	2	say how it matters		bulk
+plays a critical component		phrase_flag	2	say how it matters		bulk
+plays a critical aspect		phrase_flag	2	say how it matters		bulk
+plays a critical function		phrase_flag	2	say how it matters		bulk
+plays a critical contribution		phrase_flag	2	say how it matters		bulk
+plays a important role		phrase_flag	2	say how it matters		bulk
+plays a important factor		phrase_flag	2	say how it matters		bulk
+plays a important element		phrase_flag	2	say how it matters		bulk
+plays a important component		phrase_flag	2	say how it matters		bulk
+plays a important aspect		phrase_flag	2	say how it matters		bulk
+plays a important function		phrase_flag	2	say how it matters		bulk
+plays a important contribution		phrase_flag	2	say how it matters		bulk
+plays a essential role		phrase_flag	2	say how it matters		bulk
+plays a essential factor		phrase_flag	2	say how it matters		bulk
+plays a essential element		phrase_flag	2	say how it matters		bulk
+plays a essential component		phrase_flag	2	say how it matters		bulk
+plays a essential aspect		phrase_flag	2	say how it matters		bulk
+plays a essential function		phrase_flag	2	say how it matters		bulk
+plays a essential contribution		phrase_flag	2	say how it matters		bulk
+plays a vital role		phrase_flag	2	say how it matters		bulk
+plays a vital factor		phrase_flag	2	say how it matters		bulk
+plays a vital element		phrase_flag	2	say how it matters		bulk
+plays a vital component		phrase_flag	2	say how it matters		bulk
+plays a vital aspect		phrase_flag	2	say how it matters		bulk
+plays a vital function		phrase_flag	2	say how it matters		bulk
+plays a vital contribution		phrase_flag	2	say how it matters		bulk
+plays a significant role		phrase_flag	2	say how it matters		bulk
+plays a significant factor		phrase_flag	2	say how it matters		bulk
+plays a significant element		phrase_flag	2	say how it matters		bulk
+plays a significant component		phrase_flag	2	say how it matters		bulk
+plays a significant aspect		phrase_flag	2	say how it matters		bulk
+plays a significant function		phrase_flag	2	say how it matters		bulk
+plays a significant contribution		phrase_flag	2	say how it matters		bulk
+plays a pivotal role		phrase_flag	2	say how it matters		bulk
+plays a pivotal factor		phrase_flag	2	say how it matters		bulk
+plays a pivotal element		phrase_flag	2	say how it matters		bulk
+plays a pivotal component		phrase_flag	2	say how it matters		bulk
+plays a pivotal aspect		phrase_flag	2	say how it matters		bulk
+plays a pivotal function		phrase_flag	2	say how it matters		bulk
+plays a pivotal contribution		phrase_flag	2	say how it matters		bulk
+plays a key role		phrase_flag	2	say how it matters		bulk
+plays a key factor		phrase_flag	2	say how it matters		bulk
+plays a key element		phrase_flag	2	say how it matters		bulk
+plays a key component		phrase_flag	2	say how it matters		bulk
+plays a key aspect		phrase_flag	2	say how it matters		bulk
+plays a key function		phrase_flag	2	say how it matters		bulk
+plays a key contribution		phrase_flag	2	say how it matters		bulk
+it is important to understand that		phrase_flag	2	cut throat-clearing		bulk
+it should be emphasized that		phrase_flag	2	cut throat-clearing		bulk
+it must be noted that		phrase_flag	2	cut throat-clearing		bulk
+it goes without saying that		phrase_flag	2	cut throat-clearing		bulk
+needless to say		phrase_flag	2	cut throat-clearing		bulk
+first and foremost		phrase_flag	2	cut throat-clearing		bulk
+last but not least		phrase_flag	2	cut throat-clearing		bulk
+in the final analysis		phrase_flag	2	cut throat-clearing		bulk
+when all is said and done		phrase_flag	2	cut throat-clearing		bulk
+at the end of the day		phrase_flag	2	cut throat-clearing		bulk
+moving forward		phrase_flag	2	cut throat-clearing		bulk
+going forward		phrase_flag	2	cut throat-clearing		bulk
+at this moment in time		phrase_flag	2	cut throat-clearing		bulk
+in the current climate		phrase_flag	2	cut throat-clearing		bulk
+in today's environment		phrase_flag	2	cut throat-clearing		bulk
+against this backdrop		phrase_flag	2	cut throat-clearing		bulk
+in this context		phrase_flag	2	cut throat-clearing		bulk
+from a holistic perspective		phrase_flag	2	cut throat-clearing		bulk
+from a high level		phrase_flag	2	cut throat-clearing		bulk
+at a high level		phrase_flag	2	cut throat-clearing		bulk
+broadly speaking		phrase_flag	2	cut throat-clearing		bulk
+generally speaking		phrase_flag	2	cut throat-clearing		bulk
+by and large		phrase_flag	2	cut throat-clearing		bulk
+for all intents and purposes		phrase_flag	2	cut throat-clearing		bulk
+in many respects		phrase_flag	2	cut throat-clearing		bulk
+in some respects		phrase_flag	2	cut throat-clearing		bulk
+to a certain extent		phrase_flag	2	cut throat-clearing		bulk
+to some degree		phrase_flag	2	cut throat-clearing		bulk
+in no uncertain terms		phrase_flag	2	cut throat-clearing		bulk
+without a doubt		phrase_flag	2	cut throat-clearing		bulk
+there is no question that		phrase_flag	2	cut throat-clearing		bulk
+it is clear that		phrase_flag	2	cut throat-clearing		bulk
+it is evident that		phrase_flag	2	cut throat-clearing		bulk
+it is apparent that		phrase_flag	2	cut throat-clearing		bulk
+it stands to reason that		phrase_flag	2	cut throat-clearing		bulk
+one might argue that		phrase_flag	2	cut throat-clearing		bulk
+it could be said that		phrase_flag	2	cut throat-clearing		bulk
+as previously mentioned		phrase_flag	2	cut throat-clearing		bulk
+as noted above		phrase_flag	2	cut throat-clearing		bulk
+as discussed earlier		phrase_flag	2	cut throat-clearing		bulk
+as we have seen		phrase_flag	2	cut throat-clearing		bulk
+in the aforementioned		phrase_flag	2	cut throat-clearing		bulk
+the aforementioned		phrase_flag	2	cut throat-clearing		bulk
+the above-mentioned		phrase_flag	2	cut throat-clearing		bulk
+said entity		phrase_flag	2	cut throat-clearing		bulk
+said individual		phrase_flag	2	cut throat-clearing		bulk
+said organization		phrase_flag	2	cut throat-clearing		bulk
+implementation	implement	autofix				bulk nominal
+utilization	use	autofix				bulk nominal
+facilitation	help	autofix				bulk nominal
+optimization	improve	autofix				bulk nominal
+modification	change	autofix				bulk nominal
+notification	tell	autofix				bulk nominal
+documentation	document	autofix				bulk nominal
+verification	check	autofix				bulk nominal
+authorization	allow	autofix				bulk nominal
+clarification	clarify	autofix				bulk nominal
+coordination	coordinate	autofix				bulk nominal
+investigation	study	autofix				bulk nominal
+consideration	consider	autofix				bulk nominal
+determination	decide	autofix				bulk nominal
+evaluation	assess	autofix				bulk nominal
+continuation	continue	autofix				bulk nominal
+termination	end	autofix				bulk nominal
+initiation	start	autofix				bulk nominal
+completion	finish	autofix				bulk nominal
+submission	submit	autofix				bulk nominal
+cancellation	cancel	autofix				bulk nominal
+registration	register	autofix				bulk nominal
+compilation	compile	autofix				bulk nominal
+aggregation	combine	autofix				bulk nominal
+integration	integrate	autofix				bulk nominal
+migration	move	autofix				bulk nominal
+configuration	set up	autofix				bulk nominal
+calibration	calibrate	autofix				bulk nominal
+orchestration	coordinate	autofix				bulk nominal
+operationalization	implement	autofix				bulk nominal
+materialization	happen	autofix				bulk nominal
+conceptualization	concept	autofix				bulk nominal
+contextualization	context	autofix				bulk nominal
+prioritization	prioritize	autofix				bulk nominal
+rationalization	explain	autofix				bulk nominal
+standardization	standardize	autofix				bulk nominal
+synchronization	sync	autofix				bulk nominal
+monetization	earn	autofix				bulk nominal
+productization	product	autofix				bulk nominal
+marketization	market	autofix				bulk nominal
+incentivization	motivate	autofix				bulk nominal
+systematization	organize	autofix				bulk nominal
+characterization	describe	autofix				bulk nominal
+summarization	summarize	autofix				bulk nominal
+visualization	show	autofix				bulk nominal
+generalization	generalize	autofix				bulk nominal
+specialization	specialize	autofix				bulk nominal
+stabilization	stabilize	autofix				bulk nominal
+normalization	normalize	autofix				bulk nominal
+minimization	reduce	autofix				bulk nominal
+maximization	increase	autofix				bulk nominal
+modernization	update	autofix				bulk nominal
+digitization	digitize	autofix				bulk nominal
+computerization	automate	autofix				bulk nominal
+industrialization	scale	autofix				bulk nominal
+commercialization	sell	autofix				bulk nominal
+institutionalization	establish	autofix				bulk nominal
+functionalization	add function	autofix				bulk nominal
+vectorization	vectorize	autofix				bulk nominal
+containerization	containerize	autofix				bulk nominal
+virtualization	virtualize	autofix				bulk nominal
+containerized	packaged	autofix				bulk nominal
+virtualized	virtual	autofix				bulk nominal
+externalize	move out	autofix				bulk nominal
+internalize	absorb	autofix				bulk nominal
+strategize	plan	autofix				bulk nominal
+strategizing	planning	autofix				bulk nominal
+ameliorate	improve	autofix				bulk nominal
+ameliorating	improving	autofix				bulk nominal
+expedite	speed up	autofix				bulk nominal
+expediting	speeding up	autofix				bulk nominal
+expedited	sped up	autofix				bulk nominal
+repurpose	reuse	autofix				bulk nominal
+repurposing	reusing	autofix				bulk nominal
+repurposed	reused	autofix				bulk nominal
+reprioritize	reorder	autofix				bulk nominal
+recontextualize	reframe	autofix				bulk nominal
+reimagine	rethink	autofix				bulk nominal
+reimagining	rethinking	autofix				bulk nominal
+reimagined	rethought	autofix				bulk nominal
+replatform	move	autofix				bulk nominal
+replatforming	moving	autofix				bulk nominal
+sunset	retire	autofix				bulk nominal
+sunsetting	retiring	autofix				bulk nominal
+sunsetted	retired	autofix				bulk nominal
+actionize	act	autofix				bulk nominal
+actionizing	acting	autofix				bulk nominal
+actionized	acted	autofix				bulk nominal
+synergize		phrase_flag	2	say what you mean plainly		bulk biz
+rightshoring		phrase_flag	2	say what you mean plainly		bulk biz
+downsizing		phrase_flag	2	say what you mean plainly		bulk biz
+rightsizing		phrase_flag	2	say what you mean plainly		bulk biz
+upsizing		phrase_flag	2	say what you mean plainly		bulk biz
+cross-pollinate		phrase_flag	2	say what you mean plainly		bulk biz
+cross-functional		phrase_flag	2	say what you mean plainly		bulk biz
+mission-critical		phrase_flag	2	say what you mean plainly		bulk biz
+customer-centric		phrase_flag	2	say what you mean plainly		bulk biz
+data-driven		phrase_flag	2	say what you mean plainly		bulk biz
+outcomes-based		phrase_flag	2	say what you mean plainly		bulk biz
+results-oriented		phrase_flag	2	say what you mean plainly		bulk biz
+forward-thinking		phrase_flag	2	say what you mean plainly		bulk biz
+best-in-class		phrase_flag	2	say what you mean plainly		bulk biz
+world-class		phrase_flag	2	say what you mean plainly		bulk biz
+enterprise-grade		phrase_flag	2	say what you mean plainly		bulk biz
+mission-aligned		phrase_flag	2	say what you mean plainly		bulk biz
+value-creating		phrase_flag	2	say what you mean plainly		bulk biz
+growth-oriented		phrase_flag	2	say what you mean plainly		bulk biz
+scalable architecture		phrase_flag	2	say what you mean plainly		bulk biz
+ecosystem play		phrase_flag	2	say what you mean plainly		bulk biz
+platform strategy		phrase_flag	2	say what you mean plainly		bulk biz
+flywheel effect		phrase_flag	2	say what you mean plainly		bulk biz
+network effects		phrase_flag	2	say what you mean plainly		bulk biz
+moat building		phrase_flag	2	say what you mean plainly		bulk biz
+category creation		phrase_flag	2	say what you mean plainly		bulk biz
+category-defining		phrase_flag	2	say what you mean plainly		bulk biz
+paradigm-shifting		phrase_flag	2	say what you mean plainly		bulk biz
+game-changing		phrase_flag	2	say what you mean plainly		bulk biz
+industry-leading		phrase_flag	2	say what you mean plainly		bulk biz
+market-leading		phrase_flag	2	say what you mean plainly		bulk biz
+category-leading		phrase_flag	2	say what you mean plainly		bulk biz
+thought-leading		phrase_flag	2	say what you mean plainly		bulk biz
+bleeding-edge		phrase_flag	2	say what you mean plainly		bulk biz
+cutting-edge		phrase_flag	2	say what you mean plainly		bulk biz
+leading-edge		phrase_flag	2	say what you mean plainly		bulk biz
+state-of-the-art		phrase_flag	2	say what you mean plainly		bulk biz
+next-generation		phrase_flag	2	say what you mean plainly		bulk biz
+first-of-its-kind		phrase_flag	2	say what you mean plainly		bulk biz
+one-of-a-kind		phrase_flag	2	say what you mean plainly		bulk biz
+best-of-breed		phrase_flag	2	say what you mean plainly		bulk biz
+end-to-end		phrase_flag	2	say what you mean plainly		bulk biz
+top-to-bottom		phrase_flag	2	say what you mean plainly		bulk biz
+soup to nuts		phrase_flag	2	say what you mean plainly		bulk biz
+360 review		phrase_flag	2	say what you mean plainly		bulk biz
+720 feedback		phrase_flag	2	say what you mean plainly		bulk biz
+OKR alignment		phrase_flag	2	say what you mean plainly		bulk biz
+KPI dashboard		phrase_flag	2	say what you mean plainly		bulk biz
+OKR cadence		phrase_flag	2	say what you mean plainly		bulk biz
+sprint planning		phrase_flag	2	say what you mean plainly		bulk biz
+backlog grooming		phrase_flag	2	say what you mean plainly		bulk biz
+story pointing		phrase_flag	2	say what you mean plainly		bulk biz
+velocity tracking		phrase_flag	2	say what you mean plainly		bulk biz
+burn-down chart		phrase_flag	2	say what you mean plainly		bulk biz
+burn-up chart		phrase_flag	2	say what you mean plainly		bulk biz
+swim lane		phrase_flag	2	say what you mean plainly		bulk biz
+swimlane diagram		phrase_flag	2	say what you mean plainly		bulk biz
+RACI matrix		phrase_flag	2	say what you mean plainly		bulk biz
+stakeholder map		phrase_flag	2	say what you mean plainly		bulk biz
+empathy map		phrase_flag	2	say what you mean plainly		bulk biz
+journey map		phrase_flag	2	say what you mean plainly		bulk biz
+service blueprint		phrase_flag	2	say what you mean plainly		bulk biz
+north star metric		phrase_flag	2	say what you mean plainly		bulk biz
+activation funnel		phrase_flag	2	say what you mean plainly		bulk biz
+retention curve		phrase_flag	2	say what you mean plainly		bulk biz
+cohort analysis		phrase_flag	2	say what you mean plainly		bulk biz
+A/B experiment		phrase_flag	2	say what you mean plainly		bulk biz
+multivariate test		phrase_flag	2	say what you mean plainly		bulk biz
+growth hack		phrase_flag	2	say what you mean plainly		bulk biz
+growth hacking		phrase_flag	2	say what you mean plainly		bulk biz
+growth team		phrase_flag	2	say what you mean plainly		bulk biz
+revenue ops		phrase_flag	2	say what you mean plainly		bulk biz
+sales enablement		phrase_flag	2	say what you mean plainly		bulk biz
+demand gen		phrase_flag	2	say what you mean plainly		bulk biz
+demand generation		phrase_flag	2	say what you mean plainly		bulk biz
+lead nurturing		phrase_flag	2	say what you mean plainly		bulk biz
+pipeline velocity		phrase_flag	2	say what you mean plainly		bulk biz
+deal desk		phrase_flag	2	say what you mean plainly		bulk biz
+contract redlining		phrase_flag	2	say what you mean plainly		bulk biz
+procurement cycle		phrase_flag	2	say what you mean plainly		bulk biz
+vendor onboarding		phrase_flag	2	say what you mean plainly		bulk biz
+change management		phrase_flag	2	say what you mean plainly		bulk biz
+org design		phrase_flag	2	say what you mean plainly		bulk biz
+operating model		phrase_flag	2	say what you mean plainly		bulk biz
+target operating model		phrase_flag	2	say what you mean plainly		bulk biz
+business model canvas		phrase_flag	2	say what you mean plainly		bulk biz
+lean canvas		phrase_flag	2	say what you mean plainly		bulk biz
+OKR rollout		phrase_flag	2	say what you mean plainly		bulk biz
+transformation office		phrase_flag	2	say what you mean plainly		bulk biz
+PMO governance		phrase_flag	2	say what you mean plainly		bulk biz
+stage-gate process		phrase_flag	2	say what you mean plainly		bulk biz
+waterfall plan		phrase_flag	2	say what you mean plainly		bulk biz
+agile transformation		phrase_flag	2	say what you mean plainly		bulk biz
+scaled agile		phrase_flag	2	say what you mean plainly		bulk biz
+safe agile		phrase_flag	2	say what you mean plainly		bulk biz
+devops maturity		phrase_flag	2	say what you mean plainly		bulk biz
+SRE culture		phrase_flag	2	say what you mean plainly		bulk biz
+platform engineering		phrase_flag	2	say what you mean plainly		bulk biz
+internal developer platform		phrase_flag	2	say what you mean plainly		bulk biz
+golden path		phrase_flag	2	say what you mean plainly		bulk biz
+paved road		phrase_flag	2	say what you mean plainly		bulk biz
+align on strategy		phrase_flag	2	use plain wording		bulk vrb
+align on execution		phrase_flag	2	use plain wording		bulk vrb
+align on priorities		phrase_flag	2	use plain wording		bulk vrb
+align on roadmap		phrase_flag	2	use plain wording		bulk vrb
+align on vision		phrase_flag	2	use plain wording		bulk vrb
+align on narrative		phrase_flag	2	use plain wording		bulk vrb
+align on thesis		phrase_flag	2	use plain wording		bulk vrb
+align on charter		phrase_flag	2	use plain wording		bulk vrb
+align on principles		phrase_flag	2	use plain wording		bulk vrb
+align on tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+align on dependencies		phrase_flag	2	use plain wording		bulk vrb
+align on assumptions		phrase_flag	2	use plain wording		bulk vrb
+align on risks		phrase_flag	2	use plain wording		bulk vrb
+align on mitigations		phrase_flag	2	use plain wording		bulk vrb
+align on rollout		phrase_flag	2	use plain wording		bulk vrb
+align on launch		phrase_flag	2	use plain wording		bulk vrb
+align on pilot		phrase_flag	2	use plain wording		bulk vrb
+align on beta		phrase_flag	2	use plain wording		bulk vrb
+align on GA plan		phrase_flag	2	use plain wording		bulk vrb
+align on GTM motion		phrase_flag	2	use plain wording		bulk vrb
+align on ICP		phrase_flag	2	use plain wording		bulk vrb
+align on TAM		phrase_flag	2	use plain wording		bulk vrb
+align on SAM		phrase_flag	2	use plain wording		bulk vrb
+align on SOM		phrase_flag	2	use plain wording		bulk vrb
+align on ARR target		phrase_flag	2	use plain wording		bulk vrb
+align on NRR goal		phrase_flag	2	use plain wording		bulk vrb
+align on GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+align on SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+double down on strategy		phrase_flag	2	use plain wording		bulk vrb
+double down on execution		phrase_flag	2	use plain wording		bulk vrb
+double down on priorities		phrase_flag	2	use plain wording		bulk vrb
+double down on roadmap		phrase_flag	2	use plain wording		bulk vrb
+double down on vision		phrase_flag	2	use plain wording		bulk vrb
+double down on narrative		phrase_flag	2	use plain wording		bulk vrb
+double down on thesis		phrase_flag	2	use plain wording		bulk vrb
+double down on charter		phrase_flag	2	use plain wording		bulk vrb
+double down on principles		phrase_flag	2	use plain wording		bulk vrb
+double down on tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+double down on dependencies		phrase_flag	2	use plain wording		bulk vrb
+double down on assumptions		phrase_flag	2	use plain wording		bulk vrb
+double down on risks		phrase_flag	2	use plain wording		bulk vrb
+double down on mitigations		phrase_flag	2	use plain wording		bulk vrb
+double down on rollout		phrase_flag	2	use plain wording		bulk vrb
+double down on launch		phrase_flag	2	use plain wording		bulk vrb
+double down on pilot		phrase_flag	2	use plain wording		bulk vrb
+double down on beta		phrase_flag	2	use plain wording		bulk vrb
+double down on GA plan		phrase_flag	2	use plain wording		bulk vrb
+double down on GTM motion		phrase_flag	2	use plain wording		bulk vrb
+double down on ICP		phrase_flag	2	use plain wording		bulk vrb
+double down on TAM		phrase_flag	2	use plain wording		bulk vrb
+double down on SAM		phrase_flag	2	use plain wording		bulk vrb
+double down on SOM		phrase_flag	2	use plain wording		bulk vrb
+double down on ARR target		phrase_flag	2	use plain wording		bulk vrb
+double down on NRR goal		phrase_flag	2	use plain wording		bulk vrb
+double down on GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+double down on SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+lean into strategy		phrase_flag	2	use plain wording		bulk vrb
+lean into execution		phrase_flag	2	use plain wording		bulk vrb
+lean into priorities		phrase_flag	2	use plain wording		bulk vrb
+lean into roadmap		phrase_flag	2	use plain wording		bulk vrb
+lean into vision		phrase_flag	2	use plain wording		bulk vrb
+lean into narrative		phrase_flag	2	use plain wording		bulk vrb
+lean into thesis		phrase_flag	2	use plain wording		bulk vrb
+lean into charter		phrase_flag	2	use plain wording		bulk vrb
+lean into principles		phrase_flag	2	use plain wording		bulk vrb
+lean into tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+lean into dependencies		phrase_flag	2	use plain wording		bulk vrb
+lean into assumptions		phrase_flag	2	use plain wording		bulk vrb
+lean into risks		phrase_flag	2	use plain wording		bulk vrb
+lean into mitigations		phrase_flag	2	use plain wording		bulk vrb
+lean into rollout		phrase_flag	2	use plain wording		bulk vrb
+lean into launch		phrase_flag	2	use plain wording		bulk vrb
+lean into pilot		phrase_flag	2	use plain wording		bulk vrb
+lean into beta		phrase_flag	2	use plain wording		bulk vrb
+lean into GA plan		phrase_flag	2	use plain wording		bulk vrb
+lean into GTM motion		phrase_flag	2	use plain wording		bulk vrb
+lean into ICP		phrase_flag	2	use plain wording		bulk vrb
+lean into TAM		phrase_flag	2	use plain wording		bulk vrb
+lean into SAM		phrase_flag	2	use plain wording		bulk vrb
+lean into SOM		phrase_flag	2	use plain wording		bulk vrb
+lean into ARR target		phrase_flag	2	use plain wording		bulk vrb
+lean into NRR goal		phrase_flag	2	use plain wording		bulk vrb
+lean into GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+lean into SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+ladder up to strategy		phrase_flag	2	use plain wording		bulk vrb
+ladder up to execution		phrase_flag	2	use plain wording		bulk vrb
+ladder up to priorities		phrase_flag	2	use plain wording		bulk vrb
+ladder up to roadmap		phrase_flag	2	use plain wording		bulk vrb
+ladder up to vision		phrase_flag	2	use plain wording		bulk vrb
+ladder up to narrative		phrase_flag	2	use plain wording		bulk vrb
+ladder up to thesis		phrase_flag	2	use plain wording		bulk vrb
+ladder up to charter		phrase_flag	2	use plain wording		bulk vrb
+ladder up to principles		phrase_flag	2	use plain wording		bulk vrb
+ladder up to tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+ladder up to dependencies		phrase_flag	2	use plain wording		bulk vrb
+ladder up to assumptions		phrase_flag	2	use plain wording		bulk vrb
+ladder up to risks		phrase_flag	2	use plain wording		bulk vrb
+ladder up to mitigations		phrase_flag	2	use plain wording		bulk vrb
+ladder up to rollout		phrase_flag	2	use plain wording		bulk vrb
+ladder up to launch		phrase_flag	2	use plain wording		bulk vrb
+ladder up to pilot		phrase_flag	2	use plain wording		bulk vrb
+ladder up to beta		phrase_flag	2	use plain wording		bulk vrb
+ladder up to GA plan		phrase_flag	2	use plain wording		bulk vrb
+ladder up to GTM motion		phrase_flag	2	use plain wording		bulk vrb
+ladder up to ICP		phrase_flag	2	use plain wording		bulk vrb
+ladder up to TAM		phrase_flag	2	use plain wording		bulk vrb
+ladder up to SAM		phrase_flag	2	use plain wording		bulk vrb
+ladder up to SOM		phrase_flag	2	use plain wording		bulk vrb
+ladder up to ARR target		phrase_flag	2	use plain wording		bulk vrb
+ladder up to NRR goal		phrase_flag	2	use plain wording		bulk vrb
+ladder up to GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+ladder up to SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+pressure-test strategy		phrase_flag	2	use plain wording		bulk vrb
+pressure-test execution		phrase_flag	2	use plain wording		bulk vrb
+pressure-test priorities		phrase_flag	2	use plain wording		bulk vrb
+pressure-test roadmap		phrase_flag	2	use plain wording		bulk vrb
+pressure-test vision		phrase_flag	2	use plain wording		bulk vrb
+pressure-test narrative		phrase_flag	2	use plain wording		bulk vrb
+pressure-test thesis		phrase_flag	2	use plain wording		bulk vrb
+pressure-test charter		phrase_flag	2	use plain wording		bulk vrb
+pressure-test principles		phrase_flag	2	use plain wording		bulk vrb
+pressure-test tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+pressure-test dependencies		phrase_flag	2	use plain wording		bulk vrb
+pressure-test assumptions		phrase_flag	2	use plain wording		bulk vrb
+pressure-test risks		phrase_flag	2	use plain wording		bulk vrb
+pressure-test mitigations		phrase_flag	2	use plain wording		bulk vrb
+pressure-test rollout		phrase_flag	2	use plain wording		bulk vrb
+pressure-test launch		phrase_flag	2	use plain wording		bulk vrb
+pressure-test pilot		phrase_flag	2	use plain wording		bulk vrb
+pressure-test beta		phrase_flag	2	use plain wording		bulk vrb
+pressure-test GA plan		phrase_flag	2	use plain wording		bulk vrb
+pressure-test GTM motion		phrase_flag	2	use plain wording		bulk vrb
+pressure-test ICP		phrase_flag	2	use plain wording		bulk vrb
+pressure-test TAM		phrase_flag	2	use plain wording		bulk vrb
+pressure-test SAM		phrase_flag	2	use plain wording		bulk vrb
+pressure-test SOM		phrase_flag	2	use plain wording		bulk vrb
+pressure-test ARR target		phrase_flag	2	use plain wording		bulk vrb
+pressure-test NRR goal		phrase_flag	2	use plain wording		bulk vrb
+pressure-test GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+pressure-test SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+sense-check strategy		phrase_flag	2	use plain wording		bulk vrb
+sense-check execution		phrase_flag	2	use plain wording		bulk vrb
+sense-check priorities		phrase_flag	2	use plain wording		bulk vrb
+sense-check roadmap		phrase_flag	2	use plain wording		bulk vrb
+sense-check vision		phrase_flag	2	use plain wording		bulk vrb
+sense-check narrative		phrase_flag	2	use plain wording		bulk vrb
+sense-check thesis		phrase_flag	2	use plain wording		bulk vrb
+sense-check charter		phrase_flag	2	use plain wording		bulk vrb
+sense-check principles		phrase_flag	2	use plain wording		bulk vrb
+sense-check tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+sense-check dependencies		phrase_flag	2	use plain wording		bulk vrb
+sense-check assumptions		phrase_flag	2	use plain wording		bulk vrb
+sense-check risks		phrase_flag	2	use plain wording		bulk vrb
+sense-check mitigations		phrase_flag	2	use plain wording		bulk vrb
+sense-check rollout		phrase_flag	2	use plain wording		bulk vrb
+sense-check launch		phrase_flag	2	use plain wording		bulk vrb
+sense-check pilot		phrase_flag	2	use plain wording		bulk vrb
+sense-check beta		phrase_flag	2	use plain wording		bulk vrb
+sense-check GA plan		phrase_flag	2	use plain wording		bulk vrb
+sense-check GTM motion		phrase_flag	2	use plain wording		bulk vrb
+sense-check ICP		phrase_flag	2	use plain wording		bulk vrb
+sense-check TAM		phrase_flag	2	use plain wording		bulk vrb
+sense-check SAM		phrase_flag	2	use plain wording		bulk vrb
+sense-check SOM		phrase_flag	2	use plain wording		bulk vrb
+sense-check ARR target		phrase_flag	2	use plain wording		bulk vrb
+sense-check NRR goal		phrase_flag	2	use plain wording		bulk vrb
+sense-check GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+sense-check SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+socialize strategy		phrase_flag	2	use plain wording		bulk vrb
+socialize execution		phrase_flag	2	use plain wording		bulk vrb
+socialize priorities		phrase_flag	2	use plain wording		bulk vrb
+socialize roadmap		phrase_flag	2	use plain wording		bulk vrb
+socialize vision		phrase_flag	2	use plain wording		bulk vrb
+socialize narrative		phrase_flag	2	use plain wording		bulk vrb
+socialize thesis		phrase_flag	2	use plain wording		bulk vrb
+socialize charter		phrase_flag	2	use plain wording		bulk vrb
+socialize principles		phrase_flag	2	use plain wording		bulk vrb
+socialize tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+socialize dependencies		phrase_flag	2	use plain wording		bulk vrb
+socialize assumptions		phrase_flag	2	use plain wording		bulk vrb
+socialize risks		phrase_flag	2	use plain wording		bulk vrb
+socialize mitigations		phrase_flag	2	use plain wording		bulk vrb
+socialize rollout		phrase_flag	2	use plain wording		bulk vrb
+socialize launch		phrase_flag	2	use plain wording		bulk vrb
+socialize pilot		phrase_flag	2	use plain wording		bulk vrb
+socialize beta		phrase_flag	2	use plain wording		bulk vrb
+socialize GA plan		phrase_flag	2	use plain wording		bulk vrb
+socialize GTM motion		phrase_flag	2	use plain wording		bulk vrb
+socialize ICP		phrase_flag	2	use plain wording		bulk vrb
+socialize TAM		phrase_flag	2	use plain wording		bulk vrb
+socialize SAM		phrase_flag	2	use plain wording		bulk vrb
+socialize SOM		phrase_flag	2	use plain wording		bulk vrb
+socialize ARR target		phrase_flag	2	use plain wording		bulk vrb
+socialize NRR goal		phrase_flag	2	use plain wording		bulk vrb
+socialize GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+socialize SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+land the strategy		phrase_flag	2	use plain wording		bulk vrb
+land the execution		phrase_flag	2	use plain wording		bulk vrb
+land the priorities		phrase_flag	2	use plain wording		bulk vrb
+land the roadmap		phrase_flag	2	use plain wording		bulk vrb
+land the vision		phrase_flag	2	use plain wording		bulk vrb
+land the narrative		phrase_flag	2	use plain wording		bulk vrb
+land the thesis		phrase_flag	2	use plain wording		bulk vrb
+land the charter		phrase_flag	2	use plain wording		bulk vrb
+land the principles		phrase_flag	2	use plain wording		bulk vrb
+land the tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+land the dependencies		phrase_flag	2	use plain wording		bulk vrb
+land the assumptions		phrase_flag	2	use plain wording		bulk vrb
+land the risks		phrase_flag	2	use plain wording		bulk vrb
+land the mitigations		phrase_flag	2	use plain wording		bulk vrb
+land the rollout		phrase_flag	2	use plain wording		bulk vrb
+land the launch		phrase_flag	2	use plain wording		bulk vrb
+land the pilot		phrase_flag	2	use plain wording		bulk vrb
+land the beta		phrase_flag	2	use plain wording		bulk vrb
+land the GA plan		phrase_flag	2	use plain wording		bulk vrb
+land the GTM motion		phrase_flag	2	use plain wording		bulk vrb
+land the ICP		phrase_flag	2	use plain wording		bulk vrb
+land the TAM		phrase_flag	2	use plain wording		bulk vrb
+land the SAM		phrase_flag	2	use plain wording		bulk vrb
+land the SOM		phrase_flag	2	use plain wording		bulk vrb
+land the ARR target		phrase_flag	2	use plain wording		bulk vrb
+land the NRR goal		phrase_flag	2	use plain wording		bulk vrb
+land the GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+land the SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+nail the strategy		phrase_flag	2	use plain wording		bulk vrb
+nail the execution		phrase_flag	2	use plain wording		bulk vrb
+nail the priorities		phrase_flag	2	use plain wording		bulk vrb
+nail the roadmap		phrase_flag	2	use plain wording		bulk vrb
+nail the vision		phrase_flag	2	use plain wording		bulk vrb
+nail the narrative		phrase_flag	2	use plain wording		bulk vrb
+nail the thesis		phrase_flag	2	use plain wording		bulk vrb
+nail the charter		phrase_flag	2	use plain wording		bulk vrb
+nail the principles		phrase_flag	2	use plain wording		bulk vrb
+nail the tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+nail the dependencies		phrase_flag	2	use plain wording		bulk vrb
+nail the assumptions		phrase_flag	2	use plain wording		bulk vrb
+nail the risks		phrase_flag	2	use plain wording		bulk vrb
+nail the mitigations		phrase_flag	2	use plain wording		bulk vrb
+nail the rollout		phrase_flag	2	use plain wording		bulk vrb
+nail the launch		phrase_flag	2	use plain wording		bulk vrb
+nail the pilot		phrase_flag	2	use plain wording		bulk vrb
+nail the beta		phrase_flag	2	use plain wording		bulk vrb
+nail the GA plan		phrase_flag	2	use plain wording		bulk vrb
+nail the GTM motion		phrase_flag	2	use plain wording		bulk vrb
+nail the ICP		phrase_flag	2	use plain wording		bulk vrb
+nail the TAM		phrase_flag	2	use plain wording		bulk vrb
+nail the SAM		phrase_flag	2	use plain wording		bulk vrb
+nail the SOM		phrase_flag	2	use plain wording		bulk vrb
+nail the ARR target		phrase_flag	2	use plain wording		bulk vrb
+nail the NRR goal		phrase_flag	2	use plain wording		bulk vrb
+nail the GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+nail the SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on strategy		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on execution		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on priorities		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on roadmap		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on vision		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on narrative		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on thesis		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on charter		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on principles		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on dependencies		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on assumptions		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on risks		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on mitigations		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on rollout		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on launch		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on pilot		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on beta		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on GA plan		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on GTM motion		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on ICP		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on TAM		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on SAM		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on SOM		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on ARR target		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on NRR goal		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+thread the needle on SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+pressure test strategy		phrase_flag	2	use plain wording		bulk vrb
+pressure test execution		phrase_flag	2	use plain wording		bulk vrb
+pressure test priorities		phrase_flag	2	use plain wording		bulk vrb
+pressure test roadmap		phrase_flag	2	use plain wording		bulk vrb
+pressure test vision		phrase_flag	2	use plain wording		bulk vrb
+pressure test narrative		phrase_flag	2	use plain wording		bulk vrb
+pressure test thesis		phrase_flag	2	use plain wording		bulk vrb
+pressure test charter		phrase_flag	2	use plain wording		bulk vrb
+pressure test principles		phrase_flag	2	use plain wording		bulk vrb
+pressure test tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+pressure test dependencies		phrase_flag	2	use plain wording		bulk vrb
+pressure test assumptions		phrase_flag	2	use plain wording		bulk vrb
+pressure test risks		phrase_flag	2	use plain wording		bulk vrb
+pressure test mitigations		phrase_flag	2	use plain wording		bulk vrb
+pressure test rollout		phrase_flag	2	use plain wording		bulk vrb
+pressure test launch		phrase_flag	2	use plain wording		bulk vrb
+pressure test pilot		phrase_flag	2	use plain wording		bulk vrb
+pressure test beta		phrase_flag	2	use plain wording		bulk vrb
+pressure test GA plan		phrase_flag	2	use plain wording		bulk vrb
+pressure test GTM motion		phrase_flag	2	use plain wording		bulk vrb
+pressure test ICP		phrase_flag	2	use plain wording		bulk vrb
+pressure test TAM		phrase_flag	2	use plain wording		bulk vrb
+pressure test SAM		phrase_flag	2	use plain wording		bulk vrb
+pressure test SOM		phrase_flag	2	use plain wording		bulk vrb
+pressure test ARR target		phrase_flag	2	use plain wording		bulk vrb
+pressure test NRR goal		phrase_flag	2	use plain wording		bulk vrb
+pressure test GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+pressure test SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+unpack the strategy		phrase_flag	2	use plain wording		bulk vrb
+unpack the execution		phrase_flag	2	use plain wording		bulk vrb
+unpack the priorities		phrase_flag	2	use plain wording		bulk vrb
+unpack the roadmap		phrase_flag	2	use plain wording		bulk vrb
+unpack the vision		phrase_flag	2	use plain wording		bulk vrb
+unpack the narrative		phrase_flag	2	use plain wording		bulk vrb
+unpack the thesis		phrase_flag	2	use plain wording		bulk vrb
+unpack the charter		phrase_flag	2	use plain wording		bulk vrb
+unpack the principles		phrase_flag	2	use plain wording		bulk vrb
+unpack the tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+unpack the dependencies		phrase_flag	2	use plain wording		bulk vrb
+unpack the assumptions		phrase_flag	2	use plain wording		bulk vrb
+unpack the risks		phrase_flag	2	use plain wording		bulk vrb
+unpack the mitigations		phrase_flag	2	use plain wording		bulk vrb
+unpack the rollout		phrase_flag	2	use plain wording		bulk vrb
+unpack the launch		phrase_flag	2	use plain wording		bulk vrb
+unpack the pilot		phrase_flag	2	use plain wording		bulk vrb
+unpack the beta		phrase_flag	2	use plain wording		bulk vrb
+unpack the GA plan		phrase_flag	2	use plain wording		bulk vrb
+unpack the GTM motion		phrase_flag	2	use plain wording		bulk vrb
+unpack the ICP		phrase_flag	2	use plain wording		bulk vrb
+unpack the TAM		phrase_flag	2	use plain wording		bulk vrb
+unpack the SAM		phrase_flag	2	use plain wording		bulk vrb
+unpack the SOM		phrase_flag	2	use plain wording		bulk vrb
+unpack the ARR target		phrase_flag	2	use plain wording		bulk vrb
+unpack the NRR goal		phrase_flag	2	use plain wording		bulk vrb
+unpack the GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+unpack the SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+reframe the strategy		phrase_flag	2	use plain wording		bulk vrb
+reframe the execution		phrase_flag	2	use plain wording		bulk vrb
+reframe the priorities		phrase_flag	2	use plain wording		bulk vrb
+reframe the roadmap		phrase_flag	2	use plain wording		bulk vrb
+reframe the vision		phrase_flag	2	use plain wording		bulk vrb
+reframe the narrative		phrase_flag	2	use plain wording		bulk vrb
+reframe the thesis		phrase_flag	2	use plain wording		bulk vrb
+reframe the charter		phrase_flag	2	use plain wording		bulk vrb
+reframe the principles		phrase_flag	2	use plain wording		bulk vrb
+reframe the tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+reframe the dependencies		phrase_flag	2	use plain wording		bulk vrb
+reframe the assumptions		phrase_flag	2	use plain wording		bulk vrb
+reframe the risks		phrase_flag	2	use plain wording		bulk vrb
+reframe the mitigations		phrase_flag	2	use plain wording		bulk vrb
+reframe the rollout		phrase_flag	2	use plain wording		bulk vrb
+reframe the launch		phrase_flag	2	use plain wording		bulk vrb
+reframe the pilot		phrase_flag	2	use plain wording		bulk vrb
+reframe the beta		phrase_flag	2	use plain wording		bulk vrb
+reframe the GA plan		phrase_flag	2	use plain wording		bulk vrb
+reframe the GTM motion		phrase_flag	2	use plain wording		bulk vrb
+reframe the ICP		phrase_flag	2	use plain wording		bulk vrb
+reframe the TAM		phrase_flag	2	use plain wording		bulk vrb
+reframe the SAM		phrase_flag	2	use plain wording		bulk vrb
+reframe the SOM		phrase_flag	2	use plain wording		bulk vrb
+reframe the ARR target		phrase_flag	2	use plain wording		bulk vrb
+reframe the NRR goal		phrase_flag	2	use plain wording		bulk vrb
+reframe the GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+reframe the SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the strategy		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the execution		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the priorities		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the roadmap		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the vision		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the narrative		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the thesis		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the charter		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the principles		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the tradeoffs		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the dependencies		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the assumptions		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the risks		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the mitigations		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the rollout		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the launch		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the pilot		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the beta		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the GA plan		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the GTM motion		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the ICP		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the TAM		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the SAM		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the SOM		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the ARR target		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the NRR goal		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the GDRP posture		phrase_flag	2	use plain wording		bulk vrb
+pressure-test the SOC2 readiness		phrase_flag	2	use plain wording		bulk vrb
+synergies		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+exec readout		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+readout		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+read-out		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+one-pager		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+two-pager		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+pre-read		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+prebrief		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+debrief		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+retro		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+postmortem		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+blameless postmortem		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+post-mortem		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+five whys		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+fishbone		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+Pareto chart		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2
+planning poker		phrase_flag	3	use if technical term is needed; otherwise simplify		bulk corp2

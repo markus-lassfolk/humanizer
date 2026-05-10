@@ -4,9 +4,13 @@
 
 const { TIER_1, TIER_2, TIER_3, AI_PHRASES, FUNCTION_WORDS } = require('./vocabulary');
 const { PATTERN_PACKS_EN } = require('./pattern-packs');
+const { SCORING_KNOBS_EN } = require('../scoring-defaults');
 
 module.exports = {
   code: 'en',
+
+  // Locale-specific scoring knobs merged over DEFAULT_SCORING_KNOBS.
+  scoring: SCORING_KNOBS_EN,
 
   tier1: TIER_1,
   tier2: TIER_2,

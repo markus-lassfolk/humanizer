@@ -1,0 +1,39 @@
+# Publishes to npm when a version tag `v*` is pushed. `workflow_dispatch` runs
+# the same checks without publishing (useful before tagging).
+#
+# Configure repository secret: NPM_TOKEN (npm automation or granular access token).
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm install
+
+      - run: npm run check
+
+      - name: Publish to npm
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Checks only (workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "Release workflow ran checks only. Push a tag matching v* to publish (requires NPM_TOKEN)."

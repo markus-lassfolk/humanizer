@@ -18,6 +18,7 @@ const { patterns, wordCount } = require('./patterns');
 const { computeStats, computeUniformityScore, tokenize } = require('./stats');
 const { stripCodeSnippets } = require('./preprocess');
 const { loadLocale } = require('./locales');
+const { DEFAULT_SCORING_KNOBS, mergeScoringKnobs } = require('./locales/scoring-defaults');
 const { roundDisplayCount } = require('./utils');
 
 // ─── Category Labels ────────────────────────────────────
@@ -60,12 +61,13 @@ function analyze(text, opts = {}) {
     withLm = false,
   } = opts;
 
-  if ((text === null || text === undefined) || typeof text !== 'string') {
+  if (text === null || text === undefined || typeof text !== 'string') {
     return emptyResult();
   }
 
   // Validate locale for all string inputs to keep configuration errors consistent.
   const localeProfile = loadLocale(locale);
+  const scoringKnobs = mergeScoringKnobs(localeProfile);
 
   const preparedText = ignoreCode ? stripCodeSnippets(text) : text;
   const trimmed = preparedText.trim();
@@ -122,8 +124,13 @@ function analyze(text, opts = {}) {
   }
 
   // ── Calculate composite score ──────────────────────
-  const patternScore = calculatePatternScore(findings, calibratedWords);
-  const compositeScore = calculateCompositeScore(patternScore, uniformityScore, findings);
+  const patternScore = calculatePatternScore(findings, calibratedWords, scoringKnobs);
+  const compositeScore = calculateCompositeScore(
+    patternScore,
+    uniformityScore,
+    findings,
+    scoringKnobs,
+  );
   const reliability = buildReliability({
     words: calibratedWords,
     stats,
@@ -153,6 +160,7 @@ function analyze(text, opts = {}) {
     lmUniformityBoost,
     reliability,
     totalMatches,
+    calibratedWordCount: calibratedWords,
     wordCount: reportWordCount,
     stats,
     categories,
@@ -245,8 +253,9 @@ function buildReliability({ words, stats, findings, patternScore, uniformityScor
 /**
  * Pattern-based score component (0-100).
  * Uses density, breadth, and category diversity.
+ * @param {object} [knobs] see src/locales/scoring-defaults.js
  */
-function calculatePatternScore(findings, words) {
+function calculatePatternScore(findings, words, knobs = DEFAULT_SCORING_KNOBS) {
   if (words === 0 || findings.length === 0) return 0;
 
   let weightedTotal = 0;
@@ -256,14 +265,14 @@ function calculatePatternScore(findings, words) {
 
   // Density: weighted hits per 100 words (log scale)
   const density = (weightedTotal / words) * 100;
-  const densityScore = Math.min(Math.log2(density + 1) * 13, 65);
+  const densityScore = Math.min(Math.log2(density + 1) * knobs.densityCoef, knobs.densityCap);
 
-  // Breadth: unique pattern types (max 20)
-  const breadthBonus = Math.min(findings.length * 2, 20);
+  // Breadth: unique pattern types
+  const breadthBonus = Math.min(findings.length * knobs.breadthMult, knobs.breadthCap);
 
-  // Category diversity (max 15)
+  // Category diversity
   const categoriesHit = new Set(findings.map((f) => f.category)).size;
-  const categoryBonus = Math.min(categoriesHit * 3, 15);
+  const categoryBonus = Math.min(categoriesHit * knobs.categoryMult, knobs.categoryCap);
 
   return Math.min(Math.round(densityScore + breadthBonus + categoryBonus), 100);
 }
@@ -271,18 +280,24 @@ function calculatePatternScore(findings, words) {
 /**
  * Composite score combining pattern detection and statistical analysis.
  *
- * Pattern score is the primary signal (70% weight).
- * Uniformity score adds statistical evidence (30% weight).
- * But only when both are present — stats alone aren't enough.
+ * Pattern vs uniformity weights come from knobs.patternWeight.
+ * Stats alone are never enough to accuse without pattern hits.
+ * @param {object} [knobs] see src/locales/scoring-defaults.js
  */
-function calculateCompositeScore(patternScore, uniformityScore, findings) {
+function calculateCompositeScore(
+  patternScore,
+  uniformityScore,
+  findings,
+  knobs = DEFAULT_SCORING_KNOBS,
+) {
   if (patternScore === 0 && uniformityScore === 0) return 0;
 
   // If no patterns detected, uniformity alone isn't enough to accuse
   if (findings.length === 0) return Math.min(Math.round(uniformityScore * 0.15), 15);
 
-  // Weighted blend: patterns dominate, stats supplement
-  const blended = patternScore * 0.7 + uniformityScore * 0.3;
+  const patternWeight = knobs.patternWeight;
+  const uniformityWeight = 1 - patternWeight;
+  const blended = patternScore * patternWeight + uniformityScore * uniformityWeight;
   return Math.min(Math.round(blended), 100);
 }
 
@@ -588,6 +603,7 @@ function emptyResult() {
       recommendation: `Provide at least ${RELIABILITY_RECOMMENDED_WORDS} words for stable scoring.`,
     },
     totalMatches: 0,
+    calibratedWordCount: 0,
     wordCount: 0,
     stats: null,
     categories: {},

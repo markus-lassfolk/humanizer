@@ -13,9 +13,13 @@ const {
   EMPIRICAL_EXTRA_SV,
 } = require('./vocabulary');
 const { SV_PATTERN_PACKS } = require('./pattern-packs');
+const { SCORING_KNOBS_SV } = require('../scoring-defaults');
 
 module.exports = {
   code: 'sv',
+
+  // Locale-specific scoring knobs merged over DEFAULT_SCORING_KNOBS.
+  scoring: SCORING_KNOBS_SV,
 
   tier1: TIER_1_SV,
   tier2: TIER_2_SV,
