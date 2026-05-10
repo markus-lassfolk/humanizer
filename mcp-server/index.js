@@ -73,7 +73,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: 'score',
         description:
-          'Quick AI score (0-100). Higher = more AI-like. 0-25 human, 26-50 light AI touch, 51-75 moderate, 76-100 heavy AI.',
+          'Quick AI score (0-100). Higher = more AI-like. 0-19 human, 20-44 light AI touch, 45-69 moderate, 70-100 heavy AI.',
         inputSchema: {
           type: 'object',
           properties: {
