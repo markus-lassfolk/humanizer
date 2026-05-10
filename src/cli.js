@@ -21,7 +21,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { analyze, score, formatMarkdown, formatJSON } = require('./analyzer');
+const { analyze, score, formatMarkdown, formatJSON, roundDisplayCount } = require('./analyzer');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
 const { scanPath, compareScanResults, compareFiles, normalizeExtensions } = require('./workflows');
@@ -58,6 +58,35 @@ const color = {
   dim: (s) => (supportsColor ? `\x1b[2m${s}\x1b[0m` : s),
 };
 
+const SCORE_BUCKETS = Object.freeze([
+  { max: 19, icon: '🟢', label: 'Mostly human-sounding', tone: 'green' },
+  { max: 44, icon: '🟡', label: 'Lightly AI-touched', tone: 'yellow' },
+  { max: 69, icon: '🟠', label: 'Moderately AI-influenced', tone: 'magenta' },
+  { max: 100, icon: '🔴', label: 'Heavily AI-generated', tone: 'red' },
+]);
+
+const LAST_SCORE_BUCKET = SCORE_BUCKETS[SCORE_BUCKETS.length - 1];
+
+/**
+ * @param {number} s
+ * @returns {{max:number, icon:string, label:string, tone:string}}
+ */
+function scoreBucket(s) {
+  return SCORE_BUCKETS.find((bucket) => s <= bucket.max) || LAST_SCORE_BUCKET;
+}
+
+/**
+ * @returns {string}
+ */
+function formatScoreBadgeHelpLines() {
+  let min = 0;
+  return SCORE_BUCKETS.map((bucket) => {
+    const range = `${min}-${bucket.max}`;
+    min = bucket.max + 1;
+    return `  ${bucket.icon} ${range.padEnd(8)}${bucket.label}`;
+  }).join('\n');
+}
+
 /**
  * Get a colored score badge based on score value.
  *
@@ -65,10 +94,8 @@ const color = {
  * @returns {string} Colored badge string
  */
 function scoreBadge(s) {
-  if (s <= 19) return color.green(`🟢 ${s}/100`);
-  if (s <= 44) return color.yellow(`🟡 ${s}/100`);
-  if (s <= 69) return color.magenta(`🟠 ${s}/100`);
-  return color.red(`🔴 ${s}/100`);
+  const bucket = scoreBucket(s);
+  return color[bucket.tone](`${bucket.icon} ${s}/100`);
 }
 
 /**
@@ -78,10 +105,11 @@ function scoreBadge(s) {
  * @returns {string} Human-readable label
  */
 function scoreLabel(s) {
-  if (s <= 19) return 'Mostly human-sounding';
-  if (s <= 44) return 'Lightly AI-touched';
-  if (s <= 69) return 'Moderately AI-influenced';
-  return 'Heavily AI-generated';
+  return scoreBucket(s).label;
+}
+
+function roundSigned(value) {
+  return Number.isFinite(value) ? Math.round(value) : 0;
 }
 
 /**
@@ -135,20 +163,38 @@ if (fileIdx !== -1 && args[fileIdx + 1]) {
   flags.file = args[fileIdx + 1];
 }
 
-// Parse positional file argument (command <file>)
-if (!flags.file && args[1] && !args[1].startsWith('-')) {
-  const commands = [
-    'analyze',
-    'score',
-    'humanize',
-    'report',
-    'suggest',
-    'stats',
-    'scan',
-    'compare',
-  ];
-  if (!commands.includes(args[1])) {
-    flags.file = args[1];
+// Parse positional file argument (command <file>) by scanning all args after the
+// command so positional targets can appear after value flags.
+if (!flags.file) {
+  const valueFlagSet = new Set([
+    '-f',
+    '--file',
+    '--patterns',
+    '--threshold',
+    '--config',
+    '--before',
+    '--after',
+    '--ext',
+    '--min-words',
+    '--fail-above',
+    '--baseline',
+    '--regression-threshold',
+    '--ignore-dirs',
+    '--locale',
+  ]);
+  let skipNext = false;
+  for (let i = 1; i < args.length; i++) {
+    if (skipNext) {
+      skipNext = false;
+      continue;
+    }
+    if (valueFlagSet.has(args[i])) {
+      skipNext = true;
+      continue;
+    }
+    if (args[i].startsWith('-')) continue;
+    flags.file = args[i];
+    break;
   }
 }
 
@@ -489,10 +535,7 @@ ${color.bold('Examples:')}
   HUMANIZER_LOCALE=sv humanizer score article.txt
 
 ${color.bold('Score badges:')}
-  🟢 0-25    Mostly human-sounding
-  🟡 26-50   Lightly AI-touched
-  🟠 51-75   Moderately AI-influenced
-  🔴 76-100  Heavily AI-generated
+${formatScoreBadgeHelpLines()}
 `);
 }
 
@@ -629,18 +672,11 @@ function formatColoredReport(result) {
 
   // Score bar with color
   const filled = Math.round(result.score / 5);
-  const barColor =
-    result.score <= 19
-      ? color.green
-      : result.score <= 44
-        ? color.yellow
-        : result.score <= 69
-          ? color.magenta
-          : color.red;
+  const barColor = color[scoreBucket(result.score).tone];
   const bar = barColor('█'.repeat(filled)) + color.dim('░'.repeat(20 - filled));
   lines.push(`  Score: ${scoreBadge(result.score)}  [${bar}]`);
   lines.push(
-    `  ${color.dim(`Words: ${result.wordCount}  |  Matches: ${result.totalMatches}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`)}`,
+    `  ${color.dim(`Words: ${result.wordCount}  |  Matches: ${roundDisplayCount(result.totalMatches)}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`)}`,
   );
   if (result.reliability) {
     lines.push(`  ${color.dim(`Confidence: ${reliabilityBadge(result.reliability)}`)}`);
@@ -674,7 +710,7 @@ function formatColoredReport(result) {
   for (const [, data] of Object.entries(result.categories)) {
     if (data.matches > 0) {
       lines.push(
-        `  ${color.cyan(data.label)}: ${data.matches} matches ${color.dim(`(${data.patternsDetected.join(', ')})`)}`,
+        `  ${color.cyan(data.label)}: ${roundDisplayCount(data.matches)} matches ${color.dim(`(${data.patternsDetected.join(', ')})`)}`,
       );
     }
   }
@@ -690,7 +726,7 @@ function formatColoredReport(result) {
       const weightColor =
         finding.weight >= 4 ? color.red : finding.weight >= 2 ? color.yellow : color.blue;
       lines.push(
-        `  ${weightColor(`[${finding.patternId}]`)} ${color.bold(finding.patternName)} ${color.dim(`(×${finding.matchCount}, weight: ${finding.weight})`)}`,
+        `  ${weightColor(`[${finding.patternId}]`)} ${color.bold(finding.patternName)} ${color.dim(`(×${roundDisplayCount(finding.matchCount)}, weight: ${finding.weight})`)}`,
       );
       lines.push(`      ${color.dim(finding.description)}`);
       for (const match of finding.matches) {
@@ -707,7 +743,7 @@ function formatColoredReport(result) {
       if (finding.truncated) {
         const totalRaw = finding.rawMatchCount ?? finding.matchCount ?? finding.matches.length;
         lines.push(
-          `      ${color.dim(`... and ${Math.max(0, totalRaw - finding.matches.length)} more`)}`,
+          `      ${color.dim(`... and ${Math.max(0, roundDisplayCount(totalRaw) - finding.matches.length)} more`)}`,
         );
       }
     }
@@ -731,7 +767,9 @@ function formatGroupedSuggestions(result) {
 
   lines.push('');
   lines.push(color.bold(`  Score: ${scoreBadge(result.score)}  (${scoreLabel(result.score)})`));
-  lines.push(`  ${color.dim(`${result.totalIssues} issues found in ${result.wordCount} words`)}`);
+  lines.push(
+    `  ${color.dim(`${roundDisplayCount(result.totalIssues)} issues found in ${result.wordCount} words`)}`,
+  );
   if (result.reliability) {
     lines.push(`  ${color.dim(`Confidence: ${reliabilityBadge(result.reliability)}`)}`);
   }
@@ -817,10 +855,10 @@ function formatComparisonReport(result) {
   lines.push(color.bold('  └──────────────────────────────────────────────┘'));
   lines.push('');
   lines.push(
-    `  Before: ${scoreBadge(result.before.score)}  (${result.before.totalMatches} matches, ${result.before.wordCount} words)`,
+    `  Before: ${scoreBadge(result.before.score)}  (${roundDisplayCount(result.before.totalMatches)} matches, ${result.before.wordCount} words)`,
   );
   lines.push(
-    `  After:  ${scoreBadge(result.after.score)}  (${result.after.totalMatches} matches, ${result.after.wordCount} words)`,
+    `  After:  ${scoreBadge(result.after.score)}  (${roundDisplayCount(result.after.totalMatches)} matches, ${result.after.wordCount} words)`,
   );
   lines.push(
     `  Delta:  ${scoreDeltaColor(`${scoreArrow} ${scoreDelta >= 0 ? '+' : ''}${scoreDelta} points`)}`,
@@ -831,7 +869,7 @@ function formatComparisonReport(result) {
     lines.push(color.green(color.bold('  Top improvements:')));
     for (const item of result.improvements.slice(0, 5)) {
       lines.push(
-        `  ${color.green('•')} ${item.patternName}: ${item.beforeCount} → ${item.afterCount} (${item.delta})`,
+        `  ${color.green('•')} ${item.patternName}: ${roundDisplayCount(item.beforeCount)} → ${roundDisplayCount(item.afterCount)} (${roundSigned(item.delta)})`,
       );
     }
     lines.push('');
@@ -841,7 +879,7 @@ function formatComparisonReport(result) {
     lines.push(color.red(color.bold('  New regressions:')));
     for (const item of result.regressions.slice(0, 5)) {
       lines.push(
-        `  ${color.red('•')} ${item.patternName}: ${item.beforeCount} → ${item.afterCount} (+${item.delta})`,
+        `  ${color.red('•')} ${item.patternName}: ${roundDisplayCount(item.beforeCount)} → ${roundDisplayCount(item.afterCount)} (+${Math.abs(roundSigned(item.delta))})`,
       );
     }
     lines.push('');
@@ -895,7 +933,7 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
     const failTag =
       failAbove !== null && item.score >= failAbove ? color.red(' [FAIL]') : color.gray(' [OK]');
     lines.push(
-      `  ${scoreBadge(item.score)}${failTag} ${item.file} ${color.dim(`(${item.totalMatches} matches, ${item.wordCount} words)`)}`,
+      `  ${scoreBadge(item.score)}${failTag} ${item.file} ${color.dim(`(${roundDisplayCount(item.totalMatches)} matches, ${item.wordCount} words)`)}`,
     );
   }
   lines.push('');
@@ -936,7 +974,7 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
     lines.push(color.bold('  Common pattern hotspots:'));
     for (const item of scanResult.patternHotspots.slice(0, 8)) {
       lines.push(
-        `  ${color.cyan(`[${item.patternId}]`)} ${item.patternName} ${color.dim(`(${item.totalMatches} matches across ${item.affectedFiles} files)`)}`,
+        `  ${color.cyan(`[${item.patternId}]`)} ${item.patternName} ${color.dim(`(${roundDisplayCount(item.totalMatches)} matches across ${item.affectedFiles} files)`)}`,
       );
     }
     lines.push('');
