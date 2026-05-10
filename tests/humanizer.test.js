@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { humanize, autoFix, formatSuggestions } from '../src/humanizer.js';
+import { humanize, autoFix, formatSuggestions, buildGuidance } from '../src/humanizer.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -13,6 +13,20 @@ const __dirname = path.dirname(__filename);
 
 function loadFixture(name) {
   return fs.readFileSync(path.join(__dirname, 'fixtures', name), 'utf-8');
+}
+
+function makeSuggestion(index, group = 'Important pattern') {
+  return {
+    pattern: group,
+    patternId: 1,
+    category: 'style',
+    weight: 2,
+    text: `${group} match ${index}`,
+    line: index + 1,
+    column: 1,
+    suggestion: `Fix ${index}`,
+    confidence: 'high',
+  };
 }
 
 // ─── autoFix ─────────────────────────────────────────────
@@ -194,6 +208,16 @@ describe('humanize', () => {
     expect(verbose.minor.length).toBeGreaterThan(compact.minor.length);
   });
 
+  it('defaults verbose mode to preserve legacy full suggestion output', () => {
+    const text = '“a” “b” “c” “d” “e” “f” “g”';
+    const defaultResult = humanize(text);
+    const verboseResult = humanize(text, { verbose: true });
+    const compact = humanize(text, { verbose: false });
+
+    expect(defaultResult.minor.length).toBe(verboseResult.minor.length);
+    expect(defaultResult.minor.length).toBeGreaterThan(compact.minor.length);
+  });
+
   it('passes strict option through to analysis', () => {
     const text = 'Guys, we need more manpower. The chairman approved this.';
     const resultDefault = humanize(text);
@@ -216,6 +240,18 @@ describe('humanize', () => {
   });
 });
 
+describe('buildGuidance', () => {
+  it('uses rawScore to gate rewrite-from-scratch guidance when available', () => {
+    const tipText = 'Consider rewriting from scratch.';
+
+    const suppressedByCalibratedScore = buildGuidance({ score: 20, rawScore: 72, findings: [] });
+    expect(suppressedByCalibratedScore.some((tip) => tip.includes(tipText))).toBe(true);
+
+    const lowRawScore = buildGuidance({ score: 90, rawScore: 30, findings: [] });
+    expect(lowRawScore.some((tip) => tip.includes(tipText))).toBe(false);
+  });
+});
+
 // ─── formatSuggestions ───────────────────────────────────
 
 describe('formatSuggestions', () => {
@@ -234,5 +270,46 @@ describe('formatSuggestions', () => {
     const result = humanize(text);
     const output = formatSuggestions(result);
     expect(output).toContain('GUIDANCE');
+  });
+
+  it('does not cap grouped important/minor suggestions with hidden remainder lines', () => {
+    const important = Array.from({ length: 16 }, (_, index) => makeSuggestion(index, 'Important'));
+    const minor = Array.from({ length: 11 }, (_, index) => makeSuggestion(index, 'Minor'));
+
+    const output = formatSuggestions({
+      score: 72,
+      patternScore: 68,
+      uniformityScore: 52,
+      reliability: { level: 'high', score: 90 },
+      totalIssues: 27,
+      critical: [],
+      important,
+      minor,
+      autofix: null,
+      guidance: [],
+      styleTips: [],
+    });
+
+    expect(output).toContain('Important match 15');
+    expect(output).toContain('Minor match 10');
+    expect(output).not.toContain('... and');
+  });
+
+  it('rounds displayed issue totals for consistent output', () => {
+    const output = formatSuggestions({
+      score: 10,
+      patternScore: 12,
+      uniformityScore: 8,
+      reliability: null,
+      totalIssues: 7.6,
+      critical: [makeSuggestion(0, 'Critical')],
+      important: [],
+      minor: [],
+      autofix: null,
+      guidance: [],
+      styleTips: [],
+    });
+
+    expect(output).toContain('Issues: 8  |  Pattern: 12  |  Uniformity: 8');
   });
 });

@@ -201,6 +201,20 @@ describe('computeStats', () => {
     expect(stats.avgSentenceLength).toBeGreaterThan(0);
   });
 
+  it('computes population standard deviation for sentence lengths', () => {
+    const text = 'One two three four five six. One two three.';
+    const stats = computeStats(text);
+    // Population std dev: sentence lengths [6, 3], mean 4.5
+    // SS = (6-4.5)² + (3-4.5)² = 2.25 + 2.25 = 4.5
+    // population variance = 4.5/2 = 2.25, population σ = 1.5
+    expect(stats.sentenceLengthStdDev).toBe(1.5);
+  });
+
+  it('keeps sentence length standard deviation at 0 with fewer than 2 sentences', () => {
+    const stats = computeStats('Only one sentence here.');
+    expect(stats.sentenceLengthStdDev).toBe(0);
+  });
+
   it('computes burstiness', () => {
     // Very uniform sentences → low burstiness
     const uniform = 'The cat sat down. The dog ran fast. The cow ate hay. The fox was sly.';
