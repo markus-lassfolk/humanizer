@@ -181,6 +181,12 @@ function computeStats(text, localeProfile) {
       (sentenceCount - 1);
     sentenceLengthStdDev = Math.sqrt(variance);
 
+    // Scale back to population-equivalent for threshold compatibility.
+    // Thresholds in computeUniformityScore and computeLmUniformityBoost were calibrated
+    // against population std dev (divide by n). Apply sqrt((n-1)/n) to preserve calibration.
+    const besselAdjustment = Math.sqrt((sentenceCount - 1) / sentenceCount);
+    sentenceLengthStdDev *= besselAdjustment;
+
     // Coefficient of variation (std dev / mean) — our burstiness proxy
     sentenceLengthVariation = avgSentenceLength > 0 ? sentenceLengthStdDev / avgSentenceLength : 0;
 

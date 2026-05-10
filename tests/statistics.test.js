@@ -204,7 +204,9 @@ describe('computeStats', () => {
   it('uses sample variance (n-1) for sentence length standard deviation', () => {
     const text = 'One two three four five six. One two three.';
     const stats = computeStats(text);
-    expect(stats.sentenceLengthStdDev).toBe(2.121);
+    // After Bessel-adjustment to preserve threshold calibration, std dev is scaled
+    // back to population-equivalent: sqrt(4.5) * sqrt(1/2) = 1.5
+    expect(stats.sentenceLengthStdDev).toBe(1.5);
   });
 
   it('keeps sentence length standard deviation at 0 with fewer than 2 sentences', () => {
