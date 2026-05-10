@@ -52,13 +52,23 @@ describe('splitSentences', () => {
 
   it('handles abbreviations', () => {
     const result = splitSentences('Dr. Smith went home. Mr. Jones followed.');
-    // Should split into 2 sentences, not 4
-    expect(result.length).toBe(2);
+    expect(result).toEqual(['Dr. Smith went home.', 'Mr. Jones followed.']);
+  });
+
+  it('keeps common dotted abbreviations inside the sentence', () => {
+    const result = splitSentences(
+      'Use e.g. this pattern. See fig. 2 for details. Try i.e. that wording.',
+    );
+    expect(result).toEqual([
+      'Use e.g. this pattern.',
+      'See fig. 2 for details.',
+      'Try i.e. that wording.',
+    ]);
   });
 
   it('splits when the next sentence starts with lowercase', () => {
     const result = splitSentences('First sentence. second sentence. third sentence.');
-    expect(result.length).toBe(3);
+    expect(result).toEqual(['First sentence.', 'second sentence.', 'third sentence.']);
   });
 });
 
