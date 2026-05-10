@@ -21,10 +21,30 @@ const { analyze, score } = require('../src/analyzer.js');
 const { humanize } = require('../src/humanizer.js');
 const { computeStats } = require('../src/stats.js');
 const { loadLocale, SUPPORTED_LOCALES } = require('../src/locales');
-const pkg = require('../package.json');
+
+function loadPackageMetadata() {
+  try {
+    return require('./package.json');
+  } catch {
+    return require('../package.json');
+  }
+}
 
 const PORT = process.env.PORT || 3000;
-const MAX_BODY_BYTES = Number(process.env.MAX_BODY_BYTES) || 1_000_000;
+const pkg = loadPackageMetadata();
+
+function parseMaxBodyBytes(rawValue, fallback = 1_000_000) {
+  if (rawValue == null || rawValue === '') {
+    return fallback;
+  }
+  const parsed = Number(rawValue);
+  if (!Number.isFinite(parsed) || !Number.isInteger(parsed) || parsed <= 0) {
+    return fallback;
+  }
+  return parsed;
+}
+
+const MAX_BODY_BYTES = parseMaxBodyBytes(process.env.MAX_BODY_BYTES);
 
 // CORS headers for browser/GPT access
 const corsHeaders = {
