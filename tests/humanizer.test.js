@@ -161,6 +161,15 @@ describe('humanize', () => {
     expect(result.styleTips).toBeDefined();
     expect(Array.isArray(result.styleTips)).toBe(true);
   });
+
+  it('respects verbose option for returned suggestions', () => {
+    const text = '“a” “b” “c” “d” “e” “f” “g”';
+    const compact = humanize(text, { verbose: false });
+    const verbose = humanize(text, { verbose: true });
+
+    expect(compact.minor.length).toBe(5);
+    expect(verbose.minor.length).toBeGreaterThan(compact.minor.length);
+  });
 });
 
 // ─── formatSuggestions ───────────────────────────────────

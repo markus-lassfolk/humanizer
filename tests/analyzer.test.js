@@ -164,6 +164,13 @@ describe('formatting', () => {
     expect(md).toContain('**Score:');
     expect(md).toContain('**Confidence:**');
   });
+
+  it('formatReport truncation uses raw match count', () => {
+    const text = '“a” “b” “c” “d” “e” “f” “g”';
+    const result = analyze(text, { patternsToCheck: [18], verbose: false });
+    const report = formatReport(result);
+    expect(report).toContain('... and 9 more');
+  });
 });
 
 // ─── Individual Pattern Detection ────────────────────────
@@ -251,6 +258,14 @@ describe('pattern detection', () => {
       'The event promotes innovation, inspiration, and collaboration for increased motivation, dedication, and education.';
     const result = analyze(text, { patternsToCheck: [10] });
     expect(result.findings.length).toBeGreaterThan(0);
+  });
+
+  // 11. Synonym cycling
+  it('avoids synonym cycling false positives from substring matches', () => {
+    const text =
+      'The statement was clear. A nationwide review followed. They described countryside roads in detail.';
+    const result = analyze(text, { patternsToCheck: [11] });
+    expect(result.findings.length).toBe(0);
   });
 
   // 13. Em dash overuse

@@ -179,6 +179,17 @@ describe('scanPath', () => {
 
     expect(regular.files[0].score).toBeGreaterThan(ignoreCode.files[0].score);
   });
+
+  it('supports locale-specific scanning', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+    const swedish = 'Den här lösningen banar väg för framtiden med tydliga resultat.';
+    fs.writeFileSync(path.join(tmp, 'sv.md'), swedish);
+
+    const enScan = scanPath(tmp, { exts: ['md'], minWords: 3, locale: 'en' });
+    const svScan = scanPath(tmp, { exts: ['md'], minWords: 3, locale: 'sv' });
+
+    expect(enScan.files[0].score).toBeLessThan(svScan.files[0].score);
+  });
 });
 
 describe('compareTexts and compareFiles', () => {

@@ -114,6 +114,7 @@ function scanPath(targetPath, opts = {}) {
     ignoreDirs = null,
     includeDefaultIgnore = true,
     ignoreCode = false,
+    locale = 'en',
   } = opts;
 
   const files = collectTextFiles(targetPath, { exts, ignoreDirs, includeDefaultIgnore });
@@ -137,7 +138,7 @@ function scanPath(targetPath, opts = {}) {
       continue;
     }
 
-    const result = analyze(text, { includeStats, verbose: false, ignoreCode });
+    const result = analyze(text, { includeStats, verbose: false, ignoreCode, locale });
 
     for (const finding of result.findings) {
       const existing = patternHotspotMap.get(finding.patternId) || {

@@ -90,6 +90,23 @@ function wordRegex(word) {
   return new RegExp(`\\b${escaped}\\b`, 'gi');
 }
 
+function escapeRegexLiteral(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function synonymRegex(syn) {
+  const normalized = String(syn).toLowerCase();
+  const escaped = escapeRegexLiteral(normalized);
+  if (normalized.includes(' ')) {
+    return new RegExp(`(^|[^\\p{L}\\p{N}_])${escaped}([^\\p{L}\\p{N}_]|$)`, 'iu');
+  }
+  // Allow common noun inflection endings while still requiring word boundaries.
+  return new RegExp(
+    `(^|[^\\p{L}\\p{N}_])${escaped}(?:en|et|n|t|er|ar|or|a|s)?([^\\p{L}\\p{N}_]|$)`,
+    'iu',
+  );
+}
+
 /**
  * Normalize locale tier entry: string or { word, weight }.
  * @param {string|{word:string,weight?:number}} entry
@@ -605,24 +622,41 @@ const patterns = [
       const synonymSets = pack;
 
       const results = [];
-      const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+      const sentences = [];
+      const sentenceRegex = /[^.!?]+[.!?]*/g;
+      let sentenceMatch;
+      while ((sentenceMatch = sentenceRegex.exec(text)) !== null) {
+        const raw = sentenceMatch[0];
+        const firstNonWs = raw.search(/\S/);
+        if (firstNonWs === -1) continue;
+        const index = sentenceMatch.index + firstNonWs;
+        const content = raw.slice(firstNonWs).trim();
+        if (!content) continue;
+        sentences.push({
+          text: content,
+          lower: content.toLowerCase(),
+          index,
+        });
+      }
 
       for (const synonyms of synonymSets) {
         for (let i = 0; i < sentences.length - 1; i++) {
           const found = [];
           for (let j = i; j < Math.min(i + 4, sentences.length); j++) {
-            const lower = sentences[j].toLowerCase();
+            const lower = sentences[j].lower;
             for (const syn of synonyms) {
-              if (lower.includes(syn) && !found.includes(syn)) {
+              const synRegex = synonymRegex(syn);
+              if (synRegex.test(lower) && !found.includes(syn)) {
                 found.push(syn);
               }
             }
           }
           if (found.length >= 3) {
+            const startIndex = sentences[i].index;
             results.push({
               match: `Synonym cycling: ${found.join(' → ')}`,
-              index: text.indexOf(sentences[i]),
-              line: text.substring(0, text.indexOf(sentences[i])).split('\n').length,
+              index: startIndex,
+              line: text.substring(0, startIndex).split('\n').length,
               column: 1,
               suggestion: `Pick one term and stick with it. Found "${found.join('", "')}" used as synonyms in nearby sentences.`,
               confidence: 'medium',
