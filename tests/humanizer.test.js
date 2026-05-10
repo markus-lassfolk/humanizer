@@ -31,7 +31,7 @@ describe('autoFix', () => {
 
   it('replaces "in order to" with "to"', () => {
     const { text } = autoFix('In order to succeed, we must work hard.');
-    expect(text).toContain('to succeed');
+    expect(text).toContain('To succeed');
     expect(text).not.toContain('In order to');
   });
 
@@ -43,12 +43,12 @@ describe('autoFix', () => {
 
   it('replaces "at this point in time" with "now"', () => {
     const { text } = autoFix('At this point in time, we are ready.');
-    expect(text).toContain('now');
+    expect(text).toContain('Now');
   });
 
   it('replaces "in the event that" with "if"', () => {
     const { text } = autoFix('In the event that you need help, call us.');
-    expect(text).toContain('if');
+    expect(text).toContain('If');
     expect(text).not.toContain('In the event that');
   });
 
@@ -91,6 +91,11 @@ describe('autoFix', () => {
     expect(fixes.length).toBeGreaterThanOrEqual(3);
     expect(text).not.toContain('In order to');
     expect(text).not.toContain('\u2019');
+  });
+
+  it('preserves sentence-start capitalization in replacements', () => {
+    const { text } = autoFix('Due to the fact that we shipped early, customers noticed.');
+    expect(text).toContain('Because we shipped early');
   });
 });
 

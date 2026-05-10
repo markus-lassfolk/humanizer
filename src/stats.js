@@ -113,8 +113,9 @@ function splitSentences(text, localeProfile) {
 
   // Language-agnostic: protect initials and numbered lists regardless of locale
   cleaned = cleaned
-    .replace(/\b([A-Z])\./g, '$1\u2024') // initials: "J. K. Rowling"
-    .replace(/\b(\d+)\./g, '$1\u2024'); // numbered lists: "1. First"
+    .replace(/(?<!\p{L})(\p{L})\./gu, '$1\u2024') // initials: "J. K. Rowling", "Å. Andersson", "e. e. cummings"
+    .replace(/(\d)\.(\d)/g, '$1\u2024$2') // decimals/time values: "14.30"
+    .replace(/(^|\n)(\s*)(\d+)\.(?=\s+\S)/g, '$1$2$3\u2024'); // numbered lists at line/string start: "1. First"
 
   const fragments = cleaned
     .split(/(?<=[.!?])\s+|(?<=[.!?])$/)

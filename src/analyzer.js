@@ -113,6 +113,7 @@ function analyze(text, opts = {}) {
         category: pattern.category,
         description: pattern.description,
         weight: pattern.weight,
+        rawMatchCount: matches.length,
         matchCount: weightedCount,
         matches: verbose ? matches : matches.slice(0, 5),
         truncated: !verbose && matches.length > 5,
@@ -120,7 +121,7 @@ function analyze(text, opts = {}) {
 
       findings.push(finding);
       categoryScores[pattern.category].matches += weightedCount;
-      categoryScores[pattern.category].weightedScore += matches.length * pattern.weight;
+      categoryScores[pattern.category].weightedScore += weightedCount * pattern.weight;
       categoryScores[pattern.category].patterns.push(pattern.name);
     }
   }
@@ -446,7 +447,8 @@ function formatReport(result) {
         }
       }
       if (finding.truncated) {
-        lines.push(`      ... and ${finding.matchCount - finding.matches.length} more`);
+        const totalRaw = finding.rawMatchCount ?? finding.matchCount ?? finding.matches.length;
+        lines.push(`      ... and ${Math.max(0, totalRaw - finding.matches.length)} more`);
       }
     }
   }

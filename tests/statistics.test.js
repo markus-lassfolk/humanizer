@@ -71,9 +71,30 @@ describe('splitSentences', () => {
     expect(result).toEqual(['See no. 2 for details.', 'Acme Inc. filed today.', 'Done.']);
   });
 
-  it('splits when the next sentence starts with lowercase', () => {
-    const result = splitSentences('First sentence. second sentence. third sentence.');
-    expect(result).toEqual(['First sentence.', 'second sentence.', 'third sentence.']);
+  it('splits when next sentence starts lowercase', () => {
+    const result = splitSentences('First sentence. second sentence starts lowercase.');
+    expect(result).toEqual(['First sentence.', 'second sentence starts lowercase.']);
+  });
+
+  it('splits with non-ASCII uppercase letters', () => {
+    const result = splitSentences('Första meningen. Åter en mening.');
+    expect(result).toEqual(['Första meningen.', 'Åter en mening.']);
+  });
+
+  it('keeps Unicode and lowercase initials inside the sentence', () => {
+    const result = splitSentences(
+      'Å. Andersson arrived. e. e. cummings stayed lowercase. Next sentence.',
+    );
+    expect(result).toEqual([
+      'Å. Andersson arrived.',
+      'e. e. cummings stayed lowercase.',
+      'Next sentence.',
+    ]);
+  });
+
+  it('does not suppress sentence breaks after year-style numbers', () => {
+    const result = splitSentences('The year was 2024. We shipped the patch.');
+    expect(result).toEqual(['The year was 2024.', 'We shipped the patch.']);
   });
 });
 

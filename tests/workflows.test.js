@@ -2,7 +2,7 @@
  * workflows.test.js — Tests for scan/compare workflows.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -92,6 +92,63 @@ describe('collectTextFiles', () => {
     });
 
     expect(files.some((f) => f.includes('node_modules'))).toBe(true);
+  });
+
+  it('throws readdir errors when no onError handler is supplied', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+    const blockedDir = path.join(tmp, 'blocked');
+
+    fs.mkdirSync(blockedDir, { recursive: true });
+    fs.writeFileSync(path.join(tmp, 'ok.md'), 'This file should still be discovered.');
+
+    const originalReaddirSync = fs.readdirSync;
+    const spy = vi.spyOn(fs, 'readdirSync').mockImplementation((dir, options) => {
+      if (path.resolve(String(dir)) === path.resolve(blockedDir)) {
+        const err = new Error('permission denied');
+        err.code = 'EACCES';
+        throw err;
+      }
+      return originalReaddirSync(dir, options);
+    });
+
+    try {
+      expect(() => collectTextFiles(tmp, { exts: ['.md'] })).toThrow('permission denied');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('continues scanning when a subdirectory cannot be read', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+    const blockedDir = path.join(tmp, 'blocked');
+
+    fs.mkdirSync(blockedDir, { recursive: true });
+    fs.writeFileSync(path.join(tmp, 'ok.md'), 'This file should still be discovered.');
+
+    const originalReaddirSync = fs.readdirSync;
+    const spy = vi.spyOn(fs, 'readdirSync').mockImplementation((dir, options) => {
+      if (path.resolve(String(dir)) === path.resolve(blockedDir)) {
+        const err = new Error('permission denied');
+        err.code = 'EACCES';
+        throw err;
+      }
+      return originalReaddirSync(dir, options);
+    });
+
+    const errors = [];
+    let files;
+    try {
+      files = collectTextFiles(tmp, {
+        exts: ['.md'],
+        onError: (item) => errors.push(item),
+      });
+    } finally {
+      spy.mockRestore();
+    }
+
+    expect(files.some((f) => f.endsWith('ok.md'))).toBe(true);
+    expect(errors.length).toBe(1);
+    expect(errors[0].reason).toContain('read_dir_error');
   });
 });
 

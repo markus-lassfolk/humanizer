@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Humanizer MCP Server
- * 
+ *
  * Exposes AI writing detection and humanization tools via Model Context Protocol.
  * Works with Claude Desktop, ChatGPT, VS Code, and other MCP clients.
  *
@@ -11,6 +11,7 @@
  */
 
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -21,11 +22,11 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
-// Import humanizer modules
-import { analyze, score } from '../src/analyzer.js';
-import { humanize, autoFix } from '../src/humanizer.js';
-import { computeStats } from '../src/stats.js';
-import { loadLocale } from '../src/locales/index.js';
+const require = createRequire(import.meta.url);
+const { analyze, score } = require('../src/analyzer.js');
+const { humanize } = require('../src/humanizer.js');
+const { computeStats } = require('../src/stats.js');
+const { loadLocale, SUPPORTED_LOCALES } = require('../src/locales');
 
 const LOCALE_DESCRIPTION = 'Language locale: "en" (default) or "sv" for Swedish. Use "sv" when the input text is in Swedish.';
 
@@ -36,9 +37,9 @@ const LOCALE_DESCRIPTION = 'Language locale: "en" (default) or "sv" for Swedish.
 // server still starts when run from a partial install.
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-function readJson(path) {
+function readJson(filePath) {
   try {
-    return JSON.parse(readFileSync(path, 'utf8'));
+    return JSON.parse(readFileSync(filePath, 'utf8'));
   } catch {
     return null;
   }
@@ -160,24 +161,44 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params;
-  const locale = args.locale || 'en';
+  const { name, arguments: rawArgs } = request.params;
+  const args = rawArgs ?? {};
+  const locale = typeof args.locale === 'string' ? args.locale : 'en';
+
+  if (!SUPPORTED_LOCALES.includes(locale)) {
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Error: Invalid locale "${locale}". Supported locales: ${SUPPORTED_LOCALES.join(', ')}`,
+        },
+      ],
+      isError: true,
+    };
+  }
+
+  if (typeof args.text !== 'string' || args.text.trim().length === 0) {
+    return {
+      content: [{ type: 'text', text: 'Error: Missing required argument: text' }],
+      isError: true,
+    };
+  }
 
   try {
     switch (name) {
       case 'score': {
         const s = score(args.text, { locale });
-        const badge = s <= 25 ? '🟢' : s <= 50 ? '🟡' : s <= 75 ? '🟠' : '🔴';
+        const badge = s <= 19 ? '🟢' : s <= 44 ? '🟡' : s <= 69 ? '🟠' : '🔴';
         return {
           content: [
             {
               type: 'text',
               text: `${badge} AI Score: ${s}/100\n\n${
-                s <= 25
+                s <= 19
                   ? 'Mostly human-sounding'
-                  : s <= 50
+                  : s <= 44
                   ? 'Lightly AI-touched'
-                  : s <= 75
+                  : s <= 69
                   ? 'Moderately AI-influenced'
                   : 'Heavily AI-generated'
               }${locale !== 'en' ? `\n\nLocale: ${locale}` : ''}`,

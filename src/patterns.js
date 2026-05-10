@@ -690,24 +690,39 @@ const patterns = [
       const synonymSets = pack;
 
       const results = [];
-      const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+      const sentenceMatches = [...text.matchAll(/[^.!?]+/g)]
+        .map((match) => ({
+          text: match[0],
+          index: match.index ?? 0,
+        }))
+        .filter((sentence) => sentence.text.trim().length > 0);
 
       for (const synonyms of synonymSets) {
-        for (let i = 0; i < sentences.length - 1; i++) {
+        for (let i = 0; i < sentenceMatches.length - 1; i++) {
           const found = [];
-          for (let j = i; j < Math.min(i + 4, sentences.length); j++) {
-            const lower = sentences[j].toLowerCase();
+          let firstHitIndex = null;
+          for (let j = i; j < Math.min(i + 4, sentenceMatches.length); j++) {
+            const lower = sentenceMatches[j].text.toLowerCase();
             for (const syn of synonyms) {
               if (lower.includes(syn) && !found.includes(syn)) {
                 found.push(syn);
+                firstHitIndex ??= j;
               }
             }
           }
           if (found.length >= 3) {
+            // matchAll preserves the original offset for each sentence fragment, so
+            // repeated sentence text and punctuation without following whitespace do
+            // not send position reporting back to the first occurrence in the text.
+            // Report the first sentence in the window that actually contains a synonym.
+            const reportSentence = sentenceMatches[firstHitIndex ?? i];
+            const leadingWhitespace = reportSentence.text.match(/^\s*/)?.[0].length ?? 0;
+            const idx = reportSentence.index + leadingWhitespace;
+            const lineNum = text.substring(0, idx).split('\n').length;
             results.push({
               match: `Synonym cycling: ${found.join(' → ')}`,
-              index: text.indexOf(sentences[i]),
-              line: text.substring(0, text.indexOf(sentences[i])).split('\n').length,
+              index: idx,
+              line: lineNum,
               column: 1,
               suggestion: `Pick one term and stick with it. Found "${found.join('", "')}" used as synonyms in nearby sentences.`,
               confidence: 'medium',
