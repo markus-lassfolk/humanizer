@@ -219,6 +219,7 @@ function humanize(text, opts = {}) {
     score: analysis.score,
     patternScore: analysis.patternScore,
     uniformityScore: analysis.uniformityScore,
+    lmUniformityBoost: analysis.lmUniformityBoost || 0,
     reliability: analysis.reliability,
     wordCount: analysis.wordCount,
     totalIssues: analysis.totalMatches,

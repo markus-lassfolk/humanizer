@@ -43,6 +43,8 @@ const RELIABILITY_RECOMMENDED_WORDS = 150;
  *   - includeStats {boolean}  Include full text statistics (default: true)
  *   - ignoreCode {boolean}  Ignore fenced/inline code snippets before analysis
  *   - locale {string}       Locale code: 'en' (default) or 'sv'
+ *   - strict {boolean}      Enable strict-mode inclusive-language hints (default: false)
+ *   - withLm {boolean}      Apply optional n-gram uniformity boost (default: false)
  *   - config {object}       Custom config overrides
  * @returns {object}     — Full analysis result
  */
@@ -53,6 +55,8 @@ function analyze(text, opts = {}) {
     includeStats = true,
     ignoreCode = false,
     locale = 'en',
+    strict = false,
+    withLm = false,
   } = opts;
 
   // Load locale profile (throws on unknown locale codes)
@@ -71,8 +75,10 @@ function analyze(text, opts = {}) {
   // ── Compute text statistics ────────────────────────
   const stats = includeStats ? computeStats(trimmed, localeProfile) : null;
   // Only compute uniformity for text with enough structure to be meaningful
-  const uniformityScore =
+  const baseUniformityScore =
     stats && stats.wordCount >= 20 && stats.sentenceCount >= 3 ? computeUniformityScore(stats) : 0;
+  const lmUniformityBoost = withLm ? computeLmUniformityBoost(stats) : 0;
+  const uniformityScore = Math.min(baseUniformityScore + lmUniformityBoost, 100);
 
   // ── Run pattern detectors ──────────────────────────
   const findings = [];
@@ -86,7 +92,7 @@ function analyze(text, opts = {}) {
     : patterns;
 
   // detectOpts is passed to every pattern; only pattern 7 uses localeProfile.
-  const detectOpts = { localeProfile };
+  const detectOpts = { localeProfile, strict };
 
   for (const pattern of activePatterns) {
     const matches = pattern.detect(trimmed, detectOpts);
@@ -140,6 +146,7 @@ function analyze(text, opts = {}) {
     score: compositeScore,
     patternScore,
     uniformityScore,
+    lmUniformityBoost,
     reliability,
     totalMatches,
     wordCount: words,
@@ -148,6 +155,22 @@ function analyze(text, opts = {}) {
     findings,
     summary: buildSummary(compositeScore, totalMatches, findings, words, stats, reliability),
   };
+}
+
+function computeLmUniformityBoost(stats) {
+  if (!stats || stats.wordCount < 20 || stats.sentenceCount < 3) return 0;
+
+  let boost = 0;
+
+  // Lightweight LM-style signal from repeated local n-gram patterns.
+  if (stats.trigramRepetition > 0.12) boost += 8;
+  else if (stats.trigramRepetition > 0.08) boost += 5;
+  else if (stats.trigramRepetition > 0.05) boost += 2;
+
+  if (stats.typeTokenRatio < 0.4) boost += 2;
+  if (stats.sentenceLengthVariation < 0.25) boost += 2;
+
+  return Math.min(boost, 12);
 }
 
 function buildReliability({ words, stats, findings, patternScore, uniformityScore }) {
@@ -523,6 +546,7 @@ function emptyResult() {
     score: 0,
     patternScore: 0,
     uniformityScore: 0,
+    lmUniformityBoost: 0,
     reliability: {
       level: 'low',
       score: 0,

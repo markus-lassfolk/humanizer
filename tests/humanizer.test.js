@@ -195,21 +195,24 @@ describe('humanize', () => {
   });
 
   it('passes strict option through to analysis', () => {
-    // strict enables extra detectors. Validate that strict mode is accepted
-    // and does not reduce the overall score.
-    const text = loadFixture('ai-sample-1.txt');
+    const text = 'Guys, we need more manpower. The chairman approved this.';
     const resultDefault = humanize(text);
     const resultStrict = humanize(text, { strict: true });
-    expect(resultStrict).toHaveProperty('score');
-    expect(resultStrict.score).toBeGreaterThanOrEqual(resultDefault.score);
+    expect(resultStrict.totalIssues).toBeGreaterThan(resultDefault.totalIssues);
+    expect(
+      [...resultStrict.critical, ...resultStrict.important, ...resultStrict.minor].some(
+        (s) => s.patternId === 35,
+      ),
+    ).toBe(true);
   });
 
-  it('accepts withLm option without throwing', () => {
-    // withLm requires an LM file; when absent it degrades gracefully.
-    const text = loadFixture('ai-sample-1.txt');
-    expect(() => humanize(text, { withLm: true })).not.toThrow();
-    const result = humanize(text, { withLm: true });
-    expect(result).toHaveProperty('score');
+  it('withLm adds optional n-gram uniformity boost for repetitive text', () => {
+    const text =
+      'This process is very clear and very clear and very clear. This process is very clear and very clear and very clear. This process is very clear and very clear and very clear.';
+    const resultDefault = humanize(text);
+    const resultWithLm = humanize(text, { withLm: true });
+    expect(resultWithLm.lmUniformityBoost).toBeGreaterThan(0);
+    expect(resultWithLm.uniformityScore).toBeGreaterThanOrEqual(resultDefault.uniformityScore);
   });
 });
 

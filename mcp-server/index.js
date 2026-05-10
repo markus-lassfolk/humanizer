@@ -20,7 +20,7 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 
 // Import humanizer modules
 import { analyze, scoreLabel } from '../src/analyzer.js';
-import { humanize, autoFix } from '../src/humanizer.js';
+import { humanize } from '../src/humanizer.js';
 import { computeStats } from '../src/stats.js';
 import { loadLocale } from '../src/locales/index.js';
 
