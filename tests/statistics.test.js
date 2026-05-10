@@ -52,15 +52,71 @@ describe('splitSentences', () => {
 
   it('handles abbreviations', () => {
     const result = splitSentences('Dr. Smith went home. Mr. Jones followed.');
-    // Should split into 2 sentences, not 4
-    expect(result.length).toBe(2);
+    expect(result).toEqual(['Dr. Smith went home.', 'Mr. Jones followed.']);
   });
 
-  it('supports Swedish uppercase letters at sentence starts', () => {
+  it('keeps common dotted abbreviations inside the sentence', () => {
     const result = splitSentences(
-      'Första meningen. Åter står allt klart. Över tid blir det bättre.',
+      'Use e.g. this pattern. See fig. 2 for details. Try i.e. that wording.',
     );
-    expect(result.length).toBe(3);
+    expect(result).toEqual([
+      'Use e.g. this pattern.',
+      'See fig. 2 for details.',
+      'Try i.e. that wording.',
+    ]);
+  });
+
+  it('keeps known short abbreviations with lowercase or numeric continuations', () => {
+    const result = splitSentences('Acme Inc. filed today. Done.');
+    expect(result).toEqual(['Acme Inc. filed today.', 'Done.']);
+  });
+
+  it('allows sentence split after Inc. when next sentence starts uppercase', () => {
+    const result = splitSentences('She works at Acme Inc. She leads product.');
+    expect(result).toEqual(['She works at Acme Inc.', 'She leads product.']);
+  });
+
+  it('splits sentences ending with "no" as a regular word unless no. is followed by a number', () => {
+    expect(splitSentences('The answer is no. Next sentence.')).toEqual([
+      'The answer is no.',
+      'Next sentence.',
+    ]);
+    expect(splitSentences('I said no. She said yes.')).toEqual(['I said no.', 'She said yes.']);
+    expect(splitSentences('See no. 2 for details.')).toEqual(['See no. 2 for details.']);
+    expect(splitSentences('Compare No. 10 with no. 11 before deciding.')).toEqual([
+      'Compare No. 10 with no. 11 before deciding.',
+    ]);
+  });
+
+  it('does not merge normal short words before lowercase or numeric sentence starts', () => {
+    expect(splitSentences('Stop now. second sentence.')).toEqual(['Stop now.', 'second sentence.']);
+    expect(splitSentences('We can go. 2024 was wild.')).toEqual(['We can go.', '2024 was wild.']);
+  });
+
+  it('splits when next sentence starts lowercase', () => {
+    const result = splitSentences('First sentence. second sentence starts lowercase.');
+    expect(result).toEqual(['First sentence.', 'second sentence starts lowercase.']);
+  });
+
+  it('splits with non-ASCII uppercase letters', () => {
+    const result = splitSentences('Första meningen. Åter en mening.');
+    expect(result).toEqual(['Första meningen.', 'Åter en mening.']);
+  });
+
+  it('keeps Unicode and lowercase initials inside the sentence', () => {
+    const result = splitSentences(
+      'Å. Andersson arrived. e. e. cummings stayed lowercase. Next sentence.',
+    );
+    expect(result).toEqual([
+      'Å. Andersson arrived.',
+      'e. e. cummings stayed lowercase.',
+      'Next sentence.',
+    ]);
+  });
+
+  it('does not suppress sentence breaks after year-style numbers', () => {
+    const result = splitSentences('The year was 2024. We shipped the patch.');
+    expect(result).toEqual(['The year was 2024.', 'We shipped the patch.']);
   });
 });
 
@@ -124,6 +180,7 @@ describe('computeStats', () => {
     const stats = computeStats('');
     expect(stats.wordCount).toBe(0);
     expect(stats.sentenceCount).toBe(0);
+    expect(stats.fleschKincaid).toBe(0);
   });
 
   it('handles null input', () => {

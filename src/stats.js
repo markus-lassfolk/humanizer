@@ -38,11 +38,20 @@ function protectAbbreviations(text, abbreviations) {
   for (const abbr of abbreviations) {
     // Escape any dots within the abbreviation for regex use
     const escaped = abbr.replace(/\./g, '\\.');
-    // Build pattern: word boundary + abbreviation + trailing dot
-    const regex = new RegExp(`\\b${escaped}\\.`, 'gi');
+    // Build pattern: word boundary + abbreviation + trailing dot.
+    const regex = new RegExp(`\\b(${escaped})\\.`, 'gi');
     // Replace every dot (internal + trailing) with the placeholder
-    const placeholder = `${abbr.replace(/\./g, '\u2024')}\u2024`;
-    result = result.replace(regex, placeholder);
+    // Use $1 to preserve original casing from the matched text
+    result = result.replace(regex, (match, captured, offset, source) => {
+      if (abbr.toLowerCase() === 'inc') {
+        const remainder = source.slice(offset + match.length);
+        const next = remainder.match(/^\s*(\S)/u)?.[1] || null;
+        if (next && /\p{Lu}/u.test(next)) {
+          return match;
+        }
+      }
+      return `${captured.replace(/\./g, '\u2024')}\u2024`;
+    });
   }
   return result;
 }
@@ -65,23 +74,41 @@ function splitSentences(text, localeProfile) {
     cleaned = protectAbbreviations(cleaned, abbreviations);
   } else {
     // English fallback (legacy behaviour)
-    cleaned = cleaned.replace(
-      /\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|etc|vs|approx|dept|est|vol)\./gi,
-      '$1\u2024',
-    );
+    cleaned = protectAbbreviations(cleaned, [
+      'Mr',
+      'Mrs',
+      'Ms',
+      'Dr',
+      'Prof',
+      'Sr',
+      'Jr',
+      'etc',
+      'e.g',
+      'i.e',
+      'fig',
+      'Inc',
+      'vs',
+      'approx',
+      'dept',
+      'est',
+      'vol',
+    ]);
   }
 
-  // Language-agnostic: protect initials and numbered lists regardless of locale
+  // Language-agnostic: protect initials, contextual number abbreviations,
+  // decimals, and numbered lists regardless of locale. Keep "no." sentence-ending
+  // when it is not followed by a number, but preserve common "no. 2" / "No. 10"
+  // references as a single sentence.
   cleaned = cleaned
-    .replace(/\b([A-Z])\./g, '$1\u2024') // initials: "J. K. Rowling"
-    .replace(/\b(\d+)\./g, '$1\u2024'); // numbered lists: "1. First"
+    .replace(/\bno\.(?=\s*\d)/giu, (match) => `${match.slice(0, -1)}\u2024`)
+    .replace(/(?<!\p{L})(\p{L})\./gu, '$1\u2024') // initials: "J. K. Rowling", "Å. Andersson", "e. e. cummings"
+    .replace(/(\d)\.(\d)/g, '$1\u2024$2') // decimals/time values: "14.30"
+    .replace(/(^|\n)(\s*)(\d+)\.(?=\s+\S)/g, '$1$2$3\u2024'); // numbered lists at line/string start: "1. First"
 
-  const sentences = cleaned
-    .split(/(?<=[.!?])\s+(?=(?:\p{Lu}|["'\u201C]))|(?<=[.!?])$/u)
+  return cleaned
+    .split(/(?<=[.!?])\s+|(?<=[.!?])$/)
     .map((s) => s.replace(/\u2024/g, '.').trim())
     .filter((s) => s.length > 0);
-
-  return sentences;
 }
 
 // ─── Core Statistics ─────────────────────────────────────

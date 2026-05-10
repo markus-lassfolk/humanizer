@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * Humanizer HTTP API Server
- * 
+ *
  * Simple HTTP server for OpenAI Actions and other integrations.
  * Run with: node api-server/server.js
- * 
+ *
  * Endpoints:
  *   POST /api/score     - Quick AI score (0-100)
  *   POST /api/analyze   - Full analysis with patterns
@@ -26,6 +26,7 @@ import { loadLocale } from '../src/locales/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
+const MAX_BODY_BYTES = 1024 * 1024;
 
 // CORS headers for browser/GPT access
 const corsHeaders = {
@@ -37,24 +38,71 @@ const corsHeaders = {
 // Parse JSON body
 async function parseBody(req) {
   return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => body += chunk);
-    req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (e) {
-        reject(new Error('Invalid JSON'));
+    const chunks = [];
+    let total = 0;
+    let settled = false;
+
+    const cleanup = () => {
+      req.removeListener('data', onData);
+      req.removeListener('end', onEnd);
+      req.removeListener('error', onError);
+    };
+
+    const settleResolve = (value) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(value);
+    };
+
+    const settleReject = (err) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(err);
+    };
+
+    const onData = (chunk) => {
+      if (settled) return;
+
+      total += chunk.length;
+      if (total > MAX_BODY_BYTES) {
+        const err = new Error('Request body too large');
+        err.statusCode = 413;
+        settleReject(err);
+        return;
       }
-    });
-    req.on('error', reject);
+      chunks.push(chunk);
+    };
+
+    const onEnd = () => {
+      if (settled) return;
+
+      try {
+        const body = Buffer.concat(chunks).toString('utf8');
+        settleResolve(body ? JSON.parse(body) : {});
+      } catch {
+        const err = new Error('Invalid JSON');
+        err.statusCode = 400;
+        settleReject(err);
+      }
+    };
+
+    const onError = (err) => {
+      settleReject(err);
+    };
+
+    req.on('data', onData);
+    req.on('end', onEnd);
+    req.on('error', onError);
   });
 }
 
 // Send JSON response
 function sendJson(res, data, status = 200) {
-  res.writeHead(status, { 
+  res.writeHead(status, {
     ...corsHeaders,
-    'Content-Type': 'application/json' 
+    'Content-Type': 'application/json',
   });
   res.end(JSON.stringify(data));
 }
@@ -75,9 +123,9 @@ async function handleRequest(req, res) {
     // GET /api/openapi - Return OpenAPI spec
     if (req.method === 'GET' && path === '/api/openapi') {
       const spec = await readFile(join(__dirname, 'openapi.yaml'), 'utf-8');
-      res.writeHead(200, { 
+      res.writeHead(200, {
         ...corsHeaders,
-        'Content-Type': 'application/yaml' 
+        'Content-Type': 'application/yaml',
       });
       res.end(spec);
       return;
@@ -85,11 +133,11 @@ async function handleRequest(req, res) {
 
     // GET / - Health check
     if (req.method === 'GET' && path === '/') {
-      sendJson(res, { 
-        status: 'ok', 
+      sendJson(res, {
+        status: 'ok',
         name: 'humanizer-api',
         version: '2.1.0',
-        endpoints: ['/api/score', '/api/analyze', '/api/humanize', '/api/stats', '/api/openapi']
+        endpoints: ['/api/score', '/api/analyze', '/api/humanize', '/api/stats', '/api/openapi'],
       });
       return;
     }
@@ -97,7 +145,7 @@ async function handleRequest(req, res) {
     // POST endpoints
     if (req.method === 'POST') {
       const body = await parseBody(req);
-      
+
       if (!body.text) {
         sendJson(res, { error: 'Missing required field: text' }, 400);
         return;
@@ -110,13 +158,14 @@ async function handleRequest(req, res) {
         case '/api/score': {
           const s = score(body.text, { locale });
           const badge = s <= 25 ? '🟢' : s <= 50 ? '🟡' : s <= 75 ? '🟠' : '🔴';
-          const interpretation = s <= 25
-            ? 'Mostly human-sounding'
-            : s <= 50
-            ? 'Lightly AI-touched'
-            : s <= 75
-            ? 'Moderately AI-influenced'
-            : 'Heavily AI-generated';
+          const interpretation =
+            s <= 25
+              ? 'Mostly human-sounding'
+              : s <= 50
+                ? 'Lightly AI-touched'
+                : s <= 75
+                  ? 'Moderately AI-influenced'
+                  : 'Heavily AI-generated';
           sendJson(res, { score: s, badge, interpretation, locale });
           return;
         }
@@ -132,7 +181,7 @@ async function handleRequest(req, res) {
         }
 
         case '/api/humanize': {
-          const suggestions = humanize(body.text, { 
+          const suggestions = humanize(body.text, {
             autofix: body.autofix || false,
             locale,
           });
@@ -156,7 +205,7 @@ async function handleRequest(req, res) {
     sendJson(res, { error: 'Not found' }, 404);
   } catch (error) {
     console.error('Error:', error);
-    sendJson(res, { error: error.message }, 500);
+    sendJson(res, { error: error.message }, error.statusCode || 500);
   }
 }
 
