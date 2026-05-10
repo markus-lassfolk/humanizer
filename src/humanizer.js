@@ -14,7 +14,7 @@
  *   - Opinion injection (humans have preferences, AI is neutral)
  */
 
-const { analyze } = require('./analyzer');
+const { analyze, roundDisplayCount } = require('./analyzer');
 const { loadLocale } = require('./locales');
 
 const HIDDEN_UNICODE_CHARS = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/;
@@ -479,7 +479,7 @@ function formatSuggestions(result) {
   const bar = '█'.repeat(filled) + '░'.repeat(20 - filled);
   lines.push(`  AI Score: ${result.score}/100  [${bar}]`);
   lines.push(
-    `  Issues: ${Math.round(result.totalIssues)}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
+    `  Issues: ${roundDisplayCount(result.totalIssues)}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
   );
   if (result.reliability) {
     lines.push(
