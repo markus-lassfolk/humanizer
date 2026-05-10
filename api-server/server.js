@@ -41,7 +41,7 @@ async function parseBody(req) {
     let total = 0;
     let rejected = false;
 
-    req.on('data', (chunk) => {
+    const onData = (chunk) => {
       if (rejected) return;
 
       total += chunk.length;
@@ -50,12 +50,17 @@ async function parseBody(req) {
         const err = new Error('Request body too large');
         err.statusCode = 413;
         reject(err);
+        // Remove listeners to prevent any further processing
+        req.removeListener('data', onData);
+        req.removeListener('end', onEnd);
+        req.removeListener('error', onError);
         req.destroy();
         return;
       }
       chunks.push(chunk);
-    });
-    req.on('end', () => {
+    };
+
+    const onEnd = () => {
       if (rejected) return;
 
       try {
@@ -66,10 +71,18 @@ async function parseBody(req) {
         err.statusCode = 400;
         reject(err);
       }
-    });
-    req.on('error', (err) => {
-      if (!rejected) reject(err);
-    });
+    };
+
+    const onError = (err) => {
+      if (!rejected) {
+        rejected = true;
+        reject(err);
+      }
+    };
+
+    req.on('data', onData);
+    req.on('end', onEnd);
+    req.on('error', onError);
   });
 }
 
