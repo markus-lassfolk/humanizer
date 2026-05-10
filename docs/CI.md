@@ -1,6 +1,6 @@
 # Continuous integration and release
 
-GitHub Actions run on **Node.js 22** (see `package.json` `engines`).
+GitHub Actions use the Node.js version from `package.json` `engines` via `actions/setup-node` `node-version-file`.
 
 ## Workflows
 

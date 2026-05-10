@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: package.json
 
       - run: npm install
 
@@ -59,7 +59,7 @@ jobs:
                 'The scheduled **Nightly pipelines** workflow failed.',
                 '',
                 `- Workflow run: ${runUrl}`,
-                '- Download artifacts `nightly-sv-reports` / `nightly-en-reports` from the run for logs and snapshots.',
+                '- Download artifact `nightly-sv-reports` from the run for logs and snapshots.',
                 '',
                 'Close this issue after fixing or if the failure was transient.',
               ].join('\n'),

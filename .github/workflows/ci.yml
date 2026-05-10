@@ -1,4 +1,4 @@
-# Lint, locale validation, and tests (Node 22). Three jobs so GitHub branch
+# Lint, locale validation, and tests (Node from package.json engines). Three jobs so GitHub branch
 # protection can require each check name separately.
 name: CI
 
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: package.json
       - run: npm install
       - run: npm run check:lint
 
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: package.json
       - run: npm install
       - run: npm run check:locale
 
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: package.json
       - run: npm install
       - run: npm run check:test
 
@@ -57,6 +57,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: package.json
       - run: npm install
       - run: npm run audit:production
