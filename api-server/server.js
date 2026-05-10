@@ -26,6 +26,7 @@ import { loadLocale } from '../src/locales/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
+const MAX_BODY_BYTES = 1024 * 1024;
 
 // CORS headers for browser/GPT access
 const corsHeaders = {
@@ -37,16 +38,64 @@ const corsHeaders = {
 // Parse JSON body
 async function parseBody(req) {
   return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => body += chunk);
-    req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (e) {
-        reject(new Error('Invalid JSON'));
+    const chunks = [];
+    let total = 0;
+    let settled = false;
+
+    const cleanup = () => {
+      req.removeListener('data', onData);
+      req.removeListener('end', onEnd);
+      req.removeListener('error', onError);
+    };
+
+    const settleResolve = (value) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(value);
+    };
+
+    const settleReject = (err) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(err);
+    };
+
+    const onData = (chunk) => {
+      if (settled) return;
+
+      total += chunk.length;
+      if (total > MAX_BODY_BYTES) {
+        const err = new Error('Request body too large');
+        err.statusCode = 413;
+        settleReject(err);
+        req.destroy();
+        return;
       }
-    });
-    req.on('error', reject);
+      chunks.push(chunk);
+    };
+
+    const onEnd = () => {
+      if (settled) return;
+
+      try {
+        const body = Buffer.concat(chunks).toString('utf8');
+        settleResolve(body ? JSON.parse(body) : {});
+      } catch {
+        const err = new Error('Invalid JSON');
+        err.statusCode = 400;
+        settleReject(err);
+      }
+    };
+
+    const onError = (err) => {
+      settleReject(err);
+    };
+
+    req.on('data', onData);
+    req.on('end', onEnd);
+    req.on('error', onError);
   });
 }
 
