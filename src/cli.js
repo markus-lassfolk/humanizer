@@ -135,8 +135,10 @@ if (fileIdx !== -1 && args[fileIdx + 1]) {
   flags.file = args[fileIdx + 1];
 }
 
-// Parse positional file argument (command <file>)
-if (!flags.file && args[1] && !args[1].startsWith('-')) {
+// Parse positional file argument (command <file>) — scans all args after the command
+// so the path may appear anywhere, not just as the immediate second argument.
+// Flags that consume the next argument are skipped over.
+if (!flags.file) {
   const commands = [
     'analyze',
     'score',
@@ -147,8 +149,36 @@ if (!flags.file && args[1] && !args[1].startsWith('-')) {
     'scan',
     'compare',
   ];
-  if (!commands.includes(args[1])) {
-    flags.file = args[1];
+  const valueFlagSet = new Set([
+    '-f',
+    '--file',
+    '--patterns',
+    '--threshold',
+    '--config',
+    '--before',
+    '--after',
+    '--ext',
+    '--min-words',
+    '--fail-above',
+    '--baseline',
+    '--regression-threshold',
+    '--ignore-dirs',
+    '--locale',
+  ]);
+  let skipNext = false;
+  for (let i = 1; i < args.length; i++) {
+    if (skipNext) {
+      skipNext = false;
+      continue;
+    }
+    if (valueFlagSet.has(args[i])) {
+      skipNext = true;
+      continue;
+    }
+    if (args[i].startsWith('-')) continue;
+    if (commands.includes(args[i])) continue;
+    flags.file = args[i];
+    break;
   }
 }
 
@@ -489,10 +519,10 @@ ${color.bold('Examples:')}
   HUMANIZER_LOCALE=sv humanizer score article.txt
 
 ${color.bold('Score badges:')}
-  🟢 0-25    Mostly human-sounding
-  🟡 26-50   Lightly AI-touched
-  🟠 51-75   Moderately AI-influenced
-  🔴 76-100  Heavily AI-generated
+  🟢 0-19    Mostly human-sounding
+  🟡 20-44   Lightly AI-touched
+  🟠 45-69   Moderately AI-influenced
+  🔴 70-100  Heavily AI-generated
 `);
 }
 

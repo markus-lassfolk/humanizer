@@ -158,9 +158,15 @@ function preserveReplacementCase(match, replacement) {
  * @returns {object}       — Suggestions report
  */
 function humanize(text, opts = {}) {
-  const { autofix = false, includeStats = true, ignoreCode = false, locale = 'en' } = opts;
+  const {
+    autofix = false,
+    verbose = true,
+    includeStats = true,
+    ignoreCode = false,
+    locale = 'en',
+  } = opts;
 
-  const analysis = analyze(text, { verbose: true, includeStats, ignoreCode, locale });
+  const analysis = analyze(text, { verbose, includeStats, ignoreCode, locale });
 
   // Group by priority
   const critical = []; // weight 4-5: dead giveaways
@@ -336,7 +342,7 @@ function buildGuidance(analysis, locale = 'en') {
     );
   }
 
-  if (analysis.score >= 50) {
+  if (analysis.rawScore >= 50) {
     tips.push(
       sv
         ? 'Överväg att skriva om från grunden. När AI-mönster är så täta räcker det inte att lappa enskilda fraser — själva strukturen behöver omarbetas.'
@@ -468,7 +474,7 @@ function formatSuggestions(result) {
   const bar = '█'.repeat(filled) + '░'.repeat(20 - filled);
   lines.push(`  AI Score: ${result.score}/100  [${bar}]`);
   lines.push(
-    `  Issues: ${result.totalIssues}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
+    `  Issues: ${Math.round(result.totalIssues)}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
   );
   if (result.reliability) {
     lines.push(
@@ -488,24 +494,18 @@ function formatSuggestions(result) {
 
   if (result.important.length > 0) {
     lines.push('── IMPORTANT (noticeable patterns) ─────────────────');
-    for (const s of result.important.slice(0, 15)) {
+    for (const s of result.important) {
       lines.push(`  L${s.line}: [${s.pattern}] "${truncate(s.text, 60)}"`);
       lines.push(`       → ${s.suggestion}`);
-    }
-    if (result.important.length > 15) {
-      lines.push(`  ... and ${result.important.length - 15} more`);
     }
     lines.push('');
   }
 
   if (result.minor.length > 0) {
     lines.push('── MINOR (subtle tells) ────────────────────────────');
-    for (const s of result.minor.slice(0, 10)) {
+    for (const s of result.minor) {
       lines.push(`  L${s.line}: [${s.pattern}] "${truncate(s.text, 60)}"`);
       lines.push(`       → ${s.suggestion}`);
-    }
-    if (result.minor.length > 10) {
-      lines.push(`  ... and ${result.minor.length - 10} more`);
     }
     lines.push('');
   }

@@ -65,13 +65,14 @@ function analyze(text, opts = {}) {
     skipCalibration = false,
   } = opts;
 
-  // Load locale profile (throws on unknown locale codes)
-  const localeProfile = loadLocale(locale);
-  const scoringKnobs = mergeScoringKnobs(localeProfile);
-
+  // Validate input before doing any expensive locale/pattern work (Bug 9)
   if (!text || typeof text !== 'string') {
     return emptyResult();
   }
+
+  // Load locale profile (throws on unknown locale codes)
+  const localeProfile = loadLocale(locale);
+  const scoringKnobs = mergeScoringKnobs(localeProfile);
 
   const preparedText = ignoreCode ? stripCodeSnippets(text) : text;
   const trimmed = preparedText.trim();
@@ -186,6 +187,12 @@ function analyze(text, opts = {}) {
         })
       : null;
 
+  // Use the stats-based word count for the returned result and display, as it is
+  // Unicode-aware (tokenize) and consistent with stats.wordCount. The internal
+  // `words` variable (simple whitespace split) is still used for scoring and
+  // calibration to preserve the trained calibrator's feature expectations.
+  const reportWordCount = stats ? stats.wordCount : words;
+
   return {
     score: finalScore,
     rawScore: compositeHeuristic,
@@ -193,12 +200,12 @@ function analyze(text, opts = {}) {
     uniformityScore,
     reliability,
     totalMatches,
-    wordCount: words,
+    wordCount: reportWordCount,
     stats,
     categories,
     findings,
     calibrationFeatures,
-    summary: buildSummary(finalScore, totalMatches, findings, words, stats, reliability),
+    summary: buildSummary(finalScore, totalMatches, findings, reportWordCount, stats, reliability),
   };
 }
 
@@ -223,7 +230,10 @@ function buildReliability({ words, stats, findings, patternScore, uniformityScor
     reasons.push('Sentence count is low, so statistical signals are weaker.');
   }
 
-  if (findings.length <= 1) {
+  if (findings.length === 0) {
+    confidenceScore -= 15;
+    reasons.push('No AI pattern families were detected.');
+  } else if (findings.length === 1) {
     confidenceScore -= 15;
     reasons.push('Only one AI pattern family was detected.');
   }
@@ -334,7 +344,14 @@ function buildSummary(finalScore, totalMatches, findings, words, stats, reliabil
     .slice(0, 3)
     .map((f) => f.patternName);
 
-  let summary = `Score: ${finalScore}/100 (${level}). Found ${totalMatches} matches across ${findings.length} pattern types in ${words} words.`;
+  let summary;
+  if (totalMatches === 0) {
+    // Score is driven entirely by statistical uniformity — no lexical pattern hits.
+    // Saying "Found 0 matches across 0 pattern types" would be misleading here.
+    summary = `Score: ${finalScore}/100 (${level}). No pattern matches detected, but the text shows statistically uniform structure typical of AI prose. Analysis based on ${words} words.`;
+  } else {
+    summary = `Score: ${finalScore}/100 (${level}). Found ${Math.round(totalMatches)} matches across ${findings.length} pattern types in ${words} words.`;
+  }
 
   if (topPatterns.length > 0) {
     summary += ` Top issues: ${topPatterns.join(', ')}.`;
@@ -385,7 +402,7 @@ function formatReport(result) {
   const bar = '█'.repeat(filled) + '░'.repeat(20 - filled);
   lines.push(`  Score: ${result.score}/100  [${bar}]`);
   lines.push(
-    `  Words: ${result.wordCount}  |  Matches: ${result.totalMatches}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
+    `  Words: ${result.wordCount}  |  Matches: ${Math.round(result.totalMatches)}  |  Pattern: ${result.patternScore}  |  Uniformity: ${result.uniformityScore}`,
   );
   if (result.reliability) {
     lines.push(
@@ -420,7 +437,9 @@ function formatReport(result) {
   lines.push('── Categories ──────────────────────────────────────');
   for (const [, data] of Object.entries(result.categories)) {
     if (data.matches > 0) {
-      lines.push(`  ${data.label}: ${data.matches} matches (${data.patternsDetected.join(', ')})`);
+      lines.push(
+        `  ${data.label}: ${Math.round(data.matches)} matches (${data.patternsDetected.join(', ')})`,
+      );
     }
   }
   lines.push('');
@@ -431,7 +450,7 @@ function formatReport(result) {
     for (const finding of result.findings) {
       lines.push('');
       lines.push(
-        `  [${finding.patternId}] ${finding.patternName} (×${finding.matchCount}, weight: ${finding.weight})`,
+        `  [${finding.patternId}] ${finding.patternName} (×${Math.round(finding.matchCount)}, weight: ${finding.weight})`,
       );
       lines.push(`      ${finding.description}`);
       for (const match of finding.matches) {
@@ -474,7 +493,7 @@ function formatMarkdown(result) {
   }
   lines.push('');
   lines.push(
-    `Words: ${result.wordCount} | Matches: ${result.totalMatches} | Pattern score: ${result.patternScore} | Uniformity score: ${result.uniformityScore}`,
+    `Words: ${result.wordCount} | Matches: ${Math.round(result.totalMatches)} | Pattern score: ${result.patternScore} | Uniformity score: ${result.uniformityScore}`,
   );
   lines.push('');
   lines.push(result.summary);
@@ -523,7 +542,9 @@ function formatMarkdown(result) {
     lines.push('## Findings');
     lines.push('');
     for (const finding of result.findings) {
-      lines.push(`### ${finding.patternId}. ${finding.patternName} (×${finding.matchCount})`);
+      lines.push(
+        `### ${finding.patternId}. ${finding.patternName} (×${Math.round(finding.matchCount)})`,
+      );
       lines.push(`*${finding.description}*`);
       lines.push('');
       for (const match of finding.matches) {

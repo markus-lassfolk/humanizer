@@ -28,7 +28,7 @@ const {
   CHALLENGES_PHRASES,
   COPULA_AVOIDANCE,
 } = require('./locales/en-pattern-packs');
-const { tokenize } = require('./stats');
+const { tokenize, splitSentences } = require('./stats');
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -69,9 +69,12 @@ function countMatches(text, regex) {
   return m ? m.length : 0;
 }
 
-/** Word count. */
+/** Word count — skips tokens that contain no letters or digits (e.g. standalone em-dashes). */
 function wordCount(text) {
-  return text.trim().split(/\s+/).filter(Boolean).length;
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((w) => w && /[\p{L}\p{N}]/u.test(w)).length;
 }
 
 // ─── Vocabulary Detection Helpers ────────────────────────
@@ -690,12 +693,23 @@ const patterns = [
       const synonymSets = pack;
 
       const results = [];
-      const sentenceMatches = [...text.matchAll(/[^.!?]+/g)]
-        .map((match) => ({
-          text: match[0],
-          index: match.index ?? 0,
-        }))
-        .filter((sentence) => sentence.text.trim().length > 0);
+
+      // Use the proper abbreviation-aware sentence splitter instead of the naive
+      // /[^.!?]+/g regex which incorrectly splits on dots inside abbreviations
+      // (e.g. "Dr. Smith" → ["Dr", "Smith attended"]).
+      const sentenceList = splitSentences(text, opts.localeProfile);
+      const sentenceMatches = [];
+      let searchFrom = 0;
+      for (const sentence of sentenceList) {
+        const trimmedSentence = sentence.trim();
+        if (!trimmedSentence) continue;
+        const idx = text.indexOf(trimmedSentence, searchFrom);
+        sentenceMatches.push({
+          text: trimmedSentence,
+          index: idx !== -1 ? idx : searchFrom,
+        });
+        if (idx !== -1) searchFrom = idx + trimmedSentence.length;
+      }
 
       for (const synonyms of synonymSets) {
         for (let i = 0; i < sentenceMatches.length - 1; i++) {
@@ -871,7 +885,10 @@ const patterns = [
     description: 'Decorating headings or bullet points with emojis in professional/technical text.',
     weight: 2,
     detect(text) {
-      const emojiCount = countMatches(text, /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}]/gu);
+      const emojiCount = countMatches(
+        text,
+        /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}]/gu,
+      );
       if (emojiCount >= 3) {
         return findMatches(
           text,
