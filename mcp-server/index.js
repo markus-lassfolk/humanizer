@@ -17,18 +17,16 @@ import { fileURLToPath } from 'node:url';
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 
 const require = createRequire(import.meta.url);
-const { analyze, score } = require('../src/analyzer.js');
+const { analyze } = require('../src/analyzer.js');
 const { humanize } = require('../src/humanizer.js');
 const { computeStats } = require('../src/stats.js');
 const { loadLocale, SUPPORTED_LOCALES } = require('../src/locales');
 
-const LOCALE_DESCRIPTION = 'Language locale: "en" (default) or "sv" for Swedish. Use "sv" when the input text is in Swedish.';
+const LOCALE_DESCRIPTION =
+  'Language locale: "en" (default) or "sv" for Swedish. Use "sv" when the input text is in Swedish.';
 
 // Resolve the server name + version from the root package.json so the
 // reported server metadata can never drift from the published version.
@@ -58,7 +56,7 @@ const server = new Server(
     capabilities: {
       tools: {},
     },
-  }
+  },
 );
 
 // Define available tools
@@ -67,7 +65,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: 'score',
-        description: 'Quick AI score (0-100). Higher = more AI-like. 0-25 human, 26-50 light AI touch, 51-75 moderate, 76-100 heavy AI.',
+        description:
+          'Quick AI score (0-100). Higher = more AI-like. 0-25 human, 26-50 light AI touch, 51-75 moderate, 76-100 heavy AI.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -87,7 +86,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'analyze',
-        description: 'Full AI writing analysis with pattern matches, scores by category, and statistical analysis (burstiness, vocabulary diversity, readability). Supports locale: "sv" for Swedish.',
+        description:
+          'Full AI writing analysis with pattern matches, scores by category, and statistical analysis (burstiness, vocabulary diversity, readability). Supports locale: "sv" for Swedish.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -112,7 +112,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'humanize',
-        description: 'Get suggestions to make text sound more human. Groups issues by priority (critical, important, guidance) with specific fixes. Supports locale: "sv" for Swedish.',
+        description:
+          'Get suggestions to make text sound more human. Groups issues by priority (critical, important, guidance) with specific fixes. Supports locale: "sv" for Swedish.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -137,7 +138,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'stats',
-        description: 'Statistical text analysis only: burstiness, type-token ratio, sentence variation, trigram repetition, readability score (LIX for Swedish, Flesch-Kincaid for English).',
+        description:
+          'Statistical text analysis only: burstiness, type-token ratio, sentence variation, trigram repetition, readability score (LIX for Swedish, Flesch-Kincaid for English).',
         inputSchema: {
           type: 'object',
           properties: {
@@ -187,24 +189,25 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (name) {
       case 'score': {
-        const s = score(args.text, { locale });
+        const result = analyze(args.text, { locale });
+        const s = result.score;
         const badge = s <= 19 ? '🟢' : s <= 44 ? '🟡' : s <= 69 ? '🟠' : '🔴';
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `${badge} AI Score: ${s}/100\n\n${
-                s <= 19
-                  ? 'Mostly human-sounding'
-                  : s <= 44
-                  ? 'Lightly AI-touched'
-                  : s <= 69
-                  ? 'Moderately AI-influenced'
-                  : 'Heavily AI-generated'
-              }${locale !== 'en' ? `\n\nLocale: ${locale}` : ''}`,
-            },
-          ],
-        };
+        const label =
+          s <= 19
+            ? 'Mostly human-sounding'
+            : s <= 44
+              ? 'Lightly AI-touched'
+              : s <= 69
+                ? 'Moderately AI-influenced'
+                : 'Heavily AI-generated';
+        let text = `${badge} AI Score: ${s}/100 — ${label}`;
+        if (locale !== 'en') text += `\n\nLocale: ${locale}`;
+        if (result.reliability) {
+          const r = result.reliability;
+          text += `\n\nConfidence: ${r.level} (${r.score}/100)`;
+          if (r.level !== 'high') text += `\n${r.recommendation}`;
+        }
+        return { content: [{ type: 'text', text }] };
       }
 
       case 'analyze': {
@@ -213,14 +216,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           includeStats: true,
           locale,
         });
-        
+
         let output = `## AI Analysis\n\n`;
         output += `**Score:** ${result.score}/100\n`;
         output += `**Pattern Score:** ${result.patternScore}/100\n`;
         output += `**Uniformity Score:** ${result.uniformityScore}/100\n`;
         if (locale !== 'en') output += `**Locale:** ${locale}\n`;
+        if (result.reliability) {
+          const r = result.reliability;
+          output += `**Confidence:** ${r.level} (${r.score}/100)`;
+          if (r.reasons?.length > 0) output += ` — ${r.reasons.join(' ')}`;
+          output += '\n';
+        }
         output += '\n';
-        
+
         if (result.categories) {
           output += `### Category Breakdown\n`;
           for (const [, data] of Object.entries(result.categories)) {
@@ -230,9 +239,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
           output += '\n';
         }
-        
+
         if (result.stats) {
           output += `### Statistical Signals\n`;
+          output += `- Words: ${result.stats.wordCount} | Sentences: ${result.stats.sentenceCount} | Paragraphs: ${result.stats.paragraphCount}\n`;
+          output += `- Avg sentence length: ${result.stats.avgSentenceLength} words\n`;
           output += `- Burstiness: ${result.stats.burstiness?.toFixed(2) || 'N/A'} (human: 0.5-1.0, AI: 0.1-0.3)\n`;
           output += `- Type-Token Ratio: ${result.stats.typeTokenRatio?.toFixed(2) || 'N/A'} (human: 0.5-0.7, AI: 0.3-0.5)\n`;
           if (result.stats.lix !== null) {
@@ -241,7 +252,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             output += `- Readability (FK): ${result.stats.fleschKincaid?.toFixed(1) || 'N/A'}\n`;
           }
         }
-        
+
         if (args.verbose && result.findings?.length > 0) {
           output += `\n### Pattern Matches\n`;
           for (const f of result.findings.slice(0, 10)) {
@@ -251,16 +262,24 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             output += `\n...and ${result.findings.length - 10} more\n`;
           }
         }
-        
+
         return { content: [{ type: 'text', text: output }] };
       }
 
       case 'humanize': {
         const suggestions = humanize(args.text, { autofix: args.autofix || false, locale });
-        
+
         let output = `## Humanization Suggestions\n\n`;
         if (locale !== 'en') output += `*Locale: ${locale}*\n\n`;
-        
+        output += `**AI Score:** ${suggestions.score}/100 | **Issues:** ${suggestions.totalIssues}\n`;
+        if (suggestions.reliability) {
+          const r = suggestions.reliability;
+          output += `**Confidence:** ${r.level} (${r.score}/100)`;
+          if (r.level !== 'high') output += ` — ${r.recommendation}`;
+          output += '\n';
+        }
+        output += '\n';
+
         if (suggestions.critical?.length > 0) {
           output += `### 🔴 Critical (Dead giveaways)\n`;
           for (const s of suggestions.critical.slice(0, 10)) {
@@ -268,7 +287,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
           output += '\n';
         }
-        
+
         if (suggestions.important?.length > 0) {
           output += `### 🟠 Important (Noticeable patterns)\n`;
           for (const s of suggestions.important.slice(0, 10)) {
@@ -276,29 +295,51 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
           output += '\n';
         }
-        
+
+        if (suggestions.minor?.length > 0) {
+          output += `### 🟡 Minor (Subtle tells)\n`;
+          for (const s of suggestions.minor.slice(0, 8)) {
+            output += `- Line ${s.line}: \`${s.text?.substring(0, 60) || ''}\` → ${s.suggestion}\n`;
+          }
+          if (suggestions.minor.length > 8) {
+            output += `- ...and ${suggestions.minor.length - 8} more\n`;
+          }
+          output += '\n';
+        }
+
         if (suggestions.guidance?.length > 0) {
-          output += `### 🟡 Guidance (Writing tips)\n`;
-          for (const s of suggestions.guidance.slice(0, 5)) {
+          output += `### 💡 Guidance (Writing tips)\n`;
+          for (const s of suggestions.guidance) {
             output += `- ${s}\n`;
           }
           output += '\n';
         }
-        
+
+        if (suggestions.styleTips?.length > 0) {
+          output += `### 📊 Style Tips (Statistical)\n`;
+          for (const t of suggestions.styleTips) {
+            const metric = t.value !== null ? ` [${t.metric}: ${t.value}]` : '';
+            output += `- ${t.tip}${metric}\n`;
+          }
+          output += '\n';
+        }
+
         if (args.autofix && suggestions.autofix?.text) {
           output += `### ✅ Auto-fixed Text\n\n${suggestions.autofix.text}\n`;
         }
-        
+
         return { content: [{ type: 'text', text: output }] };
       }
 
       case 'stats': {
         const localeProfile = loadLocale(locale);
         const stats = computeStats(args.text, localeProfile);
-        
+
         let output = `## Statistical Analysis\n`;
         if (locale !== 'en') output += `*Locale: ${locale}*\n`;
         output += `\n`;
+        output += `**Words:** ${stats.wordCount} | **Sentences:** ${stats.sentenceCount} | **Paragraphs:** ${stats.paragraphCount}\n`;
+        output += `**Avg sentence length:** ${stats.avgSentenceLength} words (σ ${stats.sentenceLengthStdDev})\n\n`;
         output += `| Metric | Value | Human Range | AI Range |\n`;
         output += `|--------|-------|-------------|----------|\n`;
         output += `| Burstiness | ${stats.burstiness?.toFixed(3) || 'N/A'} | 0.5-1.0 | 0.1-0.3 |\n`;
@@ -310,7 +351,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         } else {
           output += `| Flesch-Kincaid | ${stats.fleschKincaid?.toFixed(1) || 'N/A'} | varies | 8-12 |\n`;
         }
-        
+
         return { content: [{ type: 'text', text: output }] };
       }
 

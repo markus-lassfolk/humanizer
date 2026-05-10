@@ -94,7 +94,7 @@ function autoFix(text, opts = {}) {
   if (localeProfile.autofixes && localeProfile.autofixes.length > 0) {
     for (const { pattern, replacement, label } of localeProfile.autofixes) {
       if (pattern.test(result)) {
-        result = result.replace(pattern, replacement);
+        result = result.replace(pattern, (match) => preserveReplacementCase(match, replacement));
         fixes.push(label);
       }
     }
@@ -155,12 +155,28 @@ function preserveReplacementCase(match, replacement) {
  *   - includeStats {boolean}  Include statistical suggestions
  *   - ignoreCode {boolean}  Ignore fenced/inline code snippets during analysis
  *   - locale {string}     Locale code: 'en' (default) or 'sv'
+ *   - strict {boolean}    Enable pattern 35 (inclusive-language hints)
+ *   - withLm {boolean}    Add n-gram LM uniformity boost
  * @returns {object}       — Suggestions report
  */
 function humanize(text, opts = {}) {
-  const { autofix = false, includeStats = true, ignoreCode = false, locale = 'en' } = opts;
+  const {
+    autofix = false,
+    includeStats = true,
+    ignoreCode = false,
+    locale = 'en',
+    strict = false,
+    withLm = false,
+  } = opts;
 
-  const analysis = analyze(text, { verbose: true, includeStats, ignoreCode, locale });
+  const analysis = analyze(text, {
+    verbose: true,
+    includeStats,
+    ignoreCode,
+    locale,
+    strict,
+    withLm,
+  });
 
   // Group by priority
   const critical = []; // weight 4-5: dead giveaways
