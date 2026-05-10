@@ -93,7 +93,7 @@ humanizer scan docs --baseline .humanizer-baseline.json --fail-on-regression
 
 See [docs/CLI.md](docs/CLI.md) for the full command reference, config file format, CI examples, and locale examples.
 
-**Long mixed documents:** whole-document scoring dilutes a short AI-like section across many neutral words. For `analyze`, `score`, `report`, and `humanize`, use **`--chunked`** (or rely on **auto** chunking for inputs ≥ ~600 words) to append **peak / median / low** chunk scores and a **severity** flag (`partial-ai` when a hot block stands out). Headline `score` is unchanged. Details: [docs/CHUNKED_SCORING.md](docs/CHUNKED_SCORING.md).
+**Long mixed documents:** whole-document scoring can dilute a short AI-like section across many neutral words. If a score looks “too low” for a long doc, run `analyze --verbose` on the suspicious section, or use `scan` to locate high-scoring files first.
 
 ## MCP server
 
@@ -266,7 +266,7 @@ npm run corpus:refresh   # minimal: seed + log-odds + calibrate only
 - Optional **ML calibration** (Wikipedia vs AI corpus): `npm run en:ml:dataset` → `npm run en:ml:train`, then `HUMANIZER_ML_CALIBRATION=1` — see English extension doc (off by default to avoid overfit on small sets)
 - Swedish pipeline: [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md), `npm run sv:pipeline`
 
-For **always-on** behavior, prefer loading **`SKILL.md` + the right `locales/<tag>/skill/` file per reply** instead of duplicating rules into a persona. **OpenClaw** users: minimal `SOUL.md` routing in [docs/SOUL.md](docs/SOUL.md); install and tools in [docs/AGENTS.md](docs/AGENTS.md).
+For **always-on** behavior, prefer loading **`SKILL.md` + the right `locales/<tag>/skill/` file per reply** instead of duplicating rules into a persona. **OpenClaw** users: install and tool usage in [docs/AGENTS.md](docs/AGENTS.md).
 
 ## Contributing
 
