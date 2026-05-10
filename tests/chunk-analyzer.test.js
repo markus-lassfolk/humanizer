@@ -7,7 +7,16 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { analyze, analyzeChunked } from '../src/analyzer.js';
-import { buildWindows, DEFAULTS } from '../src/chunk-analyzer.js';
+import {
+  buildWindows,
+  DEFAULTS,
+  wordSpans,
+  severityFromDocumentScore,
+  classifyMultiChunkSeverity,
+  topPatternsFromFindings,
+  medianSorted,
+  percentileSorted,
+} from '../src/chunk-analyzer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -103,7 +112,6 @@ function raw(r) {
 
 describe('chunk-analyzer internals', () => {
   it('wordSpans returns correct spans for text', () => {
-    const { wordSpans } = require('../src/chunk-analyzer.js');
     const spans = wordSpans('Hello world test');
     expect(spans).toHaveLength(3);
     expect(spans[0].start).toBe(0);
@@ -111,7 +119,6 @@ describe('chunk-analyzer internals', () => {
   });
 
   it('wordSpans handles empty text', () => {
-    const { wordSpans } = require('../src/chunk-analyzer.js');
     const spans = wordSpans('');
     expect(spans).toHaveLength(0);
   });
@@ -138,7 +145,6 @@ describe('chunk-analyzer internals', () => {
   });
 
   it('severityFromDocumentScore classifies correctly', () => {
-    const { severityFromDocumentScore } = require('../src/chunk-analyzer.js');
     expect(severityFromDocumentScore(10).severity).toBe('mostly-human');
     expect(severityFromDocumentScore(30).severity).toBe('lightly-ai');
     expect(severityFromDocumentScore(60).severity).toBe('lightly-ai');
@@ -146,8 +152,6 @@ describe('chunk-analyzer internals', () => {
   });
 
   it('classifyMultiChunkSeverity handles all cases', () => {
-    const { classifyMultiChunkSeverity } = require('../src/chunk-analyzer.js');
-
     // All low scores
     let result = classifyMultiChunkSeverity([10, 12, 15], DEFAULTS);
     expect(result.severity).toBe('mostly-human');
@@ -166,7 +170,6 @@ describe('chunk-analyzer internals', () => {
   });
 
   it('topPatternsFromFindings returns top patterns by signal', () => {
-    const { topPatternsFromFindings } = require('../src/chunk-analyzer.js');
     const findings = [
       { patternId: 1, patternName: 'Pattern 1', matchCount: 5, weight: 3 },
       { patternId: 2, patternName: 'Pattern 2', matchCount: 10, weight: 2 },
@@ -179,14 +182,12 @@ describe('chunk-analyzer internals', () => {
   });
 
   it('medianSorted calculates median correctly', () => {
-    const { medianSorted } = require('../src/chunk-analyzer.js');
     expect(medianSorted([1, 2, 3, 4, 5])).toBe(3);
     expect(medianSorted([1, 2, 3, 4])).toBe(3); // Rounds average
     expect(medianSorted([10])).toBe(10);
   });
 
   it('percentileSorted calculates percentiles correctly', () => {
-    const { percentileSorted } = require('../src/chunk-analyzer.js');
     const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     expect(percentileSorted(data, 0.5)).toBe(5); // Uses decimal 0-1
     expect(percentileSorted(data, 0.95)).toBe(9); // floor((9) * 0.95) = 8, returns data[8] = 9

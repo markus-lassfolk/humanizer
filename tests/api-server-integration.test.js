@@ -10,9 +10,9 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_PATH = path.join(__dirname, '..', 'api-server', 'server.js');
-const TEST_PORT = 3456; // Use a different port for testing
 
 let serverProcess;
+let serverPort;
 let serverReady = false;
 
 /**
@@ -22,7 +22,7 @@ function makeRequest(method, path, data = null) {
   return new Promise((resolve, reject) => {
     const options = {
       hostname: 'localhost',
-      port: TEST_PORT,
+      port: serverPort,
       path,
       method,
       headers: {
@@ -72,10 +72,26 @@ async function waitForServer(maxAttempts = 30) {
 
 describe('API Server Integration Tests', () => {
   beforeAll(async () => {
-    // Start the server
+    // Ephemeral port (PORT=0) avoids EADDRINUSE under parallel test runs / CI.
     serverProcess = spawn('node', [SERVER_PATH], {
-      env: { ...process.env, PORT: TEST_PORT.toString() },
-      stdio: 'pipe',
+      env: { ...process.env, PORT: '0' },
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+
+    serverPort = await new Promise((resolve, reject) => {
+      const t = setTimeout(() => reject(new Error('timeout waiting for server listen line')), 10000);
+      const onData = (data) => {
+        const m = String(data).match(/running on http:\/\/localhost:(\d+)/);
+        if (!m) return;
+        clearTimeout(t);
+        serverProcess.stdout.off('data', onData);
+        resolve(Number(m[1], 10));
+      };
+      serverProcess.stdout.on('data', onData);
+      serverProcess.on('error', (err) => {
+        clearTimeout(t);
+        reject(err);
+      });
     });
 
     // Wait for server to be ready
@@ -221,7 +237,7 @@ describe('API Server Integration Tests', () => {
       const response = await new Promise((resolve, reject) => {
         const options = {
           hostname: 'localhost',
-          port: TEST_PORT,
+          port: serverPort,
           path: '/api/score',
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

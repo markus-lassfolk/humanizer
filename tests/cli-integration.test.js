@@ -78,10 +78,7 @@ describe('CLI Integration Tests', () => {
 
   describe('analyze command', () => {
     it('analyzes a file and returns results', async () => {
-      if (!fs.existsSync(FIXTURE_PATH)) {
-        console.log('Skipping test - fixture not found');
-        return;
-      }
+      expect(fs.existsSync(FIXTURE_PATH), `missing fixture: ${FIXTURE_PATH}`).toBe(true);
 
       const result = await runCLI(['analyze', FIXTURE_PATH]);
       expect(result.code).toBe(0);
@@ -144,10 +141,7 @@ describe('CLI Integration Tests', () => {
   describe('stats command', () => {
     it('shows statistical analysis', async () => {
       const testFile = path.join(__dirname, 'fixtures', 'human-sample-1.txt');
-      if (!fs.existsSync(testFile)) {
-        console.log('Skipping test - fixture not found');
-        return;
-      }
+      expect(fs.existsSync(testFile), `missing fixture: ${testFile}`).toBe(true);
 
       const result = await runCLI(['stats', testFile]);
       expect(result.output).toContain('words');
@@ -171,10 +165,7 @@ describe('CLI Integration Tests', () => {
   describe('Swedish locale support', () => {
     it('analyzes Swedish text with --locale sv', async () => {
       const testFile = path.join(__dirname, 'fixtures', 'sv-human-sample-1.txt');
-      if (!fs.existsSync(testFile)) {
-        console.log('Skipping test - fixture not found');
-        return;
-      }
+      expect(fs.existsSync(testFile), `missing fixture: ${testFile}`).toBe(true);
 
       const result = await runCLI(['analyze', testFile, '--locale', 'sv']);
       expect(result.output).toContain('Score');

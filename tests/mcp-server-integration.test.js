@@ -15,14 +15,37 @@ const MCP_SERVER_PATH = path.join(__dirname, '..', 'mcp-server', 'index.js');
  */
 async function mcpRequest(request, timeout = 5000) {
   return new Promise((resolve, reject) => {
+    let settled = false;
     const child = spawn('node', [MCP_SERVER_PATH], {
       stdio: ['pipe', 'pipe', 'pipe'],
     });
 
     let stdout = '';
-    const timer = setTimeout(() => {
+
+    const finishResolve = (response) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      child.stdout.removeAllListeners();
+      child.removeAllListeners('error');
+      child.removeAllListeners('close');
       child.kill();
-      reject(new Error(`MCP request timed out after ${timeout}ms`));
+      resolve(response);
+    };
+
+    const finishReject = (err) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      child.stdout.removeAllListeners();
+      child.removeAllListeners('error');
+      child.removeAllListeners('close');
+      child.kill();
+      reject(err);
+    };
+
+    const timer = setTimeout(() => {
+      finishReject(new Error(`MCP request timed out after ${timeout}ms`));
     }, timeout);
 
     child.stdout.on('data', (data) => {
@@ -33,9 +56,7 @@ async function mcpRequest(request, timeout = 5000) {
         try {
           const response = JSON.parse(line);
           if (response.id === request.id) {
-            clearTimeout(timer);
-            child.kill();
-            resolve(response);
+            finishResolve(response);
             return;
           }
         } catch {
@@ -45,14 +66,14 @@ async function mcpRequest(request, timeout = 5000) {
     });
 
     child.on('error', (err) => {
-      clearTimeout(timer);
-      reject(err);
+      finishReject(err);
     });
 
     child.on('close', (code) => {
+      if (settled) return;
       clearTimeout(timer);
       if (code !== 0 && code !== null) {
-        reject(new Error(`MCP server exited with code ${code}`));
+        finishReject(new Error(`MCP server exited with code ${code}`));
       }
     });
 
@@ -69,15 +90,18 @@ describe('MCP Server Integration Tests', () => {
         id: 1,
         method: 'initialize',
         params: {
-          protocolVersion: '1.0.0',
+          protocolVersion: '2024-11-05',
           capabilities: {},
+          clientInfo: { name: 'humanizer-test', version: '0.0.0' },
         },
       };
 
       const response = await mcpRequest(request);
       expect(response).toHaveProperty('id', 1);
-      // MCP server should respond to initialize
-      expect(response).toBeDefined();
+      expect(response.error).toBeUndefined();
+      expect(response.result).toBeDefined();
+      expect(response.result).toHaveProperty('protocolVersion');
+      expect(response.result).toHaveProperty('serverInfo');
     });
   });
 

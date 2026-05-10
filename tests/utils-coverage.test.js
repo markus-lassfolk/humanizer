@@ -10,6 +10,7 @@ import { stripCodeSnippets } from '../src/preprocess.js';
 import { wordCount } from '../src/patterns.js';
 import { roundDisplayCount } from '../src/utils.js';
 import { compareTexts, normalizeExtensions, normalizeIgnoreDirs } from '../src/workflows.js';
+import { loadLocale } from '../src/locales/index.js';
 
 describe('Utility functions', () => {
   it('roundDisplayCount rounds correctly', () => {
@@ -68,19 +69,21 @@ describe('Code preprocessing', () => {
 });
 
 describe('Stats computation edge cases', () => {
+  const en = loadLocale('en');
+
   it('handles very short text', () => {
-    const stats = computeStats('Hi', { locale: 'en' });
+    const stats = computeStats('Hi', en);
     expect(stats.wordCount).toBe(1);
     expect(stats.sentenceCount).toBeGreaterThanOrEqual(0);
   });
 
   it('handles text with only punctuation', () => {
-    const stats = computeStats('...!!!', { locale: 'en' });
-    expect(stats).toHaveProperty('wordCount');
+    const stats = computeStats('...!!!', en);
+    expect(stats.wordCount).toBe(0);
   });
 
   it('handles single sentence', () => {
-    const stats = computeStats('This is one sentence.', { locale: 'en' });
+    const stats = computeStats('This is one sentence.', en);
     expect(stats.sentenceCount).toBe(1);
   });
 });
@@ -97,16 +100,13 @@ describe('Analyze with various options', () => {
     expect(result.score).toBeDefined();
   });
 
-  it('analyze with onlyPatterns filter', () => {
+  it('analyze with patternsToCheck limits detectors', () => {
     const text = 'It is important to note that this is crucial.';
-    const result = analyze(text, { onlyPatterns: [7], locale: 'en' });
-    expect(result.findings).toBeDefined();
-  });
-
-  it('analyze with ignorePatterns filter', () => {
-    const text = 'It is important to note that this is crucial.';
-    const result = analyze(text, { ignorePatterns: [7], locale: 'en' });
-    expect(result.findings).toBeDefined();
+    const full = analyze(text, { locale: 'en' });
+    const filtered = analyze(text, { patternsToCheck: [7], locale: 'en' });
+    expect(filtered.findings.every((f) => f.patternId === 7)).toBe(true);
+    const fullFor7 = full.findings.filter((f) => f.patternId === 7);
+    expect(filtered.findings.length).toBe(fullFor7.length);
   });
 });
 
@@ -165,13 +165,13 @@ describe('Edge cases and error handling', () => {
   it('handles null text gracefully', () => {
     expect(() => analyze(null)).not.toThrow();
     expect(() => humanize(null)).not.toThrow();
-    expect(() => computeStats(null, { locale: 'en' })).not.toThrow();
+    expect(() => computeStats(null, loadLocale('en'))).not.toThrow();
   });
 
   it('handles undefined text gracefully', () => {
     expect(() => analyze(undefined)).not.toThrow();
     expect(() => humanize(undefined)).not.toThrow();
-    expect(() => computeStats(undefined, { locale: 'en' })).not.toThrow();
+    expect(() => computeStats(undefined, loadLocale('en'))).not.toThrow();
   });
 
   it('handles very long text', () => {
@@ -204,7 +204,7 @@ describe('Swedish locale support', () => {
   });
 
   it('computes Swedish stats with LIX', () => {
-    const stats = computeStats('Detta är en mening.', { locale: 'sv' });
+    const stats = computeStats('Detta är en mening.', loadLocale('sv'));
     expect(stats).toHaveProperty('lix');
   });
 
