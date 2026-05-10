@@ -83,8 +83,10 @@ describe('API Server Integration Tests', () => {
         () => reject(new Error('timeout waiting for server listen line')),
         10000,
       );
+      let stdoutBuf = '';
       const onData = (data) => {
-        const m = String(data).match(/running on http:\/\/localhost:(\d+)/);
+        stdoutBuf += data.toString();
+        const m = stdoutBuf.match(/running on http:\/\/localhost:(\d+)/);
         if (!m) return;
         clearTimeout(t);
         serverProcess.stdout.off('data', onData);
