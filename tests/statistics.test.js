@@ -71,6 +71,11 @@ describe('splitSentences', () => {
     expect(result).toEqual(['Acme Inc. filed today.', 'Done.']);
   });
 
+  it('allows sentence split after Inc. when next sentence starts uppercase', () => {
+    const result = splitSentences('She works at Acme Inc. She leads product.');
+    expect(result).toEqual(['She works at Acme Inc.', 'She leads product.']);
+  });
+
   it('splits sentences ending with "no" as a regular word unless no. is followed by a number', () => {
     expect(splitSentences('The answer is no. Next sentence.')).toEqual([
       'The answer is no.',
@@ -175,6 +180,7 @@ describe('computeStats', () => {
     const stats = computeStats('');
     expect(stats.wordCount).toBe(0);
     expect(stats.sentenceCount).toBe(0);
+    expect(stats.fleschKincaid).toBe(0);
   });
 
   it('handles null input', () => {

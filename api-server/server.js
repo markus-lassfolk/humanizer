@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * Humanizer HTTP API Server
- * 
+ *
  * Simple HTTP server for OpenAI Actions and other integrations.
  * Run with: node api-server/server.js
- * 
+ *
  * Endpoints:
  *   POST /api/score     - Quick AI score (0-100)
  *   POST /api/analyze   - Full analysis with patterns
@@ -70,7 +70,6 @@ async function parseBody(req) {
         const err = new Error('Request body too large');
         err.statusCode = 413;
         settleReject(err);
-        req.destroy();
         return;
       }
       chunks.push(chunk);
@@ -101,9 +100,9 @@ async function parseBody(req) {
 
 // Send JSON response
 function sendJson(res, data, status = 200) {
-  res.writeHead(status, { 
+  res.writeHead(status, {
     ...corsHeaders,
-    'Content-Type': 'application/json' 
+    'Content-Type': 'application/json',
   });
   res.end(JSON.stringify(data));
 }
@@ -124,9 +123,9 @@ async function handleRequest(req, res) {
     // GET /api/openapi - Return OpenAPI spec
     if (req.method === 'GET' && path === '/api/openapi') {
       const spec = await readFile(join(__dirname, 'openapi.yaml'), 'utf-8');
-      res.writeHead(200, { 
+      res.writeHead(200, {
         ...corsHeaders,
-        'Content-Type': 'application/yaml' 
+        'Content-Type': 'application/yaml',
       });
       res.end(spec);
       return;
@@ -134,11 +133,11 @@ async function handleRequest(req, res) {
 
     // GET / - Health check
     if (req.method === 'GET' && path === '/') {
-      sendJson(res, { 
-        status: 'ok', 
+      sendJson(res, {
+        status: 'ok',
         name: 'humanizer-api',
         version: '2.1.0',
-        endpoints: ['/api/score', '/api/analyze', '/api/humanize', '/api/stats', '/api/openapi']
+        endpoints: ['/api/score', '/api/analyze', '/api/humanize', '/api/stats', '/api/openapi'],
       });
       return;
     }
@@ -146,7 +145,7 @@ async function handleRequest(req, res) {
     // POST endpoints
     if (req.method === 'POST') {
       const body = await parseBody(req);
-      
+
       if (!body.text) {
         sendJson(res, { error: 'Missing required field: text' }, 400);
         return;
@@ -159,13 +158,14 @@ async function handleRequest(req, res) {
         case '/api/score': {
           const s = score(body.text, { locale });
           const badge = s <= 25 ? '🟢' : s <= 50 ? '🟡' : s <= 75 ? '🟠' : '🔴';
-          const interpretation = s <= 25
-            ? 'Mostly human-sounding'
-            : s <= 50
-            ? 'Lightly AI-touched'
-            : s <= 75
-            ? 'Moderately AI-influenced'
-            : 'Heavily AI-generated';
+          const interpretation =
+            s <= 25
+              ? 'Mostly human-sounding'
+              : s <= 50
+                ? 'Lightly AI-touched'
+                : s <= 75
+                  ? 'Moderately AI-influenced'
+                  : 'Heavily AI-generated';
           sendJson(res, { score: s, badge, interpretation, locale });
           return;
         }
@@ -181,7 +181,7 @@ async function handleRequest(req, res) {
         }
 
         case '/api/humanize': {
-          const suggestions = humanize(body.text, { 
+          const suggestions = humanize(body.text, {
             autofix: body.autofix || false,
             locale,
           });

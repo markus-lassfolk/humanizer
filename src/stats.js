@@ -38,14 +38,20 @@ function protectAbbreviations(text, abbreviations) {
   for (const abbr of abbreviations) {
     // Escape any dots within the abbreviation for regex use
     const escaped = abbr.replace(/\./g, '\\.');
-    // Build pattern: word boundary + abbreviation + trailing dot
+    // Build pattern: word boundary + abbreviation + trailing dot.
     const regex = new RegExp(`\\b(${escaped})\\.`, 'gi');
     // Replace every dot (internal + trailing) with the placeholder
     // Use $1 to preserve original casing from the matched text
-    result = result.replace(
-      regex,
-      (match, captured) => `${captured.replace(/\./g, '\u2024')}\u2024`,
-    );
+    result = result.replace(regex, (match, captured, offset, source) => {
+      if (abbr.toLowerCase() === 'inc') {
+        const remainder = source.slice(offset + match.length);
+        const next = remainder.match(/^\s*(\S)/u)?.[1] || null;
+        if (next && /\p{Lu}/u.test(next)) {
+          return match;
+        }
+      }
+      return `${captured.replace(/\./g, '\u2024')}\u2024`;
+    });
   }
   return result;
 }
@@ -356,7 +362,7 @@ function emptyStats() {
     functionWordRatio: 0,
     trigramRepetition: 0,
     avgParagraphLength: 0,
-    fleschKincaid: null,
+    fleschKincaid: 0,
     lix: null,
     sentenceLengths: [],
   };
