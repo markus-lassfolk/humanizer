@@ -85,7 +85,7 @@ function autoFix(text, opts = {}) {
 
   for (const { from, to, label } of safeFills) {
     if (from.test(result)) {
-      result = result.replace(from, to);
+      result = result.replace(from, (match) => preserveReplacementCase(match, to));
       fixes.push(label);
     }
   }
@@ -127,6 +127,20 @@ function autoFix(text, opts = {}) {
 
   result = result.trim();
   return { text: result, fixes };
+}
+
+function preserveReplacementCase(match, replacement) {
+  if (!match || !replacement) return replacement;
+
+  if (match === match.toUpperCase()) {
+    return replacement.toUpperCase();
+  }
+
+  if (/^\p{Lu}/u.test(match)) {
+    return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+  }
+
+  return replacement;
 }
 
 // ─── Suggestion Engine ───────────────────────────────────
