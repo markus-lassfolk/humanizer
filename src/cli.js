@@ -136,16 +136,6 @@ if (fileIdx !== -1 && args[fileIdx + 1]) {
 // Parse positional file argument (command <file>) by scanning all args after the
 // command so positional targets can appear after value flags.
 if (!flags.file) {
-  const commands = [
-    'analyze',
-    'score',
-    'humanize',
-    'report',
-    'suggest',
-    'stats',
-    'scan',
-    'compare',
-  ];
   const valueFlagSet = new Set([
     '-f',
     '--file',
@@ -173,7 +163,6 @@ if (!flags.file) {
       continue;
     }
     if (args[i].startsWith('-')) continue;
-    if (commands.includes(args[i])) continue;
     flags.file = args[i];
     break;
   }
