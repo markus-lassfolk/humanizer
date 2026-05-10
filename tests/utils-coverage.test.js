@@ -9,12 +9,7 @@ import { computeStats } from '../src/stats.js';
 import { stripCodeSnippets } from '../src/preprocess.js';
 import { wordCount } from '../src/patterns.js';
 import { roundDisplayCount } from '../src/utils.js';
-import {
-  scanPath,
-  compareTexts,
-  normalizeExtensions,
-  normalizeIgnoreDirs
-} from '../src/workflows.js';
+import { compareTexts, normalizeExtensions, normalizeIgnoreDirs } from '../src/workflows.js';
 
 describe('Utility functions', () => {
   it('roundDisplayCount rounds correctly', () => {

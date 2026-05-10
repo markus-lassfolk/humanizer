@@ -20,7 +20,7 @@ describe('Pattern registry', () => {
   it('registry can get patterns by category', () => {
     const vocabPatterns = registry.byCategory('vocabulary');
     expect(Array.isArray(vocabPatterns)).toBe(true);
-    expect(vocabPatterns.every(p => p.category === 'vocabulary')).toBe(true);
+    expect(vocabPatterns.every((p) => p.category === 'vocabulary')).toBe(true);
   });
 
   it('registry lists all patterns', () => {
@@ -62,7 +62,7 @@ describe('wordCount helper', () => {
 
 describe('Pattern weights and structure', () => {
   it('all patterns have required fields', () => {
-    patterns.forEach(pattern => {
+    patterns.forEach((pattern) => {
       expect(pattern).toHaveProperty('id');
       expect(pattern).toHaveProperty('name');
       expect(pattern).toHaveProperty('category');
@@ -73,7 +73,7 @@ describe('Pattern weights and structure', () => {
   });
 
   it('all patterns have valid weights', () => {
-    patterns.forEach(pattern => {
+    patterns.forEach((pattern) => {
       expect(pattern.weight).toBeGreaterThanOrEqual(1);
       expect(pattern.weight).toBeLessThanOrEqual(5);
     });

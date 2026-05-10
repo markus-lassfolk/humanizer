@@ -43,7 +43,10 @@ describe('analyzeChunked', () => {
   });
 
   it('mixed long doc: partial-ai with peak in AI tail', () => {
-    const humanSeed = fs.readFileSync(path.join(__dirname, 'fixtures', 'human-sample-1.txt'), 'utf8');
+    const humanSeed = fs.readFileSync(
+      path.join(__dirname, 'fixtures', 'human-sample-1.txt'),
+      'utf8',
+    );
     const aiSeed = fs.readFileSync(path.join(__dirname, 'fixtures', 'ai-sample-1.txt'), 'utf8');
     const humanBlock = padToWords(humanSeed, 2000);
     const aiBlock = padToWords(aiSeed, 400);
@@ -66,7 +69,10 @@ describe('analyzeChunked', () => {
   });
 
   it('uniform human-heavy doc: mostly-human', () => {
-    const humanSeed = fs.readFileSync(path.join(__dirname, 'fixtures', 'human-sample-1.txt'), 'utf8');
+    const humanSeed = fs.readFileSync(
+      path.join(__dirname, 'fixtures', 'human-sample-1.txt'),
+      'utf8',
+    );
     const text = padToWords(humanSeed, 1600);
     const r = analyzeChunked(text, { locale: 'en' });
     expect(r.aggregate.severity).toBe('mostly-human');
@@ -74,7 +80,10 @@ describe('analyzeChunked', () => {
   });
 
   it('forwards locale sv on mixed tail', () => {
-    const humanSv = fs.readFileSync(path.join(__dirname, 'fixtures', 'sv-human-sample-1.txt'), 'utf8');
+    const humanSv = fs.readFileSync(
+      path.join(__dirname, 'fixtures', 'sv-human-sample-1.txt'),
+      'utf8',
+    );
     const aiSv = fs.readFileSync(path.join(__dirname, 'fixtures', 'sv-ai-sample-1.txt'), 'utf8');
     const humanBlock = padToWords(humanSv, 2000);
     const aiBlock = padToWords(aiSv, 400);
