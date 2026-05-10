@@ -1,77 +1,77 @@
 # avoid	prefer	kind	tier	fix_hint	pattern	notes
 # kind redundancy_phrase → Pattern 34 (regex from pattern or avoid)
-PIN-kod kod		redundancy_phrase			Stryk upprepningen: säg PIN-kod.		\bPIN-kod\s+kod\b	
-PIN-nummer		redundancy_phrase			Använd PIN-kod eller pinkod.		\bPIN-nummer\b	
-ATM-maskin		redundancy_phrase			Ange bankomat eller uttagsautomat.		\bATM-maskin\b	
-LCD-display		redundancy_phrase			Säg skärm eller LCD.		\bLCD-display\b	
-ISBN-nummer		redundancy_phrase			Säg ISBN.		\bISBN-nummer\b	
-ISBN-kod		redundancy_phrase			Säg ISBN.		\bISBN-kod\b	
-ISP-leverantör		redundancy_phrase			Säg internetleverantör eller ISP.		\bISP-leverantör\b	
-VPN-tunnel		redundancy_phrase			Ofta redundant — säg VPN.		\bVPN-tunnel\b	
-DNS-server		redundancy_phrase			Kontextberoende — ofta räcker DNS.		\bDNS-server\b	
-HTML-språk		redundancy_phrase			Säg HTML.		\bHTML-språk\b	
-JSON-formatet		redundancy_phrase			Ofta räcker JSON.		\bJSON-formatet\b	
-API-gränssnitt		redundancy_phrase			Säg API eller gränssnitt.		\bAPI-gränssnitt\b	
-GUI-gränssnitt		redundancy_phrase			Säg GUI eller gränssnitt.		\bGUI-gränssnitt\b	
-förhandsplanering		redundancy_phrase			Säg planering.		\bförhandsplanering\b	
-gratis gåva		redundancy_phrase			Säg gåva eller gratiserbjudande.		\bgratis gåva\b	
-gratis present		redundancy_phrase			Säj present eller gåva.		\bgratis present\b	
-kort sammanfattning		redundancy_phrase			Säg sammanfattning.		\bkort sammanfattning\b	
-slutresultat		redundancy_phrase			Säg resultat.		\bslutresultat\b	
-slutgiltigt avgörande		redundancy_phrase			Säg avgörande eller beslut.		\bslutgiltigt avgörande\b	
-helt unik		redundancy_phrase			Säj unik eller sällsynt.		\bhelt unik\b	
-helt unikt		redundancy_phrase			Säj unikt eller sällsynt.		\bhelt unikt\b	
-helt och hållet		redundancy_phrase			Säg helt eller fullt ut.		\bhelt och hållet\b	
-grundläggande fundament		redundancy_phrase			Säg grund eller fundament.		\bgrundläggande fundament\b	
-nära närhet		redundancy_phrase			Säg närhet eller närheten.		\bnära närhet\b	
-slutlig slutsats		redundancy_phrase			Säg slutsats.		\bslutlig slutsats\b	
-personlig individ		redundancy_phrase			Säg person.		\bpersonlig individ\b	
-varje enskild individ		redundancy_phrase			Säg varje person eller alla.		\bvarje enskild individ\b	
-tillsammans med varandra		redundancy_phrase			Säg tillsammans.		\btillsammans med varandra\b	
-första prioritet		redundancy_phrase			Säg högsta prioritet eller först.		\bförsta prioritet\b	
-sista slutet		redundancy_phrase			Säg slutet.		\bsista slutet\b	
-återigen igen		redundancy_phrase			Säg återigen eller igen.		\båterigen igen\b	
-större omfattning		redundancy_phrase			Ofta redundant — precisera omfattning.		\bstörre omfattning\b	
-mindre omfattning		redundancy_phrase			Precisera omfattning.		\bmindre omfattning\b	
-samstämmig konsensus		redundancy_phrase			Säg konsensus eller samsyn.		\bsamstämmig konsensus\b	
-gemensam ömsesidig		redundancy_phrase			Välj ett ord: gemensam eller ömsesidig.		\bgemensam ömsesidig\b	
-ömsesidig dubbelriktad		redundancy_phrase			Förenkla formuleringen.		\bömsesidig dubbelriktad\b	
-färre antal		redundancy_phrase			Säg färre.		\bfärre antal\b	
-fler antal		redundancy_phrase			Säg fler.		\bfler antal\b	
-större majoritet		redundancy_phrase			Säg majoritet eller större del.		\bstörre majoritet\b	
-liten minoritet		redundancy_phrase			Säg minoritet.		\bliten minoritet\b	
-aktuellt nu		redundancy_phrase			Säg nu eller för närvarande.		\baktuellt nu\b	
-tidigare historik		redundancy_phrase			Säg historik eller bakgrund.		\btidigare historik\b	
-framtida framtid		redundancy_phrase			Säj framtid eller framtida plan.		\bframtida framtid\b	
-varmt välkommen		redundancy_phrase			Säg välkommen (varmt kan behållas om stil kräver).		\bvarmt välkommen\b	
-kallt välkommen		redundancy_phrase			Säg välkommen.		\bkallt välkommen\b	
-absolut säker		redundancy_phrase			Säj säker eller med hög säkerhet.		\babsolut säker\b	
-helt fullständig		redundancy_phrase			Säj fullständig.		\bhelt fullständig\b	
-fullständigt komplett		redundancy_phrase			Välj fullständig eller komplett.		\bfullständigt komplett\b	
-komplett helhet		redundancy_phrase			Välj ett ord.		\bkomplett helhet\b	
-slutgiltig version		redundancy_phrase			Ofta räcker version.		\bslutgiltig version\b	
-preliminärt utkast		redundancy_phrase			Välj preliminär eller utkast.		\bpreliminärt utkast\b	
-slutgiltigt beslut		redundancy_phrase			Säg beslut om det redan är slutligt.		\bslutgiltigt beslut\b	
-ny innovation		redundancy_phrase			Säg innovation eller nyhet.		\bny innovation\b	
-gammal tradition		redundancy_phrase			Säg tradition.		\bgammal tradition\b	
-modern nutid		redundancy_phrase			Säg nutid eller samtid.		\bmodern nutid\b	
-personlig privat		redundancy_phrase			Välj personlig eller privat.		\bpersonlig privat\b	
-offentlig allmän		redundancy_phrase			Precisera: offentlig eller allmän.		\boffentlig allmän\b	
-intern inre		redundancy_phrase			Välj intern eller inre.		\bintern inre\b	
-extern yttre		redundancy_phrase			Välj extern eller yttre.		\bextern yttre\b	
-slutgiltig deadline		redundancy_phrase			Säg deadline.		\bslutgiltig deadline\b	
-slutlig deadline		redundancy_phrase			Säg deadline.		\bslutlig deadline\b	
-slutgiltig tidsfrist		redundancy_phrase			Säg tidsfrist.		\bslutgiltig tidsfrist\b	
-ömsesidigt båda		redundancy_phrase			Förenkla.		\bömsesidigt båda\b	
-öppet och transparent		redundancy_phrase			Välj ett eller precisera skillnad.		\böppet och transparent\b	
-säkert och tryggt		redundancy_phrase			Precisera risk och åtgärd.		\bsäkert och tryggt\b	
-tryggt och säkert		redundancy_phrase			Precisera risk och åtgärd.		\btryggt och säkert\b	
-säker och trygg		redundancy_phrase			Precisera.		\bsäker och trygg\b	
-en och samma		redundancy_phrase			Ofta redundant.		\ben och samma\b	
-var och en alla		redundancy_phrase			Välj formulering.		\bvar och en alla\b	
-var för sig individuellt		redundancy_phrase			Förenkla.		\bvar för sig individuellt\b	
-gemensamt tillsammans		redundancy_phrase			Välj ett ord.		\bgemensamt tillsammans\b	
-tillsammans gemensamt		redundancy_phrase			Välj ett ord.		\btillsammans gemensamt\b	
-successivt stegvis		redundancy_phrase			Välj ett ord.		\bsuccessivt stegvis\b	
-successivt gradvis		redundancy_phrase			Välj ett ord.		\bsuccessivt gradvis\b	
-successivt löpande		redundancy_phrase			Välj ett ord.		\bsuccessivt löpande\b	
+PIN-kod kod		redundancy_phrase		Stryk upprepningen: säg PIN-kod.		\bPIN-kod\s+kod\b	
+PIN-nummer		redundancy_phrase		Använd PIN-kod eller pinkod.		\bPIN-nummer\b	
+ATM-maskin		redundancy_phrase		Ange bankomat eller uttagsautomat.		\bATM-maskin\b	
+LCD-display		redundancy_phrase		Säg skärm eller LCD.		\bLCD-display\b	
+ISBN-nummer		redundancy_phrase		Säg ISBN.		\bISBN-nummer\b	
+ISBN-kod		redundancy_phrase		Säg ISBN.		\bISBN-kod\b	
+ISP-leverantör		redundancy_phrase		Säg internetleverantör eller ISP.		\bISP-leverantör\b	
+VPN-tunnel		redundancy_phrase		Ofta redundant — säg VPN.		\bVPN-tunnel\b	
+DNS-server		redundancy_phrase		Kontextberoende — ofta räcker DNS.		\bDNS-server\b	
+HTML-språk		redundancy_phrase		Säg HTML.		\bHTML-språk\b	
+JSON-formatet		redundancy_phrase		Ofta räcker JSON.		\bJSON-formatet\b	
+API-gränssnitt		redundancy_phrase		Säg API eller gränssnitt.		\bAPI-gränssnitt\b	
+GUI-gränssnitt		redundancy_phrase		Säg GUI eller gränssnitt.		\bGUI-gränssnitt\b	
+förhandsplanering		redundancy_phrase		Säg planering.		\bförhandsplanering\b	
+gratis gåva		redundancy_phrase		Säg gåva eller gratiserbjudande.		\bgratis gåva\b	
+gratis present		redundancy_phrase		Säj present eller gåva.		\bgratis present\b	
+kort sammanfattning		redundancy_phrase		Säg sammanfattning.		\bkort sammanfattning\b	
+slutresultat		redundancy_phrase		Säg resultat.		\bslutresultat\b	
+slutgiltigt avgörande		redundancy_phrase		Säg avgörande eller beslut.		\bslutgiltigt avgörande\b	
+helt unik		redundancy_phrase		Säj unik eller sällsynt.		\bhelt unik\b	
+helt unikt		redundancy_phrase		Säj unikt eller sällsynt.		\bhelt unikt\b	
+helt och hållet		redundancy_phrase		Säg helt eller fullt ut.		\bhelt och hållet\b	
+grundläggande fundament		redundancy_phrase		Säg grund eller fundament.		\bgrundläggande fundament\b	
+nära närhet		redundancy_phrase		Säg närhet eller närheten.		\bnära närhet\b	
+slutlig slutsats		redundancy_phrase		Säg slutsats.		\bslutlig slutsats\b	
+personlig individ		redundancy_phrase		Säg person.		\bpersonlig individ\b	
+varje enskild individ		redundancy_phrase		Säg varje person eller alla.		\bvarje enskild individ\b	
+tillsammans med varandra		redundancy_phrase		Säg tillsammans.		\btillsammans med varandra\b	
+första prioritet		redundancy_phrase		Säg högsta prioritet eller först.		\bförsta prioritet\b	
+sista slutet		redundancy_phrase		Säg slutet.		\bsista slutet\b	
+återigen igen		redundancy_phrase		Säg återigen eller igen.		\båterigen igen\b	
+större omfattning		redundancy_phrase		Ofta redundant — precisera omfattning.		\bstörre omfattning\b	
+mindre omfattning		redundancy_phrase		Precisera omfattning.		\bmindre omfattning\b	
+samstämmig konsensus		redundancy_phrase		Säg konsensus eller samsyn.		\bsamstämmig konsensus\b	
+gemensam ömsesidig		redundancy_phrase		Välj ett ord: gemensam eller ömsesidig.		\bgemensam ömsesidig\b	
+ömsesidig dubbelriktad		redundancy_phrase		Förenkla formuleringen.		\bömsesidig dubbelriktad\b	
+färre antal		redundancy_phrase		Säg färre.		\bfärre antal\b	
+fler antal		redundancy_phrase		Säg fler.		\bfler antal\b	
+större majoritet		redundancy_phrase		Säg majoritet eller större del.		\bstörre majoritet\b	
+liten minoritet		redundancy_phrase		Säg minoritet.		\bliten minoritet\b	
+aktuellt nu		redundancy_phrase		Säg nu eller för närvarande.		\baktuellt nu\b	
+tidigare historik		redundancy_phrase		Säg historik eller bakgrund.		\btidigare historik\b	
+framtida framtid		redundancy_phrase		Säj framtid eller framtida plan.		\bframtida framtid\b	
+varmt välkommen		redundancy_phrase		Säg välkommen (varmt kan behållas om stil kräver).		\bvarmt välkommen\b	
+kallt välkommen		redundancy_phrase		Säg välkommen.		\bkallt välkommen\b	
+absolut säker		redundancy_phrase		Säj säker eller med hög säkerhet.		\babsolut säker\b	
+helt fullständig		redundancy_phrase		Säj fullständig.		\bhelt fullständig\b	
+fullständigt komplett		redundancy_phrase		Välj fullständig eller komplett.		\bfullständigt komplett\b	
+komplett helhet		redundancy_phrase		Välj ett ord.		\bkomplett helhet\b	
+slutgiltig version		redundancy_phrase		Ofta räcker version.		\bslutgiltig version\b	
+preliminärt utkast		redundancy_phrase		Välj preliminär eller utkast.		\bpreliminärt utkast\b	
+slutgiltigt beslut		redundancy_phrase		Säg beslut om det redan är slutligt.		\bslutgiltigt beslut\b	
+ny innovation		redundancy_phrase		Säg innovation eller nyhet.		\bny innovation\b	
+gammal tradition		redundancy_phrase		Säg tradition.		\bgammal tradition\b	
+modern nutid		redundancy_phrase		Säg nutid eller samtid.		\bmodern nutid\b	
+personlig privat		redundancy_phrase		Välj personlig eller privat.		\bpersonlig privat\b	
+offentlig allmän		redundancy_phrase		Precisera: offentlig eller allmän.		\boffentlig allmän\b	
+intern inre		redundancy_phrase		Välj intern eller inre.		\bintern inre\b	
+extern yttre		redundancy_phrase		Välj extern eller yttre.		\bextern yttre\b	
+slutgiltig deadline		redundancy_phrase		Säg deadline.		\bslutgiltig deadline\b	
+slutlig deadline		redundancy_phrase		Säg deadline.		\bslutlig deadline\b	
+slutgiltig tidsfrist		redundancy_phrase		Säg tidsfrist.		\bslutgiltig tidsfrist\b	
+ömsesidigt båda		redundancy_phrase		Förenkla.		\bömsesidigt båda\b	
+öppet och transparent		redundancy_phrase		Välj ett eller precisera skillnad.		\böppet och transparent\b	
+säkert och tryggt		redundancy_phrase		Precisera risk och åtgärd.		\bsäkert och tryggt\b	
+tryggt och säkert		redundancy_phrase		Precisera risk och åtgärd.		\btryggt och säkert\b	
+säker och trygg		redundancy_phrase		Precisera.		\bsäker och trygg\b	
+en och samma		redundancy_phrase		Ofta redundant.		\ben och samma\b	
+var och en alla		redundancy_phrase		Välj formulering.		\bvar och en alla\b	
+var för sig individuellt		redundancy_phrase		Förenkla.		\bvar för sig individuellt\b	
+gemensamt tillsammans		redundancy_phrase		Välj ett ord.		\bgemensamt tillsammans\b	
+tillsammans gemensamt		redundancy_phrase		Välj ett ord.		\btillsammans gemensamt\b	
+successivt stegvis		redundancy_phrase		Välj ett ord.		\bsuccessivt stegvis\b	
+successivt gradvis		redundancy_phrase		Välj ett ord.		\bsuccessivt gradvis\b	
+successivt löpande		redundancy_phrase		Välj ett ord.		\bsuccessivt löpande\b	

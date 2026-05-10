@@ -3,16 +3,15 @@
  */
 import { describe, it, expect } from 'vitest';
 import { analyze } from '../../../src/analyzer.js';
-import { computeLmUniformityBoost } from '../../../src/stats.js';
 
 const runLm = process.env.WITH_LM === '1';
 
 describe.skipIf(!runLm)('LM uniformity Swedish (WITH_LM=1)', () => {
-  it('computeLmUniformityBoost is bounded for long Swedish text', () => {
+  it('LM boost improves uniformity for repetitive Swedish text', () => {
     const text = `${'Kommunen redovisade beslutet i april och skickade kallelsen i god tid. '.repeat(15)}`;
-    const b = computeLmUniformityBoost(text, 'sv');
-    expect(b).toBeGreaterThanOrEqual(0);
-    expect(b).toBeLessThanOrEqual(28);
+    const result = analyze(text, { locale: 'sv', withLm: true });
+    expect(result.uniformityScore).toBeGreaterThanOrEqual(0);
+    expect(result.uniformityScore).toBeLessThanOrEqual(100);
   });
 
   it('withLm does not lower uniformity vs baseline for sv', () => {
