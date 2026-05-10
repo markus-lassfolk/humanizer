@@ -202,7 +202,7 @@ describe('humanize', () => {
     const resultDefault = humanize(text);
     const resultStrict = humanize(text, { strict: true });
     expect(resultStrict).toHaveProperty('score');
-    // Score must not be lower than without strict (strict can only add detections).
+    // Strict mode can add detections but never suppress them, so score must not decrease.
     expect(resultStrict.score).toBeGreaterThanOrEqual(resultDefault.score);
   });
 
