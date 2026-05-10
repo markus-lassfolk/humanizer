@@ -28,6 +28,13 @@ const { loadLocale, SUPPORTED_LOCALES } = require('../src/locales');
 const LOCALE_DESCRIPTION =
   'Language locale: "en" (default) or "sv" for Swedish. Use "sv" when the input text is in Swedish.';
 
+function scoreLabel(s) {
+  if (s <= 19) return 'Mostly human-sounding';
+  if (s <= 44) return 'Lightly AI-touched';
+  if (s <= 69) return 'Moderately AI-influenced';
+  return 'Heavily AI-generated';
+}
+
 // Resolve the server name + version from the root package.json so the
 // reported server metadata can never drift from the published version.
 // We try the repository root first (the canonical source of truth for the
@@ -192,14 +199,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const result = analyze(args.text, { locale });
         const s = result.score;
         const badge = s <= 19 ? '🟢' : s <= 44 ? '🟡' : s <= 69 ? '🟠' : '🔴';
-        const label =
-          s <= 19
-            ? 'Mostly human-sounding'
-            : s <= 44
-              ? 'Lightly AI-touched'
-              : s <= 69
-                ? 'Moderately AI-influenced'
-                : 'Heavily AI-generated';
+        const label = scoreLabel(s);
         let text = `${badge} AI Score: ${s}/100 — ${label}`;
         if (locale !== 'en') text += `\n\nLocale: ${locale}`;
         if (result.reliability) {
