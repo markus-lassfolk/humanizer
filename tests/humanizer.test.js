@@ -129,6 +129,11 @@ describe('autoFix', () => {
     expect(first.text).toContain('Nu');
     expect(first.text).not.toContain('dagsläget');
   });
+  it('applies generated English prescriptive autofixes', () => {
+    const { text, fixes } = autoFix('We met subsequent to the review.', { locale: 'en' });
+    expect(text).toBe('We met after the review.');
+    expect(fixes).toContain('"subsequent to" → "after"');
+  });
 });
 
 // ─── humanize ────────────────────────────────────────────

@@ -16,6 +16,8 @@
  *   3 — Context-dependent. Only flagged when density exceeds threshold.
  */
 
+const { AUTOFIXES_EN_PRESCRIPTIVE } = require('../generated/en-prescriptive.js');
+
 // ─── Tier 1: Dead Giveaways ─────────────────────────────
 // Words that appear 5-20x more often in AI text than human text.
 
@@ -672,4 +674,5 @@ module.exports = {
   TIER_3,
   AI_PHRASES,
   FUNCTION_WORDS,
+  AUTOFIXES_EN: AUTOFIXES_EN_PRESCRIPTIVE,
 };

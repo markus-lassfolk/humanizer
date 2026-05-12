@@ -15,11 +15,11 @@ GitHub Actions use the Node.js version from `package.json` `engines` via `action
 
 - **lint** — `npm run check:lint` (ESLint)
 - **format** — `npm run check:format` (Prettier)
-- **locale** — Swedish prescriptive `--check` + Swedish tier validator
+- **locale** — Swedish and English prescriptive `--check` + tier validators
 - **test** — Vitest
 - **audit (non-blocking)** — `npm audit --omit=dev --audit-level=high` (failure does not fail the workflow)
 
-Install step uses **`npm install`** because `package-lock.json` is gitignored. For reproducible installs in CI, consider committing a lockfile and switching workflows to `npm ci`.
+Install step uses **`npm ci`** from the committed `package-lock.json` so fresh-checkout CI and local QA are reproducible.
 
 ### Nightly pipelines
 
@@ -48,7 +48,7 @@ bash scripts/setup-git-guards.sh
 That sets `core.hooksPath` to `.githooks/` and enables:
 
 - **pre-push** — blocks pushes to the upstream parent repo URL
-- **pre-commit** — runs `npm run check:lint` (requires `npm install` first)
+- **pre-commit** — runs `npm run check:lint` (requires `npm ci` or `npm install` first)
 
 ## Branch protection (recommended)
 

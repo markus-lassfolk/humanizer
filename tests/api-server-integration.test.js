@@ -11,6 +11,17 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_PATH = path.join(__dirname, '..', 'api-server', 'server.js');
 
+const POST_ENDPOINTS = ['/api/score', '/api/analyze', '/api/humanize', '/api/stats'];
+const INVALID_TEXT_PAYLOADS = [
+  {},
+  { text: '' },
+  { text: '   \n\t' },
+  { text: 123 },
+  { text: null },
+  { text: { secret: 'abc' } },
+  { text: ['not', 'a', 'string'] },
+];
+
 let serverProcess;
 let serverPort;
 let serverReady = false;
@@ -227,6 +238,17 @@ describe('API Server Integration Tests', () => {
     });
   });
 
+  describe('POST text validation', () => {
+    it.each(POST_ENDPOINTS)('rejects invalid text payloads for %s', async (endpoint) => {
+      for (const payload of INVALID_TEXT_PAYLOADS) {
+        const response = await makeRequest('POST', endpoint, payload);
+        expect(response.statusCode, `${endpoint} ${JSON.stringify(payload)}`).toBe(400);
+        const data = JSON.parse(response.body);
+        expect(data).toEqual({ error: 'text must be a non-empty string' });
+      }
+    });
+  });
+
   describe('CORS headers', () => {
     it('includes CORS headers in response', async () => {
       const response = await makeRequest('POST', '/api/score', {
@@ -269,6 +291,12 @@ describe('API Server Integration Tests', () => {
     it('returns 404 for unknown endpoints', async () => {
       const response = await makeRequest('GET', '/api/unknown');
       expect(response.statusCode).toBe(404);
+    });
+
+    it('returns 404 for unknown POST endpoints without text validation', async () => {
+      const response = await makeRequest('POST', '/api/unknown', {});
+      expect(response.statusCode).toBe(404);
+      expect(JSON.parse(response.body)).toEqual({ error: 'Not found' });
     });
   });
 });
