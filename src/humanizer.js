@@ -33,10 +33,11 @@ const NON_BREAKING_SPACES_GLOBAL = /(?:\u00A0|\u202F)/g;
  * @param {string} text        — Input text
  * @param {object} [opts]      — Options
  * @param {string} [opts.locale='en'] — Locale code
+ * @param {boolean} [opts.ignoreCode=false] — Enable markdown protection during fixes
  * @returns {{ text: string, fixes: string[] }}
  */
 function autoFix(text, opts = {}) {
-  const { locale = 'en' } = opts;
+  const { locale = 'en', ignoreCode = false } = opts;
   const localeProfile = loadLocale(locale);
   const fixes = [];
 
@@ -77,7 +78,7 @@ function autoFix(text, opts = {}) {
     /\s*Happy to help[.!]?\s*$/i,
   ];
 
-  const result = transformMarkdownProse(text, (input) => {
+  const applyFixes = (input) => {
     let next = input;
 
     // Curly quotes → straight quotes
@@ -135,7 +136,9 @@ function autoFix(text, opts = {}) {
     }
 
     return next;
-  });
+  };
+
+  const result = ignoreCode ? transformMarkdownProse(text, applyFixes) : applyFixes(text);
 
   return { text: result.trim(), fixes };
 }
@@ -217,7 +220,7 @@ function humanize(text, opts = {}) {
   let fixedText = null;
   let appliedFixes = [];
   if (autofix) {
-    const result = autoFix(text, { locale });
+    const result = autoFix(text, { locale, ignoreCode });
     fixedText = result.text;
     appliedFixes = result.fixes;
   }

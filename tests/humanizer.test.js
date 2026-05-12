@@ -130,7 +130,7 @@ describe('autoFix', () => {
       '```',
     ].join('\n');
 
-    const { text } = autoFix(input);
+    const { text } = autoFix(input, { ignoreCode: true });
 
     expect(text).toContain('to deploy, update the config.');
     expect(text).toContain('```md\nIn order to deploy, update the config.\n```');
@@ -138,7 +138,7 @@ describe('autoFix', () => {
 
   it('preserves inline code during autofix', () => {
     const input = 'In order to run it, type `in order to deploy` in the shell.';
-    const { text } = autoFix(input);
+    const { text } = autoFix(input, { ignoreCode: true });
 
     expect(text).toBe('To run it, type `in order to deploy` in the shell.');
   });

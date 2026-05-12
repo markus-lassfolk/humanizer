@@ -106,7 +106,7 @@ function countWords(text) {
 
 function isMarkdownLikePath(filePath) {
   const ext = path.extname(filePath).toLowerCase();
-  return ext === '.md' || ext === '.mdx';
+  return ext === '.md' || ext === '.mdx' || ext === '.mdoc';
 }
 
 function preprocessForScan(text, file, ignoreCode) {
