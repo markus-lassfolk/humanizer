@@ -412,7 +412,7 @@ function resolveScanOptions() {
     flags.includeDefaultIgnore !== null
       ? flags.includeDefaultIgnore
       : (configIncludeDefaultIgnore ?? true);
-  const targetLooksMarkdown = flags.file ? isMarkdownPath(flags.file) : true;
+  const targetLooksMarkdown = isMarkdownPath(flags.file || '.');
   const ignoreCode =
     flags.ignoreCode !== null ? flags.ignoreCode : (configIgnoreCode ?? targetLooksMarkdown);
 
@@ -626,7 +626,8 @@ function formatStatsReport(stats) {
 
 /** Auto-chunk when word count ≥ minDocWordsForChunking (after optional ignore-code masking). */
 function shouldUseChunkedAnalysis(text, cliFlags) {
-  const ignoreCode = cliFlags.ignoreCode === true;
+  const ignoreCode =
+    cliFlags.ignoreCode === true || (cliFlags.ignoreCode === null && isMarkdownPath(cliFlags.file));
   const prepared = ignoreCode ? stripMarkdownProtectedRegions(text) : text;
   const w = wordCount(prepared.trim());
   if (cliFlags.chunked === true) return true;
