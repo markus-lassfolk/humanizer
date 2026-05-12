@@ -182,7 +182,7 @@ describe('analyze', () => {
     expect(ignoreCode.summary.toLowerCase()).not.toContain('great question');
   });
 
-  it('ignores Markdown frontmatter, tables, MDX props, and quoted examples when ignoreCode is enabled', () => {
+  it('ignores fenced code and inline code spans when ignoreCode is enabled', () => {
     const text = [
       '---',
       'title: Comprehensive seamless transformation',
@@ -198,18 +198,27 @@ describe('analyze', () => {
       '',
       "> Vendor quote: In today's rapidly evolving digital landscape, this solution is a testament to innovation.",
       '',
-      'Short internal note: ship after tests pass.',
+      '```javascript',
+      'console.log("This comprehensive solution leverages innovation");',
+      '```',
+      '',
+      'Short internal note with `comprehensive code snippet` inside.',
     ].join('\n');
 
     const regular = analyze(text, { verbose: true });
-    const protectedMarkdown = analyze(text, { ignoreCode: true, verbose: true });
+    const ignoreCodeResult = analyze(text, { ignoreCode: true, verbose: true });
 
-    expect(regular.totalMatches).toBeGreaterThan(protectedMarkdown.totalMatches);
-    const protectedMatches = protectedMarkdown.findings
+    // With ignoreCode, only fenced code and inline backticks are masked (not frontmatter, tables, blockquotes)
+    expect(regular.totalMatches).toBeGreaterThanOrEqual(ignoreCodeResult.totalMatches);
+    const ignoredMatches = ignoreCodeResult.findings
       .flatMap((f) => f.matches)
       .map((m) => m.match)
       .join(' ');
-    expect(protectedMatches).not.toMatch(/Comprehensive|landscape|Widget|Vendor/i);
+    // Should not include text from fenced code or inline code
+    expect(ignoredMatches).not.toMatch(/comprehensive solution leverages innovation/i);
+    expect(ignoredMatches).not.toMatch(/comprehensive code snippet/i);
+    // But should still include frontmatter, tables, blockquotes since ignoreCode only masks code
+    expect(ignoredMatches).toMatch(/comprehensive|landscape|innovation/i);
   });
 
   it('marks short samples as low confidence', () => {

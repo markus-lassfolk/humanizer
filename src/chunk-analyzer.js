@@ -6,7 +6,7 @@
  * Lazy-requires `./analyzer` inside analyzeChunked to avoid circular init with analyzer.js.
  */
 
-const { stripMarkdownProtectedRegions } = require('./preprocess');
+const { stripCodeSnippets } = require('./preprocess');
 
 const DEFAULTS = {
   windowWords: 300,
@@ -245,7 +245,7 @@ function analyzeChunked(text, opts = {}) {
     };
   }
 
-  const prepared = analyzeOpts.ignoreCode ? stripMarkdownProtectedRegions(text) : text;
+  const prepared = analyzeOpts.ignoreCode ? stripCodeSnippets(text) : text;
   const trimmed = prepared.trim();
   const spans = wordSpans(trimmed);
   const totalWords = wordCountFromSpans(spans);

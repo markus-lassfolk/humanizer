@@ -30,8 +30,14 @@ const {
 const { wordCount } = require('./patterns');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
-const { scanPath, compareScanResults, compareFiles, normalizeExtensions } = require('./workflows');
-const { stripMarkdownProtectedRegions } = require('./preprocess');
+const {
+  scanPath,
+  compareScanResults,
+  compareFiles,
+  normalizeExtensions,
+  isMarkdownLikePath,
+} = require('./workflows');
+const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
 const { roundDisplayCount } = require('./utils');
 
 // ─── Tiny Color Helper (no chalk dependency) ─────────────
@@ -93,11 +99,6 @@ function scoreLabel(s) {
 
 function roundSigned(value) {
   return Number.isFinite(value) ? Math.round(value) : 0;
-}
-
-function isMarkdownPath(filePath) {
-  if (!filePath || typeof filePath !== 'string') return false;
-  return ['.md', '.mdx', '.mdoc'].includes(path.extname(filePath).toLowerCase());
 }
 
 function includesMarkdownExtensions(exts) {
@@ -635,8 +636,12 @@ function shouldUseChunkedAnalysis(text, cliFlags, resolvedIgnoreCode = null) {
     typeof resolvedIgnoreCode === 'boolean'
       ? resolvedIgnoreCode
       : cliFlags.ignoreCode === true ||
-        (cliFlags.ignoreCode === null && isMarkdownPath(cliFlags.file));
-  const prepared = ignoreCode ? stripMarkdownProtectedRegions(text) : text;
+        (cliFlags.ignoreCode === null && cliFlags.file && isMarkdownLikePath(cliFlags.file));
+  const preprocessFn =
+    cliFlags.file && isMarkdownLikePath(cliFlags.file)
+      ? stripMarkdownProtectedRegions
+      : stripCodeSnippets;
+  const prepared = ignoreCode ? preprocessFn(text) : text;
   const w = wordCount(prepared.trim());
   if (cliFlags.chunked === true) return true;
   if (cliFlags.chunked === false) return false;
@@ -1061,7 +1066,8 @@ async function main() {
     verbose: flags.verbose,
     patternsToCheck: flags.patterns,
     ignoreCode:
-      flags.ignoreCode === true || (flags.ignoreCode === null && isMarkdownPath(flags.file)),
+      flags.ignoreCode === true ||
+      (flags.ignoreCode === null && flags.file && isMarkdownLikePath(flags.file)),
     locale: flags.locale,
     strict: flags.strict,
     withLm: flags.withLm,
@@ -1205,7 +1211,11 @@ async function main() {
     }
 
     case 'stats': {
-      const statsText = opts.ignoreCode ? stripMarkdownProtectedRegions(text) : text;
+      const preprocessFn =
+        flags.file && isMarkdownLikePath(flags.file)
+          ? stripMarkdownProtectedRegions
+          : stripCodeSnippets;
+      const statsText = opts.ignoreCode ? preprocessFn(text) : text;
       const { loadLocale } = require('./locales');
       const localeProfile = loadLocale(opts.locale);
       const stats = computeStats(statsText, localeProfile);
