@@ -230,7 +230,7 @@ function humanize(text, opts = {}) {
     important,
     minor,
     autofix: autofix ? { text: fixedText, fixes: appliedFixes } : null,
-    guidance: guidanceItems.map(item => typeof item === 'string' ? item : item.text),
+    guidance: guidanceItems.map((item) => (typeof item === 'string' ? item : item.text)),
     guidanceItems,
     styleTips,
   };

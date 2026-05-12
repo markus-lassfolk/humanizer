@@ -158,7 +158,7 @@ function optionValue(flag) {
   const idx = args.indexOf(flag);
   if (idx === -1) return null;
   const value = args[idx + 1];
-  if (!value || (value.startsWith('-') && BOOLEAN_FLAGS.has(value)) || (value.startsWith('--') && VALUE_FLAGS.has(value))) {
+  if (!value || (value.startsWith('-') && (BOOLEAN_FLAGS.has(value) || VALUE_FLAGS.has(value)))) {
     failOption(`${flag} requires ${VALUE_FLAGS.get(flag)}.`);
   }
   return value;
@@ -204,7 +204,10 @@ function validateArgs() {
     const arg = args[i];
     if (VALUE_FLAGS.has(arg)) {
       const nextArg = args[i + 1];
-      if (!nextArg || (nextArg.startsWith('-') && BOOLEAN_FLAGS.has(nextArg)) || (nextArg.startsWith('--') && VALUE_FLAGS.has(nextArg))) {
+      if (
+        !nextArg ||
+        (nextArg.startsWith('-') && (BOOLEAN_FLAGS.has(nextArg) || VALUE_FLAGS.has(nextArg)))
+      ) {
         failOption(`${arg} requires ${VALUE_FLAGS.get(arg)}.`);
       }
       i += 1;
@@ -706,7 +709,7 @@ function filterAnalysisByThreshold(result, threshold) {
 function filterGuidanceBySuggestions(guidance, keptSuggestions) {
   if (!Array.isArray(guidance) || guidance.length === 0) return guidance;
   const keptPatternIds = new Set(keptSuggestions.map((item) => item.patternId));
-  
+
   return guidance.filter((tip) => {
     if (typeof tip === 'string') {
       return true;
@@ -736,7 +739,7 @@ function filterSuggestionsByThreshold(result, threshold) {
     critical,
     important,
     minor,
-    guidance: filteredGuidanceItems.map(item => typeof item === 'string' ? item : item.text),
+    guidance: filteredGuidanceItems.map((item) => (typeof item === 'string' ? item : item.text)),
     guidanceItems: filteredGuidanceItems,
   };
 }
