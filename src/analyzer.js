@@ -16,7 +16,7 @@
 
 const { patterns, wordCount } = require('./patterns');
 const { computeStats, computeUniformityScore, tokenize } = require('./stats');
-const { stripCodeSnippets } = require('./preprocess');
+const { stripMarkdownProtectedRegions } = require('./preprocess');
 const { loadLocale } = require('./locales');
 const { DEFAULT_SCORING_KNOBS, mergeScoringKnobs } = require('./locales/scoring-defaults');
 const { roundDisplayCount } = require('./utils');
@@ -69,7 +69,7 @@ function analyze(text, opts = {}) {
   const localeProfile = loadLocale(locale);
   const scoringKnobs = mergeScoringKnobs(localeProfile);
 
-  const preparedText = ignoreCode ? stripCodeSnippets(text) : text;
+  const preparedText = ignoreCode ? stripMarkdownProtectedRegions(text) : text;
   const trimmed = preparedText.trim();
   if (trimmed.length === 0) return emptyResult();
 

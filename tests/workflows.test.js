@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import { Buffer } from 'buffer';
 import {
   normalizeExtensions,
   normalizeIgnoreDirs,
@@ -178,6 +179,22 @@ describe('scanPath', () => {
     const ignoreCode = scanPath(tmp, { exts: ['md'], minWords: 3, ignoreCode: true });
 
     expect(regular.files[0].score).toBeGreaterThan(ignoreCode.files[0].score);
+  });
+
+  it('continues past invalid binary-like files and reports file errors', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+
+    fs.writeFileSync(path.join(tmp, 'valid.md'), 'The patch fixes two bugs. Build time dropped.');
+    fs.writeFileSync(path.join(tmp, 'bad.md'), Buffer.from([0x00, 0x01, 0x02, 0x03]));
+
+    const result = scanPath(tmp, { exts: ['md'], minWords: 3 });
+
+    expect(result.summary.scannedFiles).toBe(1);
+    expect(result.summary.failedFiles).toBe(1);
+    expect(result.files[0].file.endsWith('valid.md')).toBe(true);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0].file.endsWith('bad.md')).toBe(true);
+    expect(result.errors[0].reason).toContain('non_text_or_binary_content');
   });
 
   it('supports locale-specific scanning', () => {

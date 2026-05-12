@@ -119,6 +119,30 @@ describe('autoFix', () => {
     expect(text).not.toContain('I dagsläget');
   });
 
+  it('preserves fenced Markdown code blocks during autofix', () => {
+    const input = [
+      '# Runbook',
+      '',
+      'In order to deploy, update the config.',
+      '',
+      '```md',
+      'In order to deploy, update the config.',
+      '```',
+    ].join('\n');
+
+    const { text } = autoFix(input);
+
+    expect(text).toContain('to deploy, update the config.');
+    expect(text).toContain('```md\nIn order to deploy, update the config.\n```');
+  });
+
+  it('preserves inline code during autofix', () => {
+    const input = 'In order to run it, type `in order to deploy` in the shell.';
+    const { text } = autoFix(input);
+
+    expect(text).toBe('To run it, type `in order to deploy` in the shell.');
+  });
+
   it('locale prescriptive autofixes are applied on repeated autoFix calls', () => {
     // Verifies that module-level regex lastIndex state doesn't cause misses across calls.
     const input = 'I dagsläget saknar vi en tydlig strategi.';

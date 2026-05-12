@@ -31,7 +31,7 @@ const { wordCount } = require('./patterns');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
 const { scanPath, compareScanResults, compareFiles, normalizeExtensions } = require('./workflows');
-const { stripCodeSnippets } = require('./preprocess');
+const { stripMarkdownProtectedRegions } = require('./preprocess');
 const { roundDisplayCount } = require('./utils');
 
 // ─── Tiny Color Helper (no chalk dependency) ─────────────
@@ -93,6 +93,11 @@ function scoreLabel(s) {
 
 function roundSigned(value) {
   return Number.isFinite(value) ? Math.round(value) : 0;
+}
+
+function isMarkdownPath(filePath) {
+  if (!filePath || typeof filePath !== 'string') return false;
+  return ['.md', '.mdx', '.mdoc'].includes(path.extname(filePath).toLowerCase());
 }
 
 /**
@@ -407,7 +412,9 @@ function resolveScanOptions() {
     flags.includeDefaultIgnore !== null
       ? flags.includeDefaultIgnore
       : (configIncludeDefaultIgnore ?? true);
-  const ignoreCode = flags.ignoreCode !== null ? flags.ignoreCode : (configIgnoreCode ?? false);
+  const targetLooksMarkdown = flags.file ? isMarkdownPath(flags.file) : true;
+  const ignoreCode =
+    flags.ignoreCode !== null ? flags.ignoreCode : (configIgnoreCode ?? targetLooksMarkdown);
 
   if (failOnRegression && !baseline) {
     throw new Error(
@@ -620,7 +627,7 @@ function formatStatsReport(stats) {
 /** Auto-chunk when word count ≥ minDocWordsForChunking (after optional ignore-code masking). */
 function shouldUseChunkedAnalysis(text, cliFlags) {
   const ignoreCode = cliFlags.ignoreCode === true;
-  const prepared = ignoreCode ? stripCodeSnippets(text) : text;
+  const prepared = ignoreCode ? stripMarkdownProtectedRegions(text) : text;
   const w = wordCount(prepared.trim());
   if (cliFlags.chunked === true) return true;
   if (cliFlags.chunked === false) return false;
@@ -926,7 +933,7 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
   lines.push('');
   lines.push(`  Target: ${scanResult.targetPath}`);
   lines.push(
-    `  Files scanned: ${scanResult.summary.scannedFiles}  |  Skipped: ${scanResult.summary.skippedFiles}`,
+    `  Files scanned: ${scanResult.summary.scannedFiles}  |  Skipped: ${scanResult.summary.skippedFiles}  |  Failed: ${scanResult.summary.failedFiles || 0}`,
   );
   lines.push(
     `  Avg score: ${scanResult.summary.averageScore}  |  Max: ${scanResult.summary.maxScore}  |  Min: ${scanResult.summary.minScore}`,
@@ -994,10 +1001,19 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
     lines.push('');
   }
 
+  if (scanResult.errors && scanResult.errors.length > 0) {
+    lines.push(color.yellow(color.bold('  File errors:')));
+    for (const item of scanResult.errors.slice(0, 10)) {
+      lines.push(`  ${color.yellow('!')} ${item.file} ${color.dim(`(${item.reason})`)}`);
+    }
+    if (scanResult.errors.length > 10) {
+      lines.push(color.dim(`  ... and ${scanResult.errors.length - 10} more`));
+    }
+    lines.push('');
+  }
+
   if (scanResult.skipped.length > 0) {
-    lines.push(
-      color.gray(`  ${scanResult.skipped.length} files skipped (too short or unreadable).`),
-    );
+    lines.push(color.gray(`  ${scanResult.skipped.length} files skipped (too short).`));
     lines.push('');
   }
 
@@ -1035,7 +1051,8 @@ async function main() {
   const opts = {
     verbose: flags.verbose,
     patternsToCheck: flags.patterns,
-    ignoreCode: flags.ignoreCode === true,
+    ignoreCode:
+      flags.ignoreCode === true || (flags.ignoreCode === null && isMarkdownPath(flags.file)),
     locale: flags.locale,
     strict: flags.strict,
     withLm: flags.withLm,
@@ -1179,7 +1196,7 @@ async function main() {
     }
 
     case 'stats': {
-      const statsText = opts.ignoreCode ? stripCodeSnippets(text) : text;
+      const statsText = opts.ignoreCode ? stripMarkdownProtectedRegions(text) : text;
       const { loadLocale } = require('./locales');
       const localeProfile = loadLocale(opts.locale);
       const stats = computeStats(statsText, localeProfile);
@@ -1275,6 +1292,10 @@ async function main() {
         baselineComparison.summary.regressions > 0
       ) {
         exitCode = exitCode || 3;
+      }
+
+      if (scanResult.summary.failedFiles > 0) {
+        exitCode = exitCode || 4;
       }
 
       if (exitCode !== 0) {
