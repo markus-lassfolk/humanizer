@@ -156,9 +156,10 @@ function normalizeStatsForOutput(stats) {
  * @returns {object}
  */
 function normalizeAnalysisForOutput(result) {
-  const normalized = normalizeJsonValue(result);
-  if (normalized && typeof normalized === 'object' && 'stats' in normalized) {
-    normalized.stats = normalizeStatsForOutput(result.stats);
+  const { stats, ...rest } = result;
+  const normalized = normalizeJsonValue(rest);
+  if (stats !== undefined) {
+    normalized.stats = normalizeStatsForOutput(stats);
   }
   return normalized;
 }
@@ -185,5 +186,4 @@ module.exports = {
   normalizeStatsForOutput,
   normalizeAnalysisForOutput,
   formatMetric,
-  isFiniteMetric,
 };

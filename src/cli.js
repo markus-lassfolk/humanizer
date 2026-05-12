@@ -622,9 +622,7 @@ function formatStatsReport(stats) {
     lines.push(`    Flesch-Kincaid:   ${formatMetric(stats, 'fleschKincaid', ' grade level')}`);
   }
   const functionWordPercent =
-    stats.functionWordRatio === null
-      ? ''
-      : ` (${(stats.functionWordRatio * 100).toFixed(1)}%)`;
+    stats.functionWordRatio === null ? '' : ` (${(stats.functionWordRatio * 100).toFixed(1)}%)`;
   lines.push(
     `    Function words:   ${formatMetric(stats, 'functionWordRatio')}${functionWordPercent}`,
   );
