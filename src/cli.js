@@ -158,7 +158,7 @@ function optionValue(flag) {
   const idx = args.indexOf(flag);
   if (idx === -1) return null;
   const value = args[idx + 1];
-  if (!value || value.startsWith('-')) {
+  if (!value || (value.startsWith('-') && BOOLEAN_FLAGS.has(value)) || (value.startsWith('--') && VALUE_FLAGS.has(value))) {
     failOption(`${flag} requires ${VALUE_FLAGS.get(flag)}.`);
   }
   return value;
@@ -203,7 +203,8 @@ function validateArgs() {
   for (let i = 1; i < args.length; i++) {
     const arg = args[i];
     if (VALUE_FLAGS.has(arg)) {
-      if (!args[i + 1] || args[i + 1].startsWith('-')) {
+      const nextArg = args[i + 1];
+      if (!nextArg || (nextArg.startsWith('-') && BOOLEAN_FLAGS.has(nextArg)) || (nextArg.startsWith('--') && VALUE_FLAGS.has(nextArg))) {
         failOption(`${arg} requires ${VALUE_FLAGS.get(arg)}.`);
       }
       i += 1;
@@ -705,32 +706,16 @@ function filterAnalysisByThreshold(result, threshold) {
 function filterGuidanceBySuggestions(guidance, keptSuggestions) {
   if (!Array.isArray(guidance) || guidance.length === 0) return guidance;
   const keptPatternIds = new Set(keptSuggestions.map((item) => item.patternId));
-  const rules = [
-    { ids: [1, 4], terms: ['inflated/promotional', 'svulstig'] },
-    { ids: [3], terms: ['-ing'] },
-    { ids: [5], terms: ['sources', 'källor'] },
-    { ids: [6], terms: ['despite challenges', 'trots utmaningar'] },
-    { ids: [7], terms: ['AI vocabulary', 'AI-typiska'] },
-    { ids: [8], terms: ['is" and "has', 'är" och "har'] },
-    { ids: [9], terms: ['not just', 'inte bara'] },
-    { ids: [10], terms: ['triads', 'treparts'] },
-    { ids: [13], terms: ['em dashes', 'tankstreck'] },
-    { ids: [14, 15], terms: ['bold formatting', 'fet-formatering'] },
-    { ids: [17], terms: ['emojis'] },
-    { ids: [19, 21], terms: ['chatbot filler', 'chattbot'] },
-    { ids: [20], terms: ['knowledge-cutoff', 'kunskapsavstäng'] },
-    { ids: [22, 23], terms: ['filler and hedging', 'utfyllnad'] },
-    { ids: [24], terms: ['generic conclusions', 'generiska avslut'] },
-    { ids: [29], terms: ['hidden unicode'] },
-  ];
-
+  
   return guidance.filter((tip) => {
-    const lowerTip = String(tip).toLowerCase();
-    const rule = rules.find((candidate) =>
-      candidate.terms.some((term) => lowerTip.includes(term.toLowerCase())),
-    );
-    if (!rule) return true;
-    return rule.ids.some((id) => keptPatternIds.has(id));
+    if (typeof tip === 'string') {
+      return true;
+    }
+    if (tip && typeof tip === 'object' && tip.patternIds && Array.isArray(tip.patternIds)) {
+      if (tip.patternIds.length === 0) return true;
+      return tip.patternIds.some((id) => keptPatternIds.has(id));
+    }
+    return true;
   });
 }
 
@@ -741,6 +726,8 @@ function filterSuggestionsByThreshold(result, threshold) {
   const important = keep(result.important);
   const minor = keep(result.minor);
   const keptSuggestions = [...critical, ...important, ...minor];
+  const guidanceItems = result.guidanceItems || result.guidance;
+  const filteredGuidanceItems = filterGuidanceBySuggestions(guidanceItems, keptSuggestions);
   return {
     ...result,
     unfilteredTotalIssues: result.totalIssues,
@@ -749,7 +736,8 @@ function filterSuggestionsByThreshold(result, threshold) {
     critical,
     important,
     minor,
-    guidance: filterGuidanceBySuggestions(result.guidance, keptSuggestions),
+    guidance: filteredGuidanceItems.map(item => typeof item === 'string' ? item : item.text),
+    guidanceItems: filteredGuidanceItems,
   };
 }
 
@@ -950,7 +938,8 @@ function formatGroupedSuggestions(result) {
   if (result.guidance.length > 0) {
     lines.push(color.cyan(color.bold('  ━━ GUIDANCE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')));
     for (const tip of result.guidance) {
-      lines.push(`  ${color.cyan('•')} ${tip}`);
+      const tipText = typeof tip === 'string' ? tip : tip.text;
+      lines.push(`  ${color.cyan('•')} ${tipText}`);
     }
     lines.push('');
   }
