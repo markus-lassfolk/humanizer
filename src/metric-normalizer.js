@@ -174,13 +174,14 @@ function normalizeStatsForOutput(stats, options = {}) {
  * Normalize a complete analysis/suggestion payload for JSON output.
  *
  * @param {object} result
+ * @param {object} options
  * @returns {object}
  */
-function normalizeAnalysisForOutput(result) {
+function normalizeAnalysisForOutput(result, options = {}) {
   const { stats, ...rest } = result;
   const normalized = normalizeJsonValue(rest);
   if (stats !== undefined) {
-    normalized.stats = normalizeStatsForOutput(stats);
+    normalized.stats = normalizeStatsForOutput(stats, options);
   }
   return normalized;
 }

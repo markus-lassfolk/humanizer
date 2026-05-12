@@ -1066,7 +1066,7 @@ async function main() {
         const chunked = analyzeChunked(text, opts);
         if (flags.json) {
           console.log(
-            JSON.stringify(normalizeAnalysisForOutput(mergeChunkedForJSON(chunked)), null, 2),
+            JSON.stringify(normalizeAnalysisForOutput(mergeChunkedForJSON(chunked), { locale: opts.locale }), null, 2),
           );
         } else {
           console.log(formatColoredReport(chunked.document));
@@ -1075,7 +1075,7 @@ async function main() {
       } else {
         const result = analyze(text, opts);
         if (flags.json) {
-          console.log(formatJSON(result));
+          console.log(formatJSON(result, { locale: opts.locale }));
         } else {
           console.log(formatColoredReport(result));
         }
@@ -1132,7 +1132,7 @@ async function main() {
                 ...result,
                 chunks: chunked.chunks,
                 aggregate: chunked.aggregate,
-              }),
+              }, { locale: opts.locale }),
               null,
               2,
             ),
@@ -1147,7 +1147,7 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else if (flags.json) {
-        console.log(JSON.stringify(normalizeAnalysisForOutput(result), null, 2));
+        console.log(JSON.stringify(normalizeAnalysisForOutput(result, { locale: opts.locale }), null, 2));
       } else {
         console.log(formatSuggestions(result));
         if (flags.autofix && result.autofix) {
@@ -1190,7 +1190,7 @@ async function main() {
                 ...result,
                 chunks: chunked.chunks,
                 aggregate: chunked.aggregate,
-              }),
+              }, { locale: opts.locale }),
               null,
               2,
             ),
@@ -1200,7 +1200,7 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else if (flags.json) {
-        console.log(JSON.stringify(normalizeAnalysisForOutput(result), null, 2));
+        console.log(JSON.stringify(normalizeAnalysisForOutput(result, { locale: opts.locale }), null, 2));
       } else {
         console.log(formatGroupedSuggestions(result));
       }
@@ -1213,7 +1213,7 @@ async function main() {
       const localeProfile = loadLocale(opts.locale);
       const stats = computeStats(statsText, localeProfile);
       if (flags.json) {
-        console.log(JSON.stringify(normalizeStatsForOutput(stats), null, 2));
+        console.log(JSON.stringify(normalizeStatsForOutput(stats, { locale: opts.locale }), null, 2));
       } else {
         console.log(formatStatsReport(stats, { locale: opts.locale }));
       }

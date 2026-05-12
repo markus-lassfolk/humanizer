@@ -567,8 +567,8 @@ function formatMarkdown(result) {
 /**
  * Format analysis as JSON.
  */
-function formatJSON(result) {
-  return JSON.stringify(normalizeAnalysisForOutput(result), null, 2);
+function formatJSON(result, options = {}) {
+  return JSON.stringify(normalizeAnalysisForOutput(result, options), null, 2);
 }
 
 // ─── Label Helpers ───────────────────────────────────────
