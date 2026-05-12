@@ -114,6 +114,100 @@ function reliabilityBadge(reliability) {
 
 const args = process.argv.slice(2);
 const command = args[0];
+const { SUPPORTED_LOCALES } = require('./locales');
+
+const VALUE_FLAGS = new Map([
+  ['-f', 'path'],
+  ['--file', 'path'],
+  ['--patterns', 'comma-separated pattern IDs'],
+  ['--threshold', 'non-negative integer'],
+  ['--config', 'path'],
+  ['--before', 'path'],
+  ['--after', 'path'],
+  ['--ext', 'comma-separated extension list'],
+  ['--min-words', 'non-negative integer'],
+  ['--fail-above', 'non-negative integer'],
+  ['--baseline', 'path'],
+  ['--regression-threshold', 'non-negative integer'],
+  ['--ignore-dirs', 'comma-separated directory list'],
+  ['--locale', `locale (${SUPPORTED_LOCALES.join(', ')})`],
+]);
+
+const BOOLEAN_FLAGS = new Set([
+  '--json',
+  '--verbose',
+  '-v',
+  '--autofix',
+  '--help',
+  '-h',
+  '--fail-on-regression',
+  '--no-default-ignore',
+  '--ignore-code',
+  '--strict',
+  '--with-lm',
+  '--chunked',
+  '--no-chunked',
+]);
+
+function failOption(message) {
+  console.error(color.red(`Error: ${message}`));
+  process.exit(1);
+}
+
+function optionValue(flag) {
+  const idx = args.indexOf(flag);
+  if (idx === -1) return null;
+  const value = args[idx + 1];
+  if (!value || value.startsWith('-')) {
+    failOption(`${flag} requires ${VALUE_FLAGS.get(flag)}.`);
+  }
+  return value;
+}
+
+function parseNonNegativeIntegerOption(flag) {
+  const value = optionValue(flag);
+  if (value === null) return null;
+  if (!/^\d+$/.test(value)) {
+    failOption(`${flag} must be a non-negative integer.`);
+  }
+  return Number(value);
+}
+
+function parsePatternIds(value) {
+  const tokens = value.split(',').map((v) => v.trim());
+  if (tokens.length === 0 || tokens.some((v) => !/^\d+$/.test(v) || Number(v) <= 0)) {
+    failOption('--patterns must be a comma-separated list of positive integer pattern IDs.');
+  }
+  return tokens.map(Number);
+}
+
+function validateLocale(locale, source) {
+  if (!SUPPORTED_LOCALES.includes(locale)) {
+    failOption(
+      `Invalid locale "${locale}" from ${source}. Supported locales: ${SUPPORTED_LOCALES.join(', ')}.`,
+    );
+  }
+  return locale;
+}
+
+function validateArgs() {
+  for (let i = 1; i < args.length; i++) {
+    const arg = args[i];
+    if (VALUE_FLAGS.has(arg)) {
+      if (!args[i + 1] || args[i + 1].startsWith('-')) {
+        failOption(`${arg} requires ${VALUE_FLAGS.get(arg)}.`);
+      }
+      i += 1;
+      continue;
+    }
+    if (BOOLEAN_FLAGS.has(arg)) continue;
+    if (arg.startsWith('-')) {
+      failOption(`Unknown option: ${arg}`);
+    }
+  }
+}
+
+validateArgs();
 
 const flags = {
   json: args.includes('--json'),
@@ -135,44 +229,24 @@ const flags = {
   ignoreDirs: null,
   includeDefaultIgnore: null,
   ignoreCode: null,
-  locale: process.env.HUMANIZER_LOCALE || 'en',
+  locale: validateLocale(process.env.HUMANIZER_LOCALE || 'en', 'HUMANIZER_LOCALE'),
   strict: args.includes('--strict'),
   withLm: args.includes('--with-lm'),
   chunked: args.includes('--no-chunked') ? false : args.includes('--chunked') ? true : null,
 };
 
-// Parse -f / --file flag
-const fileIdx = args.indexOf('-f') !== -1 ? args.indexOf('-f') : args.indexOf('--file');
-if (fileIdx !== -1 && args[fileIdx + 1]) {
-  flags.file = args[fileIdx + 1];
-}
+flags.file = optionValue('-f') || optionValue('--file');
 
 // Parse positional file argument (command <file>) by scanning all args after the
 // command so positional targets can appear after value flags.
 if (!flags.file) {
-  const valueFlagSet = new Set([
-    '-f',
-    '--file',
-    '--patterns',
-    '--threshold',
-    '--config',
-    '--before',
-    '--after',
-    '--ext',
-    '--min-words',
-    '--fail-above',
-    '--baseline',
-    '--regression-threshold',
-    '--ignore-dirs',
-    '--locale',
-  ]);
   let skipNext = false;
   for (let i = 1; i < args.length; i++) {
     if (skipNext) {
       skipNext = false;
       continue;
     }
-    if (valueFlagSet.has(args[i])) {
+    if (VALUE_FLAGS.has(args[i])) {
       skipNext = true;
       continue;
     }
@@ -182,85 +256,33 @@ if (!flags.file) {
   }
 }
 
-// Parse --patterns flag (comma-separated pattern IDs)
-const patIdx = args.indexOf('--patterns');
-if (patIdx !== -1 && args[patIdx + 1]) {
-  flags.patterns = args[patIdx + 1]
-    .split(',')
-    .map(Number)
-    .filter((n) => n > 0);
+const patternsValue = optionValue('--patterns');
+if (patternsValue !== null) {
+  flags.patterns = parsePatternIds(patternsValue);
 }
 
-// Parse --threshold flag
-const threshIdx = args.indexOf('--threshold');
-if (threshIdx !== -1 && args[threshIdx + 1]) {
-  flags.threshold = parseInt(args[threshIdx + 1], 10);
-}
+flags.threshold = parseNonNegativeIntegerOption('--threshold');
+flags.config = optionValue('--config');
+flags.before = optionValue('--before');
+flags.after = optionValue('--after');
 
-// Parse --config flag
-const configIdx = args.indexOf('--config');
-if (configIdx !== -1 && args[configIdx + 1]) {
-  flags.config = args[configIdx + 1];
-}
-
-// Parse --before and --after flags (compare command)
-const beforeIdx = args.indexOf('--before');
-if (beforeIdx !== -1 && args[beforeIdx + 1]) {
-  flags.before = args[beforeIdx + 1];
-}
-const afterIdx = args.indexOf('--after');
-if (afterIdx !== -1 && args[afterIdx + 1]) {
-  flags.after = args[afterIdx + 1];
-}
-
-// Parse --ext flag (scan command)
-const extIdx = args.indexOf('--ext');
-if (extIdx !== -1) {
-  const extValue = args[extIdx + 1];
-  if (!extValue || extValue.startsWith('-')) {
-    console.error(
-      'Error: --ext requires a comma-separated extension list (for example: --ext md,txt).',
-    );
-    process.exit(1);
-  }
+const extValue = optionValue('--ext');
+if (extValue !== null) {
   flags.extensions = normalizeExtensions(extValue.split(','));
 }
 
-// Parse --min-words flag (scan command)
-const minWordsIdx = args.indexOf('--min-words');
-if (minWordsIdx !== -1 && args[minWordsIdx + 1]) {
-  const n = parseInt(args[minWordsIdx + 1], 10);
-  if (!Number.isNaN(n) && n >= 0) flags.minWords = n;
-}
-
-// Parse --fail-above flag (scan command)
-const failIdx = args.indexOf('--fail-above');
-if (failIdx !== -1 && args[failIdx + 1]) {
-  const n = parseInt(args[failIdx + 1], 10);
-  if (!Number.isNaN(n) && n >= 0) flags.failAbove = n;
-}
-
-// Parse --baseline flag (scan command)
-const baselineIdx = args.indexOf('--baseline');
-if (baselineIdx !== -1 && args[baselineIdx + 1]) {
-  flags.baseline = args[baselineIdx + 1];
-}
-
-// Parse --regression-threshold flag (scan command)
-const regressionIdx = args.indexOf('--regression-threshold');
-if (regressionIdx !== -1 && args[regressionIdx + 1]) {
-  const n = parseInt(args[regressionIdx + 1], 10);
-  if (!Number.isNaN(n) && n >= 0) flags.regressionThreshold = n;
-}
+flags.minWords = parseNonNegativeIntegerOption('--min-words');
+flags.failAbove = parseNonNegativeIntegerOption('--fail-above');
+flags.baseline = optionValue('--baseline');
+flags.regressionThreshold = parseNonNegativeIntegerOption('--regression-threshold');
 
 if (args.includes('--fail-on-regression')) {
   flags.failOnRegression = true;
 }
 
-// Parse --ignore-dirs flag (scan command)
-const ignoreIdx = args.indexOf('--ignore-dirs');
-if (ignoreIdx !== -1 && args[ignoreIdx + 1]) {
-  flags.ignoreDirs = args[ignoreIdx + 1]
+const ignoreDirsValue = optionValue('--ignore-dirs');
+if (ignoreDirsValue !== null) {
+  flags.ignoreDirs = ignoreDirsValue
     .split(',')
     .map((d) => d.trim())
     .filter(Boolean);
@@ -274,10 +296,9 @@ if (args.includes('--ignore-code')) {
   flags.ignoreCode = true;
 }
 
-// Parse --locale flag (overrides HUMANIZER_LOCALE env)
-const localeIdx = args.indexOf('--locale');
-if (localeIdx !== -1 && args[localeIdx + 1]) {
-  flags.locale = args[localeIdx + 1];
+const localeValue = optionValue('--locale');
+if (localeValue !== null) {
+  flags.locale = validateLocale(localeValue, '--locale');
 }
 
 // ─── Scan Config Resolution ──────────────────────────────
@@ -456,7 +477,7 @@ ${color.bold('Options:')}
   --verbose, -v           Show all matches (not just top 5 per pattern)
   --autofix               Apply safe mechanical fixes (humanize only)
   --patterns <ids>        Only check specific pattern IDs (comma-separated)
-  --threshold <n>         Only show patterns with weight above threshold
+  --threshold <n>         Only include findings/suggestions with weight >= threshold
   --before <path>         Before file for compare command
   --after <path>          After file for compare command
   --ext <list>            File extensions for scan (e.g. md,txt,rst)
@@ -617,6 +638,25 @@ function formatStatsReport(stats) {
   return lines.join('\n');
 }
 
+function filterAnalysisByThreshold(result, threshold) {
+  if (threshold === null) return result;
+  return {
+    ...result,
+    findings: result.findings.filter((finding) => finding.weight >= threshold),
+  };
+}
+
+function filterSuggestionsByThreshold(result, threshold) {
+  if (threshold === null) return result;
+  const keep = (items) => items.filter((item) => item.weight >= threshold);
+  return {
+    ...result,
+    critical: keep(result.critical),
+    important: keep(result.important),
+    minor: keep(result.minor),
+  };
+}
+
 /** Auto-chunk when word count ≥ minDocWordsForChunking (after optional ignore-code masking). */
 function shouldUseChunkedAnalysis(text, cliFlags) {
   const ignoreCode = cliFlags.ignoreCode === true;
@@ -728,8 +768,6 @@ function formatColoredReport(result) {
   if (result.findings.length > 0) {
     lines.push(color.bold('  ── Findings ──────────────────────────────────'));
     for (const finding of result.findings) {
-      if (flags.threshold && finding.weight < flags.threshold) continue;
-
       lines.push('');
       const weightColor =
         finding.weight >= 4 ? color.red : finding.weight >= 2 ? color.yellow : color.blue;
@@ -1046,17 +1084,25 @@ async function main() {
       if (shouldUseChunkedAnalysis(text, flags)) {
         const chunked = analyzeChunked(text, opts);
         if (flags.json) {
-          console.log(JSON.stringify(mergeChunkedForJSON(chunked), null, 2));
+          console.log(
+            JSON.stringify(
+              filterAnalysisByThreshold(mergeChunkedForJSON(chunked), flags.threshold),
+              null,
+              2,
+            ),
+          );
         } else {
-          console.log(formatColoredReport(chunked.document));
+          console.log(
+            formatColoredReport(filterAnalysisByThreshold(chunked.document, flags.threshold)),
+          );
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else {
         const result = analyze(text, opts);
         if (flags.json) {
-          console.log(formatJSON(result));
+          console.log(formatJSON(filterAnalysisByThreshold(result, flags.threshold)));
         } else {
-          console.log(formatColoredReport(result));
+          console.log(formatColoredReport(filterAnalysisByThreshold(result, flags.threshold)));
         }
       }
       break;
@@ -1107,13 +1153,17 @@ async function main() {
         if (flags.json) {
           console.log(
             JSON.stringify(
-              { ...result, chunks: chunked.chunks, aggregate: chunked.aggregate },
+              {
+                ...filterSuggestionsByThreshold(result, flags.threshold),
+                chunks: chunked.chunks,
+                aggregate: chunked.aggregate,
+              },
               null,
               2,
             ),
           );
         } else {
-          console.log(formatSuggestions(result));
+          console.log(formatSuggestions(filterSuggestionsByThreshold(result, flags.threshold)));
           if (flags.autofix && result.autofix) {
             console.log(`\n${color.bold('── AUTO-FIXED TEXT ──────────────────────────────')}\n`);
             console.log(result.autofix.text);
@@ -1122,9 +1172,9 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else if (flags.json) {
-        console.log(JSON.stringify(result, null, 2));
+        console.log(JSON.stringify(filterSuggestionsByThreshold(result, flags.threshold), null, 2));
       } else {
-        console.log(formatSuggestions(result));
+        console.log(formatSuggestions(filterSuggestionsByThreshold(result, flags.threshold)));
         if (flags.autofix && result.autofix) {
           console.log(`\n${color.bold('── AUTO-FIXED TEXT ──────────────────────────────')}\n`);
           console.log(result.autofix.text);
@@ -1137,13 +1187,13 @@ async function main() {
     case 'report': {
       if (shouldUseChunkedAnalysis(text, flags)) {
         const chunked = analyzeChunked(text, { ...opts, verbose: true });
-        console.log(formatMarkdown(chunked.document));
+        console.log(formatMarkdown(filterAnalysisByThreshold(chunked.document, flags.threshold)));
         console.log('\n### Chunk distribution\n');
         const appendix = formatChunkedTextAppendix(chunked).replace(/^\n/, '').trimEnd();
         console.log(`\n\`\`\`\n${appendix}\n\`\`\`\n`);
       } else {
         const result = analyze(text, { ...opts, verbose: true });
-        console.log(formatMarkdown(result));
+        console.log(formatMarkdown(filterAnalysisByThreshold(result, flags.threshold)));
       }
       break;
     }
@@ -1161,19 +1211,27 @@ async function main() {
         if (flags.json) {
           console.log(
             JSON.stringify(
-              { ...result, chunks: chunked.chunks, aggregate: chunked.aggregate },
+              {
+                ...filterSuggestionsByThreshold(result, flags.threshold),
+                chunks: chunked.chunks,
+                aggregate: chunked.aggregate,
+              },
               null,
               2,
             ),
           );
         } else {
-          console.log(formatGroupedSuggestions(result));
+          console.log(
+            formatGroupedSuggestions(filterSuggestionsByThreshold(result, flags.threshold)),
+          );
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else if (flags.json) {
-        console.log(JSON.stringify(result, null, 2));
+        console.log(JSON.stringify(filterSuggestionsByThreshold(result, flags.threshold), null, 2));
       } else {
-        console.log(formatGroupedSuggestions(result));
+        console.log(
+          formatGroupedSuggestions(filterSuggestionsByThreshold(result, flags.threshold)),
+        );
       }
       break;
     }
@@ -1197,9 +1255,13 @@ async function main() {
         process.exit(1);
       }
 
-      const result = compareFiles(flags.before, flags.after, {
-        ignoreCode: opts.ignoreCode,
-      });
+      let result;
+      try {
+        result = compareFiles(flags.before, flags.after, opts);
+      } catch (err) {
+        console.error(color.red(`Error: ${err.message}`));
+        process.exit(1);
+      }
       if (flags.json) {
         console.log(JSON.stringify(result, null, 2));
       } else {
