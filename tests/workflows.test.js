@@ -181,6 +181,26 @@ describe('scanPath', () => {
     expect(regular.files[0].score).toBeGreaterThan(ignoreCode.files[0].score);
   });
 
+  it('uses generic code stripping for non-markdown files when ignoreCode is enabled', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+
+    fs.writeFileSync(
+      path.join(tmp, 'quoted.txt'),
+      '> Great question! This serves as a testament to innovation. I hope this helps!\nPlain reply follows.',
+    );
+    fs.writeFileSync(
+      path.join(tmp, 'quoted.md'),
+      '> Great question! This serves as a testament to innovation. I hope this helps!\nPlain reply follows.',
+    );
+
+    const result = scanPath(tmp, { exts: ['txt', 'md'], minWords: 1, ignoreCode: true });
+    const txt = result.files.find((file) => file.file.endsWith('quoted.txt'));
+    const md = result.files.find((file) => file.file.endsWith('quoted.md'));
+
+    expect(txt.score).toBeGreaterThan(md.score);
+    expect(txt.totalMatches).toBeGreaterThan(md.totalMatches);
+  });
+
   it('continues past invalid binary-like files and reports file errors', () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
 

@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { stripCodeSnippets, stripMarkdownProtectedRegions } from '../src/preprocess.js';
+import {
+  stripCodeSnippets,
+  stripMarkdownProtectedRegions,
+  transformMarkdownProse,
+} from '../src/preprocess.js';
 
 describe('stripCodeSnippets', () => {
   it('masks fenced code blocks and preserves line count', () => {
@@ -58,5 +62,39 @@ describe('stripMarkdownProtectedRegions', () => {
     expect(output).not.toContain('Widget');
     expect(output).not.toContain('rapidly evolving digital landscape');
     expect(output).toContain('Short internal note: ship after tests pass.');
+  });
+
+  it('does not let MDX component masking span across multiple lines', () => {
+    const input = [
+      '<Widget',
+      'Some regular prose mentions comprehensive robust delivery.',
+      '/>',
+    ].join('\n');
+
+    const output = stripMarkdownProtectedRegions(input);
+
+    expect(output).toContain('Some regular prose mentions comprehensive robust delivery.');
+  });
+});
+
+describe('transformMarkdownProse', () => {
+  it('restores protected snippets in one pass without leaking nested placeholder tokens', () => {
+    const input = [
+      '| Term | Description |',
+      '| --- | --- |',
+      '| CLI | Keep `in order to` literal. |',
+      '',
+      '> Quote keeps `in order to` literal.',
+      '',
+      'In order to ship, update prose.',
+    ].join('\n');
+
+    const output = transformMarkdownProse(input, (text) => text.replace(/\bin order to\b/gi, 'to'));
+
+    expect(output).toContain('| CLI | Keep `in order to` literal. |');
+    expect(output).toContain('> Quote keeps `in order to` literal.');
+    expect(output).toContain('to ship, update prose.');
+    expect(output).not.toContain('HUMANIZER_PROTECTED');
+    expect(output).not.toContain('\uE000');
   });
 });

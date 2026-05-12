@@ -224,9 +224,10 @@ function analyzeChunked(text, opts = {}) {
     strict: Boolean(opts.strict),
     withLm: Boolean(opts.withLm),
   };
+  const chunkAnalyzeOpts = { ...analyzeOpts, ignoreCode: false };
 
   if (!text || typeof text !== 'string') {
-    const empty = analyze('', analyzeOpts);
+    const empty = analyze('', chunkAnalyzeOpts);
     return {
       document: empty,
       chunks: [],
@@ -249,7 +250,7 @@ function analyzeChunked(text, opts = {}) {
   const spans = wordSpans(trimmed);
   const totalWords = wordCountFromSpans(spans);
 
-  const document = analyze(trimmed, analyzeOpts);
+  const document = analyze(trimmed, chunkAnalyzeOpts);
 
   let ranges;
   if (totalWords < cfg.minDocWordsForChunking) {
@@ -262,7 +263,7 @@ function analyzeChunked(text, opts = {}) {
   for (let i = 0; i < ranges.length; i++) {
     const { start, end } = ranges[i];
     const chunkText = sliceByWordRange(trimmed, spans, start, end);
-    const r = analyze(chunkText, analyzeOpts);
+    const r = analyze(chunkText, chunkAnalyzeOpts);
     chunks.push({
       index: i,
       startWord: start,

@@ -7,22 +7,197 @@
  */
 
 const NON_NEWLINE = /[^\n]/g;
-const FENCED_CODE_BLOCKS = /```[\s\S]*?```|~~~[\s\S]*?~~~/g;
 const INLINE_CODE_SPANS = /`[^`\n]+`/g;
-const FRONTMATTER = /^(?:---|\.\.\.)[ \t]*\r?\n[\s\S]*?\r?\n(?:---|\.\.\.)[ \t]*(?=\r?\n|$)/;
-const MDX_ESM_LINE = /^\s*(?:import|export)\b[^\n]*(?:\n|$)/gm;
-const MDX_COMPONENT_LINE = /^\s*<[A-Z][\w.:]*(?:\s+[\s\S]*?)?\/?>(?:\s*)$/gm;
-const MARKDOWN_TABLE_ROW = /^\s*\|.*\|\s*$/gm;
-const MARKDOWN_TABLE_SEPARATOR = /^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$/gm;
-const BLOCKQUOTE_LINE = /^\s*>.*$/gm;
-const INDENTED_CODE_BLOCK = /^(?: {4}|\t).+$/gm;
+const PROTECTED_TOKEN = /\uE000HUMANIZER_PROTECTED_(\d+)\uE001/g;
 
 function maskSnippet(snippet) {
   return snippet.replace(NON_NEWLINE, ' ');
 }
 
-function applyMask(text, regex) {
-  return text.replace(regex, (m) => maskSnippet(m));
+function isFenceLine(line) {
+  const trimmed = line.trimStart();
+  return trimmed.startsWith('```') || trimmed.startsWith('~~~');
+}
+
+function fenceMarker(line) {
+  const trimmed = line.trimStart();
+  if (trimmed.startsWith('```')) return '```';
+  if (trimmed.startsWith('~~~')) return '~~~';
+  return null;
+}
+
+function isMdxEsmLine(line) {
+  const trimmed = line.trimStart();
+  return trimmed.startsWith('import ') || trimmed.startsWith('export ');
+}
+
+function isMdxComponentLine(line) {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith('<') || trimmed.includes('\n')) return false;
+  const nameStart = trimmed.charCodeAt(1);
+  if (!(nameStart >= 65 && nameStart <= 90)) return false;
+  return trimmed.endsWith('>') && !trimmed.includes('><');
+}
+
+function isMarkdownTableRow(line) {
+  const trimmed = line.trim();
+  return trimmed.startsWith('|') && trimmed.endsWith('|') && trimmed.length >= 2;
+}
+
+function isMarkdownTableSeparator(line) {
+  const trimmed = line.trim();
+  if (!trimmed.includes('|') || !trimmed.includes('-')) return false;
+  const cells = trimmed
+    .split('|')
+    .map((cell) => cell.trim())
+    .filter(Boolean);
+  if (cells.length < 2) return false;
+  return cells.every((cell) => {
+    let dashCount = 0;
+    for (let i = 0; i < cell.length; i += 1) {
+      const ch = cell[i];
+      if (ch === '-') dashCount += 1;
+      else if (ch !== ':') return false;
+    }
+    return dashCount >= 3;
+  });
+}
+
+function isBlockquoteLine(line) {
+  return line.trimStart().startsWith('>');
+}
+
+function isIndentedCodeLine(line) {
+  return line.startsWith('    ') || line.startsWith('\t');
+}
+
+function addRange(ranges, start, end) {
+  if (end > start) ranges.push({ start, end });
+}
+
+function addInlineCodeRanges(text, ranges) {
+  let inProtected = 0;
+  let match;
+  INLINE_CODE_SPANS.lastIndex = 0;
+  while ((match = INLINE_CODE_SPANS.exec(text)) !== null) {
+    const start = match.index;
+    const end = start + match[0].length;
+    while (inProtected < ranges.length && ranges[inProtected].end <= start) inProtected += 1;
+    if (inProtected < ranges.length && ranges[inProtected].start < end) continue;
+    addRange(ranges, start, end);
+  }
+}
+
+function mergeRanges(ranges) {
+  ranges.sort((a, b) => a.start - b.start || b.end - a.end);
+  const merged = [];
+  for (const range of ranges) {
+    const last = merged[merged.length - 1];
+    if (!last || range.start > last.end) {
+      merged.push({ ...range });
+    } else if (range.end > last.end) {
+      last.end = range.end;
+    }
+  }
+  return merged;
+}
+
+function protectedRanges(text, opts = {}) {
+  const { code = true, frontmatter = true, mdx = true, tables = true, blockquotes = true } = opts;
+  const ranges = [];
+  let offset = 0;
+  let lineNumber = 0;
+  let inFence = false;
+  let fence = null;
+  let fenceStart = 0;
+  let frontmatterOpen = false;
+  let frontmatterStart = 0;
+  let frontmatterDone = false;
+
+  const lines = text.match(/.*(?:\n|$)/g) || [];
+  if (lines.length && lines[lines.length - 1] === '') lines.pop();
+
+  for (const lineWithNewline of lines) {
+    const line = lineWithNewline.endsWith('\n') ? lineWithNewline.slice(0, -1) : lineWithNewline;
+    const lineEnd = offset + lineWithNewline.length;
+    const contentEnd = line.endsWith('\r')
+      ? lineEnd - (lineWithNewline.endsWith('\n') ? 2 : 1)
+      : lineEnd - (lineWithNewline.endsWith('\n') ? 1 : 0);
+    const trimmed = line.trim();
+
+    if (
+      frontmatter &&
+      !frontmatterDone &&
+      lineNumber === 0 &&
+      (trimmed === '---' || trimmed === '...')
+    ) {
+      frontmatterOpen = true;
+      frontmatterStart = offset;
+      offset = lineEnd;
+      lineNumber += 1;
+      continue;
+    }
+
+    if (frontmatterOpen) {
+      if (trimmed === '---' || trimmed === '...') {
+        addRange(ranges, frontmatterStart, contentEnd);
+        frontmatterOpen = false;
+        frontmatterDone = true;
+      }
+      offset = lineEnd;
+      lineNumber += 1;
+      continue;
+    }
+
+    if (code && inFence) {
+      if (line.trimStart().startsWith(fence)) {
+        addRange(ranges, fenceStart, contentEnd);
+        inFence = false;
+        fence = null;
+      }
+      offset = lineEnd;
+      lineNumber += 1;
+      continue;
+    }
+
+    if (code && isFenceLine(line)) {
+      inFence = true;
+      fence = fenceMarker(line);
+      fenceStart = offset;
+      offset = lineEnd;
+      lineNumber += 1;
+      continue;
+    }
+
+    if (code && isIndentedCodeLine(line)) addRange(ranges, offset, contentEnd);
+    else if (mdx && (isMdxEsmLine(line) || isMdxComponentLine(line))) {
+      addRange(ranges, offset, contentEnd);
+    } else if (tables && (isMarkdownTableSeparator(line) || isMarkdownTableRow(line))) {
+      addRange(ranges, offset, contentEnd);
+    } else if (blockquotes && isBlockquoteLine(line)) addRange(ranges, offset, contentEnd);
+
+    offset = lineEnd;
+    lineNumber += 1;
+  }
+
+  if (frontmatterOpen) addRange(ranges, frontmatterStart, text.length);
+  if (code && inFence) addRange(ranges, fenceStart, text.length);
+  if (code) addInlineCodeRanges(text, ranges);
+
+  return mergeRanges(ranges);
+}
+
+function maskRanges(text, ranges) {
+  if (ranges.length === 0) return text;
+  let result = '';
+  let cursor = 0;
+  for (const { start, end } of ranges) {
+    result += text.slice(cursor, start);
+    result += maskSnippet(text.slice(start, end));
+    cursor = end;
+  }
+  result += text.slice(cursor);
+  return result;
 }
 
 /**
@@ -38,17 +213,25 @@ function stripCodeSnippets(text, opts = {}) {
   if (!text || typeof text !== 'string') return '';
 
   const { fenced = true, inline = true } = opts;
-  let processed = text;
+  const ranges = [];
 
   if (fenced) {
-    processed = applyMask(processed, FENCED_CODE_BLOCKS);
+    ranges.push(
+      ...protectedRanges(text, {
+        code: true,
+        frontmatter: false,
+        mdx: false,
+        tables: false,
+        blockquotes: false,
+      }).filter((range) => text.slice(range.start, range.end).includes('\n')),
+    );
   }
 
   if (inline) {
-    processed = applyMask(processed, INLINE_CODE_SPANS);
+    addInlineCodeRanges(text, ranges);
   }
 
-  return processed;
+  return maskRanges(text, mergeRanges(ranges));
 }
 
 /**
@@ -69,35 +252,7 @@ function stripCodeSnippets(text, opts = {}) {
  */
 function stripMarkdownProtectedRegions(text, opts = {}) {
   if (!text || typeof text !== 'string') return '';
-
-  const { code = true, frontmatter = true, mdx = true, tables = true, blockquotes = true } = opts;
-
-  let processed = text;
-
-  if (frontmatter) {
-    processed = applyMask(processed, FRONTMATTER);
-  }
-
-  if (code) {
-    processed = stripCodeSnippets(processed, { fenced: true, inline: true });
-    processed = applyMask(processed, INDENTED_CODE_BLOCK);
-  }
-
-  if (mdx) {
-    processed = applyMask(processed, MDX_ESM_LINE);
-    processed = applyMask(processed, MDX_COMPONENT_LINE);
-  }
-
-  if (tables) {
-    processed = applyMask(processed, MARKDOWN_TABLE_SEPARATOR);
-    processed = applyMask(processed, MARKDOWN_TABLE_ROW);
-  }
-
-  if (blockquotes) {
-    processed = applyMask(processed, BLOCKQUOTE_LINE);
-  }
-
-  return processed;
+  return maskRanges(text, protectedRanges(text, opts));
 }
 
 /**
@@ -111,32 +266,24 @@ function stripMarkdownProtectedRegions(text, opts = {}) {
 function transformMarkdownProse(text, transform) {
   if (!text || typeof text !== 'string') return transform(text || '');
 
-  const placeholders = [];
-  const stash = (snippet) => {
-    const token = `\uE000HUMANIZER_PROTECTED_${placeholders.length}\uE001`;
-    placeholders.push({ token, snippet });
-    return token;
-  };
+  const ranges = protectedRanges(text);
+  const placeholders = new Map();
+  let protectedText = '';
+  let cursor = 0;
 
-  let protectedText = text;
-  protectedText = protectedText.replace(FRONTMATTER, stash);
-  protectedText = protectedText.replace(FENCED_CODE_BLOCKS, stash);
-  protectedText = protectedText.replace(INLINE_CODE_SPANS, stash);
-  protectedText = protectedText.replace(INDENTED_CODE_BLOCK, stash);
-  protectedText = protectedText.replace(MDX_ESM_LINE, stash);
-  protectedText = protectedText.replace(MDX_COMPONENT_LINE, stash);
-  protectedText = protectedText.replace(MARKDOWN_TABLE_SEPARATOR, stash);
-  protectedText = protectedText.replace(MARKDOWN_TABLE_ROW, stash);
-  protectedText = protectedText.replace(BLOCKQUOTE_LINE, stash);
-
-  let transformed = transform(protectedText);
-
-  for (let i = placeholders.length - 1; i >= 0; i--) {
-    const { token, snippet } = placeholders[i];
-    transformed = transformed.split(token).join(snippet);
+  for (const { start, end } of ranges) {
+    const index = placeholders.size;
+    const token = `\uE000HUMANIZER_PROTECTED_${index}\uE001`;
+    protectedText += text.slice(cursor, start);
+    protectedText += token;
+    placeholders.set(String(index), text.slice(start, end));
+    cursor = end;
   }
+  protectedText += text.slice(cursor);
 
-  return transformed;
+  return transform(protectedText).replace(PROTECTED_TOKEN, (token, index) =>
+    placeholders.has(index) ? placeholders.get(index) : token,
+  );
 }
 
 module.exports = {

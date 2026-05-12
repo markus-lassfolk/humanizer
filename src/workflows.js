@@ -9,7 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const { analyze } = require('./analyzer');
-const { stripMarkdownProtectedRegions } = require('./preprocess');
+const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
 
 const DEFAULT_SCAN_EXTENSIONS = ['.md', '.mdx', '.txt', '.rst', '.adoc'];
 const DEFAULT_IGNORE_DIRS = new Set([
@@ -104,6 +104,16 @@ function countWords(text) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
+function isMarkdownLikePath(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  return ext === '.md' || ext === '.mdx';
+}
+
+function preprocessForScan(text, file, ignoreCode) {
+  if (!ignoreCode) return text;
+  return isMarkdownLikePath(file) ? stripMarkdownProtectedRegions(text) : stripCodeSnippets(text);
+}
+
 function hasDisallowedControlCharacters(text) {
   for (let i = 0; i < text.length; i += 1) {
     const code = text.charCodeAt(i);
@@ -148,14 +158,14 @@ function scanPath(targetPath, opts = {}) {
       continue;
     }
 
-    const wordText = ignoreCode ? stripMarkdownProtectedRegions(text) : text;
+    const wordText = preprocessForScan(text, file, ignoreCode);
     const words = countWords(wordText);
     if (words < minWords) {
       skipped.push({ file, reason: `too_short: ${words} words` });
       continue;
     }
 
-    const result = analyze(text, { includeStats, verbose: false, ignoreCode, locale });
+    const result = analyze(wordText, { includeStats, verbose: false, ignoreCode: false, locale });
 
     for (const finding of result.findings) {
       const existing = patternHotspotMap.get(finding.patternId) || {
@@ -448,6 +458,8 @@ module.exports = {
   normalizeExtensions,
   normalizeIgnoreDirs,
   collectTextFiles,
+  isMarkdownLikePath,
+  preprocessForScan,
   scanPath,
   compareScanResults,
   compareTexts,

@@ -100,6 +100,11 @@ function isMarkdownPath(filePath) {
   return ['.md', '.mdx', '.mdoc'].includes(path.extname(filePath).toLowerCase());
 }
 
+function includesMarkdownExtensions(exts) {
+  const normalized = normalizeExtensions(exts || []);
+  return normalized.some((ext) => ext === '.md' || ext === '.mdx' || ext === '.mdoc');
+}
+
 /**
  * Get a colored reliability badge.
  *
@@ -412,9 +417,9 @@ function resolveScanOptions() {
     flags.includeDefaultIgnore !== null
       ? flags.includeDefaultIgnore
       : (configIncludeDefaultIgnore ?? true);
-  const targetLooksMarkdown = isMarkdownPath(flags.file || '.');
+  const scanIncludesMarkdown = includesMarkdownExtensions(extensions);
   const ignoreCode =
-    flags.ignoreCode !== null ? flags.ignoreCode : (configIgnoreCode ?? targetLooksMarkdown);
+    flags.ignoreCode !== null ? flags.ignoreCode : (configIgnoreCode ?? scanIncludesMarkdown);
 
   if (failOnRegression && !baseline) {
     throw new Error(
@@ -625,9 +630,12 @@ function formatStatsReport(stats) {
 }
 
 /** Auto-chunk when word count ≥ minDocWordsForChunking (after optional ignore-code masking). */
-function shouldUseChunkedAnalysis(text, cliFlags) {
+function shouldUseChunkedAnalysis(text, cliFlags, resolvedIgnoreCode = null) {
   const ignoreCode =
-    cliFlags.ignoreCode === true || (cliFlags.ignoreCode === null && isMarkdownPath(cliFlags.file));
+    typeof resolvedIgnoreCode === 'boolean'
+      ? resolvedIgnoreCode
+      : cliFlags.ignoreCode === true ||
+        (cliFlags.ignoreCode === null && isMarkdownPath(cliFlags.file));
   const prepared = ignoreCode ? stripMarkdownProtectedRegions(text) : text;
   const w = wordCount(prepared.trim());
   if (cliFlags.chunked === true) return true;
@@ -1061,7 +1069,7 @@ async function main() {
 
   switch (command) {
     case 'analyze': {
-      if (shouldUseChunkedAnalysis(text, flags)) {
+      if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
         const chunked = analyzeChunked(text, opts);
         if (flags.json) {
           console.log(JSON.stringify(mergeChunkedForJSON(chunked), null, 2));
@@ -1081,7 +1089,7 @@ async function main() {
     }
 
     case 'score': {
-      if (shouldUseChunkedAnalysis(text, flags)) {
+      if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
         const chunked = analyzeChunked(text, opts);
         if (flags.json) {
           console.log(
@@ -1120,7 +1128,7 @@ async function main() {
         strict: opts.strict,
         withLm: opts.withLm,
       });
-      if (shouldUseChunkedAnalysis(text, flags)) {
+      if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
         const chunked = analyzeChunked(text, opts);
         if (flags.json) {
           console.log(
@@ -1153,7 +1161,7 @@ async function main() {
     }
 
     case 'report': {
-      if (shouldUseChunkedAnalysis(text, flags)) {
+      if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
         const chunked = analyzeChunked(text, { ...opts, verbose: true });
         console.log(formatMarkdown(chunked.document));
         console.log('\n### Chunk distribution\n');
@@ -1174,7 +1182,7 @@ async function main() {
         strict: opts.strict,
         withLm: opts.withLm,
       });
-      if (shouldUseChunkedAnalysis(text, flags)) {
+      if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
         const chunked = analyzeChunked(text, opts);
         if (flags.json) {
           console.log(
