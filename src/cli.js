@@ -190,6 +190,15 @@ function validateLocale(locale, source) {
   return locale;
 }
 
+function resolveLocaleForCommand(cliLocale) {
+  if (cliLocale !== null) return validateLocale(cliLocale, '--locale');
+  return process.env.HUMANIZER_LOCALE || 'en';
+}
+
+function validateEnvLocaleIfUsed(locale) {
+  if (locale !== 'en') validateLocale(locale, 'HUMANIZER_LOCALE');
+}
+
 function validateArgs() {
   for (let i = 1; i < args.length; i++) {
     const arg = args[i];
@@ -229,7 +238,7 @@ const flags = {
   ignoreDirs: null,
   includeDefaultIgnore: null,
   ignoreCode: null,
-  locale: validateLocale(process.env.HUMANIZER_LOCALE || 'en', 'HUMANIZER_LOCALE'),
+  locale: 'en',
   strict: args.includes('--strict'),
   withLm: args.includes('--with-lm'),
   chunked: args.includes('--no-chunked') ? false : args.includes('--chunked') ? true : null,
@@ -297,9 +306,7 @@ if (args.includes('--ignore-code')) {
 }
 
 const localeValue = optionValue('--locale');
-if (localeValue !== null) {
-  flags.locale = validateLocale(localeValue, '--locale');
-}
+flags.locale = resolveLocaleForCommand(localeValue);
 
 // ─── Scan Config Resolution ──────────────────────────────
 
@@ -638,22 +645,111 @@ function formatStatsReport(stats) {
   return lines.join('\n');
 }
 
+function summaryWithFilteredFindings(result, findings) {
+  if (findings.length === 0) {
+    return `Score: ${result.score}/100. No findings meet the active threshold filter.`;
+  }
+
+  const totalMatches = findings.reduce((sum, finding) => sum + finding.matchCount, 0);
+  const displayMatches = roundDisplayCount(totalMatches);
+  const matchWord = displayMatches === 1 ? 'match' : 'matches';
+  const patternTypeWord = findings.length === 1 ? 'pattern type' : 'pattern types';
+  const topPatterns = [...findings]
+    .sort((a, b) => b.matchCount * b.weight - a.matchCount * a.weight)
+    .slice(0, 3)
+    .map((finding) => finding.patternName)
+    .join(', ');
+  const topIssueText = topPatterns ? ` Top issues: ${topPatterns}.` : '';
+  return `Score: ${result.score}/100. Filtered to ${displayMatches} ${matchWord} across ${findings.length} ${patternTypeWord} in ${result.wordCount} words.${topIssueText}`;
+}
+
 function filterAnalysisByThreshold(result, threshold) {
   if (threshold === null) return result;
+  const findings = result.findings.filter((finding) => finding.weight >= threshold);
+  const categories = {};
+
+  for (const [cat, data] of Object.entries(result.categories || {})) {
+    categories[cat] = {
+      ...data,
+      matches: 0,
+      weightedScore: 0,
+      patternsDetected: [],
+    };
+  }
+
+  for (const finding of findings) {
+    const existing = categories[finding.category] || {
+      label: finding.category,
+      matches: 0,
+      weightedScore: 0,
+      patternsDetected: [],
+    };
+    existing.matches += finding.matchCount;
+    existing.weightedScore += finding.matchCount * finding.weight;
+    existing.patternsDetected.push(finding.patternName);
+    categories[finding.category] = existing;
+  }
+
   return {
     ...result,
-    findings: result.findings.filter((finding) => finding.weight >= threshold),
+    unfilteredTotalMatches: result.totalMatches,
+    unfilteredFindingsCount: result.findings.length,
+    threshold,
+    totalMatches: findings.reduce((sum, finding) => sum + finding.matchCount, 0),
+    categories,
+    findings,
+    summary: summaryWithFilteredFindings(result, findings),
   };
+}
+
+function filterGuidanceBySuggestions(guidance, keptSuggestions) {
+  if (!Array.isArray(guidance) || guidance.length === 0) return guidance;
+  const keptPatternIds = new Set(keptSuggestions.map((item) => item.patternId));
+  const rules = [
+    { ids: [1, 4], terms: ['inflated/promotional', 'svulstig'] },
+    { ids: [3], terms: ['-ing'] },
+    { ids: [5], terms: ['sources', 'källor'] },
+    { ids: [6], terms: ['despite challenges', 'trots utmaningar'] },
+    { ids: [7], terms: ['AI vocabulary', 'AI-typiska'] },
+    { ids: [8], terms: ['is" and "has', 'är" och "har'] },
+    { ids: [9], terms: ['not just', 'inte bara'] },
+    { ids: [10], terms: ['triads', 'treparts'] },
+    { ids: [13], terms: ['em dashes', 'tankstreck'] },
+    { ids: [14, 15], terms: ['bold formatting', 'fet-formatering'] },
+    { ids: [17], terms: ['emojis'] },
+    { ids: [19, 21], terms: ['chatbot filler', 'chattbot'] },
+    { ids: [20], terms: ['knowledge-cutoff', 'kunskapsavstäng'] },
+    { ids: [22, 23], terms: ['filler and hedging', 'utfyllnad'] },
+    { ids: [24], terms: ['generic conclusions', 'generiska avslut'] },
+    { ids: [29], terms: ['hidden unicode'] },
+  ];
+
+  return guidance.filter((tip) => {
+    const lowerTip = String(tip).toLowerCase();
+    const rule = rules.find((candidate) =>
+      candidate.terms.some((term) => lowerTip.includes(term.toLowerCase())),
+    );
+    if (!rule) return true;
+    return rule.ids.some((id) => keptPatternIds.has(id));
+  });
 }
 
 function filterSuggestionsByThreshold(result, threshold) {
   if (threshold === null) return result;
   const keep = (items) => items.filter((item) => item.weight >= threshold);
+  const critical = keep(result.critical);
+  const important = keep(result.important);
+  const minor = keep(result.minor);
+  const keptSuggestions = [...critical, ...important, ...minor];
   return {
     ...result,
-    critical: keep(result.critical),
-    important: keep(result.important),
-    minor: keep(result.minor),
+    unfilteredTotalIssues: result.totalIssues,
+    threshold,
+    totalIssues: keptSuggestions.reduce((sum, item) => sum + (item.matchWeight ?? 1), 0),
+    critical,
+    important,
+    minor,
+    guidance: filterGuidanceBySuggestions(result.guidance, keptSuggestions),
   };
 }
 
@@ -1054,6 +1150,10 @@ async function main() {
   }
 
   const textCommands = new Set(['analyze', 'score', 'humanize', 'report', 'suggest', 'stats']);
+  const localeUsingCommands = new Set([...textCommands, 'compare', 'scan']);
+  if (localeUsingCommands.has(command)) {
+    validateEnvLocaleIfUsed(flags.locale);
+  }
 
   let text = null;
   if (textCommands.has(command)) {

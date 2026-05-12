@@ -49,7 +49,14 @@ describe('CLI robustness validation', () => {
     }
   });
 
-  it('rejects invalid locale from env and CLI flag', () => {
+  it('does not validate env locale for help flows, but rejects it for locale-using commands', () => {
+    const helpRun = runCli(['--help'], {
+      env: { HUMANIZER_LOCALE: 'not-a-locale' },
+    });
+    expect(helpRun.status).toBe(0);
+    expect(helpRun.stdout).toContain('Usage:');
+    expect(helpRun.stderr).toBe('');
+
     const envRun = runCli(['score', '--json'], {
       input: 'This is a testament to robust solutions.',
       env: { HUMANIZER_LOCALE: 'not-a-locale' },
@@ -151,6 +158,12 @@ describe('CLI threshold filtering', () => {
     const json = JSON.parse(jsonRun.stdout);
     expect(json.findings.length).toBeGreaterThan(0);
     expect(json.findings.every((finding) => finding.weight >= 5)).toBe(true);
+    expect(json.totalMatches).toBe(
+      json.findings.reduce((sum, finding) => sum + finding.matchCount, 0),
+    );
+    expect(json.categories.language.matches).toBe(json.totalMatches);
+    expect(json.summary).toContain('Filtered to');
+    expect(json.unfilteredTotalMatches).toBeGreaterThan(json.totalMatches);
 
     const reportRun = runCli(['report', '--threshold', '5'], { input: text });
     expect(reportRun.status).toBe(0);
@@ -168,5 +181,11 @@ describe('CLI threshold filtering', () => {
     ];
     expect(allSuggestions.length).toBeGreaterThan(0);
     expect(allSuggestions.every((item) => item.weight >= 5)).toBe(true);
+    expect(suggestions.totalIssues).toBe(
+      allSuggestions.reduce((sum, item) => sum + item.matchWeight, 0),
+    );
+    expect(suggestions.unfilteredTotalIssues).toBeGreaterThan(suggestions.totalIssues);
+    expect(suggestions.guidance.join('\n')).toContain('AI vocabulary');
+    expect(suggestions.guidance.join('\n')).not.toContain('promotional');
   });
 });
