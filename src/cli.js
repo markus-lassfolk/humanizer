@@ -229,7 +229,7 @@ const flags = {
   ignoreDirs: null,
   includeDefaultIgnore: null,
   ignoreCode: null,
-  locale: validateLocale(process.env.HUMANIZER_LOCALE || 'en', 'HUMANIZER_LOCALE'),
+  locale: process.env.HUMANIZER_LOCALE || 'en',
   strict: args.includes('--strict'),
   withLm: args.includes('--with-lm'),
   chunked: args.includes('--no-chunked') ? false : args.includes('--chunked') ? true : null,
@@ -299,6 +299,8 @@ if (args.includes('--ignore-code')) {
 const localeValue = optionValue('--locale');
 if (localeValue !== null) {
   flags.locale = validateLocale(localeValue, '--locale');
+} else {
+  flags.locale = validateLocale(flags.locale, 'HUMANIZER_LOCALE');
 }
 
 // ─── Scan Config Resolution ──────────────────────────────
@@ -641,11 +643,9 @@ function formatStatsReport(stats) {
 function filterAnalysisByThreshold(result, threshold) {
   if (threshold === null) return result;
   const filteredFindings = result.findings.filter((finding) => finding.weight >= threshold);
-  const recalculatedTotalMatches = filteredFindings.reduce((sum, f) => sum + f.matchCount, 0);
   return {
     ...result,
     findings: filteredFindings,
-    totalMatches: recalculatedTotalMatches,
   };
 }
 
@@ -655,14 +655,11 @@ function filterSuggestionsByThreshold(result, threshold) {
   const filteredCritical = keep(result.critical);
   const filteredImportant = keep(result.important);
   const filteredMinor = keep(result.minor);
-  const recalculatedTotalIssues =
-    filteredCritical.length + filteredImportant.length + filteredMinor.length;
   return {
     ...result,
     critical: filteredCritical,
     important: filteredImportant,
     minor: filteredMinor,
-    totalIssues: recalculatedTotalIssues,
   };
 }
 
