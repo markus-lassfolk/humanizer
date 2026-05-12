@@ -114,11 +114,11 @@ function protectedRanges(text, opts = {}) {
   let frontmatterStart = 0;
   let frontmatterDone = false;
 
-  const lines = text.match(/.*(?:\n|$)/g) || [];
-  if (lines.length && lines[lines.length - 1] === '') lines.pop();
-
-  for (const lineWithNewline of lines) {
-    const line = lineWithNewline.endsWith('\n') ? lineWithNewline.slice(0, -1) : lineWithNewline;
+  for (let lineStart = 0; lineStart < text.length; ) {
+    const newlineIndex = text.indexOf('\n', lineStart);
+    const nextLineStart = newlineIndex === -1 ? text.length : newlineIndex + 1;
+    const lineWithNewline = text.slice(lineStart, nextLineStart);
+    const line = newlineIndex === -1 ? lineWithNewline : lineWithNewline.slice(0, -1);
     const lineEnd = offset + lineWithNewline.length;
     const contentEnd = line.endsWith('\r')
       ? lineEnd - (lineWithNewline.endsWith('\n') ? 2 : 1)
@@ -135,6 +135,7 @@ function protectedRanges(text, opts = {}) {
       frontmatterStart = offset;
       offset = lineEnd;
       lineNumber += 1;
+      lineStart = nextLineStart;
       continue;
     }
 
@@ -146,6 +147,7 @@ function protectedRanges(text, opts = {}) {
       }
       offset = lineEnd;
       lineNumber += 1;
+      lineStart = nextLineStart;
       continue;
     }
 
@@ -157,6 +159,7 @@ function protectedRanges(text, opts = {}) {
       }
       offset = lineEnd;
       lineNumber += 1;
+      lineStart = nextLineStart;
       continue;
     }
 
@@ -166,6 +169,7 @@ function protectedRanges(text, opts = {}) {
       fenceStart = offset;
       offset = lineEnd;
       lineNumber += 1;
+      lineStart = nextLineStart;
       continue;
     }
 
@@ -178,6 +182,7 @@ function protectedRanges(text, opts = {}) {
 
     offset = lineEnd;
     lineNumber += 1;
+    lineStart = nextLineStart;
   }
 
   if (frontmatterOpen) addRange(ranges, frontmatterStart, text.length);
