@@ -88,10 +88,9 @@ function normalizeForAnalysis(value) {
 }
 
 function wordRegex(word) {
-  const normalizedWord = normalizeForAnalysis(word);
-  const escaped = normalizedWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   // For multi-word phrases, don't use word boundaries on internal spaces
-  if (normalizedWord.includes(' ')) {
+  if (word.includes(' ')) {
     return new RegExp(`\\b${escaped}\\b`, 'gi');
   }
   return new RegExp(`\\b${escaped}\\b`, 'gi');
@@ -147,14 +146,13 @@ function localizedVocabularySuggestion(suggestionPrefix, word, localeProfile) {
 
 function scanWordList(text, wordList, suggestionPrefix, confidence = 'high', localeProfile = null) {
   const results = [];
-  const normalizedText = normalizeForAnalysis(text);
   for (const raw of wordList) {
     const { word, weight } = normalizeWordEntry(raw);
     if (!word) continue;
     const normalizedWord = normalizeForAnalysis(word);
     const regex = wordRegex(normalizedWord);
     const matches = findMatches(
-      normalizedText,
+      text,
       regex,
       localizedVocabularySuggestion(suggestionPrefix, normalizedWord, localeProfile),
       confidence,
@@ -483,7 +481,8 @@ const patterns = [
       if (words > 50) {
         const tier3Count = tier3.reduce((count, entry) => {
           const { word } = normalizeWordEntry(entry);
-          const regex = wordRegex(word);
+          const normalizedWord = normalizeForAnalysis(word);
+          const regex = wordRegex(normalizedWord);
           return count + countMatches(normalizedText, regex);
         }, 0);
         const density = tier3Count / words;
