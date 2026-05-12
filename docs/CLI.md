@@ -160,6 +160,33 @@ humanizer compare --before draft-v1.md --after draft-v2.md
 
 Use this after editing to verify that the score went down and to see which pattern categories improved or regressed.
 
+## Metric availability contract
+
+Human-readable `report` and `stats` output never prints JavaScript sentinel values such as `NaN`, `Infinity`, `-Infinity`, or `undefined`. If a metric cannot be computed reliably, the CLI prints an explicit unavailable value, for example `unavailable (input too short)` or `unavailable (requires at least 2 sentences)`.
+
+JSON output uses a stable schema for unavailable metrics:
+
+- non-finite numeric values (`NaN`, `Infinity`, `-Infinity`) and undefined-derived values serialize as `null`;
+- normalized stats include `metricAvailability`, keyed by metric name, with `{ "available": false, "reason": "..." }` metadata for each null metric;
+- counts and structural fields such as `wordCount`, `sentenceCount`, `paragraphCount`, and `sentenceLengths` remain present.
+
+Example for a one-sentence input:
+
+```json
+{
+  "stats": {
+    "wordCount": 1,
+    "sentenceCount": 1,
+    "burstiness": null,
+    "fleschKincaid": null,
+    "metricAvailability": {
+      "burstiness": { "available": false, "reason": "requires at least 2 sentences" },
+      "fleschKincaid": { "available": false, "reason": "input too short" }
+    }
+  }
+}
+```
+
 ## Options
 
 ```text
