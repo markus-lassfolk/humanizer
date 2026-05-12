@@ -134,6 +134,14 @@ describe('autoFix', () => {
     expect(text).toBe('We met after the review.');
     expect(fixes).toContain('"subsequent to" → "after"');
   });
+
+  it('does not apply unsafe noun-to-verb English prescriptive autofixes', () => {
+    const { text, fixes } = autoFix('Need clarification before implementation.', { locale: 'en' });
+    expect(text).toBe('Need clarification before implementation.');
+    expect(text).not.toContain('Need clarify');
+    expect(fixes).not.toContain('"clarification" → "clarify"');
+    expect(fixes).not.toContain('"implementation" → "implement"');
+  });
 });
 
 // ─── humanize ────────────────────────────────────────────

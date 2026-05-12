@@ -588,7 +588,12 @@ function generateBulkRows() {
     ['actionized', 'acted'],
   ];
   for (const [a, b] of nominal) {
-    out.push([a, b, 'autofix', '', '', '', 'bulk nominal']);
+    const isUnsafeNominalRewrite = /(tion|sion|ment)$/.test(a);
+    out.push(
+      isUnsafeNominalRewrite
+        ? [a, '', 'phrase_flag', '2', b || 'rephrase nominalization', '', 'bulk nominal']
+        : [a, b, 'autofix', '', '', '', 'bulk nominal'],
+    );
   }
   const biz = [
     'synergize',
