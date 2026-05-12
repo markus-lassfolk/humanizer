@@ -1076,7 +1076,10 @@ async function main() {
   switch (command) {
     case 'analyze': {
       if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
-        const chunked = analyzeChunked(text, opts);
+        const chunked = analyzeChunked(text, {
+          ...opts,
+          isMarkdown: flags.file && isMarkdownLikePath(flags.file),
+        });
         if (flags.json) {
           console.log(JSON.stringify(mergeChunkedForJSON(chunked), null, 2));
         } else {
@@ -1096,7 +1099,10 @@ async function main() {
 
     case 'score': {
       if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
-        const chunked = analyzeChunked(text, opts);
+        const chunked = analyzeChunked(text, {
+          ...opts,
+          isMarkdown: flags.file && isMarkdownLikePath(flags.file),
+        });
         if (flags.json) {
           console.log(
             JSON.stringify(
@@ -1135,7 +1141,10 @@ async function main() {
         withLm: opts.withLm,
       });
       if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
-        const chunked = analyzeChunked(text, opts);
+        const chunked = analyzeChunked(text, {
+          ...opts,
+          isMarkdown: flags.file && isMarkdownLikePath(flags.file),
+        });
         if (flags.json) {
           console.log(
             JSON.stringify(
@@ -1168,7 +1177,11 @@ async function main() {
 
     case 'report': {
       if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
-        const chunked = analyzeChunked(text, { ...opts, verbose: true });
+        const chunked = analyzeChunked(text, {
+          ...opts,
+          verbose: true,
+          isMarkdown: flags.file && isMarkdownLikePath(flags.file),
+        });
         console.log(formatMarkdown(chunked.document));
         console.log('\n### Chunk distribution\n');
         const appendix = formatChunkedTextAppendix(chunked).replace(/^\n/, '').trimEnd();
@@ -1189,7 +1202,10 @@ async function main() {
         withLm: opts.withLm,
       });
       if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
-        const chunked = analyzeChunked(text, opts);
+        const chunked = analyzeChunked(text, {
+          ...opts,
+          isMarkdown: flags.file && isMarkdownLikePath(flags.file),
+        });
         if (flags.json) {
           console.log(
             JSON.stringify(

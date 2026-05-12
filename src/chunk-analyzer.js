@@ -6,7 +6,7 @@
  * Lazy-requires `./analyzer` inside analyzeChunked to avoid circular init with analyzer.js.
  */
 
-const { stripCodeSnippets } = require('./preprocess');
+const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
 
 const DEFAULTS = {
   windowWords: 300,
@@ -195,6 +195,7 @@ function classifyMultiChunkSeverity(scores, cfg) {
  * @param {number} [opts.highScore]
  * @param {number} [opts.lowScore]
  * @param {boolean} [opts.ignoreCode]
+ * @param {boolean} [opts.isMarkdown]
  * @param {string} [opts.locale]
  * @param {boolean} [opts.strict]
  * @param {boolean} [opts.withLm]
@@ -245,7 +246,8 @@ function analyzeChunked(text, opts = {}) {
     };
   }
 
-  const prepared = analyzeOpts.ignoreCode ? stripCodeSnippets(text) : text;
+  const preprocessFn = opts.isMarkdown ? stripMarkdownProtectedRegions : stripCodeSnippets;
+  const prepared = analyzeOpts.ignoreCode ? preprocessFn(text) : text;
   const trimmed = prepared.trim();
   const spans = wordSpans(trimmed);
   const totalWords = wordCountFromSpans(spans);
