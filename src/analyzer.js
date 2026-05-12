@@ -581,7 +581,7 @@ function scoreLabel(s) {
 }
 
 function burstinessLabel(b) {
-  if (b === null || b === undefined) return '(unavailable)';
+  if (b === null || b === undefined) return '';
   if (b >= 0.7) return '(high — human-like)';
   if (b >= 0.45) return '(moderate)';
   if (b >= 0.25) return '(low — somewhat uniform)';
@@ -589,7 +589,7 @@ function burstinessLabel(b) {
 }
 
 function ttrLabel(ttr, wc) {
-  if (ttr === null || ttr === undefined) return '(unavailable)';
+  if (ttr === null || ttr === undefined) return '';
   if (wc < 100) return '(too short to assess)';
   if (ttr >= 0.6) return '(high — diverse vocabulary)';
   if (ttr >= 0.45) return '(moderate)';

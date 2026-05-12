@@ -623,10 +623,10 @@ function formatStatsReport(stats) {
   }
   const functionWordPercent =
     stats.functionWordRatio === null
-      ? 'unavailable'
-      : `${(stats.functionWordRatio * 100).toFixed(1)}%`;
+      ? ''
+      : ` (${(stats.functionWordRatio * 100).toFixed(1)}%)`;
   lines.push(
-    `    Function words:   ${formatMetric(stats, 'functionWordRatio')} (${functionWordPercent})`,
+    `    Function words:   ${formatMetric(stats, 'functionWordRatio')}${functionWordPercent}`,
   );
   lines.push('');
 
@@ -650,7 +650,7 @@ function shouldUseChunkedAnalysis(text, cliFlags) {
  * @returns {string}
  */
 function burstLabel(b) {
-  if (b === null || b === undefined) return color.gray('(unavailable)');
+  if (b === null || b === undefined) return '';
   if (b >= 0.7) return color.green('(high — human-like)');
   if (b >= 0.45) return color.yellow('(moderate)');
   if (b >= 0.25) return color.yellow('(low — somewhat uniform)');
@@ -665,7 +665,7 @@ function burstLabel(b) {
  * @returns {string}
  */
 function ttrLabel(ttr, wc) {
-  if (ttr === null || ttr === undefined) return color.gray('(unavailable)');
+  if (ttr === null || ttr === undefined) return '';
   if (wc < 100) return color.gray('(too short to assess)');
   if (ttr >= 0.6) return color.green('(high — diverse)');
   if (ttr >= 0.45) return color.yellow('(moderate)');
