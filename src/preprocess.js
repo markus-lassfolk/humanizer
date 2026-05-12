@@ -131,7 +131,8 @@ function transformMarkdownProse(text, transform) {
 
   let transformed = transform(protectedText);
 
-  for (const { token, snippet } of placeholders) {
+  for (let i = placeholders.length - 1; i >= 0; i--) {
+    const { token, snippet } = placeholders[i];
     transformed = transformed.split(token).join(snippet);
   }
 
