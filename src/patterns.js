@@ -83,10 +83,15 @@ function wordCount(text) {
  * Build a case-insensitive word-boundary regex for a word.
  * Escapes special regex chars in the word.
  */
+function normalizeForAnalysis(value) {
+  return typeof value === 'string' ? value.normalize('NFC') : value;
+}
+
 function wordRegex(word) {
-  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const normalizedWord = normalizeForAnalysis(word);
+  const escaped = normalizedWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   // For multi-word phrases, don't use word boundaries on internal spaces
-  if (word.includes(' ')) {
+  if (normalizedWord.includes(' ')) {
     return new RegExp(`\\b${escaped}\\b`, 'gi');
   }
   return new RegExp(`\\b${escaped}\\b`, 'gi');
@@ -97,7 +102,7 @@ function escapeForRegexPattern(value) {
 }
 
 function synonymRegex(syn) {
-  const normalized = String(syn).toLowerCase();
+  const normalized = normalizeForAnalysis(String(syn).toLowerCase());
   const escaped = escapeForRegexPattern(normalized);
   if (normalized.includes(' ')) {
     return new RegExp(`(^|[^\\p{L}\\p{N}_])${escaped}([^\\p{L}\\p{N}_]|$)`, 'iu');
@@ -126,16 +131,32 @@ function normalizeWordEntry(entry) {
  * Scan text for words from a tier list. Returns matches with word-specific suggestions.
  * Supports weighted entries (matchWeight) for empirical calibration.
  */
-function scanWordList(text, wordList, suggestionPrefix, confidence = 'high') {
+function localizedVocabularySuggestion(suggestionPrefix, word, localeProfile) {
+  if (localeProfile && localeProfile.code === 'sv') {
+    const tier = suggestionPrefix.match(/Tier (\d)/)?.[1] || null;
+    const prefix = tier
+      ? `AI-typiskt ord nivå ${tier}`
+      : suggestionPrefix.startsWith('Empirical AI signal')
+        ? 'Empirisk AI-signal'
+        : suggestionPrefix;
+    return `${prefix}: "${word}". Byt till ett enklare och mer konkret alternativ.`;
+  }
+
+  return `${suggestionPrefix}: "${word}". Use a simpler, more specific alternative.`;
+}
+
+function scanWordList(text, wordList, suggestionPrefix, confidence = 'high', localeProfile = null) {
   const results = [];
+  const normalizedText = normalizeForAnalysis(text);
   for (const raw of wordList) {
     const { word, weight } = normalizeWordEntry(raw);
     if (!word) continue;
-    const regex = wordRegex(word);
+    const normalizedWord = normalizeForAnalysis(word);
+    const regex = wordRegex(normalizedWord);
     const matches = findMatches(
-      text,
+      normalizedText,
       regex,
-      `${suggestionPrefix}: "${word}". Use a simpler, more specific alternative.`,
+      localizedVocabularySuggestion(suggestionPrefix, normalizedWord, localeProfile),
       confidence,
     );
     for (const m of matches) {
@@ -431,10 +452,11 @@ const patterns = [
       const phrases = profile ? profile.phrases : AI_PHRASES;
 
       const results = [];
-      const words = wordCount(text);
+      const normalizedText = normalizeForAnalysis(text);
+      const words = wordCount(normalizedText);
 
       // Tier 1: always flag
-      results.push(...scanWordList(text, tier1, 'Tier 1 AI word', 'high'));
+      results.push(...scanWordList(normalizedText, tier1, 'Tier 1 AI word', 'high', profile));
 
       // Empirical n-grams from bundled sv-frequencies.json (Swedish); excludes
       // stopwords and curated tier keys. Refresh: npm run corpus:logodds
@@ -442,16 +464,17 @@ const patterns = [
       if (empiricalExtra.length > 0) {
         results.push(
           ...scanWordList(
-            text,
+            normalizedText,
             empiricalExtra,
             'Empirical AI signal (corpus log-odds — npm run corpus:refresh to rebuild)',
             'medium',
+            profile,
           ),
         );
       }
 
       // Tier 2: flag if 2+ tier-2 words appear
-      const tier2Matches = scanWordList(text, tier2, 'Tier 2 AI word', 'medium');
+      const tier2Matches = scanWordList(normalizedText, tier2, 'Tier 2 AI word', 'medium', profile);
       if (tier2Matches.length >= 2) {
         results.push(...tier2Matches);
       }
@@ -461,11 +484,13 @@ const patterns = [
         const tier3Count = tier3.reduce((count, entry) => {
           const { word } = normalizeWordEntry(entry);
           const regex = wordRegex(word);
-          return count + countMatches(text, regex);
+          return count + countMatches(normalizedText, regex);
         }, 0);
         const density = tier3Count / words;
         if (density > 0.03) {
-          results.push(...scanWordList(text, tier3, 'Tier 3 AI word (high density)', 'low'));
+          results.push(
+            ...scanWordList(normalizedText, tier3, 'Tier 3 AI word (high density)', 'low', profile),
+          );
         }
       }
 
@@ -504,7 +529,7 @@ const patterns = [
         if (cat && SUPPRESSED_CATEGORIES.has(cat)) return false;
         return true;
       });
-      results.push(...scanPhrases(text, filteredPhrases));
+      results.push(...scanPhrases(normalizedText, filteredPhrases));
 
       return results;
     },

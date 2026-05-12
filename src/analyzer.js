@@ -70,7 +70,8 @@ function analyze(text, opts = {}) {
   const scoringKnobs = mergeScoringKnobs(localeProfile);
 
   const preparedText = ignoreCode ? stripCodeSnippets(text) : text;
-  const trimmed = preparedText.trim();
+  const normalizedText = preparedText.normalize('NFC');
+  const trimmed = normalizedText.trim();
   if (trimmed.length === 0) return emptyResult();
 
   // Keep whitespace-based count for calibrated scoring thresholds.
