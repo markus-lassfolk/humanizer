@@ -27,6 +27,10 @@ const SENTENCE_VARIATION_KEYS = [
 
 const VOCABULARY_DIVERSITY_KEYS = ['typeTokenRatio'];
 const READABILITY_KEYS = ['fleschKincaid', 'lix'];
+const READABILITY_BY_LOCALE = {
+  en: 'fleschKincaid',
+  sv: 'lix',
+};
 
 /**
  * Return true when a value is a finite number that can be safely serialized and
@@ -47,6 +51,19 @@ function isFiniteMetric(value) {
  */
 function unavailable(reason = DEFAULT_UNAVAILABLE_REASON) {
   return { available: false, reason };
+}
+
+/**
+ * Infer the active readability metric from a stats object when the caller does
+ * not pass locale metadata. computeStats() keeps the inactive metric null for
+ * normal inputs, so non-null metric presence is the least surprising default.
+ *
+ * @param {object} stats
+ * @returns {'fleschKincaid' | 'lix'}
+ */
+function inferReadabilityMetric(stats) {
+  if (stats?.lix !== null && stats?.lix !== undefined) return 'lix';
+  return 'fleschKincaid';
 }
 
 /**
@@ -79,15 +96,20 @@ function normalizeJsonValue(value) {
  * - no NaN/Infinity/-Infinity/undefined values are emitted.
  *
  * @param {object|null|undefined} stats
+ * @param {{ locale?: string, readabilityMetric?: 'fleschKincaid' | 'lix' }} [options]
  * @returns {object|null}
  */
-function normalizeStatsForOutput(stats) {
+function normalizeStatsForOutput(stats, options = {}) {
   if (!stats || typeof stats !== 'object') return null;
 
   const normalized = normalizeJsonValue(stats);
   const availability = {};
   const wordCount = Number.isFinite(stats.wordCount) ? stats.wordCount : 0;
   const sentenceCount = Number.isFinite(stats.sentenceCount) ? stats.sentenceCount : 0;
+  const readabilityMetric =
+    options.readabilityMetric ||
+    READABILITY_BY_LOCALE[options.locale] ||
+    inferReadabilityMetric(stats);
 
   for (const key of [
     ...GENERAL_STAT_KEYS,
@@ -126,20 +148,21 @@ function normalizeStatsForOutput(stats) {
     }
   }
 
-  if (wordCount < 3) {
-    for (const key of READABILITY_KEYS) {
+  for (const key of READABILITY_KEYS) {
+    if (wordCount < 3) {
       normalized[key] = null;
-      availability[key] = unavailable(SHORT_INPUT_REASON);
-    }
-  } else {
-    for (const key of READABILITY_KEYS) {
-      if (stats[key] === null || stats[key] === undefined) {
-        normalized[key] = null;
-        availability[key] = unavailable('not applicable for locale');
-      } else if (!isFiniteMetric(stats[key])) {
-        normalized[key] = null;
-        availability[key] = unavailable(DEFAULT_UNAVAILABLE_REASON);
-      }
+      availability[key] = unavailable(
+        key === readabilityMetric ? SHORT_INPUT_REASON : 'not applicable for locale',
+      );
+    } else if (key !== readabilityMetric) {
+      normalized[key] = null;
+      availability[key] = unavailable('not applicable for locale');
+    } else if (stats[key] === null || stats[key] === undefined) {
+      normalized[key] = null;
+      availability[key] = unavailable(DEFAULT_UNAVAILABLE_REASON);
+    } else if (!isFiniteMetric(stats[key])) {
+      normalized[key] = null;
+      availability[key] = unavailable(DEFAULT_UNAVAILABLE_REASON);
     }
   }
 

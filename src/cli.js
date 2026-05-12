@@ -578,8 +578,8 @@ function readInput() {
  * @param {object} stats - Stats object from computeStats()
  * @returns {string} Formatted report
  */
-function formatStatsReport(stats) {
-  stats = normalizeStatsForOutput(stats);
+function formatStatsReport(stats, options = {}) {
+  stats = normalizeStatsForOutput(stats, options);
   const lines = [];
 
   lines.push('');
@@ -1215,7 +1215,7 @@ async function main() {
       if (flags.json) {
         console.log(JSON.stringify(normalizeStatsForOutput(stats), null, 2));
       } else {
-        console.log(formatStatsReport(stats));
+        console.log(formatStatsReport(stats, { locale: opts.locale }));
       }
       break;
     }

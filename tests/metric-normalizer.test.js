@@ -62,6 +62,21 @@ describe('metric output normalization', () => {
     expectNoJsSentinels(parsed);
   });
 
+  it('does not append redundant unavailable labels in reports', () => {
+    const result = analyze('Hej.');
+    const rendered = [formatReport(result), formatMarkdown(result)].join('\n');
+
+    expect(rendered).toContain('unavailable (requires at least 2 sentences)');
+    expect(rendered).not.toMatch(/unavailable \([^)]*\)\s+\(unavailable\)/);
+  });
+
+  it('keeps English short-input readability on Flesch-Kincaid in analyzer reports', () => {
+    const report = formatReport(analyze('Hi.'));
+
+    expect(report).toContain('Readability (FK grade): unavailable (input too short)');
+    expect(report).not.toContain('Readability (LIX): unavailable (input too short)');
+  });
+
   it('does not leak invalid tokens in representative report/analyze JSON outputs', () => {
     const result = analyze('Hej.');
 
@@ -87,5 +102,34 @@ describe('metric output normalization', () => {
     expect(normalized.stats.typeTokenRatio).toBeNull();
     expect(normalized.stats.metricAvailability.typeTokenRatio).toHaveProperty('reason');
     expectNoJsSentinels(normalized);
+  });
+
+  it('uses locale metadata to pick the unavailable readability metric for empty stats', () => {
+    const emptyStats = {
+      wordCount: 0,
+      uniqueWordCount: 0,
+      sentenceCount: 0,
+      paragraphCount: 0,
+      avgWordLength: 0,
+      avgSentenceLength: 0,
+      sentenceLengthStdDev: 0,
+      sentenceLengthVariation: 0,
+      burstiness: 0,
+      typeTokenRatio: 0,
+      functionWordRatio: 0,
+      trigramRepetition: 0,
+      avgParagraphLength: 0,
+      fleschKincaid: null,
+      lix: null,
+      sentenceLengths: [],
+    };
+
+    const english = normalizeStatsForOutput(emptyStats, { locale: 'en' });
+    const swedish = normalizeStatsForOutput(emptyStats, { locale: 'sv' });
+
+    expect(english.metricAvailability.fleschKincaid.reason).toBe('input too short');
+    expect(english.metricAvailability.lix.reason).toBe('not applicable for locale');
+    expect(swedish.metricAvailability.lix.reason).toBe('input too short');
+    expect(swedish.metricAvailability.fleschKincaid.reason).toBe('not applicable for locale');
   });
 });

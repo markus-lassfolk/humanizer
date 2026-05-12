@@ -166,11 +166,26 @@ describe('CLI Integration Tests', () => {
       expect(result.output).toContain('words');
     });
 
-    it('does not leak NaN or undefined for very short input', async () => {
+    it('does not leak NaN, undefined, or duplicate unavailable labels for very short input', async () => {
       const result = await runCLI(['stats'], { stdin: 'Hej.' });
       expect(result.code).toBe(0);
       expect(result.output).not.toMatch(/\bNaN\b|\bundefined\b|\bInfinity\b/);
       expect(result.output).toContain('unavailable (requires at least 2 sentences)');
+      expect(result.output).not.toMatch(/unavailable \([^)]*\)\s+\(unavailable\)/);
+    });
+
+    it('shows Flesch-Kincaid, not LIX, for English short-input stats', async () => {
+      const result = await runCLI(['stats'], { stdin: 'Hi.' });
+      expect(result.code).toBe(0);
+      expect(result.output).toContain('Flesch-Kincaid:   unavailable (input too short)');
+      expect(result.output).not.toContain('LIX:              unavailable (input too short)');
+    });
+
+    it('shows LIX for Swedish short-input stats', async () => {
+      const result = await runCLI(['stats', '--locale', 'sv'], { stdin: 'Hej.' });
+      expect(result.code).toBe(0);
+      expect(result.output).toContain('LIX:              unavailable (input too short)');
+      expect(result.output).not.toContain('Flesch-Kincaid:   unavailable (input too short)');
     });
 
     it('outputs stable stats JSON for very short input', async () => {
@@ -184,11 +199,12 @@ describe('CLI Integration Tests', () => {
   });
 
   describe('report command', () => {
-    it('does not leak NaN or undefined for very short input', async () => {
+    it('does not leak NaN, undefined, or duplicate unavailable labels for very short input', async () => {
       const result = await runCLI(['report'], { stdin: 'Hej.' });
       expect(result.code).toBe(0);
       expect(result.output).not.toMatch(/\bNaN\b|\bundefined\b|\bInfinity\b/);
       expect(result.output).toContain('unavailable (requires at least 2 sentences)');
+      expect(result.output).not.toMatch(/unavailable \([^)]*\)\s+\(unavailable\)/);
     });
   });
 
