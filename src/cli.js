@@ -158,7 +158,7 @@ function optionValue(flag) {
   const idx = args.indexOf(flag);
   if (idx === -1) return null;
   const value = args[idx + 1];
-  if (!value || (value.startsWith('-') && (BOOLEAN_FLAGS.has(value) || VALUE_FLAGS.has(value)))) {
+  if (!value || value.startsWith('-')) {
     failOption(`${flag} requires ${VALUE_FLAGS.get(flag)}.`);
   }
   return value;
@@ -195,8 +195,11 @@ function resolveLocaleForCommand(cliLocale) {
   return process.env.HUMANIZER_LOCALE || 'en';
 }
 
-function validateEnvLocaleIfUsed(locale) {
-  if (locale !== 'en') validateLocale(locale, 'HUMANIZER_LOCALE');
+function validateEnvLocaleIfUsed() {
+  const envLocale = process.env.HUMANIZER_LOCALE;
+  if (envLocale && envLocale !== 'en') {
+    validateLocale(envLocale, 'HUMANIZER_LOCALE');
+  }
 }
 
 function validateArgs() {
@@ -204,10 +207,7 @@ function validateArgs() {
     const arg = args[i];
     if (VALUE_FLAGS.has(arg)) {
       const nextArg = args[i + 1];
-      if (
-        !nextArg ||
-        (nextArg.startsWith('-') && (BOOLEAN_FLAGS.has(nextArg) || VALUE_FLAGS.has(nextArg)))
-      ) {
+      if (!nextArg || nextArg.startsWith('-')) {
         failOption(`${arg} requires ${VALUE_FLAGS.get(arg)}.`);
       }
       i += 1;
@@ -1144,7 +1144,7 @@ async function main() {
   const textCommands = new Set(['analyze', 'score', 'humanize', 'report', 'suggest', 'stats']);
   const localeUsingCommands = new Set([...textCommands, 'compare', 'scan']);
   if (localeUsingCommands.has(command)) {
-    validateEnvLocaleIfUsed(flags.locale);
+    validateEnvLocaleIfUsed();
   }
 
   let text = null;
