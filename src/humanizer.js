@@ -40,34 +40,6 @@ function autoFix(text, opts = {}) {
   const localeProfile = loadLocale(locale);
   const fixes = [];
 
-  const applyFixes = (input) => {
-    let result = input;
-
-    // Curly quotes → straight quotes
-    if (/[\u201C\u201D]/.test(result)) {
-      result = result.replace(/[\u201C\u201D]/g, '"');
-      fixes.push('Replaced curly double quotes with straight quotes');
-    }
-    if (/[\u2018\u2019]/.test(result)) {
-      result = result.replace(/[\u2018\u2019]/g, "'");
-      fixes.push('Replaced curly single quotes with straight quotes');
-    }
-
-    // Hidden obfuscation chars → remove/normalize
-    if (HIDDEN_UNICODE_CHARS.test(result)) {
-      result = result.replace(HIDDEN_UNICODE_CHARS_GLOBAL, '');
-      fixes.push('Removed hidden unicode characters (zero-width/soft hyphen)');
-    }
-    if (NON_BREAKING_SPACES.test(result)) {
-      result = result.replace(NON_BREAKING_SPACES_GLOBAL, ' ');
-      fixes.push('Normalized non-breaking spaces to regular spaces');
-    }
-
-    return result;
-  };
-
-  let result = transformMarkdownProse(text, applyFixes);
-
   // Filler phrase replacements (unambiguous)
   const safeFills = [
     { from: /\bin order to\b/gi, to: 'to', label: '"in order to" → "to"' },
@@ -92,31 +64,6 @@ function autoFix(text, opts = {}) {
     { from: /\butilization\b/gi, to: 'use', label: '"utilization" → "use"' },
   ];
 
-  result = transformMarkdownProse(result, (input) => {
-    let next = input;
-    for (const { from, to, label } of safeFills) {
-      if (from.test(next)) {
-        next = next.replace(from, (match) => preserveReplacementCase(match, to));
-        fixes.push(label);
-      }
-    }
-    return next;
-  });
-
-  // Locale-specific autofixes (e.g. Swedish mechanical replacements)
-  if (localeProfile.autofixes && localeProfile.autofixes.length > 0) {
-    result = transformMarkdownProse(result, (input) => {
-      let next = input;
-      for (const { pattern, replacement, label } of localeProfile.autofixes) {
-        if (pattern.test(next)) {
-          next = next.replace(pattern, (match) => preserveReplacementCase(match, replacement));
-          fixes.push(label);
-        }
-      }
-      return next;
-    });
-  }
-
   // Chatbot artifact removal (start/end of text)
   const chatbotStart = [
     /^(Here is|Here's) (a |an |the )?(comprehensive |brief |quick )?(overview|summary|breakdown|list|guide|explanation|look)[^.]*\.\s*/i,
@@ -124,34 +71,73 @@ function autoFix(text, opts = {}) {
     /^(Great|Excellent|Good|Wonderful|Fantastic) question!\s*/i,
     /^(That's|That is) a (great|excellent|good|wonderful|fantastic) (question|point)!\s*/i,
   ];
-  result = transformMarkdownProse(result, (input) => {
+
+  const chatbotEnd = [
+    /\s*(I hope this helps|Let me know if you('d| would) like|Feel free to|Don't hesitate to|Is there anything else)[^.]*[.!]\s*$/i,
+    /\s*Happy to help[.!]?\s*$/i,
+  ];
+
+  const result = transformMarkdownProse(text, (input) => {
     let next = input;
+
+    // Curly quotes → straight quotes
+    if (/[\u201C\u201D]/.test(next)) {
+      next = next.replace(/[\u201C\u201D]/g, '"');
+      fixes.push('Replaced curly double quotes with straight quotes');
+    }
+    if (/[\u2018\u2019]/.test(next)) {
+      next = next.replace(/[\u2018\u2019]/g, "'");
+      fixes.push('Replaced curly single quotes with straight quotes');
+    }
+
+    // Hidden obfuscation chars → remove/normalize
+    if (HIDDEN_UNICODE_CHARS.test(next)) {
+      next = next.replace(HIDDEN_UNICODE_CHARS_GLOBAL, '');
+      fixes.push('Removed hidden unicode characters (zero-width/soft hyphen)');
+    }
+    if (NON_BREAKING_SPACES.test(next)) {
+      next = next.replace(NON_BREAKING_SPACES_GLOBAL, ' ');
+      fixes.push('Normalized non-breaking spaces to regular spaces');
+    }
+
+    // Filler phrase replacements
+    for (const { from, to, label } of safeFills) {
+      if (from.test(next)) {
+        next = next.replace(from, (match) => preserveReplacementCase(match, to));
+        fixes.push(label);
+      }
+    }
+
+    // Locale-specific autofixes (e.g. Swedish mechanical replacements)
+    if (localeProfile.autofixes && localeProfile.autofixes.length > 0) {
+      for (const { pattern, replacement, label } of localeProfile.autofixes) {
+        if (pattern.test(next)) {
+          next = next.replace(pattern, (match) => preserveReplacementCase(match, replacement));
+          fixes.push(label);
+        }
+      }
+    }
+
+    // Chatbot artifact removal (start of text)
     for (const regex of chatbotStart) {
       if (regex.test(next)) {
         next = next.replace(regex, '');
         fixes.push('Removed chatbot opening artifact');
       }
     }
-    return next;
-  });
 
-  const chatbotEnd = [
-    /\s*(I hope this helps|Let me know if you('d| would) like|Feel free to|Don't hesitate to|Is there anything else)[^.]*[.!]\s*$/i,
-    /\s*Happy to help[.!]?\s*$/i,
-  ];
-  result = transformMarkdownProse(result, (input) => {
-    let next = input;
+    // Chatbot artifact removal (end of text)
     for (const regex of chatbotEnd) {
       if (regex.test(next)) {
         next = next.replace(regex, '');
         fixes.push('Removed chatbot closing artifact');
       }
     }
+
     return next;
   });
 
-  result = result.trim();
-  return { text: result, fixes };
+  return { text: result.trim(), fixes };
 }
 
 function preserveReplacementCase(match, replacement) {
