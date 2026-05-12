@@ -640,20 +640,29 @@ function formatStatsReport(stats) {
 
 function filterAnalysisByThreshold(result, threshold) {
   if (threshold === null) return result;
+  const filteredFindings = result.findings.filter((finding) => finding.weight >= threshold);
+  const recalculatedTotalMatches = filteredFindings.reduce((sum, f) => sum + f.matchCount, 0);
   return {
     ...result,
-    findings: result.findings.filter((finding) => finding.weight >= threshold),
+    findings: filteredFindings,
+    totalMatches: recalculatedTotalMatches,
   };
 }
 
 function filterSuggestionsByThreshold(result, threshold) {
   if (threshold === null) return result;
   const keep = (items) => items.filter((item) => item.weight >= threshold);
+  const filteredCritical = keep(result.critical);
+  const filteredImportant = keep(result.important);
+  const filteredMinor = keep(result.minor);
+  const recalculatedTotalIssues =
+    filteredCritical.length + filteredImportant.length + filteredMinor.length;
   return {
     ...result,
-    critical: keep(result.critical),
-    important: keep(result.important),
-    minor: keep(result.minor),
+    critical: filteredCritical,
+    important: filteredImportant,
+    minor: filteredMinor,
+    totalIssues: recalculatedTotalIssues,
   };
 }
 
