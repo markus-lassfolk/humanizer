@@ -126,21 +126,19 @@ function normalizeStatsForOutput(stats) {
     }
   }
 
-  for (const key of READABILITY_KEYS) {
-    if (stats[key] === null || stats[key] === undefined) {
-      normalized[key] = null;
-      availability[key] = unavailable('not applicable for locale');
-    } else if (!isFiniteMetric(stats[key])) {
-      normalized[key] = null;
-      availability[key] = unavailable(DEFAULT_UNAVAILABLE_REASON);
-    }
-  }
-
   if (wordCount < 3) {
     for (const key of READABILITY_KEYS) {
-      if (stats[key] !== null && stats[key] !== undefined) {
+      normalized[key] = null;
+      availability[key] = unavailable(SHORT_INPUT_REASON);
+    }
+  } else {
+    for (const key of READABILITY_KEYS) {
+      if (stats[key] === null || stats[key] === undefined) {
         normalized[key] = null;
-        availability[key] = unavailable(SHORT_INPUT_REASON);
+        availability[key] = unavailable('not applicable for locale');
+      } else if (!isFiniteMetric(stats[key])) {
+        normalized[key] = null;
+        availability[key] = unavailable(DEFAULT_UNAVAILABLE_REASON);
       }
     }
   }
