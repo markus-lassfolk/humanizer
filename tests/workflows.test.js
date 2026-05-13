@@ -227,6 +227,22 @@ describe('scanPath', () => {
 
     expect(enScan.files[0].score).toBeLessThan(svScan.files[0].score);
   });
+
+  it('uses markdown-aware preprocessing for mdoc scan files', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+    const file = path.join(tmp, 'doc.mdoc');
+    fs.writeFileSync(
+      file,
+      ['---', 'title: Robust solutions', '---', 'Plain prose for the actual document body.'].join(
+        '\n',
+      ),
+    );
+
+    const result = scanPath(tmp, { exts: ['mdoc'], minWords: 1, ignoreCode: true });
+
+    expect(result.files).toHaveLength(1);
+    expect(result.files[0].wordCount).toBe(7);
+  });
 });
 
 describe('compareTexts and compareFiles', () => {

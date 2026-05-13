@@ -168,6 +168,8 @@ function preserveReplacementCase(match, replacement) {
  *   - verbose {boolean}   Show all matches
  *   - includeStats {boolean}  Include statistical suggestions
  *   - ignoreCode {boolean}  Ignore fenced/inline code snippets during analysis
+ *   - analysisText {string} Preprocessed text to use for analysis only
+ *   - analysisIgnoreCode {boolean} Whether analysisText still needs code stripping
  *   - locale {string}     Locale code: 'en' (default) or 'sv'
  *   - strict {boolean}    Enable pattern 35 (inclusive-language hints)
  *   - withLm {boolean}    Add n-gram LM uniformity boost
@@ -178,16 +180,18 @@ function humanize(text, opts = {}) {
     autofix = false,
     includeStats = true,
     ignoreCode = false,
+    analysisText = null,
+    analysisIgnoreCode = ignoreCode,
     locale = 'en',
     verbose = true,
     strict = false,
     withLm = false,
   } = opts;
 
-  const analysis = analyze(text, {
+  const analysis = analyze(analysisText ?? text, {
     verbose,
     includeStats,
-    ignoreCode,
+    ignoreCode: analysisIgnoreCode,
     locale,
     strict,
     withLm,

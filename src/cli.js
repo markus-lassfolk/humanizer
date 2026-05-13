@@ -1062,16 +1062,19 @@ async function main() {
     }
   }
 
+  const isMarkdownInput = Boolean(flags.file && isMarkdownLikePath(flags.file));
   const opts = {
     verbose: flags.verbose,
     patternsToCheck: flags.patterns,
-    ignoreCode:
-      flags.ignoreCode === true ||
-      (flags.ignoreCode === null && flags.file && isMarkdownLikePath(flags.file)),
+    ignoreCode: flags.ignoreCode === true || (flags.ignoreCode === null && isMarkdownInput),
     locale: flags.locale,
     strict: flags.strict,
     withLm: flags.withLm,
   };
+
+  const analysisText =
+    opts.ignoreCode && isMarkdownInput ? stripMarkdownProtectedRegions(text) : text;
+  const analysisOpts = isMarkdownInput ? { ...opts, ignoreCode: false } : opts;
 
   switch (command) {
     case 'analyze': {
@@ -1087,7 +1090,7 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else {
-        const result = analyze(text, opts);
+        const result = analyze(analysisText, analysisOpts);
         if (flags.json) {
           console.log(formatJSON(result));
         } else {
@@ -1121,7 +1124,7 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else {
-        const s = score(text, opts);
+        const s = score(analysisText, analysisOpts);
         if (flags.json) {
           console.log(JSON.stringify({ score: s }));
         } else {
@@ -1136,6 +1139,8 @@ async function main() {
         autofix: flags.autofix,
         verbose: flags.verbose,
         ignoreCode: opts.ignoreCode,
+        analysisText,
+        analysisIgnoreCode: analysisOpts.ignoreCode,
         locale: opts.locale,
         strict: opts.strict,
         withLm: opts.withLm,
@@ -1187,7 +1192,7 @@ async function main() {
         const appendix = formatChunkedTextAppendix(chunked).replace(/^\n/, '').trimEnd();
         console.log(`\n\`\`\`\n${appendix}\n\`\`\`\n`);
       } else {
-        const result = analyze(text, { ...opts, verbose: true });
+        const result = analyze(analysisText, { ...analysisOpts, verbose: true });
         console.log(formatMarkdown(result));
       }
       break;
@@ -1197,6 +1202,8 @@ async function main() {
       const result = humanize(text, {
         verbose: flags.verbose,
         ignoreCode: opts.ignoreCode,
+        analysisText,
+        analysisIgnoreCode: analysisOpts.ignoreCode,
         locale: opts.locale,
         strict: opts.strict,
         withLm: opts.withLm,
@@ -1227,10 +1234,7 @@ async function main() {
     }
 
     case 'stats': {
-      const preprocessFn =
-        flags.file && isMarkdownLikePath(flags.file)
-          ? stripMarkdownProtectedRegions
-          : stripCodeSnippets;
+      const preprocessFn = isMarkdownInput ? stripMarkdownProtectedRegions : stripCodeSnippets;
       const statsText = opts.ignoreCode ? preprocessFn(text) : text;
       const { loadLocale } = require('./locales');
       const localeProfile = loadLocale(opts.locale);

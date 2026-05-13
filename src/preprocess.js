@@ -185,7 +185,8 @@ function protectedRanges(text, opts = {}) {
     lineStart = nextLineStart;
   }
 
-  if (frontmatterOpen) addRange(ranges, frontmatterStart, text.length);
+  // A lone opening delimiter is valid Markdown thematic-break syntax, not frontmatter.
+  // Only mask frontmatter after observing a closing delimiter in the loop above.
   if (code && inFence) addRange(ranges, fenceStart, text.length);
   if (code) addInlineCodeRanges(text, ranges);
 

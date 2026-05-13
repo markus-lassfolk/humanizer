@@ -36,6 +36,16 @@ describe('stripCodeSnippets', () => {
 });
 
 describe('stripMarkdownProtectedRegions', () => {
+  it('treats a lone top-level thematic break as prose instead of frontmatter', () => {
+    const input = [
+      '---',
+      'Real prose uses robust solutions in the rapidly evolving landscape.',
+    ].join('\n');
+    const masked = stripMarkdownProtectedRegions(input);
+
+    expect(masked).toContain('---');
+    expect(masked).toContain('Real prose uses robust solutions');
+  });
   it('masks frontmatter, tables, MDX, and blockquotes while preserving prose', () => {
     const input = [
       '---',
