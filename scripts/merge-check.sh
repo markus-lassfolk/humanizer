@@ -144,12 +144,10 @@ check_review_threads() {
 }
 
 check_reviews_current_head() {
-  local head_oid approvals changes_requested stale_changes current_approval_count latest_reviews
+  local head_oid changes_requested stale_changes current_approval_count latest_reviews
   head_oid=$(json_get '.headRefOid' <<<"$PR_JSON")
 
-  approvals=$(gh api "repos/$FULL_REPO/pulls/$PR_NUMBER/reviews" --paginate)
-
-  latest_reviews=$(jq 'group_by(.user.login) | map(sort_by(.submitted_at) | last)' <<<"$approvals")
+  latest_reviews=$(jq 'map(select(.state != "COMMENTED" and .state != "DISMISSED")) | group_by(.user.login) | map(sort_by(.submitted_at) | last)' <<<"$PR_REVIEWS")
 
   changes_requested=$(jq '[.[] | select(.state == "CHANGES_REQUESTED")] | length' <<<"$latest_reviews")
   [[ "$changes_requested" == "0" ]] || fail "changes requested reviews remain: $changes_requested"
@@ -166,16 +164,15 @@ check_reviews_current_head() {
 }
 
 check_council_current_head() {
-  local head_oid issue_comments review_bodies matched
+  local head_oid issue_comments matched
   head_oid=$(json_get '.headRefOid' <<<"$PR_JSON")
 
   issue_comments=$(gh api "repos/$FULL_REPO/issues/$PR_NUMBER/comments" --paginate)
-  review_bodies=$(gh api "repos/$FULL_REPO/pulls/$PR_NUMBER/reviews" --paginate)
 
   matched=$(jq -n \
     --arg head "$head_oid" \
     --argjson issueComments "$issue_comments" \
-    --argjson reviews "$review_bodies" \
+    --argjson reviews "$PR_REVIEWS" \
     --argjson keywords "$(printf '%s\n' "${COUNCIL_KEYWORDS[@]}" | jq -R . | jq -s .)" \
     'def norm: ascii_downcase;
      def mentions_head($text): (($text // "") | contains($head) or contains($head[0:12]) or contains($head[0:8]));
@@ -206,12 +203,12 @@ check_checks() {
     [[ "$failing" == "0" ]] || fail "required check failing: $name"
   done
 
-  failing=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select(.status == "COMPLETED" and (.conclusion | IN("FAILURE", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED")))] | map(.name // .context) | . - $optional | unique | join(", ")' <<<"$rollup")
+  failing=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" --argjson required "$(printf '%s\n' "${REQUIRED_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select(.status == "COMPLETED" and (.conclusion | IN("FAILURE", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED")))] | map(.name // .context) | . - $optional - $required | unique | join(", ")' <<<"$rollup")
   if [[ -n "$failing" ]]; then
     fail "failing check(s): $failing"
   fi
 
-  pending=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select(.status != "COMPLETED")] | map(.name // .context) | . - $optional | unique | join(", ")' <<<"$rollup")
+  pending=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" --argjson required "$(printf '%s\n' "${REQUIRED_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select(.status != "COMPLETED")] | map(.name // .context) | . - $optional - $required | unique | join(", ")' <<<"$rollup")
   if [[ -n "$pending" ]]; then
     fail "pending check(s): $pending"
   fi
@@ -271,6 +268,9 @@ check_pr_state
 check_label_stage
 check_blocker_labels
 check_review_threads
+
+PR_REVIEWS=$(gh api "repos/$FULL_REPO/pulls/$PR_NUMBER/reviews" --paginate)
+
 check_reviews_current_head
 check_council_current_head
 check_checks
