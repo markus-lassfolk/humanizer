@@ -353,9 +353,24 @@ function toPatternHistogram(result) {
  * Compare two text drafts and show score + pattern deltas.
  */
 function compareTexts(beforeText, afterText, opts = {}) {
-  const { ignoreCode = false } = opts;
-  const before = analyze(beforeText, { verbose: true, includeStats: true, ignoreCode });
-  const after = analyze(afterText, { verbose: true, includeStats: true, ignoreCode });
+  const {
+    ignoreCode = false,
+    locale = 'en',
+    strict = false,
+    withLm = false,
+    patternsToCheck = null,
+  } = opts;
+  const analysisOpts = {
+    verbose: true,
+    includeStats: true,
+    ignoreCode,
+    locale,
+    strict,
+    withLm,
+    patternsToCheck,
+  };
+  const before = analyze(beforeText, analysisOpts);
+  const after = analyze(afterText, analysisOpts);
 
   const histogram = toPatternHistogram(before);
   for (const f of after.findings) {
@@ -411,8 +426,16 @@ function compareTexts(beforeText, afterText, opts = {}) {
 
 /** Compare two files. */
 function compareFiles(beforePath, afterPath, opts = {}) {
-  const beforeText = fs.readFileSync(path.resolve(beforePath), 'utf-8');
-  const afterText = fs.readFileSync(path.resolve(afterPath), 'utf-8');
+  const resolvedBefore = path.resolve(beforePath);
+  const resolvedAfter = path.resolve(afterPath);
+  const missing = [];
+  if (!fs.existsSync(resolvedBefore)) missing.push(`before file not found: ${beforePath}`);
+  if (!fs.existsSync(resolvedAfter)) missing.push(`after file not found: ${afterPath}`);
+  if (missing.length > 0) {
+    throw new Error(missing.join('; '));
+  }
+  const beforeText = fs.readFileSync(resolvedBefore, 'utf-8');
+  const afterText = fs.readFileSync(resolvedAfter, 'utf-8');
   return compareTexts(beforeText, afterText, opts);
 }
 

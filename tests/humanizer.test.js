@@ -264,10 +264,20 @@ describe('buildGuidance', () => {
     const tipText = 'Consider rewriting from scratch.';
 
     const suppressedByCalibratedScore = buildGuidance({ score: 20, rawScore: 72, findings: [] });
-    expect(suppressedByCalibratedScore.some((tip) => tip.includes(tipText))).toBe(true);
+    expect(
+      suppressedByCalibratedScore.some((item) => {
+        const text = typeof item === 'string' ? item : item.text;
+        return text.includes(tipText);
+      }),
+    ).toBe(true);
 
     const lowRawScore = buildGuidance({ score: 90, rawScore: 30, findings: [] });
-    expect(lowRawScore.some((tip) => tip.includes(tipText))).toBe(false);
+    expect(
+      lowRawScore.some((item) => {
+        const text = typeof item === 'string' ? item : item.text;
+        return text.includes(tipText);
+      }),
+    ).toBe(false);
   });
 });
 
