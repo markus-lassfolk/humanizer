@@ -150,15 +150,14 @@ function protectedRanges(text, opts = {}) {
         continue;
       }
       // If we encounter a code fence, MDX import/export, Markdown table,
-      // blockquote, or indented code while waiting for frontmatter close,
+      // or blockquote while waiting for frontmatter close,
       // treat the opening delimiter as a thematic break (not frontmatter).
       if (
         isFenceLine(line) ||
         isMdxEsmLine(line) ||
         isMarkdownTableSeparator(line) ||
         isMarkdownTableRow(line) ||
-        isBlockquoteLine(line) ||
-        isIndentedCodeLine(line)
+        isBlockquoteLine(line)
       ) {
         frontmatterOpen = false;
         frontmatterDone = true;
