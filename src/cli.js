@@ -195,7 +195,8 @@ function resolveLocaleForCommand(cliLocale) {
   return process.env.HUMANIZER_LOCALE || 'en';
 }
 
-function validateEnvLocaleIfUsed() {
+function validateEnvLocaleIfUsed(cliLocale) {
+  if (cliLocale !== null) return;
   const envLocale = process.env.HUMANIZER_LOCALE;
   if (envLocale && envLocale !== 'en') {
     validateLocale(envLocale, 'HUMANIZER_LOCALE');
@@ -310,7 +311,9 @@ if (args.includes('--ignore-code')) {
 }
 
 const localeValue = optionValue('--locale');
-flags.locale = resolveLocaleForCommand(localeValue);
+if (!flags.help) {
+  flags.locale = resolveLocaleForCommand(localeValue);
+}
 
 // ─── Scan Config Resolution ──────────────────────────────
 
@@ -722,6 +725,25 @@ function filterGuidanceBySuggestions(guidance, keptSuggestions) {
   });
 }
 
+function countKeptSuggestionIssues(keptSuggestions) {
+  const findingCounts = new Map();
+  let fallbackTotal = 0;
+
+  for (const item of keptSuggestions) {
+    if (
+      Number.isFinite(item.findingMatchCount) &&
+      item.patternId !== null &&
+      item.patternId !== undefined
+    ) {
+      findingCounts.set(item.patternId, item.findingMatchCount);
+    } else {
+      fallbackTotal += item.matchWeight ?? 1;
+    }
+  }
+
+  return [...findingCounts.values()].reduce((sum, count) => sum + count, fallbackTotal);
+}
+
 function filterSuggestionsByThreshold(result, threshold) {
   if (threshold === null) return result;
   const keep = (items) => items.filter((item) => item.weight >= threshold);
@@ -735,7 +757,7 @@ function filterSuggestionsByThreshold(result, threshold) {
     ...result,
     unfilteredTotalIssues: result.totalIssues,
     threshold,
-    totalIssues: keptSuggestions.reduce((sum, item) => sum + (item.matchWeight ?? 1), 0),
+    totalIssues: countKeptSuggestionIssues(keptSuggestions),
     critical,
     important,
     minor,
@@ -1144,7 +1166,7 @@ async function main() {
   const textCommands = new Set(['analyze', 'score', 'humanize', 'report', 'suggest', 'stats']);
   const localeUsingCommands = new Set([...textCommands, 'compare', 'scan']);
   if (localeUsingCommands.has(command)) {
-    validateEnvLocaleIfUsed();
+    validateEnvLocaleIfUsed(localeValue);
   }
 
   let text = null;

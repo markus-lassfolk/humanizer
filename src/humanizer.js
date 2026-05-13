@@ -197,6 +197,7 @@ function humanize(text, opts = {}) {
       suggestion: m.suggestion,
       confidence: m.confidence || 'high',
       matchWeight: m.matchWeight ?? 1,
+      findingMatchCount: finding.matchCount,
     }));
 
     if (finding.weight >= 4) critical.push(...suggestions);
