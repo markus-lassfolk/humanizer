@@ -142,6 +142,12 @@ describe('autoFix', () => {
     expect(fixes).not.toContain('"clarification" → "clarify"');
     expect(fixes).not.toContain('"implementation" → "implement"');
   });
+
+  it('does not apply context-sensitive sunset autofixes to ordinary nouns', () => {
+    const { text, fixes } = autoFix('The sunset over the bay was orange.', { locale: 'en' });
+    expect(text).toBe('The sunset over the bay was orange.');
+    expect(fixes).not.toContain('"sunset" → "retire"');
+  });
 });
 
 // ─── humanize ────────────────────────────────────────────

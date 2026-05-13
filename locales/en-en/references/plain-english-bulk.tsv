@@ -179,9 +179,9 @@ reimagining	rethinking	autofix				bulk nominal
 reimagined	rethought	autofix				bulk nominal
 replatform	move	autofix				bulk nominal
 replatforming	moving	autofix				bulk nominal
-sunset	retire	autofix				bulk nominal
-sunsetting	retiring	autofix				bulk nominal
-sunsetted	retired	autofix				bulk nominal
+sunset	retire	phrase_flag		retire only in product-deprecation context		context-sensitive bulk nominal
+sunsetting	retiring	phrase_flag		retiring only in product-deprecation context		context-sensitive bulk nominal
+sunsetted	retired	phrase_flag		retired only in product-deprecation context		context-sensitive bulk nominal
 actionize	act	autofix				bulk nominal
 actionizing	acting	autofix				bulk nominal
 actionized	acted	autofix				bulk nominal
