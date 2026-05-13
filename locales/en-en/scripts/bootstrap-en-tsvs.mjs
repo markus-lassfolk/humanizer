@@ -588,7 +588,7 @@ function generateBulkRows() {
     ['actionized', 'acted'],
   ];
   for (const [a, b] of nominal) {
-    const isUnsafeNominalRewrite = /(tion|sion|ment)$/.test(a);
+    const isUnsafeNominalRewrite = /(tion|sion|ment)$/.test(a) || /^sunset(|ting|ted)$/.test(a);
     out.push(
       isUnsafeNominalRewrite
         ? [a, '', 'phrase_flag', '2', b || 'rephrase nominalization', '', 'bulk nominal']
