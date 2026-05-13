@@ -280,10 +280,6 @@ async function handleRequest(req, res) {
           sendJson(res, stats);
           return;
         }
-
-        default:
-          sendJson(res, { error: 'Not found' }, 404);
-          return;
       }
     }
 
