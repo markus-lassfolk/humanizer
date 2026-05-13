@@ -179,7 +179,7 @@ check_council_current_head() {
     --argjson keywords "$(printf '%s\n' "${COUNCIL_KEYWORDS[@]}" | jq -R . | jq -s .)" \
     'def norm: ascii_downcase;
      def mentions_head($text): (($text // "") | contains($head) or contains($head[0:12]) or contains($head[0:8]));
-     def mentions_keyword($text): any($keywords[]; (($text // "") | norm | contains(.)));
+     def mentions_keyword($text): any($keywords[]; . as $kw | ($text // "") | norm | contains($kw));
      ([ $issueComments[]? | select(mentions_head(.body) and mentions_keyword(.body)) ]
       + [ $reviews[]? | select(mentions_head(.body) and mentions_keyword(.body)) ]) | length')
 
