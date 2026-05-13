@@ -65,7 +65,7 @@ json_get() {
 
 has_label() {
   local label="$1"
-  jq -e --arg label "$label" '.labels[].name == $label' <<<"$PR_JSON" >/dev/null
+  jq -e --arg label "$label" '.labels | any(.name == $label)' <<<"$PR_JSON" >/dev/null
 }
 
 check_label_stage() {
@@ -144,18 +144,20 @@ check_review_threads() {
 }
 
 check_reviews_current_head() {
-  local head_oid approvals changes_requested stale_changes current_approval_count
+  local head_oid approvals changes_requested stale_changes current_approval_count latest_reviews
   head_oid=$(json_get '.headRefOid' <<<"$PR_JSON")
 
   approvals=$(gh api "repos/$FULL_REPO/pulls/$PR_NUMBER/reviews" --paginate)
 
-  changes_requested=$(jq '[.[] | select(.state == "CHANGES_REQUESTED")] | length' <<<"$approvals")
+  latest_reviews=$(jq 'group_by(.user.login) | map(sort_by(.submitted_at) | last)' <<<"$approvals")
+
+  changes_requested=$(jq '[.[] | select(.state == "CHANGES_REQUESTED")] | length' <<<"$latest_reviews")
   [[ "$changes_requested" == "0" ]] || fail "changes requested reviews remain: $changes_requested"
 
-  stale_changes=$(jq --arg head "$head_oid" '[.[] | select((.state == "APPROVED") and (.commit_id != $head))] | length' <<<"$approvals")
+  stale_changes=$(jq --arg head "$head_oid" '[.[] | select((.state == "APPROVED") and (.commit_id != $head))] | length' <<<"$latest_reviews")
   [[ "$stale_changes" == "0" ]] || fail "stale approvals exist from an older head: $stale_changes"
 
-  current_approval_count=$(jq --arg head "$head_oid" '[.[] | select((.state == "APPROVED") and (.commit_id == $head))] | length' <<<"$approvals")
+  current_approval_count=$(jq --arg head "$head_oid" '[.[] | select((.state == "APPROVED") and (.commit_id == $head))] | length' <<<"$latest_reviews")
   verbose "current-head approvals=$current_approval_count"
 
   if [[ "$current_approval_count" -lt 1 ]]; then
@@ -204,12 +206,12 @@ check_checks() {
     [[ "$failing" == "0" ]] || fail "required check failing: $name"
   done
 
-  failing=$(jq -r '[.[]? | select(.status == "COMPLETED" and (.conclusion | IN("FAILURE", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED")))] | map(.name // .context) | unique | join(", ")' <<<"$rollup")
+  failing=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select(.status == "COMPLETED" and (.conclusion | IN("FAILURE", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED")))] | map(.name // .context) | . - $optional | unique | join(", ")' <<<"$rollup")
   if [[ -n "$failing" ]]; then
     fail "failing check(s): $failing"
   fi
 
-  pending=$(jq -r '[.[]? | select(.status != "COMPLETED")] | map(.name // .context) | unique | join(", ")' <<<"$rollup")
+  pending=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select(.status != "COMPLETED")] | map(.name // .context) | . - $optional | unique | join(", ")' <<<"$rollup")
   if [[ -n "$pending" ]]; then
     fail "pending check(s): $pending"
   fi
