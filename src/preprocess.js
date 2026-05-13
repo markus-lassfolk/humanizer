@@ -144,11 +144,31 @@ function protectedRanges(text, opts = {}) {
         addRange(ranges, frontmatterStart, contentEnd);
         frontmatterOpen = false;
         frontmatterDone = true;
+        offset = lineEnd;
+        lineNumber += 1;
+        lineStart = nextLineStart;
+        continue;
       }
-      offset = lineEnd;
-      lineNumber += 1;
-      lineStart = nextLineStart;
-      continue;
+      // If we encounter a code fence, MDX import/export, Markdown table,
+      // blockquote, or indented code while waiting for frontmatter close,
+      // treat the opening delimiter as a thematic break (not frontmatter).
+      if (
+        isFenceLine(line) ||
+        isMdxEsmLine(line) ||
+        isMarkdownTableSeparator(line) ||
+        isMarkdownTableRow(line) ||
+        isBlockquoteLine(line) ||
+        isIndentedCodeLine(line)
+      ) {
+        frontmatterOpen = false;
+        frontmatterDone = true;
+        // Fall through to process this line normally
+      } else {
+        offset = lineEnd;
+        lineNumber += 1;
+        lineStart = nextLineStart;
+        continue;
+      }
     }
 
     if (code && inFence) {
