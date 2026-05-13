@@ -249,7 +249,13 @@ function stripCodeSnippets(text, opts = {}) {
         mdx: false,
         tables: false,
         blockquotes: false,
-      }).filter((range) => text.slice(range.start, range.end).includes('\n')),
+      }).filter((range) => {
+        const snippet = text.slice(range.start, range.end);
+        if (!snippet.includes('\n')) return false;
+        if (range.end !== text.length) return true;
+        const lastLine = text.slice(Math.max(0, text.lastIndexOf('\n', text.length - 2) + 1));
+        return lastLine.trimStart().startsWith('```') || lastLine.trimStart().startsWith('~~~');
+      }),
     );
   }
 

@@ -459,7 +459,6 @@ module.exports = {
   normalizeIgnoreDirs,
   collectTextFiles,
   isMarkdownLikePath,
-  preprocessForScan,
   scanPath,
   compareScanResults,
   compareTexts,
