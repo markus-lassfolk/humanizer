@@ -298,5 +298,13 @@ describe('API Server Integration Tests', () => {
       expect(response.statusCode).toBe(404);
       expect(JSON.parse(response.body)).toEqual({ error: 'Not found' });
     });
+
+    it('applies body size limits before returning 404 for unknown POST endpoints', async () => {
+      const response = await makeRequest('POST', '/api/unknown', {
+        text: 'x'.repeat(1_000_001),
+      });
+      expect(response.statusCode).toBe(413);
+      expect(JSON.parse(response.body)).toEqual({ error: 'Request body too large' });
+    });
   });
 });

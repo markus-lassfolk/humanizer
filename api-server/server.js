@@ -192,12 +192,12 @@ async function handleRequest(req, res) {
 
     // POST endpoints
     if (req.method === 'POST') {
+      const body = await parseBody(req);
+
       if (!POST_ROUTES.has(route)) {
         sendJson(res, { error: 'Not found' }, 404);
         return;
       }
-
-      const body = await parseBody(req);
 
       const textValidation = validateTextInput(body);
       if (!textValidation.ok) {
