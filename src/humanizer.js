@@ -37,9 +37,12 @@ const NON_BREAKING_SPACES_GLOBAL = /(?:\u00A0|\u202F)/g;
 function autoFix(text, opts = {}) {
   const { locale = 'en' } = opts;
   const localeProfile = loadLocale(locale);
+  if (text === null || text === undefined || typeof text !== 'string') {
+    return { text, fixes: [] };
+  }
   // Normalize to NFC so that canonically equivalent Unicode forms are handled
   // consistently by all downstream regex replacements.
-  let result = typeof text === 'string' ? text.normalize('NFC') : text;
+  let result = text.normalize('NFC');
   const fixes = [];
 
   // Curly quotes → straight quotes
