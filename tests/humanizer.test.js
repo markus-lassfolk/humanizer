@@ -207,7 +207,13 @@ describe('humanize', () => {
   });
 
   it('preserves code snippets in humanize autofix when autofixIgnoreCode is enabled', () => {
-    const text = ['Inline `in order to` stays.', '', '```md', 'In order to deploy, update config.', '```'].join('\n');
+    const text = [
+      'Inline `in order to` stays.',
+      '',
+      '```md',
+      'In order to deploy, update config.',
+      '```',
+    ].join('\n');
     const result = humanize(text, { autofix: true, autofixIgnoreCode: true });
     expect(result.autofix.text).toContain('`in order to`');
     expect(result.autofix.text).toContain('In order to deploy, update config.');
