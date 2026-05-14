@@ -131,13 +131,25 @@ check_pr_state() {
 }
 
 check_review_threads() {
-  local unresolved
-  unresolved=$(gh api graphql \
-    -f owner="$OWNER" \
-    -f repo="$REPO" \
-    -F pr="$PR_NUMBER" \
-    -f query='query($owner:String!, $repo:String!, $pr:Int!) { repository(owner:$owner, name:$repo) { pullRequest(number:$pr) { reviewThreads(first:100) { nodes { isResolved } } } } }' \
-    --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false)] | length')
+  local unresolved cursor has_next all_threads page_data
+  all_threads="[]"
+  cursor="null"
+  has_next="true"
+
+  while [[ "$has_next" == "true" ]]; do
+    page_data=$(gh api graphql \
+      -f owner="$OWNER" \
+      -f repo="$REPO" \
+      -F pr="$PR_NUMBER" \
+      -f cursor="$cursor" \
+      -f query='query($owner:String!, $repo:String!, $pr:Int!, $cursor:String) { repository(owner:$owner, name:$repo) { pullRequest(number:$pr) { reviewThreads(first:100, after:$cursor) { nodes { isResolved } pageInfo { hasNextPage endCursor } } } } }')
+    
+    all_threads=$(jq -n --argjson all "$all_threads" --argjson page "$page_data" '$all + $page.data.repository.pullRequest.reviewThreads.nodes')
+    has_next=$(jq -r '.data.repository.pullRequest.reviewThreads.pageInfo.hasNextPage' <<<"$page_data")
+    cursor=$(jq -r '.data.repository.pullRequest.reviewThreads.pageInfo.endCursor' <<<"$page_data")
+  done
+
+  unresolved=$(jq '[.[] | select(.isResolved == false)] | length' <<<"$all_threads")
 
   verbose "unresolved review threads=$unresolved"
   [[ "$unresolved" == "0" ]] || fail "unresolved review threads remain: $unresolved"
@@ -197,18 +209,18 @@ check_checks() {
       continue
     fi
 
-    pending=$(jq '[.[] | select(.status != "COMPLETED")] | length' <<<"$matches")
-    failing=$(jq '[.[] | select(.status == "COMPLETED" and (.conclusion != "SUCCESS"))] | length' <<<"$matches")
+    pending=$(jq '[.[] | select((.status // "COMPLETED") != "COMPLETED" and (.state // "SUCCESS") | IN("PENDING", "QUEUED") )] | length' <<<"$matches")
+    failing=$(jq '[.[] | select((.status == "COMPLETED" and (.conclusion != "SUCCESS")) or (.state // "SUCCESS" | IN("FAILURE", "ERROR")))] | length' <<<"$matches")
     [[ "$pending" == "0" ]] || fail "required check pending: $name"
     [[ "$failing" == "0" ]] || fail "required check failing: $name"
   done
 
-  failing=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" --argjson required "$(printf '%s\n' "${REQUIRED_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select(.status == "COMPLETED" and (.conclusion | IN("FAILURE", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED")))] | map(.name // .context) | . - $optional - $required | unique | join(", ")' <<<"$rollup")
+  failing=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" --argjson required "$(printf '%s\n' "${REQUIRED_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select((.status == "COMPLETED" and (.conclusion | IN("FAILURE", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED"))) or (.state // "SUCCESS" | IN("FAILURE", "ERROR")))] | map(.name // .context) | . - $optional - $required | unique | join(", ")' <<<"$rollup")
   if [[ -n "$failing" ]]; then
     fail "failing check(s): $failing"
   fi
 
-  pending=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" --argjson required "$(printf '%s\n' "${REQUIRED_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select(.status != "COMPLETED")] | map(.name // .context) | . - $optional - $required | unique | join(", ")' <<<"$rollup")
+  pending=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" --argjson required "$(printf '%s\n' "${REQUIRED_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select((.status // "COMPLETED") != "COMPLETED" and (.state // "SUCCESS") | IN("PENDING", "QUEUED"))] | map(.name // .context) | . - $optional - $required | unique | join(", ")' <<<"$rollup")
   if [[ -n "$pending" ]]; then
     fail "pending check(s): $pending"
   fi
@@ -216,7 +228,7 @@ check_checks() {
   for optional in "${OPTIONAL_CHECKS[@]}"; do
     matches=$(jq --arg name "$optional" '[.[]? | select((.name // .context) == $name)]' <<<"$rollup")
     if [[ "$(jq 'length' <<<"$matches")" != "0" ]]; then
-      acceptable=$(jq '[.[] | select(.status == "COMPLETED" and (.conclusion | IN("SUCCESS", "NEUTRAL", "SKIPPED")))] | length' <<<"$matches")
+      acceptable=$(jq '[.[] | select((.status == "COMPLETED" and (.conclusion | IN("SUCCESS", "NEUTRAL", "SKIPPED"))) or (.state // "FAILURE" | IN("SUCCESS")))] | length' <<<"$matches")
       if [[ "$acceptable" == "0" ]]; then
         fail "optional check present but not acceptable: $optional"
       fi
