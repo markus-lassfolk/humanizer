@@ -1090,6 +1090,18 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
   }
   lines.push('');
 
+  if (scanResult.skipped.length > 0) {
+    lines.push(
+      color.gray(
+        `  ${scanResult.skipped.length} files skipped (too short, unreadable, or failed to analyze).`,
+      ),
+    );
+    for (const item of scanResult.skipped.slice(0, MAX_DISPLAYED_SKIPPED_FILES)) {
+      lines.push(color.gray(`    - ${item.file}: ${item.reason}`));
+    }
+    lines.push('');
+  }
+
   if (files.length === 0) {
     lines.push(color.yellow('  No files matched the scan criteria.'));
     lines.push('');
@@ -1144,18 +1156,6 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
       lines.push(
         `  ${color.cyan(`[${item.patternId}]`)} ${item.patternName} ${color.dim(`(${roundDisplayCount(item.totalMatches)} matches across ${item.affectedFiles} files)`)}`,
       );
-    }
-    lines.push('');
-  }
-
-  if (scanResult.skipped.length > 0) {
-    lines.push(
-      color.gray(
-        `  ${scanResult.skipped.length} files skipped (too short, unreadable, or failed to analyze).`,
-      ),
-    );
-    for (const item of scanResult.skipped.slice(0, MAX_DISPLAYED_SKIPPED_FILES)) {
-      lines.push(color.gray(`    - ${item.file}: ${item.reason}`));
     }
     lines.push('');
   }

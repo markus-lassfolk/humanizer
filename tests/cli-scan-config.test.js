@@ -221,7 +221,8 @@ describe('scan config handling', () => {
       expect(run.stderr).toBe('');
 
       const payload = JSON.parse(run.stdout);
-      if (process.platform === 'win32') {
+      if (process.platform === 'win32' || process.getuid?.() === 0) {
+        // On Windows or when running as root, chmod 000 doesn't prevent reading
         expect(payload.summary.scannedFiles).toBeGreaterThanOrEqual(1);
       } else {
         expect(payload.summary.scannedFiles).toBe(1);
