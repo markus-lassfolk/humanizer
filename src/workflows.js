@@ -9,9 +9,18 @@
 const fs = require('fs');
 const path = require('path');
 const { analyze } = require('./analyzer');
-const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
+const {
+  stripCodeSnippets,
+  stripMarkdownProtectedRegions,
+  stripFrontmatter,
+  stripMdxComponents,
+  stripBlockquotes,
+} = require('./preprocess');
 
 const DEFAULT_SCAN_EXTENSIONS = ['.md', '.mdx', '.txt', '.rst', '.adoc'];
+const READ_ERROR_PREFIX = 'read_error:';
+const ANALYZE_ERROR_PREFIX = 'analyze_error:';
+const TOO_SHORT_PREFIX = 'too_short:';
 const DEFAULT_IGNORE_DIRS = new Set([
   '.git',
   'node_modules',
@@ -114,6 +123,17 @@ function preprocessForScan(text, file, ignoreCode) {
   return isMarkdownLikePath(file) ? stripMarkdownProtectedRegions(text) : stripCodeSnippets(text);
 }
 
+/** Same prose-masking chain as {@link analyze}, for minWords after code preprocessing. */
+function applyScanProseMasking(text, opts) {
+  const { ignoreFrontmatter, ignoreMdx, ignoreBlockquotes, proseOnly } = opts;
+  if (!text || typeof text !== 'string') return '';
+  let t = text.normalize('NFC');
+  if (ignoreFrontmatter || proseOnly) t = stripFrontmatter(t);
+  if (ignoreMdx || proseOnly) t = stripMdxComponents(t);
+  if (ignoreBlockquotes || proseOnly) t = stripBlockquotes(t);
+  return t;
+}
+
 function hasDisallowedControlCharacters(text) {
   for (let i = 0; i < text.length; i += 1) {
     const code = text.charCodeAt(i);
@@ -153,7 +173,7 @@ function scanPath(targetPath, opts = {}) {
     try {
       text = fs.readFileSync(file, 'utf-8');
     } catch (err) {
-      errors.push({ file, reason: `read_error: ${err.message}` });
+      errors.push({ file, reason: `${READ_ERROR_PREFIX} ${err.message}` });
       continue;
     }
 
@@ -163,22 +183,34 @@ function scanPath(targetPath, opts = {}) {
     }
 
     const wordText = preprocessForScan(text, file, ignoreCode);
-    const words = countWords(wordText);
-    if (words < minWords) {
-      skipped.push({ file, reason: `too_short: ${words} words` });
-      continue;
-    }
-
-    const result = analyze(wordText, {
-      includeStats,
-      verbose: false,
-      ignoreCode: false,
+    const proseGatedText = applyScanProseMasking(wordText, {
       ignoreFrontmatter,
       ignoreMdx,
       ignoreBlockquotes,
       proseOnly,
-      locale,
     });
+    const words = countWords(proseGatedText);
+    if (words < minWords) {
+      skipped.push({ file, reason: `${TOO_SHORT_PREFIX} ${words} words` });
+      continue;
+    }
+
+    let result;
+    try {
+      result = analyze(wordText, {
+        includeStats,
+        verbose: false,
+        ignoreCode: false,
+        ignoreFrontmatter,
+        ignoreMdx,
+        ignoreBlockquotes,
+        proseOnly,
+        locale,
+      });
+    } catch (err) {
+      skipped.push({ file, reason: `${ANALYZE_ERROR_PREFIX} ${err.message}` });
+      continue;
+    }
 
     for (const finding of result.findings) {
       const existing = patternHotspotMap.get(finding.patternId) || {
@@ -222,10 +254,16 @@ function scanPath(targetPath, opts = {}) {
       a.patternId - b.patternId,
   );
 
+  const analyzeFailuresInSkipped = skipped.filter((item) =>
+    item.reason.startsWith(ANALYZE_ERROR_PREFIX),
+  ).length;
+  const tooShortFiles = skipped.filter((item) => item.reason.startsWith(TOO_SHORT_PREFIX)).length;
+
   const summary = {
     scannedFiles: results.length,
     skippedFiles: skipped.length,
-    failedFiles: errors.length,
+    failedFiles: errors.length + analyzeFailuresInSkipped,
+    tooShortFiles,
     averageScore: results.length
       ? Math.round((results.reduce((sum, r) => sum + r.score, 0) / results.length) * 100) / 100
       : 0,

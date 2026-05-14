@@ -38,9 +38,17 @@ const NON_BREAKING_SPACES_GLOBAL = /(?:\u00A0|\u202F)/g;
  */
 function autoFix(text, opts = {}) {
   const { locale = 'en', ignoreCode = false } = opts;
+  if (text === null || text === undefined || typeof text !== 'string') {
+    return { text, fixes: [] };
+  }
+
   const localeProfile = loadLocale(locale);
-  const normalized = typeof text === 'string' ? text.normalize('NFC') : text;
   const fixes = [];
+  const originalText = text;
+  const normalized = text.normalize('NFC');
+  if (normalized !== originalText) {
+    fixes.push('Normalized Unicode to NFC (composed form)');
+  }
 
   // Filler phrase replacements (unambiguous)
   const safeFills = [

@@ -14,9 +14,6 @@ const PROTECTED_TOKEN = /\uE000HUMANIZER_PROTECTED_(\d+)\uE001/g;
 // YAML frontmatter: optional \r\n line endings, must start at document start
 const FRONTMATTER_RE = /^---\r?\n[\s\S]*?\n---(?:\r?\n|$)/;
 
-// MDX import/export lines — uses \b and [^\n]+ to avoid polynomial backtracking
-const MDX_IMPORT_EXPORT_RE = /^(?:import|export)\b[^\n]+$/gm;
-
 // JSX/MDX component tags starting with uppercase (self-closing and opening).
 // Only single-line tags are matched. Attribute values containing literal >
 // (rare in practice) will not be fully covered; use HTML entities instead.
@@ -367,7 +364,8 @@ function stripFrontmatter(text) {
  * preserving line breaks.
  *
  * Masked regions:
- *   - `import … ;` / `export …` lines (MDX module system)
+ *   - MDX/ESM `import` / `export` lines (detected via {@link isMdxEsmLine}; prose like
+ *     "export controls…" is preserved)
  *   - Self-closing JSX component tags: `<Component prop="value" />`
  *   - Opening JSX component tags:      `<Component prop="value">`
  *
@@ -379,7 +377,9 @@ function stripFrontmatter(text) {
 function stripMdxComponents(text) {
   if (!text || typeof text !== 'string') return '';
   let processed = text;
-  processed = processed.replace(MDX_IMPORT_EXPORT_RE, (m) => maskSnippet(m));
+  processed = processed.replace(/^[^\n]*$/gm, (line) =>
+    isMdxEsmLine(line) ? maskSnippet(line) : line,
+  );
   processed = processed.replace(MDX_SELF_CLOSING_TAG_RE, (m) => maskSnippet(m));
   processed = processed.replace(MDX_OPEN_TAG_RE, (m) => maskSnippet(m));
   return processed;

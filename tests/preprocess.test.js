@@ -84,6 +84,14 @@ describe('stripMdxComponents', () => {
     expect(output).not.toContain('import Widget');
   });
 
+  it('does not mask prose lines that start with import or export', () => {
+    const input = [
+      'import controls are tightening this quarter.',
+      'export controls changed after the review.',
+    ].join('\n');
+    expect(stripMdxComponents(input)).toBe(input);
+  });
+
   it('masks JSX self-closing component tags', () => {
     const input = [
       '# Notes',

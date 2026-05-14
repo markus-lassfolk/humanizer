@@ -119,6 +119,25 @@ describe('CLI Integration Tests', () => {
       expect(result.code).toBe(0);
       expect(() => JSON.parse(result.output)).not.toThrow();
     });
+
+    it('outputs stable JSON for very short input', async () => {
+      const result = await runCLI(['analyze', '--json'], { stdin: 'Hej.' });
+      expect(result.code).toBe(0);
+      const parsed = JSON.parse(result.output);
+      expect(parsed).toHaveProperty('stats');
+      expect(parsed.stats).toHaveProperty('metricAvailability');
+      expect(parsed.stats).toHaveProperty('burstiness', null);
+      expect(result.output).not.toMatch(/\bNaN\b|\bundefined\b|\bInfinity\b/);
+    });
+  });
+
+  describe('score command JSON', () => {
+    it('outputs stable score JSON for very short input', async () => {
+      const result = await runCLI(['score', '--json'], { stdin: 'Hej.' });
+      expect(result.code).toBe(0);
+      expect(JSON.parse(result.output)).toHaveProperty('score');
+      expect(result.output).not.toMatch(/\bNaN\b|\bundefined\b|\bInfinity\b/);
+    });
   });
 
   describe('score command', () => {
@@ -155,6 +174,26 @@ describe('CLI Integration Tests', () => {
 
       expect(result.output).toContain('Score');
     });
+
+    it('does not rewrite fenced or inline markdown code in --autofix output', async () => {
+      const markdown = [
+        '# Runbook',
+        '',
+        'In order to deploy, update the docs.',
+        '',
+        '```md',
+        'In order to deploy, update the config.',
+        '```',
+        '',
+        'Use `in order to` only as a literal phrase.',
+      ].join('\n');
+
+      const result = await runCLI(['humanize', '--autofix'], { stdin: markdown });
+      expect(result.code).toBe(0);
+      expect(result.output).toContain('To deploy, update the docs.');
+      expect(result.output).toContain('In order to deploy, update the config.');
+      expect(result.output).toContain('`in order to`');
+    });
   });
 
   describe('stats command', () => {
@@ -164,6 +203,47 @@ describe('CLI Integration Tests', () => {
 
       const result = await runCLI(['stats', testFile]);
       expect(result.output).toContain('words');
+    });
+
+    it('does not leak NaN, undefined, or duplicate unavailable labels for very short input', async () => {
+      const result = await runCLI(['stats'], { stdin: 'Hej.' });
+      expect(result.code).toBe(0);
+      expect(result.output).not.toMatch(/\bNaN\b|\bundefined\b|\bInfinity\b/);
+      expect(result.output).toContain('unavailable (requires at least 2 sentences)');
+      expect(result.output).not.toMatch(/unavailable \([^)]*\)\s+\(unavailable\)/);
+    });
+
+    it('shows Flesch-Kincaid, not LIX, for English short-input stats', async () => {
+      const result = await runCLI(['stats'], { stdin: 'Hi.' });
+      expect(result.code).toBe(0);
+      expect(result.output).toContain('Flesch-Kincaid:   unavailable (input too short)');
+      expect(result.output).not.toContain('LIX:              unavailable (input too short)');
+    });
+
+    it('shows LIX for Swedish short-input stats', async () => {
+      const result = await runCLI(['stats', '--locale', 'sv'], { stdin: 'Hej.' });
+      expect(result.code).toBe(0);
+      expect(result.output).toContain('LIX:              unavailable (input too short)');
+      expect(result.output).not.toContain('Flesch-Kincaid:   unavailable (input too short)');
+    });
+
+    it('outputs stable stats JSON for very short input', async () => {
+      const result = await runCLI(['stats', '--json'], { stdin: 'Hej.' });
+      expect(result.code).toBe(0);
+      const parsed = JSON.parse(result.output);
+      expect(parsed).toHaveProperty('metricAvailability');
+      expect(parsed).toHaveProperty('burstiness', null);
+      expect(result.output).not.toMatch(/\bNaN\b|\bundefined\b|\bInfinity\b/);
+    });
+  });
+
+  describe('report command', () => {
+    it('does not leak NaN, undefined, or duplicate unavailable labels for very short input', async () => {
+      const result = await runCLI(['report'], { stdin: 'Hej.' });
+      expect(result.code).toBe(0);
+      expect(result.output).not.toMatch(/\bNaN\b|\bundefined\b|\bInfinity\b/);
+      expect(result.output).toContain('unavailable (requires at least 2 sentences)');
+      expect(result.output).not.toMatch(/unavailable \([^)]*\)\s+\(unavailable\)/);
     });
   });
 
@@ -188,6 +268,15 @@ describe('CLI Integration Tests', () => {
 
       const result = await runCLI(['analyze', testFile, '--locale', 'sv']);
       expect(result.output).toContain('Score');
+    });
+
+    it('suggest --locale sv outputs Swedish suggestion text, not English', async () => {
+      const testFile = path.join(__dirname, 'fixtures', 'sv-ai-sample-1.txt');
+      expect(fs.existsSync(testFile), `missing fixture: ${testFile}`).toBe(true);
+
+      const result = await runCLI(['suggest', testFile, '--locale', 'sv']);
+      expect(result.output).not.toContain('Use a simpler, more specific alternative.');
+      expect(result.output).toContain('Byt till ett enklare och mer konkret alternativ.');
     });
   });
 });
