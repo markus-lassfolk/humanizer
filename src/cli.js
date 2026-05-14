@@ -1277,11 +1277,6 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
     lines.push('');
   }
 
-  if (scanResult.skipped.length > 0) {
-    lines.push(color.gray(`  ${scanResult.skipped.length} files skipped (too short).`));
-    lines.push('');
-  }
-
   return lines.join('\n');
 }
 

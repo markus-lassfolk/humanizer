@@ -8,7 +8,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { analyze } = require('./analyzer');
+const analyzer = require('./analyzer');
+const { loadLocale } = require('./locales');
 const {
   stripCodeSnippets,
   stripMarkdownProtectedRegions,
@@ -161,6 +162,8 @@ function scanPath(targetPath, opts = {}) {
     locale = 'en',
   } = opts;
 
+  loadLocale(locale);
+
   const files = collectTextFiles(targetPath, { exts, ignoreDirs, includeDefaultIgnore });
 
   const results = [];
@@ -197,7 +200,7 @@ function scanPath(targetPath, opts = {}) {
 
     let result;
     try {
-      result = analyze(wordText, {
+      result = analyzer.analyze(wordText, {
         includeStats,
         verbose: false,
         ignoreCode: false,
@@ -449,8 +452,8 @@ function compareTexts(beforeText, afterText, opts = {}) {
     withLm,
     patternsToCheck,
   };
-  const before = analyze(beforeText, analysisOpts);
-  const after = analyze(afterText, analysisOpts);
+  const before = analyzer.analyze(beforeText, analysisOpts);
+  const after = analyzer.analyze(afterText, analysisOpts);
 
   const histogram = toPatternHistogram(before);
   for (const f of after.findings) {

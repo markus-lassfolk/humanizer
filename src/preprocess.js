@@ -135,6 +135,7 @@ function mergeRanges(ranges) {
 }
 
 function protectedRanges(text, opts = {}) {
+  if (!text || typeof text !== 'string') return [];
   const { code = true, frontmatter = true, mdx = true, tables = true, blockquotes = true } = opts;
   const ranges = [];
   let offset = 0;
@@ -254,15 +255,6 @@ function maskRanges(text, ranges) {
 }
 
 /**
- * Strip (mask) code snippets while preserving original line breaks.
- *
- * @param {string} text
- * @param {object} opts
- * @param {boolean} opts.fenced  Mask fenced code blocks (default true)
- * @param {boolean} opts.inline  Mask inline backtick code spans (default true)
- * @returns {string}
- */
-/**
  * Ranges covering fenced / indented code blocks and inline backtick spans
  * (same boundaries as {@link stripCodeSnippets}).
  *
@@ -303,6 +295,15 @@ function collectCodeSnippetRanges(text, opts = {}) {
   return mergeRanges(ranges);
 }
 
+/**
+ * Strip (mask) code snippets while preserving original line breaks.
+ *
+ * @param {string} text
+ * @param {object} [opts]
+ * @param {boolean} [opts.fenced=true]  Mask fenced code blocks
+ * @param {boolean} [opts.inline=true]  Mask inline backtick code spans
+ * @returns {string}
+ */
 function stripCodeSnippets(text, opts = {}) {
   if (!text || typeof text !== 'string') return '';
   return maskRanges(text, collectCodeSnippetRanges(text, opts));
