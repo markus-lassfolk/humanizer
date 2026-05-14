@@ -4,22 +4,22 @@ GitHub Actions use the Node.js version from `package.json` `engines` via `action
 
 ## Workflows
 
-| Workflow | File | When |
-| --- | --- | --- |
-| **CI** | `.github/workflows/ci.yml` | Push / PR to `main` or `v2` |
-| **CodeQL** | `.github/workflows/codeql.yml` | Push / PR to `main` or `v2`, plus weekly |
-| **Nightly pipelines** | `.github/workflows/nightly-pipelines.yml` | Weekly (Monday 06:00 UTC), manual |
-| **Release** | `.github/workflows/release.yml` | Tag push `v*`, manual |
+| Workflow              | File                                      | When                                     |
+| --------------------- | ----------------------------------------- | ---------------------------------------- |
+| **CI**                | `.github/workflows/ci.yml`                | Push / PR to `main` or `v2`              |
+| **CodeQL**            | `.github/workflows/codeql.yml`            | Push / PR to `main` or `v2`, plus weekly |
+| **Nightly pipelines** | `.github/workflows/nightly-pipelines.yml` | Weekly (Monday 06:00 UTC), manual        |
+| **Release**           | `.github/workflows/release.yml`           | Tag push `v*`, manual                    |
 
 ### CI jobs
 
 - **lint** — `npm run check:lint` (ESLint)
 - **format** — `npm run check:format` (Prettier)
-- **locale** — Swedish prescriptive `--check` + Swedish tier validator
+- **locale** — Swedish and English prescriptive `--check` + tier validators
 - **test** — Vitest
 - **audit (non-blocking)** — `npm audit --omit=dev --audit-level=high` (failure does not fail the workflow)
 
-Install step uses **`npm install`** because `package-lock.json` is gitignored. For reproducible installs in CI, consider committing a lockfile and switching workflows to `npm ci`.
+Install step uses **`npm ci`** from the committed `package-lock.json` so fresh-checkout CI and local QA are reproducible.
 
 ### Nightly pipelines
 
@@ -48,7 +48,7 @@ bash scripts/setup-git-guards.sh
 That sets `core.hooksPath` to `.githooks/` and enables:
 
 - **pre-push** — blocks pushes to the upstream parent repo URL
-- **pre-commit** — runs `npm run check:lint` (requires `npm install` first)
+- **pre-commit** — runs `npm run check:lint` (requires `npm ci` or `npm install` first)
 
 ## Branch protection (recommended)
 
@@ -59,3 +59,24 @@ In GitHub: **Settings → Branches → Add rule** for `main` and `v2`:
 - Optionally require **CodeQL** / **Analyze**
 
 This prevents merges when tests or locale gates fail.
+
+## Repo-local merge gate
+
+Stewardship automation must run the repository-local merge gate before merging a PR:
+
+```bash
+scripts/merge-check.sh --pr <number> --verbose
+```
+
+The gate is intentionally non-merging. It only verifies whether a PR is eligible for a future stewardship merge and exits non-zero when any blocker is present.
+
+It requires:
+
+- exactly one stage label, and it must be `stage/approved`;
+- no `fixes-needed` or `needs-manual-fix` labels;
+- an open, non-draft PR targeting `main` with a clean merge state;
+- zero unresolved review threads;
+- current-head approval and current-head council/deep-verification evidence;
+- passing required checks: `lint`, `format`, `locale`, `test`, `Analyze (javascript-typescript)`, and `CodeQL`.
+
+It treats merge conflicts, draft PRs, manual blockers, pending/failing checks, stale approvals, unresolved threads, and wrong stages as hard blockers. The script does **not** use admin merge and does **not** call `gh pr merge`.

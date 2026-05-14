@@ -9,7 +9,7 @@ From a local checkout:
 ```bash
 git clone https://github.com/markus-lassfolk/humanizer.git
 cd humanizer
-npm install
+npm ci
 npm install -g .
 ```
 
@@ -195,7 +195,7 @@ Example for a one-sentence input:
 --verbose, -v           Show all matches
 --autofix               Apply safe fixes (humanize only)
 --patterns <ids>        Only check specific pattern IDs, comma-separated
---threshold <n>         Only show patterns with weight above threshold
+--threshold <n>         Only include findings/suggestions with weight >= threshold
 --before <path>         Before file for compare
 --after <path>          After file for compare
 --ext <list>            File extensions for scan, e.g. md,txt,rst

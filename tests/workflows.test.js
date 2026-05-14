@@ -229,6 +229,52 @@ describe('compareTexts and compareFiles', () => {
 
     expect(regular.before.score).toBeGreaterThan(codeAware.before.score);
   });
+
+  it('passes locale and strict options into compare workflows', () => {
+    const svBefore =
+      'I dagens snabbt föränderliga digitala landskap behöver vi nyttja robusta lösningar. Detta är avgörande för en holistisk strategi.';
+    const svAfter =
+      'Vi ska uppdatera listan på fredag. Karin tar mötet och jag skickar protokollet efter lunch.';
+    const svResult = compareTexts(svBefore, svAfter, { locale: 'sv' });
+
+    expect(svResult.before.totalMatches).toBeGreaterThan(0);
+    expect(svResult.delta.score).toBeLessThan(0);
+
+    const strictResult = compareTexts(
+      'The chairman asked for manpower estimates.',
+      'The chair asked for staffing estimates.',
+      { strict: true },
+    );
+
+    expect(strictResult.improvements.some((item) => item.patternId === 35)).toBe(true);
+  });
+
+  it('reports all missing compare files before reading either input', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-compare-missing-'));
+    const existing = path.join(tmp, 'existing.md');
+    const missingBefore = path.join(tmp, 'missing-before.md');
+    const missingAfter = path.join(tmp, 'missing-after.md');
+    fs.writeFileSync(existing, 'Existing comparison text.');
+
+    expect(() => compareFiles(missingBefore, existing)).toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining(`before file not found: ${missingBefore}`),
+      }),
+    );
+    expect(() => compareFiles(existing, missingAfter)).toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining(`after file not found: ${missingAfter}`),
+      }),
+    );
+
+    try {
+      compareFiles(missingBefore, missingAfter);
+      throw new Error('Expected compareFiles to throw for two missing files.');
+    } catch (err) {
+      expect(err.message).toContain(`before file not found: ${missingBefore}`);
+      expect(err.message).toContain(`after file not found: ${missingAfter}`);
+    }
+  });
 });
 
 describe('compareScanResults', () => {

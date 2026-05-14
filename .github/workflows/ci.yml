@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-      - run: npm install
+      - run: npm ci
       - run: npm run check:lint
 
   format:
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-      - run: npm install
+      - run: npm ci
       - run: npm run check:format
 
   locale:
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-      - run: npm install
+      - run: npm ci
       - run: npm run check:locale
 
   test:
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-      - run: npm install
+      - run: npm ci
       - run: npm run check:test
 
   audit:
@@ -69,5 +69,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-      - run: npm install
+      - run: npm ci
       - run: npm run audit:production

@@ -7,7 +7,7 @@ Thanks for your interest in improving AI writing detection.
 ```bash
 git clone https://github.com/markus-lassfolk/humanizer.git
 cd humanizer
-npm install
+npm ci
 npm test
 ```
 
