@@ -5,6 +5,7 @@ import path from 'path';
 import { spawnSync } from 'child_process';
 
 const CLI_PATH = path.resolve(process.cwd(), 'src', 'cli.js');
+const NO_PERMISSIONS = 0o000;
 
 function runCli(args) {
   return spawnSync('node', [CLI_PATH, ...args], {
@@ -227,5 +228,43 @@ describe('scan config handling', () => {
     const payload = JSON.parse(run.stdout);
     expect(payload.baselineComparison.summary.regressions).toBe(1);
     expect(payload.baselineComparison.regressions[0].relativePath).toBe('doc.md');
+  });
+
+  it('reports unreadable files without failing the whole scan', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-cli-config-'));
+    const readable = path.join(tmp, 'readable.md');
+    const unreadable = path.join(tmp, 'unreadable.md');
+
+    fs.writeFileSync(readable, 'The deployment finished at 10:30 and all smoke tests passed.');
+    fs.writeFileSync(unreadable, 'This content should not be readable during scan.');
+    fs.chmodSync(unreadable, NO_PERMISSIONS);
+
+    try {
+      const run = runCli(['scan', tmp, '--json']);
+
+      const payload = JSON.parse(run.stdout);
+      if (process.platform === 'win32' || process.getuid?.() === 0) {
+        // On Windows or when running as root, chmod 000 doesn't prevent reading
+        expect(run.status).toBe(0);
+        expect(run.stderr).toBe('');
+        expect(payload.summary.scannedFiles).toBeGreaterThanOrEqual(1);
+      } else {
+        expect(run.status).toBe(4);
+        expect(run.stderr).toBe('');
+        expect(payload.summary.scannedFiles).toBe(1);
+        expect(payload.summary.failedFiles).toBe(1);
+        expect(payload.summary.skippedFiles).toBe(0);
+        expect(payload.errors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              file: unreadable,
+              reason: expect.stringContaining('read_error:'),
+            }),
+          ]),
+        );
+      }
+    } finally {
+      fs.chmodSync(unreadable, 0o644);
+    }
   });
 });

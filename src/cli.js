@@ -46,6 +46,7 @@ const {
 } = require('./workflows');
 const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
 const { roundDisplayCount } = require('./utils');
+const MAX_DISPLAYED_SKIPPED_FILES = 8;
 
 // ─── Tiny Color Helper (no chalk dependency) ─────────────
 
@@ -1118,6 +1119,11 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
   lines.push(
     `  Files scanned: ${scanResult.summary.scannedFiles}  |  Skipped: ${scanResult.summary.skippedFiles}  |  Failed: ${scanResult.summary.failedFiles || 0}`,
   );
+  if (typeof scanResult.summary.failedFiles === 'number') {
+    lines.push(
+      `  Failed files: ${scanResult.summary.failedFiles}  |  Too short: ${scanResult.summary.tooShortFiles ?? 0}`,
+    );
+  }
   lines.push(
     `  Avg score: ${scanResult.summary.averageScore}  |  Max: ${scanResult.summary.maxScore}  |  Min: ${scanResult.summary.minScore}`,
   );
@@ -1125,6 +1131,18 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
     lines.push(`  Unique patterns: ${scanResult.summary.uniquePatterns}`);
   }
   lines.push('');
+
+  if (scanResult.skipped.length > 0) {
+    lines.push(
+      color.gray(
+        `  ${scanResult.skipped.length} files skipped (too short, unreadable, or failed to analyze).`,
+      ),
+    );
+    for (const item of scanResult.skipped.slice(0, MAX_DISPLAYED_SKIPPED_FILES)) {
+      lines.push(color.gray(`    - ${item.file}: ${item.reason}`));
+    }
+    lines.push('');
+  }
 
   if (files.length === 0) {
     lines.push(color.yellow('  No files matched the scan criteria.'));

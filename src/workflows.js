@@ -12,6 +12,9 @@ const { analyze } = require('./analyzer');
 const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
 
 const DEFAULT_SCAN_EXTENSIONS = ['.md', '.mdx', '.txt', '.rst', '.adoc'];
+const READ_ERROR_PREFIX = 'read_error:';
+const ANALYZE_ERROR_PREFIX = 'analyze_error:';
+const TOO_SHORT_PREFIX = 'too_short:';
 const DEFAULT_IGNORE_DIRS = new Set([
   '.git',
   'node_modules',
@@ -149,7 +152,7 @@ function scanPath(targetPath, opts = {}) {
     try {
       text = fs.readFileSync(file, 'utf-8');
     } catch (err) {
-      errors.push({ file, reason: `read_error: ${err.message}` });
+      errors.push({ file, reason: `${READ_ERROR_PREFIX} ${err.message}` });
       continue;
     }
 
@@ -161,11 +164,17 @@ function scanPath(targetPath, opts = {}) {
     const wordText = preprocessForScan(text, file, ignoreCode);
     const words = countWords(wordText);
     if (words < minWords) {
-      skipped.push({ file, reason: `too_short: ${words} words` });
+      skipped.push({ file, reason: `${TOO_SHORT_PREFIX} ${words} words` });
       continue;
     }
 
-    const result = analyze(wordText, { includeStats, verbose: false, ignoreCode: false, locale });
+    let result;
+    try {
+      result = analyze(wordText, { includeStats, verbose: false, ignoreCode: false, locale });
+    } catch (err) {
+      skipped.push({ file, reason: `${ANALYZE_ERROR_PREFIX} ${err.message}` });
+      continue;
+    }
 
     for (const finding of result.findings) {
       const existing = patternHotspotMap.get(finding.patternId) || {
@@ -209,10 +218,16 @@ function scanPath(targetPath, opts = {}) {
       a.patternId - b.patternId,
   );
 
+  const analyzeFailuresInSkipped = skipped.filter((item) =>
+    item.reason.startsWith(ANALYZE_ERROR_PREFIX),
+  ).length;
+  const tooShortFiles = skipped.filter((item) => item.reason.startsWith(TOO_SHORT_PREFIX)).length;
+
   const summary = {
     scannedFiles: results.length,
     skippedFiles: skipped.length,
-    failedFiles: errors.length,
+    failedFiles: errors.length + analyzeFailuresInSkipped,
+    tooShortFiles,
     averageScore: results.length
       ? Math.round((results.reduce((sum, r) => sum + r.score, 0) / results.length) * 100) / 100
       : 0,
