@@ -16,7 +16,7 @@ No hosted API key is required for the core analyzer.
 ```bash
 git clone https://github.com/markus-lassfolk/humanizer.git
 cd humanizer
-npm install
+npm ci
 
 # English is the default locale
 echo "This serves as a testament to innovation." | node src/cli.js score
@@ -33,18 +33,18 @@ humanizer humanize --autofix -f draft.md
 
 Humanizer currently ships two runtime analyzer locales:
 
-| Runtime locale | Language | Status | What it includes |
-|---|---|---|---|
-| `en` | English | Default / stable | 29 detectors, English vocabulary tiers, phrase packs, function words, Flesch-Kincaid readability |
-| `sv` | Swedish | Stable, explicit opt-in | Swedish vocabulary tiers, Swedish pattern packs, Svarta listan/Klarspråk autofixes, Swedish abbreviations, LIX readability, empirical n-grams |
+| Runtime locale | Language | Status                  | What it includes                                                                                                                              |
+| -------------- | -------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `en`           | English  | Default / stable        | 29 detectors, English vocabulary tiers, phrase packs, function words, Flesch-Kincaid readability                                              |
+| `sv`           | Swedish  | Stable, explicit opt-in | Swedish vocabulary tiers, Swedish pattern packs, Svarta listan/Klarspråk autofixes, Swedish abbreviations, LIX readability, empirical n-grams |
 
 Agent skill bundles are packaged by BCP-47-style folder:
 
-| Skill bundle | Runtime locale | Use for |
-|---|---:|---|
-| `locales/en-en/` | `en` | International English guidance |
-| `locales/en-us/` | `en` | US English packaging/guidance |
-| `locales/sv-se/` | `sv` | Swedish guidance and references |
+| Skill bundle     | Runtime locale | Use for                         |
+| ---------------- | -------------: | ------------------------------- |
+| `locales/en-en/` |           `en` | International English guidance  |
+| `locales/en-us/` |           `en` | US English packaging/guidance   |
+| `locales/sv-se/` |           `sv` | Swedish guidance and references |
 
 Humanizer does **not** silently auto-detect language today. Pass `--locale sv`, `HUMANIZER_LOCALE=sv`, or `locale: "sv"` in MCP/API calls for Swedish text.
 
@@ -153,7 +153,7 @@ const { analyze, score } = require('humanizer/src/analyzer');
 const { humanize } = require('humanizer/src/humanizer');
 
 const result = analyze(text, {
-  locale: 'sv',        // 'en' by default
+  locale: 'sv', // 'en' by default
   verbose: true,
   includeStats: true,
   ignoreCode: true,
@@ -179,12 +179,12 @@ Humanizer blends pattern detection with statistical text analysis:
 
 Score guide:
 
-| Score | Meaning |
-|---:|---|
-| 0-25 | Mostly human-sounding |
-| 26-50 | Lightly AI-touched |
-| 51-75 | Moderately AI-influenced |
-| 76-100 | Heavily AI-generated |
+|  Score | Meaning                  |
+| -----: | ------------------------ |
+|   0-25 | Mostly human-sounding    |
+|  26-50 | Lightly AI-touched       |
+|  51-75 | Moderately AI-influenced |
+| 76-100 | Heavily AI-generated     |
 
 For the full detector catalogue, see [docs/PATTERNS.md](docs/PATTERNS.md) and `locales/generic/references/patterns.md`.
 
@@ -220,7 +220,7 @@ humanizer/
 ## Development
 
 ```bash
-npm install
+npm ci
 npm test
 npm run lint
 npm run format:check
@@ -239,7 +239,7 @@ After changing corpus or Wikipedia extended data, use `--with-extended` (include
 npm run corpus:refresh   # minimal: seed + log-odds + calibrate only
 ```
 
-`npm run check` also runs `locale:prescriptive --check` and `validate:sv-tiers`. See [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md) for the full Swedish empirical pipeline.
+`npm run check` also runs Swedish and English prescriptive generation checks plus tier validators (`locale:prescriptive`, `validate:sv-tiers`, `locale:prescriptive-en`, `validate:en-tiers`). See [`locales/sv-se/docs/SWEDISH-EXTENSION.md`](locales/sv-se/docs/SWEDISH-EXTENSION.md) for the full Swedish empirical pipeline.
 
 For **always-on** persona wiring (OpenClaw `SOUL.md`, Claude, ChatGPT) with locale-aware guidance, see [docs/AGENTS.md](docs/AGENTS.md) and the skill files under `locales/<tag>/skill/`.
 
