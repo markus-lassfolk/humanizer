@@ -11,6 +11,9 @@ const path = require('path');
 const { analyze } = require('./analyzer');
 
 const DEFAULT_SCAN_EXTENSIONS = ['.md', '.txt', '.rst', '.adoc'];
+const READ_ERROR_PREFIX = 'read_error:';
+const ANALYZE_ERROR_PREFIX = 'analyze_error:';
+const TOO_SHORT_PREFIX = 'too_short:';
 const DEFAULT_IGNORE_DIRS = new Set([
   '.git',
   'node_modules',
@@ -128,13 +131,13 @@ function scanPath(targetPath, opts = {}) {
     try {
       text = fs.readFileSync(file, 'utf-8');
     } catch (err) {
-      skipped.push({ file, reason: `read_error: ${err.message}` });
+      skipped.push({ file, reason: `${READ_ERROR_PREFIX} ${err.message}` });
       continue;
     }
 
     const words = countWords(text);
     if (words < minWords) {
-      skipped.push({ file, reason: `too_short: ${words} words` });
+      skipped.push({ file, reason: `${TOO_SHORT_PREFIX} ${words} words` });
       continue;
     }
 
@@ -142,7 +145,7 @@ function scanPath(targetPath, opts = {}) {
     try {
       result = analyze(text, { includeStats, verbose: false, ignoreCode, locale });
     } catch (err) {
-      skipped.push({ file, reason: `analyze_error: ${err.message}` });
+      skipped.push({ file, reason: `${ANALYZE_ERROR_PREFIX} ${err.message}` });
       continue;
     }
 
@@ -188,14 +191,26 @@ function scanPath(targetPath, opts = {}) {
       a.patternId - b.patternId,
   );
 
+  const skipSummary = skipped.reduce(
+    (acc, item) => {
+      if (
+        item.reason.startsWith(READ_ERROR_PREFIX) ||
+        item.reason.startsWith(ANALYZE_ERROR_PREFIX)
+      ) {
+        acc.failedFiles += 1;
+      } else if (item.reason.startsWith(TOO_SHORT_PREFIX)) {
+        acc.tooShortFiles += 1;
+      }
+      return acc;
+    },
+    { failedFiles: 0, tooShortFiles: 0 },
+  );
+
   const summary = {
     scannedFiles: results.length,
     skippedFiles: skipped.length,
-    failedFiles: skipped.filter(
-      (item) =>
-        item.reason.startsWith('read_error:') || item.reason.startsWith('analyze_error:'),
-    ).length,
-    tooShortFiles: skipped.filter((item) => item.reason.startsWith('too_short:')).length,
+    failedFiles: skipSummary.failedFiles,
+    tooShortFiles: skipSummary.tooShortFiles,
     averageScore: results.length
       ? Math.round((results.reduce((sum, r) => sum + r.score, 0) / results.length) * 100) / 100
       : 0,

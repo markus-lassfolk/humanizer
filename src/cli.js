@@ -33,6 +33,7 @@ const { computeStats } = require('./stats');
 const { scanPath, compareScanResults, compareFiles, normalizeExtensions } = require('./workflows');
 const { stripCodeSnippets } = require('./preprocess');
 const { roundDisplayCount } = require('./utils');
+const MAX_DISPLAYED_SKIPPED_FILES = 8;
 
 // ─── Tiny Color Helper (no chalk dependency) ─────────────
 
@@ -1149,9 +1150,11 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
 
   if (scanResult.skipped.length > 0) {
     lines.push(
-      color.gray(`  ${scanResult.skipped.length} files skipped (too short, unreadable, or invalid).`),
+      color.gray(
+        `  ${scanResult.skipped.length} files skipped (too short, unreadable, or failed to analyze).`,
+      ),
     );
-    for (const item of scanResult.skipped.slice(0, 8)) {
+    for (const item of scanResult.skipped.slice(0, MAX_DISPLAYED_SKIPPED_FILES)) {
       lines.push(color.gray(`    - ${item.file}: ${item.reason}`));
     }
     lines.push('');

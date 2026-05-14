@@ -5,6 +5,7 @@ import path from 'path';
 import { spawnSync } from 'child_process';
 
 const CLI_PATH = path.resolve(process.cwd(), 'src', 'cli.js');
+const NO_PERMISSIONS = 0o000;
 
 function runCli(args) {
   return spawnSync('node', [CLI_PATH, ...args], {
@@ -211,7 +212,7 @@ describe('scan config handling', () => {
 
     fs.writeFileSync(readable, 'The deployment finished at 10:30 and all smoke tests passed.');
     fs.writeFileSync(unreadable, 'This content should not be readable during scan.');
-    fs.chmodSync(unreadable, 0o000);
+    fs.chmodSync(unreadable, NO_PERMISSIONS);
 
     try {
       const run = runCli(['scan', tmp, '--json']);
@@ -220,17 +221,21 @@ describe('scan config handling', () => {
       expect(run.stderr).toBe('');
 
       const payload = JSON.parse(run.stdout);
-      expect(payload.summary.scannedFiles).toBe(1);
-      expect(payload.summary.failedFiles).toBe(1);
-      expect(payload.summary.skippedFiles).toBe(1);
-      expect(payload.skipped).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            file: unreadable,
-            reason: expect.stringContaining('read_error:'),
-          }),
-        ]),
-      );
+      if (process.platform === 'win32') {
+        expect(payload.summary.scannedFiles).toBeGreaterThanOrEqual(1);
+      } else {
+        expect(payload.summary.scannedFiles).toBe(1);
+        expect(payload.summary.failedFiles).toBe(1);
+        expect(payload.summary.skippedFiles).toBe(1);
+        expect(payload.skipped).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              file: unreadable,
+              reason: expect.stringContaining('read_error:'),
+            }),
+          ]),
+        );
+      }
     } finally {
       fs.chmodSync(unreadable, 0o644);
     }
