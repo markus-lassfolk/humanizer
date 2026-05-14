@@ -6,7 +6,7 @@
  * Lazy-requires `./analyzer` inside analyzeChunked to avoid circular init with analyzer.js.
  */
 
-const { stripCodeSnippets } = require('./preprocess');
+const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
 
 const DEFAULTS = {
   windowWords: 300,
@@ -195,6 +195,7 @@ function classifyMultiChunkSeverity(scores, cfg) {
  * @param {number} [opts.highScore]
  * @param {number} [opts.lowScore]
  * @param {boolean} [opts.ignoreCode]
+ * @param {boolean} [opts.isMarkdown]
  * @param {string} [opts.locale]
  * @param {boolean} [opts.strict]
  * @param {boolean} [opts.withLm]
@@ -224,9 +225,10 @@ function analyzeChunked(text, opts = {}) {
     strict: Boolean(opts.strict),
     withLm: Boolean(opts.withLm),
   };
+  const chunkAnalyzeOpts = { ...analyzeOpts, ignoreCode: false };
 
   if (!text || typeof text !== 'string') {
-    const empty = analyze('', analyzeOpts);
+    const empty = analyze('', chunkAnalyzeOpts);
     return {
       document: empty,
       chunks: [],
@@ -244,12 +246,13 @@ function analyzeChunked(text, opts = {}) {
     };
   }
 
-  const prepared = analyzeOpts.ignoreCode ? stripCodeSnippets(text) : text;
+  const preprocessFn = opts.isMarkdown ? stripMarkdownProtectedRegions : stripCodeSnippets;
+  const prepared = analyzeOpts.ignoreCode ? preprocessFn(text) : text;
   const trimmed = prepared.trim();
   const spans = wordSpans(trimmed);
   const totalWords = wordCountFromSpans(spans);
 
-  const document = analyze(trimmed, analyzeOpts);
+  const document = analyze(trimmed, chunkAnalyzeOpts);
 
   let ranges;
   if (totalWords < cfg.minDocWordsForChunking) {
@@ -262,7 +265,7 @@ function analyzeChunked(text, opts = {}) {
   for (let i = 0; i < ranges.length; i++) {
     const { start, end } = ranges[i];
     const chunkText = sliceByWordRange(trimmed, spans, start, end);
-    const r = analyze(chunkText, analyzeOpts);
+    const r = analyze(chunkText, chunkAnalyzeOpts);
     chunks.push({
       index: i,
       startWord: start,

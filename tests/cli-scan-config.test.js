@@ -149,6 +149,31 @@ describe('scan config handling', () => {
     expect(payload.files[0].score).toBeLessThan(35);
   });
 
+  it('does not enable ignoreCode by default when scan extensions are implicit', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-cli-config-'));
+    const target = path.join(tmp, 'notes.md');
+
+    fs.writeFileSync(
+      target,
+      [
+        '```md',
+        'Great question! This serves as a testament to innovation.',
+        '```',
+        'Short prose.',
+      ].join('\n'),
+    );
+
+    const defaultRun = runCli(['scan', target, '--json']);
+    const ignoreCodeRun = runCli(['scan', target, '--json', '--ignore-code']);
+
+    expect(defaultRun.status).toBe(0);
+    expect(ignoreCodeRun.status).toBe(0);
+
+    const defaultPayload = JSON.parse(defaultRun.stdout);
+    const ignoreCodePayload = JSON.parse(ignoreCodeRun.stdout);
+    expect(defaultPayload.files[0].score).toBeGreaterThan(ignoreCodePayload.files[0].score);
+  });
+
   it('supports baseline regression gating from config', () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-cli-config-'));
     const target = path.join(tmp, 'doc.md');
