@@ -182,6 +182,45 @@ describe('analyze', () => {
     expect(ignoreCode.summary.toLowerCase()).not.toContain('great question');
   });
 
+  it('ignores fenced code and inline code spans when ignoreCode is enabled', () => {
+    const text = [
+      '---',
+      'title: Comprehensive seamless transformation',
+      'keywords: robust, innovative, leverage, landscape',
+      '---',
+      '',
+      "import Widget from './Widget';",
+      '<Widget description="This comprehensive widget leverages innovative capabilities" />',
+      '',
+      '| Term | Description |',
+      '| --- | --- |',
+      '| AI | Comprehensive seamless transformation |',
+      '',
+      "> Vendor quote: In today's rapidly evolving digital landscape, this solution is a testament to innovation.",
+      '',
+      '```javascript',
+      'console.log("This comprehensive solution leverages innovation");',
+      '```',
+      '',
+      'Short internal note with `comprehensive code snippet` inside.',
+    ].join('\n');
+
+    const regular = analyze(text, { verbose: true });
+    const ignoreCodeResult = analyze(text, { ignoreCode: true, verbose: true });
+
+    // With ignoreCode, only fenced code and inline backticks are masked (not frontmatter, tables, blockquotes)
+    expect(regular.totalMatches).toBeGreaterThanOrEqual(ignoreCodeResult.totalMatches);
+    const ignoredMatches = ignoreCodeResult.findings
+      .flatMap((f) => f.matches)
+      .map((m) => m.match)
+      .join(' ');
+    // Should not include text from fenced code or inline code
+    expect(ignoredMatches).not.toMatch(/comprehensive solution leverages innovation/i);
+    expect(ignoredMatches).not.toMatch(/comprehensive code snippet/i);
+    // But should still include frontmatter, tables, blockquotes since ignoreCode only masks code
+    expect(ignoredMatches).toMatch(/comprehensive|landscape|innovation/i);
+  });
+
   it('marks short samples as low confidence', () => {
     const result = analyze('Great question! This helps.');
     expect(result.reliability.level).toBe('low');
@@ -283,22 +322,12 @@ describe('formatting', () => {
   it('formatJSON normalizes undefined and non-finite numbers to null', () => {
     const json = formatJSON({
       score: Number.NaN,
-      stats: {
-        burstiness: Number.POSITIVE_INFINITY,
-        variation: Number.NEGATIVE_INFINITY,
-        optional: undefined,
-      },
       samples: [1, Number.NaN, undefined],
       missing: undefined,
     });
 
     expect(JSON.parse(json)).toStrictEqual({
       score: null,
-      stats: {
-        burstiness: null,
-        variation: null,
-        optional: null,
-      },
       samples: [1, null, null],
       missing: null,
     });

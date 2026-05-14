@@ -53,4 +53,12 @@ module.exports = {
   empiricalExtra: [],
 
   patternPacks: PATTERN_PACKS_EN,
+
+  ui: {
+    tier1Prefix: 'Tier 1 AI word',
+    tier2Prefix: 'Tier 2 AI word',
+    tier3Prefix: 'Tier 3 AI word (high density)',
+    empiricalPrefix: 'Empirical AI signal (corpus log-odds — npm run corpus:refresh to rebuild)',
+    vocabSuggestion: 'Use a simpler, more specific alternative.',
+  },
 };

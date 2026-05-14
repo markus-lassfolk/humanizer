@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import { Buffer } from 'buffer';
 import {
   normalizeExtensions,
   normalizeIgnoreDirs,
@@ -161,6 +162,31 @@ describe('scanPath', () => {
     expect(result.files[0].file.endsWith('notes.md')).toBe(true);
   });
 
+  it('applies prose-only masking to minWords before counting', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+    try {
+      const body = 'One two.';
+      const padded = [
+        '---',
+        'title: Comprehensive seamless transformation overview for stakeholders',
+        'keywords: robust, innovative, leverage, landscape, digital, evolving',
+        '---',
+        '',
+        body,
+      ].join('\n');
+      fs.writeFileSync(path.join(tmp, 'thin-body.md'), padded);
+
+      const withoutProseOnly = scanPath(tmp, { exts: ['md'], minWords: 5, proseOnly: false });
+      const withProseOnly = scanPath(tmp, { exts: ['md'], minWords: 5, proseOnly: true });
+
+      expect(withoutProseOnly.summary.scannedFiles).toBe(1);
+      expect(withProseOnly.summary.scannedFiles).toBe(0);
+      expect(withProseOnly.skipped.some((s) => s.reason.startsWith('too_short:'))).toBe(true);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
   it('can ignore code snippets during scan', () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
 
@@ -180,6 +206,58 @@ describe('scanPath', () => {
     expect(regular.files[0].score).toBeGreaterThan(ignoreCode.files[0].score);
   });
 
+  it('uses generic code stripping for non-markdown files when ignoreCode is enabled', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+
+    fs.writeFileSync(
+      path.join(tmp, 'quoted.txt'),
+      '> Great question! This serves as a testament to innovation. I hope this helps!\nPlain reply follows.',
+    );
+    fs.writeFileSync(
+      path.join(tmp, 'quoted.md'),
+      '> Great question! This serves as a testament to innovation. I hope this helps!\nPlain reply follows.',
+    );
+
+    const result = scanPath(tmp, { exts: ['txt', 'md'], minWords: 1, ignoreCode: true });
+    const txt = result.files.find((file) => file.file.endsWith('quoted.txt'));
+    const md = result.files.find((file) => file.file.endsWith('quoted.md'));
+
+    expect(txt.score).toBeGreaterThan(md.score);
+    expect(txt.totalMatches).toBeGreaterThan(md.totalMatches);
+  });
+
+  it('continues past invalid binary-like files and reports file errors', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+
+    fs.writeFileSync(path.join(tmp, 'valid.md'), 'The patch fixes two bugs. Build time dropped.');
+    fs.writeFileSync(path.join(tmp, 'bad.md'), Buffer.from([0x00, 0x01, 0x02, 0x03]));
+
+    const result = scanPath(tmp, { exts: ['md'], minWords: 3 });
+
+    expect(result.summary.scannedFiles).toBe(1);
+    expect(result.summary.failedFiles).toBe(1);
+    expect(result.files[0].file.endsWith('valid.md')).toBe(true);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0].file.endsWith('bad.md')).toBe(true);
+    expect(result.errors[0].reason).toContain('non_text_or_binary_content');
+  });
+
+  it('does not treat literal replacement characters as binary content', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+
+    fs.writeFileSync(
+      path.join(tmp, 'replacement.md'),
+      'Literal replacement char: � in prose text.',
+    );
+
+    const result = scanPath(tmp, { exts: ['md'], minWords: 1 });
+
+    expect(result.summary.failedFiles).toBe(0);
+    expect(result.summary.scannedFiles).toBe(1);
+    expect(result.errors).toHaveLength(0);
+    expect(result.files[0].file.endsWith('replacement.md')).toBe(true);
+  });
+
   it('supports locale-specific scanning', () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
     const swedish = 'Den här lösningen banar väg för framtiden med tydliga resultat.';
@@ -189,6 +267,59 @@ describe('scanPath', () => {
     const svScan = scanPath(tmp, { exts: ['md'], minWords: 3, locale: 'sv' });
 
     expect(enScan.files[0].score).toBeLessThan(svScan.files[0].score);
+  });
+
+  it('isolates analyze failures and reports them per file', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+    const badFile = path.join(tmp, 'bad.md');
+    const goodFile = path.join(tmp, 'good.md');
+    try {
+      fs.writeFileSync(badFile, 'TRIGGER_ANALYZE_ERROR');
+      fs.writeFileSync(
+        goodFile,
+        'The team shipped the fix on Friday and monitored logs overnight.',
+      );
+
+      const result = scanPath(tmp, {
+        exts: ['md'],
+        minWords: 1,
+        locale: 'invalid-locale-for-testing',
+      });
+
+      expect(result.summary.scannedFiles).toBe(0);
+      expect(result.summary.failedFiles).toBe(2);
+      expect(result.files).toEqual([]);
+      expect(result.skipped).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            file: badFile,
+            reason: expect.stringContaining('analyze_error:'),
+          }),
+          expect.objectContaining({
+            file: goodFile,
+            reason: expect.stringContaining('analyze_error:'),
+          }),
+        ]),
+      );
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it('uses markdown-aware preprocessing for mdoc scan files', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+    const file = path.join(tmp, 'doc.mdoc');
+    fs.writeFileSync(
+      file,
+      ['---', 'title: Robust solutions', '---', 'Plain prose for the actual document body.'].join(
+        '\n',
+      ),
+    );
+
+    const result = scanPath(tmp, { exts: ['mdoc'], minWords: 1, ignoreCode: true });
+
+    expect(result.files).toHaveLength(1);
+    expect(result.files[0].wordCount).toBe(7);
   });
 });
 

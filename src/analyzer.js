@@ -16,9 +16,20 @@
 
 const { patterns, wordCount } = require('./patterns');
 const { computeStats, computeUniformityScore, tokenize } = require('./stats');
-const { stripCodeSnippets } = require('./preprocess');
+const {
+  stripCodeSnippets,
+  stripFrontmatter,
+  stripMdxComponents,
+  stripBlockquotes,
+} = require('./preprocess');
 const { loadLocale } = require('./locales');
 const { DEFAULT_SCORING_KNOBS, mergeScoringKnobs } = require('./locales/scoring-defaults');
+const {
+  normalizeAnalysisForOutput,
+  normalizeStatsForOutput,
+  formatMetric,
+  inferReadabilityMetric,
+} = require('./metric-normalizer');
 const { roundDisplayCount } = require('./utils');
 
 // ─── Category Labels ────────────────────────────────────
@@ -40,14 +51,18 @@ const RELIABILITY_RECOMMENDED_WORDS = 150;
  *
  * @param {string} text  — The text to analyze
  * @param {object} opts  — Options:
- *   - verbose {boolean}     Show all matches (not just top 5 per pattern)
- *   - patternsToCheck {number[]}  Only run specific pattern IDs
- *   - includeStats {boolean}  Include full text statistics (default: true)
- *   - ignoreCode {boolean}  Ignore fenced/inline code snippets before analysis
- *   - locale {string}       Locale code: 'en' (default) or 'sv'
- *   - strict {boolean}      Enable strict-mode inclusive-language hints (default: false)
- *   - withLm {boolean}      Apply optional n-gram uniformity boost (default: false)
- *   - config {object}       Custom config overrides
+ *   - verbose {boolean}          Show all matches (not just top 5 per pattern)
+ *   - patternsToCheck {number[]} Only run specific pattern IDs
+ *   - includeStats {boolean}     Include full text statistics (default: true)
+ *   - ignoreCode {boolean}       Ignore fenced/inline code snippets before analysis
+ *   - ignoreFrontmatter {boolean} Ignore YAML frontmatter before analysis
+ *   - ignoreMdx {boolean}        Ignore MDX import/export lines and JSX component tags
+ *   - ignoreBlockquotes {boolean} Ignore Markdown blockquote lines (> …)
+ *   - proseOnly {boolean}        Shorthand for ignoreFrontmatter + ignoreMdx + ignoreBlockquotes
+ *   - locale {string}            Locale code: 'en' (default) or 'sv'
+ *   - strict {boolean}           Enable strict-mode inclusive-language hints (default: false)
+ *   - withLm {boolean}           Apply optional n-gram uniformity boost (default: false)
+ *   - config {object}            Custom config overrides
  * @returns {object}     — Full analysis result
  */
 function analyze(text, opts = {}) {
@@ -56,6 +71,10 @@ function analyze(text, opts = {}) {
     patternsToCheck = null,
     includeStats = true,
     ignoreCode = false,
+    ignoreFrontmatter = false,
+    ignoreMdx = false,
+    ignoreBlockquotes = false,
+    proseOnly = false,
     locale = 'en',
     strict = false,
     withLm = false,
@@ -65,13 +84,22 @@ function analyze(text, opts = {}) {
     return emptyResult();
   }
 
+  // Normalize to NFC so that canonically equivalent Unicode forms (e.g. NFD
+  // decomposed diacritics from some editors/OS integrations) are treated
+  // identically to their NFC equivalents by all downstream detectors.
+  text = text.normalize('NFC');
+
   // Validate locale for all string inputs to keep configuration errors consistent.
   const localeProfile = loadLocale(locale);
   const scoringKnobs = mergeScoringKnobs(localeProfile);
 
-  const preparedText = ignoreCode ? stripCodeSnippets(text) : text;
-  const normalizedText = preparedText.normalize('NFC');
-  const trimmed = normalizedText.trim();
+  let preparedText = text.normalize('NFC');
+  if (ignoreCode) preparedText = stripCodeSnippets(preparedText);
+  if (ignoreFrontmatter || proseOnly) preparedText = stripFrontmatter(preparedText);
+  if (ignoreMdx || proseOnly) preparedText = stripMdxComponents(preparedText);
+  if (ignoreBlockquotes || proseOnly) preparedText = stripBlockquotes(preparedText);
+
+  const trimmed = preparedText.trim();
   if (trimmed.length === 0) return emptyResult();
 
   // Keep whitespace-based count for calibrated scoring thresholds.
@@ -418,20 +446,29 @@ function formatReport(result) {
 
   // Stats section
   if (result.stats) {
-    const s = result.stats;
+    const s = normalizeStatsForOutput(result.stats);
     lines.push('── Text Statistics ─────────────────────────────────');
     lines.push(`  Sentences: ${s.sentenceCount}  |  Paragraphs: ${s.paragraphCount}`);
-    lines.push(`  Avg sentence length: ${s.avgSentenceLength} words (σ ${s.sentenceLengthStdDev})`);
-    lines.push(`  Burstiness: ${s.burstiness} ${burstinessLabel(s.burstiness)}`);
     lines.push(
-      `  Vocabulary diversity (TTR): ${s.typeTokenRatio} ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
+      `  Avg sentence length: ${formatMetric(s, 'avgSentenceLength', ' words')} (σ ${formatMetric(s, 'sentenceLengthStdDev')})`,
     );
-    lines.push(`  Function word ratio: ${s.functionWordRatio}`);
-    lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
+    lines.push(`  Burstiness: ${formatMetric(s, 'burstiness')} ${burstinessLabel(s.burstiness)}`);
+    lines.push(
+      `  Vocabulary diversity (TTR): ${formatMetric(s, 'typeTokenRatio')} ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
+    );
+    lines.push(`  Function word ratio: ${formatMetric(s, 'functionWordRatio')}`);
+    lines.push(`  Trigram repetition: ${formatMetric(s, 'trigramRepetition')}`);
     if (s.lix !== null) {
-      lines.push(`  Readability (LIX): ${s.lix}`);
+      lines.push(`  Readability (LIX): ${formatMetric(s, 'lix')}`);
+    } else if (s.fleschKincaid !== null) {
+      lines.push(`  Readability (FK grade): ${formatMetric(s, 'fleschKincaid')}`);
     } else {
-      lines.push(`  Readability (FK grade): ${s.fleschKincaid}`);
+      const primary = inferReadabilityMetric(result.stats);
+      if (primary === 'lix') {
+        lines.push(`  Readability (LIX): ${formatMetric(s, 'lix')}`);
+      } else {
+        lines.push(`  Readability (FK grade): ${formatMetric(s, 'fleschKincaid')}`);
+      }
     }
     lines.push('');
   }
@@ -505,23 +542,25 @@ function formatMarkdown(result) {
   lines.push('');
 
   if (result.stats) {
-    const s = result.stats;
+    const s = normalizeStatsForOutput(result.stats);
     lines.push('## Text statistics');
     lines.push('');
     lines.push('| Metric | Value | Assessment |');
     lines.push('|--------|-------|------------|');
     lines.push(
-      `| Avg sentence length | ${s.avgSentenceLength} words | ${s.avgSentenceLength > 25 ? 'Long' : s.avgSentenceLength < 12 ? 'Short' : 'Normal'} |`,
+      `| Avg sentence length | ${formatMetric(s, 'avgSentenceLength', ' words')} | ${s.avgSentenceLength === null ? 'Unavailable' : s.avgSentenceLength > 25 ? 'Long' : s.avgSentenceLength < 12 ? 'Short' : 'Normal'} |`,
     );
     lines.push(
-      `| Sentence variation | σ ${s.sentenceLengthStdDev} | ${s.sentenceLengthStdDev > 8 ? 'High (human-like)' : s.sentenceLengthStdDev < 4 ? 'Low (AI-like)' : 'Moderate'} |`,
-    );
-    lines.push(`| Burstiness | ${s.burstiness} | ${burstinessLabel(s.burstiness)} |`);
-    lines.push(
-      `| Vocabulary diversity | ${s.typeTokenRatio} | ${ttrLabel(s.typeTokenRatio, s.wordCount)} |`,
+      `| Sentence variation | σ ${formatMetric(s, 'sentenceLengthStdDev')} | ${s.sentenceLengthStdDev === null ? 'Unavailable' : s.sentenceLengthStdDev > 8 ? 'High (human-like)' : s.sentenceLengthStdDev < 4 ? 'Low (AI-like)' : 'Moderate'} |`,
     );
     lines.push(
-      `| Trigram repetition | ${s.trigramRepetition} | ${s.trigramRepetition > 0.1 ? 'High (AI-like)' : 'Normal'} |`,
+      `| Burstiness | ${formatMetric(s, 'burstiness')} | ${burstinessLabel(s.burstiness)} |`,
+    );
+    lines.push(
+      `| Vocabulary diversity | ${formatMetric(s, 'typeTokenRatio')} | ${ttrLabel(s.typeTokenRatio, s.wordCount)} |`,
+    );
+    lines.push(
+      `| Trigram repetition | ${formatMetric(s, 'trigramRepetition')} | ${s.trigramRepetition !== null && s.trigramRepetition > 0.1 ? 'High (AI-like)' : s.trigramRepetition === null ? 'Unavailable' : 'Normal'} |`,
     );
     if (s.lix !== null) {
       const lixLabel =
@@ -534,11 +573,17 @@ function formatMarkdown(result) {
               : s.lix > 30
                 ? 'Easy'
                 : 'Very easy';
-      lines.push(`| Readability | LIX ${s.lix} | ${lixLabel} |`);
+      lines.push(`| Readability | LIX ${formatMetric(s, 'lix')} | ${lixLabel} |`);
+    } else if (s.fleschKincaid !== null) {
+      const fkLabel = s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy';
+      lines.push(`| Readability | FK grade ${formatMetric(s, 'fleschKincaid')} | ${fkLabel} |`);
     } else {
-      lines.push(
-        `| Readability | FK grade ${s.fleschKincaid} | ${s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`,
-      );
+      const primary = inferReadabilityMetric(result.stats);
+      if (primary === 'lix') {
+        lines.push(`| Readability | LIX ${formatMetric(s, 'lix')} | Unavailable |`);
+      } else {
+        lines.push(`| Readability | FK grade ${formatMetric(s, 'fleschKincaid')} | Unavailable |`);
+      }
     }
     lines.push('');
   }
@@ -569,16 +614,8 @@ function formatMarkdown(result) {
 /**
  * Format analysis as JSON.
  */
-function formatJSON(result) {
-  return JSON.stringify(
-    result,
-    (_key, value) => {
-      if (value === undefined) return null;
-      if (typeof value === 'number' && !Number.isFinite(value)) return null;
-      return value;
-    },
-    2,
-  );
+function formatJSON(result, options = {}) {
+  return JSON.stringify(normalizeAnalysisForOutput(result, options), null, 2);
 }
 
 // ─── Label Helpers ───────────────────────────────────────
@@ -591,6 +628,7 @@ function scoreLabel(s) {
 }
 
 function burstinessLabel(b) {
+  if (b === null || b === undefined) return '';
   if (b >= 0.7) return '(high — human-like)';
   if (b >= 0.45) return '(moderate)';
   if (b >= 0.25) return '(low — somewhat uniform)';
@@ -598,6 +636,7 @@ function burstinessLabel(b) {
 }
 
 function ttrLabel(ttr, wc) {
+  if (ttr === null || ttr === undefined) return '';
   if (wc < 100) return '(too short to assess)';
   if (ttr >= 0.6) return '(high — diverse vocabulary)';
   if (ttr >= 0.45) return '(moderate)';

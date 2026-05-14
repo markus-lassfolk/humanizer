@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { analyze, score } from '../src/analyzer.js';
+import { analyze, score, formatMarkdown, formatReport } from '../src/analyzer.js';
 import { computeStats } from '../src/stats.js';
 
 // ─── Empty / Minimal Input ───────────────────────────────
@@ -105,6 +105,33 @@ describe('unicode and special characters', () => {
   it('statistics handles non-English gracefully', () => {
     const stats = computeStats('这是一个测试。人工智能正在改变世界。');
     expect(stats.sentenceCount).toBeGreaterThanOrEqual(0);
+  });
+
+  // NFD decomposed diacritics (å, ä, ö as combining sequences) must produce
+  // the same score and pattern matches as their NFC equivalents.
+  it('NFD Swedish text scores same as NFC equivalent', () => {
+    // NFC: sömlös, NFD: so\u0308mlo\u0308s
+    const nfc = 'Det \u00E4r en s\u00F6ml\u00F6s l\u00F6sning.';
+    const nfd = 'Det a\u0308r en so\u0308mlo\u0308s lo\u0308sning.';
+    const resultNfc = analyze(nfc, { locale: 'sv' });
+    const resultNfd = analyze(nfd, { locale: 'sv' });
+    expect(resultNfd.score).toBe(resultNfc.score);
+    expect(resultNfd.totalMatches).toBe(resultNfc.totalMatches);
+  });
+
+  it('NFD Swedish text with å, ä, ö matches same pattern IDs as NFC', () => {
+    // NFC forms of avgörande and föränderliga, including words with å (jämföra, välja)
+    const nfc = 'Det är avgörande att föränderliga lösningar fungerar. Jämföra och välja.';
+    // NFD: decomposed ä → a\u0308, ö → o\u0308, å → a\u030A
+    const nfd =
+      'Det a\u0308r avgo\u0308rande att fo\u0308ra\u0308nderliga lo\u0308sningar fungerar. Ja\u030Amfo\u0308ra och va\u0308lja.';
+    const resultNfc = analyze(nfc, { locale: 'sv' });
+    const resultNfd = analyze(nfd, { locale: 'sv' });
+    const nfcIds = resultNfc.findings.map((f) => f.patternId).sort();
+    const nfdIds = resultNfd.findings.map((f) => f.patternId).sort();
+    expect(nfdIds).toEqual(nfcIds);
+    // Verify the test actually contains decomposed å (a\u030A)
+    expect(nfd).toContain('a\u030A');
   });
 });
 
@@ -207,5 +234,63 @@ In order to help, due to the fact that you asked, at this point in time, it is i
     const s = score(text);
     expect(s).toBeLessThanOrEqual(100);
     expect(s).toBeGreaterThanOrEqual(60);
+  });
+});
+
+// ─── NaN / undefined guards in report output ─────────────
+
+describe('report output — no NaN or undefined for short/edge inputs', () => {
+  const shortInputs = [
+    ['single word', 'hello'],
+    ['single sentence', 'Hello.'],
+    ['one-word with period', 'Hej.'],
+    ['two words', 'hello world'],
+    ['numbers only', '12345'],
+    ['single character', 'x'],
+  ];
+
+  for (const [label, text] of shortInputs) {
+    it(`formatMarkdown contains no "NaN" or "undefined" for: ${label}`, () => {
+      const result = analyze(text);
+      const md = formatMarkdown(result);
+      expect(md).not.toContain('NaN');
+      expect(md).not.toContain('undefined');
+    });
+
+    it(`formatReport contains no "NaN" or "undefined" for: ${label}`, () => {
+      const result = analyze(text);
+      const report = formatReport(result);
+      expect(report).not.toContain('NaN');
+      expect(report).not.toContain('undefined');
+    });
+
+    it(`analyze JSON contains no non-finite stats values for: ${label}`, () => {
+      const result = analyze(text);
+      if (result.stats) {
+        for (const [key, val] of Object.entries(result.stats)) {
+          if (Array.isArray(val)) continue;
+          if (val === null) continue;
+          expect(
+            typeof val === 'number' && !Number.isFinite(val),
+            `stats.${key} should not be non-finite (got ${val})`,
+          ).toBe(false);
+        }
+      }
+    });
+  }
+
+  it('analyze returns null stats for empty text', () => {
+    const result = analyze('');
+    expect(result.stats).toBeNull();
+  });
+
+  it('analyze stats.fleschKincaid is null or finite when input has no sentences', () => {
+    // Punctuation-only text tokenizes to zero words → stats is null in analyze()
+    const result = analyze('...');
+    // Either stats is null (no words) or FK is null / a finite number
+    if (result.stats !== null) {
+      const fk = result.stats.fleschKincaid;
+      expect(fk === null || Number.isFinite(fk)).toBe(true);
+    }
   });
 });
