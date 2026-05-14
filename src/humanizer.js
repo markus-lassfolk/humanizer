@@ -39,7 +39,7 @@ const NON_BREAKING_SPACES_GLOBAL = /(?:\u00A0|\u202F)/g;
 function autoFix(text, opts = {}) {
   const { locale = 'en', ignoreCode = false } = opts;
   const localeProfile = loadLocale(locale);
-  let result = String(text ?? '');
+  let result = text === null || text === undefined ? '' : String(text);
   const fixes = [];
 
   const runAutofixPass = (input) => {
@@ -167,7 +167,8 @@ function preserveReplacementCase(match, replacement) {
  *   - locale {string}     Locale code: 'en' (default) or 'sv'
  *   - strict {boolean}    Enable pattern 35 (inclusive-language hints)
  *   - withLm {boolean}    Add n-gram LM uniformity boost
- *   - autofixIgnoreCode {boolean} Preserve fenced/inline code during autofix
+ *   - autofixPreserveCode {boolean} Preserve fenced/inline code during autofix
+ *   - autofixIgnoreCode {boolean} Backward-compatible alias for autofixPreserveCode
  * @returns {object}       — Suggestions report
  */
 function humanize(text, opts = {}) {
@@ -179,6 +180,7 @@ function humanize(text, opts = {}) {
     verbose = true,
     strict = false,
     withLm = false,
+    autofixPreserveCode = false,
     autofixIgnoreCode = false,
   } = opts;
 
@@ -220,7 +222,8 @@ function humanize(text, opts = {}) {
   let fixedText = null;
   let appliedFixes = [];
   if (autofix) {
-    const result = autoFix(text, { locale, ignoreCode: autofixIgnoreCode });
+    const preserveCode = autofixPreserveCode || autofixIgnoreCode;
+    const result = autoFix(text, { locale, ignoreCode: preserveCode });
     fixedText = result.text;
     appliedFixes = result.fixes;
   }
