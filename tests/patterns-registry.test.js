@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { registry, wordCount, patterns } from '../src/patterns.js';
+import { registry, wordCount, patterns, PatternRegistry } from '../src/patterns.js';
 
 describe('Pattern registry', () => {
   it('has patterns available', () => {
@@ -18,9 +18,10 @@ describe('Pattern registry', () => {
   });
 
   it('registry can get patterns by category', () => {
-    const vocabPatterns = registry.byCategory('vocabulary');
-    expect(Array.isArray(vocabPatterns)).toBe(true);
-    expect(vocabPatterns.every((p) => p.category === 'vocabulary')).toBe(true);
+    const contentPatterns = registry.byCategory('content');
+    expect(Array.isArray(contentPatterns)).toBe(true);
+    expect(contentPatterns.length).toBeGreaterThan(0);
+    expect(contentPatterns.every((p) => p.category === 'content')).toBe(true);
   });
 
   it('registry lists all patterns', () => {
@@ -35,6 +36,46 @@ describe('Pattern registry', () => {
     const categories = registry.categories();
     expect(Array.isArray(categories)).toBe(true);
     expect(categories.length).toBeGreaterThan(0);
+  });
+});
+
+describe('PatternRegistry mutation and validation paths', () => {
+  it('adds and removes custom patterns', () => {
+    const localRegistry = new PatternRegistry();
+    const initialCount = localRegistry.all().length;
+    localRegistry.add({
+      id: 9999,
+      name: 'Custom pattern',
+      category: 'custom',
+      weight: 1,
+      detect: () => [],
+    });
+    expect(localRegistry.get(9999)).toBeDefined();
+    expect(localRegistry.all().length).toBe(initialCount + 1);
+    localRegistry.remove(9999);
+    expect(localRegistry.get(9999)).toBeUndefined();
+    expect(localRegistry.all().length).toBe(initialCount);
+  });
+
+  it('throws when adding malformed patterns', () => {
+    const localRegistry = new PatternRegistry();
+    expect(() => localRegistry.add({ id: 1 })).toThrow(
+      'Pattern must have id, name, and detect function',
+    );
+  });
+
+  it('adds custom words to tiers and merges with built-ins', () => {
+    const localRegistry = new PatternRegistry();
+    const tier1Before = localRegistry.getVocabulary(1).length;
+    localRegistry.addWords(1, ['customtieroneword']);
+    const tier1After = localRegistry.getVocabulary(1);
+    expect(tier1After.length).toBe(tier1Before + 1);
+    expect(tier1After).toContain('customtieroneword');
+  });
+
+  it('throws on invalid tier when adding words', () => {
+    const localRegistry = new PatternRegistry();
+    expect(() => localRegistry.addWords(9, ['bad-tier-word'])).toThrow('Invalid tier: 9');
   });
 });
 

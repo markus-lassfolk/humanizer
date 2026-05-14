@@ -16,6 +16,8 @@ import {
   topPatternsFromFindings,
   medianSorted,
   percentileSorted,
+  formatChunkedTextAppendix,
+  mergeChunkedForJSON,
 } from '../src/chunk-analyzer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -28,6 +30,15 @@ function padToWords(seed, target) {
 }
 
 describe('analyzeChunked', () => {
+  it('handles empty or invalid input with empty chunk aggregate', () => {
+    const result = analyzeChunked(null, { locale: 'en' });
+    expect(result.chunks).toEqual([]);
+    expect(result.aggregate.chunkCount).toBe(0);
+    expect(result.aggregate.peak.index).toBe(-1);
+    expect(result.aggregate.severity).toBe('mostly-human');
+    expect(result.aggregate.severityReason).toBe('Empty input.');
+  });
+
   it('document score matches plain analyze (idempotence)', () => {
     const text = 'Short text for parity. It has a few sentences. Nothing special here.';
     const plain = analyze(text, { locale: 'en' });
@@ -182,15 +193,50 @@ describe('chunk-analyzer internals', () => {
   });
 
   it('medianSorted calculates median correctly', () => {
+    expect(medianSorted([])).toBe(0);
     expect(medianSorted([1, 2, 3, 4, 5])).toBe(3);
     expect(medianSorted([1, 2, 3, 4])).toBe(3); // Rounds average
     expect(medianSorted([10])).toBe(10);
   });
 
   it('percentileSorted calculates percentiles correctly', () => {
+    expect(percentileSorted([], 0.5)).toBe(0);
     const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     expect(percentileSorted(data, 0.5)).toBe(5); // Uses decimal 0-1
     expect(percentileSorted(data, 0.95)).toBe(9); // floor((9) * 0.95) = 8, returns data[8] = 9
+  });
+});
+
+describe('chunk result formatting and JSON flattening', () => {
+  it('formats chunk appendix for empty result without crashing', () => {
+    const chunked = analyzeChunked('', { locale: 'en' });
+    const appendix = formatChunkedTextAppendix(chunked);
+    expect(appendix).toContain('Chunk distribution');
+    expect(appendix).toContain('Severity: mostly-human');
+    expect(appendix).toContain('Peak: 0 (chunk #-1, words ?-?)');
+  });
+
+  it('formats chunk appendix with histogram for multi-chunk result', () => {
+    const text = padToWords('This is a moderately repetitive sentence for chunking.', 800);
+    const chunked = analyzeChunked(text, {
+      locale: 'en',
+      windowWords: 150,
+      strideWords: 75,
+      minDocWordsForChunking: 200,
+    });
+    const appendix = formatChunkedTextAppendix(chunked);
+    expect(chunked.chunks.length).toBeGreaterThan(1);
+    expect(appendix).toContain('Histogram [0-20|21-40|41-60|61-80|81-100]:');
+  });
+
+  it('merges chunked output into JSON-friendly shape', () => {
+    const chunked = analyzeChunked('Simple merge payload text.', { locale: 'en' });
+    const merged = mergeChunkedForJSON(chunked);
+    expect(merged).toHaveProperty('score');
+    expect(merged).toHaveProperty('chunks');
+    expect(merged).toHaveProperty('aggregate');
+    expect(merged.chunks).toEqual(chunked.chunks);
+    expect(merged.aggregate).toEqual(chunked.aggregate);
   });
 });
 
