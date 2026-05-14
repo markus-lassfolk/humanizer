@@ -1076,6 +1076,11 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
   lines.push(
     `  Files scanned: ${scanResult.summary.scannedFiles}  |  Skipped: ${scanResult.summary.skippedFiles}`,
   );
+  if (typeof scanResult.summary.failedFiles === 'number') {
+    lines.push(
+      `  Failed files: ${scanResult.summary.failedFiles}  |  Too short: ${scanResult.summary.tooShortFiles ?? 0}`,
+    );
+  }
   lines.push(
     `  Avg score: ${scanResult.summary.averageScore}  |  Max: ${scanResult.summary.maxScore}  |  Min: ${scanResult.summary.minScore}`,
   );
@@ -1144,8 +1149,11 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
 
   if (scanResult.skipped.length > 0) {
     lines.push(
-      color.gray(`  ${scanResult.skipped.length} files skipped (too short or unreadable).`),
+      color.gray(`  ${scanResult.skipped.length} files skipped (too short, unreadable, or invalid).`),
     );
+    for (const item of scanResult.skipped.slice(0, 8)) {
+      lines.push(color.gray(`    - ${item.file}: ${item.reason}`));
+    }
     lines.push('');
   }
 

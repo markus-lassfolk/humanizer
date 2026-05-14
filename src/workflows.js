@@ -138,7 +138,13 @@ function scanPath(targetPath, opts = {}) {
       continue;
     }
 
-    const result = analyze(text, { includeStats, verbose: false, ignoreCode, locale });
+    let result;
+    try {
+      result = analyze(text, { includeStats, verbose: false, ignoreCode, locale });
+    } catch (err) {
+      skipped.push({ file, reason: `analyze_error: ${err.message}` });
+      continue;
+    }
 
     for (const finding of result.findings) {
       const existing = patternHotspotMap.get(finding.patternId) || {
@@ -185,6 +191,11 @@ function scanPath(targetPath, opts = {}) {
   const summary = {
     scannedFiles: results.length,
     skippedFiles: skipped.length,
+    failedFiles: skipped.filter(
+      (item) =>
+        item.reason.startsWith('read_error:') || item.reason.startsWith('analyze_error:'),
+    ).length,
+    tooShortFiles: skipped.filter((item) => item.reason.startsWith('too_short:')).length,
     averageScore: results.length
       ? Math.round((results.reduce((sum, r) => sum + r.score, 0) / results.length) * 100) / 100
       : 0,

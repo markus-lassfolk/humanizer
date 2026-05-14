@@ -203,4 +203,36 @@ describe('scan config handling', () => {
     expect(payload.baselineComparison.summary.regressions).toBe(1);
     expect(payload.baselineComparison.regressions[0].relativePath).toBe('doc.md');
   });
+
+  it('reports unreadable files without failing the whole scan', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-cli-config-'));
+    const readable = path.join(tmp, 'readable.md');
+    const unreadable = path.join(tmp, 'unreadable.md');
+
+    fs.writeFileSync(readable, 'The deployment finished at 10:30 and all smoke tests passed.');
+    fs.writeFileSync(unreadable, 'This content should not be readable during scan.');
+    fs.chmodSync(unreadable, 0o000);
+
+    try {
+      const run = runCli(['scan', tmp, '--json']);
+
+      expect(run.status).toBe(0);
+      expect(run.stderr).toBe('');
+
+      const payload = JSON.parse(run.stdout);
+      expect(payload.summary.scannedFiles).toBe(1);
+      expect(payload.summary.failedFiles).toBe(1);
+      expect(payload.summary.skippedFiles).toBe(1);
+      expect(payload.skipped).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            file: unreadable,
+            reason: expect.stringContaining('read_error:'),
+          }),
+        ]),
+      );
+    } finally {
+      fs.chmodSync(unreadable, 0o644);
+    }
+  });
 });

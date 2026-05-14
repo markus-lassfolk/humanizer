@@ -190,6 +190,32 @@ describe('scanPath', () => {
 
     expect(enScan.files[0].score).toBeLessThan(svScan.files[0].score);
   });
+
+  it('isolates analyze failures and reports them per file', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+    const badFile = path.join(tmp, 'bad.md');
+    const goodFile = path.join(tmp, 'good.md');
+    fs.writeFileSync(badFile, 'TRIGGER_ANALYZE_ERROR');
+    fs.writeFileSync(goodFile, 'The team shipped the fix on Friday and monitored logs overnight.');
+
+    const result = scanPath(tmp, { exts: ['md'], minWords: 1, locale: 'not-a-real-locale' });
+
+    expect(result.summary.scannedFiles).toBe(0);
+    expect(result.summary.failedFiles).toBe(2);
+    expect(result.files).toEqual([]);
+    expect(result.skipped).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          file: badFile,
+          reason: expect.stringContaining('analyze_error:'),
+        }),
+        expect.objectContaining({
+          file: goodFile,
+          reason: expect.stringContaining('analyze_error:'),
+        }),
+      ]),
+    );
+  });
 });
 
 describe('compareTexts and compareFiles', () => {
