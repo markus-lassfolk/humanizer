@@ -4,6 +4,8 @@ import {
   stripFrontmatter,
   stripMdxComponents,
   stripBlockquotes,
+  stripMarkdownProtectedRegions,
+  transformMarkdownProse,
 } from '../src/preprocess.js';
 
 describe('stripCodeSnippets', () => {
@@ -151,5 +153,115 @@ describe('stripBlockquotes', () => {
   it('returns empty string for non-string input', () => {
     expect(stripBlockquotes(null)).toBe('');
     expect(stripBlockquotes('')).toBe('');
+  });
+});
+
+describe('stripMarkdownProtectedRegions', () => {
+  it('treats a lone top-level thematic break as prose instead of frontmatter', () => {
+    const input = [
+      '---',
+      'Real prose uses robust solutions in the rapidly evolving landscape.',
+    ].join('\n');
+    const masked = stripMarkdownProtectedRegions(input);
+
+    expect(masked).toContain('---');
+    expect(masked).toContain('Real prose uses robust solutions');
+  });
+
+  it('treats indented opening delimiter as prose not frontmatter', () => {
+    const input = ['   ---', 'title: Test', '---', '', 'Real prose here.'].join('\n');
+    const masked = stripMarkdownProtectedRegions(input);
+
+    expect(masked).toContain('---');
+    expect(masked).toContain('Real prose here.');
+  });
+
+  it('ends pseudo-frontmatter when an MDX component line appears before a closing delimiter', () => {
+    const input = [
+      '---',
+      '<Widget description="Comprehensive seamless transformation" />',
+      '',
+      'Author note: comprehensive work continues.',
+    ].join('\n');
+    const masked = stripMarkdownProtectedRegions(input);
+
+    expect(masked).not.toContain('Comprehensive seamless transformation');
+    expect(masked).toContain('Author note: comprehensive work continues.');
+  });
+
+  it('masks frontmatter, tables, MDX, and blockquotes while preserving prose', () => {
+    const input = [
+      '---',
+      'title: Comprehensive seamless transformation',
+      'keywords: robust, innovative, leverage, landscape',
+      '---',
+      '',
+      "import Widget from './Widget';",
+      '<Widget description="This comprehensive widget leverages innovative capabilities" />',
+      '',
+      '| Term | Description |',
+      '| --- | --- |',
+      '| AI | Comprehensive seamless transformation |',
+      '',
+      "> Vendor says: In today's rapidly evolving digital landscape.",
+      '',
+      'Short internal note: ship after tests pass.',
+    ].join('\n');
+
+    const output = stripMarkdownProtectedRegions(input);
+
+    expect(output.split('\n')).toHaveLength(input.split('\n').length);
+    expect(output).not.toContain('Comprehensive seamless transformation');
+    expect(output).not.toContain('Widget');
+    expect(output).not.toContain('rapidly evolving digital landscape');
+    expect(output).toContain('Short internal note: ship after tests pass.');
+  });
+
+  it('does not let MDX component masking span across multiple lines', () => {
+    const input = [
+      '<Widget',
+      'Some regular prose mentions comprehensive robust delivery.',
+      '/>',
+    ].join('\n');
+
+    const output = stripMarkdownProtectedRegions(input);
+
+    expect(output).toContain('Some regular prose mentions comprehensive robust delivery.');
+  });
+
+  it('does not mask prose lines that merely start with import/export words', () => {
+    const input = [
+      'import controls are tightening this quarter.',
+      'export quality metrics stayed stable through launch.',
+      "import Widget from './Widget';",
+    ].join('\n');
+
+    const output = stripMarkdownProtectedRegions(input);
+
+    expect(output).toContain('import controls are tightening this quarter.');
+    expect(output).toContain('export quality metrics stayed stable through launch.');
+    expect(output).not.toContain("import Widget from './Widget';");
+  });
+});
+
+describe('transformMarkdownProse', () => {
+  it('restores protected snippets in one pass without leaking nested placeholder tokens', () => {
+    const input = [
+      '| Term | Description |',
+      '| --- | --- |',
+      '| CLI | Keep `in order to` literal. |',
+      '',
+      '> Quote keeps `in order to` literal.',
+      '',
+      'In order to ship, update prose.',
+    ].join('\n');
+
+    const output = transformMarkdownProse(input, (text) => text.replace(/\bin order to\b/gi, 'to'));
+
+    expect(output).toContain('| CLI | Keep `in order to` literal. |');
+    expect(output).toContain('> Quote keeps `in order to` literal.');
+    expect(output).toContain('to ship, update prose.');
+    expect(output).not.toContain('HUMANIZER_PROTECTED');
+    expect(output).not.toContain('\uE000');
   });
 });
