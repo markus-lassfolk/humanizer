@@ -174,6 +174,26 @@ describe('CLI Integration Tests', () => {
 
       expect(result.output).toContain('Score');
     });
+
+    it('does not rewrite fenced or inline markdown code in --autofix output', async () => {
+      const markdown = [
+        '# Runbook',
+        '',
+        'In order to deploy, update the docs.',
+        '',
+        '```md',
+        'In order to deploy, update the config.',
+        '```',
+        '',
+        'Use `in order to` only as a literal phrase.',
+      ].join('\n');
+
+      const result = await runCLI(['humanize', '--autofix'], { stdin: markdown });
+      expect(result.code).toBe(0);
+      expect(result.output).toContain('To deploy, update the docs.');
+      expect(result.output).toContain('In order to deploy, update the config.');
+      expect(result.output).toContain('`in order to`');
+    });
   });
 
   describe('stats command', () => {

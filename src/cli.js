@@ -1325,6 +1325,7 @@ async function main() {
         autofix: flags.autofix,
         verbose: flags.verbose,
         ignoreCode: opts.ignoreCode,
+        autofixPreserveCode: flags.autofix,
         analysisText,
         analysisIgnoreCode: analysisOpts.ignoreCode,
         locale: opts.locale,

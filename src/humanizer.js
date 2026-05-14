@@ -173,6 +173,8 @@ function preserveReplacementCase(match, replacement) {
  *   - ignoreCode {boolean}  Ignore fenced/inline code snippets during analysis
  *   - analysisText {string} Preprocessed text to use for analysis only
  *   - analysisIgnoreCode {boolean} Whether analysisText still needs code stripping
+ *   - autofixPreserveCode {boolean} When autofix is on, skip fixes inside fenced/inline Markdown code
+ *   - autofixIgnoreCode {boolean}   Alias intent for autofix code preservation (legacy)
  *   - locale {string}     Locale code: 'en' (default) or 'sv'
  *   - strict {boolean}    Enable pattern 35 (inclusive-language hints)
  *   - withLm {boolean}    Add n-gram LM uniformity boost
@@ -185,6 +187,8 @@ function humanize(text, opts = {}) {
     ignoreCode = false,
     analysisText = null,
     analysisIgnoreCode = ignoreCode,
+    autofixPreserveCode = false,
+    autofixIgnoreCode = false,
     locale = 'en',
     verbose = true,
     strict = false,
@@ -229,7 +233,8 @@ function humanize(text, opts = {}) {
   let fixedText = null;
   let appliedFixes = [];
   if (autofix) {
-    const result = autoFix(text, { locale, ignoreCode });
+    const preserveCodeInAutofix = ignoreCode || autofixPreserveCode || autofixIgnoreCode;
+    const result = autoFix(text, { locale, ignoreCode: preserveCodeInAutofix });
     fixedText = result.text;
     appliedFixes = result.fixes;
   }
