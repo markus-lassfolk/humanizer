@@ -4,7 +4,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .npm
-package-lock.json
+# package-lock.json is committed so fresh clones can use npm ci.
 
 # Build
 dist/

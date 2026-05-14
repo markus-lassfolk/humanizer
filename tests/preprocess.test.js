@@ -85,6 +85,20 @@ describe('stripMarkdownProtectedRegions', () => {
 
     expect(output).toContain('Some regular prose mentions comprehensive robust delivery.');
   });
+
+  it('does not mask prose lines that merely start with import/export words', () => {
+    const input = [
+      'import controls are tightening this quarter.',
+      'export quality metrics stayed stable through launch.',
+      "import Widget from './Widget';",
+    ].join('\n');
+
+    const output = stripMarkdownProtectedRegions(input);
+
+    expect(output).toContain('import controls are tightening this quarter.');
+    expect(output).toContain('export quality metrics stayed stable through launch.');
+    expect(output).not.toContain("import Widget from './Widget';");
+  });
 });
 
 describe('transformMarkdownProse', () => {
