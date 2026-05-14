@@ -449,30 +449,33 @@ const patterns = [
       const tier3 = profile ? profile.tier3 : TIER_3;
       const phrases = profile ? profile.phrases : AI_PHRASES;
 
+      // Use locale-specific UI strings if provided; fall back to English defaults.
+      const ui = (profile && profile.ui) || {};
+      const tier1Prefix = ui.tier1Prefix || 'Tier 1 AI word';
+      const tier2Prefix = ui.tier2Prefix || 'Tier 2 AI word';
+      const tier3Prefix = ui.tier3Prefix || 'Tier 3 AI word (high density)';
+      const empiricalPrefix =
+        ui.empiricalPrefix ||
+        'Empirical AI signal (corpus log-odds — npm run corpus:refresh to rebuild)';
+
       const results = [];
       const normalizedText = normalizeForAnalysis(text);
       const words = wordCount(normalizedText);
 
       // Tier 1: always flag
-      results.push(...scanWordList(normalizedText, tier1, 'Tier 1 AI word', 'high', profile));
+      results.push(...scanWordList(normalizedText, tier1, tier1Prefix, 'high', profile));
 
       // Empirical n-grams from bundled sv-frequencies.json (Swedish); excludes
       // stopwords and curated tier keys. Refresh: npm run corpus:logodds
       const empiricalExtra = profile && profile.empiricalExtra ? profile.empiricalExtra : [];
       if (empiricalExtra.length > 0) {
         results.push(
-          ...scanWordList(
-            normalizedText,
-            empiricalExtra,
-            'Empirical AI signal (corpus log-odds — npm run corpus:refresh to rebuild)',
-            'medium',
-            profile,
-          ),
+          ...scanWordList(normalizedText, empiricalExtra, empiricalPrefix, 'medium', profile),
         );
       }
 
       // Tier 2: flag if 2+ tier-2 words appear
-      const tier2Matches = scanWordList(normalizedText, tier2, 'Tier 2 AI word', 'medium', profile);
+      const tier2Matches = scanWordList(normalizedText, tier2, tier2Prefix, 'medium', profile);
       if (tier2Matches.length >= 2) {
         results.push(...tier2Matches);
       }
@@ -487,9 +490,7 @@ const patterns = [
         }, 0);
         const density = tier3Count / words;
         if (density > 0.03) {
-          results.push(
-            ...scanWordList(normalizedText, tier3, 'Tier 3 AI word (high density)', 'low', profile),
-          );
+          results.push(...scanWordList(normalizedText, tier3, tier3Prefix, 'low', profile));
         }
       }
 

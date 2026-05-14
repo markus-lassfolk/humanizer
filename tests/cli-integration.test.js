@@ -269,5 +269,14 @@ describe('CLI Integration Tests', () => {
       const result = await runCLI(['analyze', testFile, '--locale', 'sv']);
       expect(result.output).toContain('Score');
     });
+
+    it('suggest --locale sv outputs Swedish suggestion text, not English', async () => {
+      const testFile = path.join(__dirname, 'fixtures', 'sv-ai-sample-1.txt');
+      expect(fs.existsSync(testFile), `missing fixture: ${testFile}`).toBe(true);
+
+      const result = await runCLI(['suggest', testFile, '--locale', 'sv']);
+      expect(result.output).not.toContain('Use a simpler, more specific alternative.');
+      expect(result.output).toContain('Byt till ett enklare och mer konkret alternativ.');
+    });
   });
 });
