@@ -77,6 +77,25 @@ describe('CLI Integration Tests', () => {
   });
 
   describe('analyze command', () => {
+    it('applies full markdown protection on non-chunked markdown analyze paths', async () => {
+      const tmp = fs.mkdtempSync(path.join('/tmp', 'humanizer-cli-md-'));
+      const file = path.join(tmp, 'short.md');
+      fs.writeFileSync(
+        file,
+        [
+          '---',
+          'title: robust solutions in the rapidly evolving landscape',
+          '---',
+          'Plain body text for the document.',
+        ].join('\n'),
+      );
+
+      const result = await runCLI(['analyze', file, '--json']);
+      expect(result.code).toBe(0);
+      const payload = JSON.parse(result.stdout);
+      expect(payload.wordCount).toBe(6);
+      expect(JSON.stringify(payload.findings)).not.toContain('rapidly evolving');
+    });
     it('analyzes a file and returns results', async () => {
       expect(fs.existsSync(FIXTURE_PATH), `missing fixture: ${FIXTURE_PATH}`).toBe(true);
 
