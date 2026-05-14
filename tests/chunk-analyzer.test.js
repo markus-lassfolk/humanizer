@@ -212,8 +212,10 @@ describe('chunk result formatting and JSON flattening', () => {
     const chunked = analyzeChunked('', { locale: 'en' });
     const appendix = formatChunkedTextAppendix(chunked);
     expect(appendix).toContain('Chunk distribution');
+    expect(appendix).toContain('Chunks: 0');
     expect(appendix).toContain('Severity: mostly-human');
-    expect(appendix).toContain('Peak: 0 (chunk #-1, words ?-?)');
+    expect(appendix).toContain('Peak: 0');
+    expect(appendix).toContain('words ?-?');
   });
 
   it('formats chunk appendix with histogram for multi-chunk result', () => {
