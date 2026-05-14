@@ -671,6 +671,8 @@ function formatStatsReport(stats, options = {}) {
     stats.metricAvailability?.fleschKincaid?.reason !== LOCALE_UNAVAILABLE_REASON
   ) {
     lines.push(`    Flesch-Kincaid:   ${formatMetric(stats, 'fleschKincaid', ' grade level')}`);
+  } else {
+    lines.push(`    Readability:      ${color.dim('unavailable (input too short)')}`);
   }
   const functionWordPercent =
     stats.functionWordRatio === null ? '' : ` (${(stats.functionWordRatio * 100).toFixed(1)}%)`;
@@ -894,13 +896,15 @@ function formatColoredReport(result) {
       `  Type-token ratio: ${formatMetric(s, 'typeTokenRatio')}  ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
     );
     lines.push(`  Trigram repetition: ${formatMetric(s, 'trigramRepetition')}`);
-    if (result.stats.lix !== null) {
+    if (s.lix !== null || s.metricAvailability?.lix?.reason !== LOCALE_UNAVAILABLE_REASON) {
       lines.push(`  Readability: LIX ${formatMetric(s, 'lix')}`);
     } else if (
-      result.stats.fleschKincaid !== null ||
+      s.fleschKincaid !== null ||
       s.metricAvailability?.fleschKincaid?.reason !== LOCALE_UNAVAILABLE_REASON
     ) {
       lines.push(`  Readability: ${formatMetric(s, 'fleschKincaid', ' grade level')}`);
+    } else {
+      lines.push(`  Readability: ${color.dim('unavailable (input too short)')}`);
     }
     lines.push('');
   }

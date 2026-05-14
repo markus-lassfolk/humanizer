@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { analyze, score } from '../src/analyzer.js';
+import { analyze, score, formatMarkdown, formatReport } from '../src/analyzer.js';
 import { computeStats } from '../src/stats.js';
 
 // ─── Empty / Minimal Input ───────────────────────────────
@@ -234,5 +234,63 @@ In order to help, due to the fact that you asked, at this point in time, it is i
     const s = score(text);
     expect(s).toBeLessThanOrEqual(100);
     expect(s).toBeGreaterThanOrEqual(60);
+  });
+});
+
+// ─── NaN / undefined guards in report output ─────────────
+
+describe('report output — no NaN or undefined for short/edge inputs', () => {
+  const shortInputs = [
+    ['single word', 'hello'],
+    ['single sentence', 'Hello.'],
+    ['one-word with period', 'Hej.'],
+    ['two words', 'hello world'],
+    ['numbers only', '12345'],
+    ['single character', 'x'],
+  ];
+
+  for (const [label, text] of shortInputs) {
+    it(`formatMarkdown contains no "NaN" or "undefined" for: ${label}`, () => {
+      const result = analyze(text);
+      const md = formatMarkdown(result);
+      expect(md).not.toContain('NaN');
+      expect(md).not.toContain('undefined');
+    });
+
+    it(`formatReport contains no "NaN" or "undefined" for: ${label}`, () => {
+      const result = analyze(text);
+      const report = formatReport(result);
+      expect(report).not.toContain('NaN');
+      expect(report).not.toContain('undefined');
+    });
+
+    it(`analyze JSON contains no non-finite stats values for: ${label}`, () => {
+      const result = analyze(text);
+      if (result.stats) {
+        for (const [key, val] of Object.entries(result.stats)) {
+          if (Array.isArray(val)) continue;
+          if (val === null) continue;
+          expect(
+            typeof val === 'number' && !Number.isFinite(val),
+            `stats.${key} should not be non-finite (got ${val})`,
+          ).toBe(false);
+        }
+      }
+    });
+  }
+
+  it('analyze returns null stats for empty text', () => {
+    const result = analyze('');
+    expect(result.stats).toBeNull();
+  });
+
+  it('analyze stats.fleschKincaid is null or finite when input has no sentences', () => {
+    // Punctuation-only text tokenizes to zero words → stats is null in analyze()
+    const result = analyze('...');
+    // Either stats is null (no words) or FK is null / a finite number
+    if (result.stats !== null) {
+      const fk = result.stats.fleschKincaid;
+      expect(fk === null || Number.isFinite(fk)).toBe(true);
+    }
   });
 });

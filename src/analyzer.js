@@ -23,6 +23,7 @@ const {
   normalizeAnalysisForOutput,
   normalizeStatsForOutput,
   formatMetric,
+  inferReadabilityMetric,
 } = require('./metric-normalizer');
 const { roundDisplayCount } = require('./utils');
 
@@ -440,10 +441,17 @@ function formatReport(result) {
     );
     lines.push(`  Function word ratio: ${formatMetric(s, 'functionWordRatio')}`);
     lines.push(`  Trigram repetition: ${formatMetric(s, 'trigramRepetition')}`);
-    if (result.stats.lix !== null) {
+    if (s.lix !== null) {
       lines.push(`  Readability (LIX): ${formatMetric(s, 'lix')}`);
-    } else {
+    } else if (s.fleschKincaid !== null) {
       lines.push(`  Readability (FK grade): ${formatMetric(s, 'fleschKincaid')}`);
+    } else {
+      const primary = inferReadabilityMetric(result.stats);
+      if (primary === 'lix') {
+        lines.push(`  Readability (LIX): ${formatMetric(s, 'lix')}`);
+      } else {
+        lines.push(`  Readability (FK grade): ${formatMetric(s, 'fleschKincaid')}`);
+      }
     }
     lines.push('');
   }
@@ -537,24 +545,28 @@ function formatMarkdown(result) {
     lines.push(
       `| Trigram repetition | ${formatMetric(s, 'trigramRepetition')} | ${s.trigramRepetition !== null && s.trigramRepetition > 0.1 ? 'High (AI-like)' : s.trigramRepetition === null ? 'Unavailable' : 'Normal'} |`,
     );
-    if (result.stats.lix !== null) {
+    if (s.lix !== null) {
       const lixLabel =
-        s.lix === null
-          ? 'Unavailable'
-          : s.lix > 60
-            ? 'Very hard'
-            : s.lix > 50
-              ? 'Hard'
-              : s.lix > 40
-                ? 'Medium'
-                : s.lix > 30
-                  ? 'Easy'
-                  : 'Very easy';
+        s.lix > 60
+          ? 'Very hard'
+          : s.lix > 50
+            ? 'Hard'
+            : s.lix > 40
+              ? 'Medium'
+              : s.lix > 30
+                ? 'Easy'
+                : 'Very easy';
       lines.push(`| Readability | LIX ${formatMetric(s, 'lix')} | ${lixLabel} |`);
+    } else if (s.fleschKincaid !== null) {
+      const fkLabel = s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy';
+      lines.push(`| Readability | FK grade ${formatMetric(s, 'fleschKincaid')} | ${fkLabel} |`);
     } else {
-      lines.push(
-        `| Readability | FK grade ${formatMetric(s, 'fleschKincaid')} | ${s.fleschKincaid === null ? 'Unavailable' : s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`,
-      );
+      const primary = inferReadabilityMetric(result.stats);
+      if (primary === 'lix') {
+        lines.push(`| Readability | LIX ${formatMetric(s, 'lix')} | Unavailable |`);
+      } else {
+        lines.push(`| Readability | FK grade ${formatMetric(s, 'fleschKincaid')} | Unavailable |`);
+      }
     }
     lines.push('');
   }

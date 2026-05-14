@@ -209,5 +209,6 @@ module.exports = {
   normalizeStatsForOutput,
   normalizeAnalysisForOutput,
   formatMetric,
+  inferReadabilityMetric,
   LOCALE_UNAVAILABLE_REASON,
 };
