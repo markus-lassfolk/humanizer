@@ -80,9 +80,10 @@ function analyze(text, opts = {}) {
   const stats = includeStats ? computeStats(trimmed, localeProfile) : null;
   // Report/display count should be Unicode-aware and consistent with stats/tokenization.
   const reportWordCount = stats ? stats.wordCount : tokenize(trimmed).length;
-  // Only compute uniformity for text with enough structure to be meaningful
-  const baseUniformityScore =
-    stats && stats.wordCount >= 20 && stats.sentenceCount >= 3 ? computeUniformityScore(stats) : 0;
+  // Only compute uniformity for text with enough structure to be meaningful.
+  // Track whether uniformity is applicable so the composite formula can adapt.
+  const uniformityApplicable = !!(stats && stats.wordCount >= 20 && stats.sentenceCount >= 3);
+  const baseUniformityScore = uniformityApplicable ? computeUniformityScore(stats) : 0;
   const lmUniformityBoost = withLm ? computeLmUniformityBoost(stats) : 0;
   const uniformityScore = Math.min(baseUniformityScore + lmUniformityBoost, 100);
 
@@ -130,6 +131,7 @@ function analyze(text, opts = {}) {
     uniformityScore,
     findings,
     scoringKnobs,
+    uniformityApplicable,
   );
   const reliability = buildReliability({
     words: calibratedWords,
@@ -282,21 +284,29 @@ function calculatePatternScore(findings, words, knobs = DEFAULT_SCORING_KNOBS) {
  *
  * Pattern vs uniformity weights come from knobs.patternWeight.
  * Stats alone are never enough to accuse without pattern hits.
+ * When uniformity is not applicable (text too short for statistical analysis),
+ * the composite equals the pattern score directly so short high-signal texts
+ * are not penalised by a zero uniformity contribution.
  * @param {object} [knobs] see src/locales/scoring-defaults.js
+ * @param {boolean} [uniformityApplicable] whether uniformity was actually computed
  */
 function calculateCompositeScore(
   patternScore,
   uniformityScore,
   findings,
   knobs = DEFAULT_SCORING_KNOBS,
+  uniformityApplicable = true,
 ) {
   if (patternScore === 0 && uniformityScore === 0) return 0;
 
   // If no patterns detected, uniformity alone isn't enough to accuse
   if (findings.length === 0) return Math.min(Math.round(uniformityScore * 0.15), 15);
 
-  const patternWeight = knobs.patternWeight;
-  const uniformityWeight = 1 - patternWeight;
+  // When the text is too short to compute uniformity, rely entirely on the
+  // pattern score — blending in a structural zero would silently penalise
+  // short texts that carry clear AI vocabulary signals.
+  const patternWeight = uniformityApplicable ? knobs.patternWeight : 1.0;
+  const uniformityWeight = uniformityApplicable ? 1 - knobs.patternWeight : 0.0;
   const blended = patternScore * patternWeight + uniformityScore * uniformityWeight;
   return Math.min(Math.round(blended), 100);
 }
