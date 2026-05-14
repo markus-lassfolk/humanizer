@@ -217,7 +217,7 @@ check_checks() {
       continue
     fi
 
-    pending=$(jq '[.[] | select((.status // "COMPLETED") != "COMPLETED" and (.state // "SUCCESS") | IN("PENDING", "QUEUED") )] | length' <<<"$matches")
+    pending=$(jq '[.[] | select((.status // "COMPLETED") != "COMPLETED" or ((.state // "SUCCESS") | IN("PENDING", "QUEUED")) )] | length' <<<"$matches")
     failing=$(jq '[.[] | select((.status == "COMPLETED" and (.conclusion != "SUCCESS")) or (.state // "SUCCESS" | IN("FAILURE", "ERROR")))] | length' <<<"$matches")
     [[ "$pending" == "0" ]] || fail "required check pending: $name"
     [[ "$failing" == "0" ]] || fail "required check failing: $name"
@@ -228,7 +228,7 @@ check_checks() {
     fail "failing check(s): $failing"
   fi
 
-  pending=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" --argjson required "$(printf '%s\n' "${REQUIRED_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select((.status // "COMPLETED") != "COMPLETED" and (.state // "SUCCESS") | IN("PENDING", "QUEUED"))] | map(.name // .context) | . - $optional - $required | unique | join(", ")' <<<"$rollup")
+  pending=$(jq -r --argjson optional "$(printf '%s\n' "${OPTIONAL_CHECKS[@]}" | jq -R . | jq -s .)" --argjson required "$(printf '%s\n' "${REQUIRED_CHECKS[@]}" | jq -R . | jq -s .)" '[.[]? | select((.status // "COMPLETED") != "COMPLETED" or ((.state // "SUCCESS") | IN("PENDING", "QUEUED")))] | map(.name // .context) | . - $optional - $required | unique | join(", ")' <<<"$rollup")
   if [[ -n "$pending" ]]; then
     fail "pending check(s): $pending"
   fi
