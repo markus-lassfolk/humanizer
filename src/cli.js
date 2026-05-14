@@ -35,6 +35,7 @@ const {
   normalizeStatsForOutput,
   normalizeAnalysisForOutput,
   formatMetric,
+  LOCALE_UNAVAILABLE_REASON,
 } = require('./metric-normalizer');
 const {
   scanPath,
@@ -662,11 +663,11 @@ function formatStatsReport(stats, options = {}) {
   lines.push('');
 
   lines.push(color.bold('  ── Readability ────────────────────────────────'));
-  if (stats.lix !== null || stats.metricAvailability?.lix?.reason !== 'not applicable for locale') {
+  if (stats.lix !== null || stats.metricAvailability?.lix?.reason !== LOCALE_UNAVAILABLE_REASON) {
     lines.push(`    LIX:              ${formatMetric(stats, 'lix')}`);
   } else if (
     stats.fleschKincaid !== null ||
-    stats.metricAvailability?.fleschKincaid?.reason !== 'not applicable for locale'
+    stats.metricAvailability?.fleschKincaid?.reason !== LOCALE_UNAVAILABLE_REASON
   ) {
     lines.push(`    Flesch-Kincaid:   ${formatMetric(stats, 'fleschKincaid', ' grade level')}`);
   }
@@ -896,7 +897,7 @@ function formatColoredReport(result) {
       lines.push(`  Readability: LIX ${formatMetric(s, 'lix')}`);
     } else if (
       result.stats.fleschKincaid !== null ||
-      s.metricAvailability?.fleschKincaid?.reason !== 'not applicable for locale'
+      s.metricAvailability?.fleschKincaid?.reason !== LOCALE_UNAVAILABLE_REASON
     ) {
       lines.push(`  Readability: ${formatMetric(s, 'fleschKincaid', ' grade level')}`);
     }

@@ -10,6 +10,7 @@
 const DEFAULT_UNAVAILABLE_REASON = 'metric unavailable';
 const SHORT_INPUT_REASON = 'input too short';
 const SPARSE_SENTENCE_REASON = 'requires at least 2 sentences';
+const LOCALE_UNAVAILABLE_REASON = 'not applicable for locale';
 
 const GENERAL_STAT_KEYS = [
   'avgWordLength',
@@ -152,11 +153,11 @@ function normalizeStatsForOutput(stats, options = {}) {
     if (wordCount < 3) {
       normalized[key] = null;
       availability[key] = unavailable(
-        key === readabilityMetric ? SHORT_INPUT_REASON : 'not applicable for locale',
+        key === readabilityMetric ? SHORT_INPUT_REASON : LOCALE_UNAVAILABLE_REASON,
       );
     } else if (key !== readabilityMetric) {
       normalized[key] = null;
-      availability[key] = unavailable('not applicable for locale');
+      availability[key] = unavailable(LOCALE_UNAVAILABLE_REASON);
     } else if (stats[key] === null || stats[key] === undefined) {
       normalized[key] = null;
       availability[key] = unavailable(DEFAULT_UNAVAILABLE_REASON);
@@ -208,4 +209,5 @@ module.exports = {
   normalizeStatsForOutput,
   normalizeAnalysisForOutput,
   formatMetric,
+  LOCALE_UNAVAILABLE_REASON,
 };
