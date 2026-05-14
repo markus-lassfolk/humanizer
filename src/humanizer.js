@@ -36,14 +36,20 @@ const NON_BREAKING_SPACES_GLOBAL = /(?:\u00A0|\u202F)/g;
  */
 function autoFix(text, opts = {}) {
   const { locale = 'en' } = opts;
-  const localeProfile = loadLocale(locale);
   if (text === null || text === undefined || typeof text !== 'string') {
     return { text, fixes: [] };
   }
+  const localeProfile = loadLocale(locale);
   // Normalize to NFC so that canonically equivalent Unicode forms are handled
   // consistently by all downstream regex replacements.
+  const originalText = text;
   let result = text.normalize('NFC');
   const fixes = [];
+
+  // Report normalization as a fix if it changed the string
+  if (result !== originalText) {
+    fixes.push('Normalized Unicode to NFC (composed form)');
+  }
 
   // Curly quotes → straight quotes
   if (/[\u201C\u201D]/.test(result)) {

@@ -120,16 +120,18 @@ describe('unicode and special characters', () => {
   });
 
   it('NFD Swedish text with å, ä, ö matches same pattern IDs as NFC', () => {
-    // NFC forms of avgörande and föränderliga
-    const nfc = 'Det \u00E4r avg\u00F6rande att f\u00F6r\u00E4nderliga l\u00F6sningar fungerar.';
+    // NFC forms of avgörande and föränderliga, including words with å (jämföra, välja)
+    const nfc = 'Det är avgörande att föränderliga lösningar fungerar. Jämföra och välja.';
     // NFD: decomposed ä → a\u0308, ö → o\u0308, å → a\u030A
     const nfd =
-      'Det a\u0308r avgo\u0308rande att fo\u0308ra\u0308nderliga lo\u0308sningar fungerar.';
+      'Det a\u0308r avgo\u0308rande att fo\u0308ra\u0308nderliga lo\u0308sningar fungerar. Ja\u030Amfo\u0308ra och va\u0308lja.';
     const resultNfc = analyze(nfc, { locale: 'sv' });
     const resultNfd = analyze(nfd, { locale: 'sv' });
     const nfcIds = resultNfc.findings.map((f) => f.patternId).sort();
     const nfdIds = resultNfd.findings.map((f) => f.patternId).sort();
     expect(nfdIds).toEqual(nfcIds);
+    // Verify the test actually contains decomposed å (a\u030A)
+    expect(nfd).toContain('a\u030A');
   });
 });
 
