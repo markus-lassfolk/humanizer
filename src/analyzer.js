@@ -305,6 +305,8 @@ function calculateCompositeScore(
   // When the text is too short to compute uniformity, rely entirely on the
   // pattern score — blending in a structural zero would silently penalise
   // short texts that carry clear AI vocabulary signals.
+  // uniformityWeight is kept explicit (rather than inferred from patternWeight)
+  // so the intent stays clear if this function is extended in the future.
   const patternWeight = uniformityApplicable ? knobs.patternWeight : 1.0;
   const uniformityWeight = uniformityApplicable ? 1 - knobs.patternWeight : 0.0;
   const blended = patternScore * patternWeight + uniformityScore * uniformityWeight;
