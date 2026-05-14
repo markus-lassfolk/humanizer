@@ -31,6 +31,13 @@ const { wordCount } = require('./patterns');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
 const {
+  normalizeJsonValue,
+  normalizeStatsForOutput,
+  normalizeAnalysisForOutput,
+  formatMetric,
+  LOCALE_UNAVAILABLE_REASON,
+} = require('./metric-normalizer');
+const {
   scanPath,
   compareScanResults,
   compareFiles,
@@ -621,7 +628,8 @@ function readInput() {
  * @param {object} stats - Stats object from computeStats()
  * @returns {string} Formatted report
  */
-function formatStatsReport(stats) {
+function formatStatsReport(stats, options = {}) {
+  stats = normalizeStatsForOutput(stats, options);
   const lines = [];
 
   lines.push('');
@@ -632,34 +640,41 @@ function formatStatsReport(stats) {
 
   lines.push(color.bold('  ── Sentences ──────────────────────────────────'));
   lines.push(`    Count:            ${stats.sentenceCount}`);
-  lines.push(`    Avg length:       ${stats.avgSentenceLength} words`);
-  lines.push(`    Std deviation:    ${stats.sentenceLengthStdDev}`);
-  lines.push(`    Burstiness:       ${stats.burstiness}  ${burstLabel(stats.burstiness)}`);
+  lines.push(`    Avg length:       ${formatMetric(stats, 'avgSentenceLength', ' words')}`);
+  lines.push(`    Std deviation:    ${formatMetric(stats, 'sentenceLengthStdDev')}`);
+  lines.push(
+    `    Burstiness:       ${formatMetric(stats, 'burstiness')}  ${burstLabel(stats.burstiness)}`,
+  );
   lines.push('');
 
   lines.push(color.bold('  ── Vocabulary ─────────────────────────────────'));
   lines.push(`    Total words:      ${stats.wordCount}`);
   lines.push(`    Unique words:     ${stats.uniqueWordCount}`);
   lines.push(
-    `    Type-token ratio: ${stats.typeTokenRatio}  ${ttrLabel(stats.typeTokenRatio, stats.wordCount)}`,
+    `    Type-token ratio: ${formatMetric(stats, 'typeTokenRatio')}  ${ttrLabel(stats.typeTokenRatio, stats.wordCount)}`,
   );
-  lines.push(`    Avg word length:  ${stats.avgWordLength}`);
+  lines.push(`    Avg word length:  ${formatMetric(stats, 'avgWordLength')}`);
   lines.push('');
 
   lines.push(color.bold('  ── Structure ──────────────────────────────────'));
   lines.push(`    Paragraphs:       ${stats.paragraphCount}`);
-  lines.push(`    Avg para length:  ${stats.avgParagraphLength} words`);
-  lines.push(`    Trigram repeat:   ${stats.trigramRepetition}`);
+  lines.push(`    Avg para length:  ${formatMetric(stats, 'avgParagraphLength', ' words')}`);
+  lines.push(`    Trigram repeat:   ${formatMetric(stats, 'trigramRepetition')}`);
   lines.push('');
 
   lines.push(color.bold('  ── Readability ────────────────────────────────'));
-  if (stats.lix !== null) {
-    lines.push(`    LIX:              ${stats.lix}`);
-  } else if (stats.fleschKincaid !== null) {
-    lines.push(`    Flesch-Kincaid:   ${stats.fleschKincaid} grade level`);
+  if (stats.lix !== null || stats.metricAvailability?.lix?.reason !== LOCALE_UNAVAILABLE_REASON) {
+    lines.push(`    LIX:              ${formatMetric(stats, 'lix')}`);
+  } else if (
+    stats.fleschKincaid !== null ||
+    stats.metricAvailability?.fleschKincaid?.reason !== LOCALE_UNAVAILABLE_REASON
+  ) {
+    lines.push(`    Flesch-Kincaid:   ${formatMetric(stats, 'fleschKincaid', ' grade level')}`);
   }
+  const functionWordPercent =
+    stats.functionWordRatio === null ? '' : ` (${(stats.functionWordRatio * 100).toFixed(1)}%)`;
   lines.push(
-    `    Function words:   ${stats.functionWordRatio} (${(stats.functionWordRatio * 100).toFixed(1)}%)`,
+    `    Function words:   ${formatMetric(stats, 'functionWordRatio')}${functionWordPercent}`,
   );
   lines.push('');
 
@@ -805,6 +820,7 @@ function shouldUseChunkedAnalysis(text, cliFlags, resolvedIgnoreCode = null) {
  * @returns {string}
  */
 function burstLabel(b) {
+  if (b === null || b === undefined) return '';
   if (b >= 0.7) return color.green('(high — human-like)');
   if (b >= 0.45) return color.yellow('(moderate)');
   if (b >= 0.25) return color.yellow('(low — somewhat uniform)');
@@ -819,6 +835,7 @@ function burstLabel(b) {
  * @returns {string}
  */
 function ttrLabel(ttr, wc) {
+  if (ttr === null || ttr === undefined) return '';
   if (wc < 100) return color.gray('(too short to assess)');
   if (ttr >= 0.6) return color.green('(high — diverse)');
   if (ttr >= 0.45) return color.yellow('(moderate)');
@@ -869,17 +886,20 @@ function formatColoredReport(result) {
 
   // Statistics
   if (result.stats) {
-    const s = result.stats;
+    const s = normalizeStatsForOutput(result.stats);
     lines.push(color.bold('  ── Statistics ──────────────────────────────────'));
-    lines.push(`  Burstiness: ${s.burstiness}  ${burstLabel(s.burstiness)}`);
+    lines.push(`  Burstiness: ${formatMetric(s, 'burstiness')}  ${burstLabel(s.burstiness)}`);
     lines.push(
-      `  Type-token ratio: ${s.typeTokenRatio}  ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
+      `  Type-token ratio: ${formatMetric(s, 'typeTokenRatio')}  ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
     );
-    lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
-    if (s.lix !== null) {
-      lines.push(`  Readability: LIX ${s.lix}`);
-    } else if (s.fleschKincaid !== null) {
-      lines.push(`  Readability: ${s.fleschKincaid} grade level`);
+    lines.push(`  Trigram repetition: ${formatMetric(s, 'trigramRepetition')}`);
+    if (result.stats.lix !== null) {
+      lines.push(`  Readability: LIX ${formatMetric(s, 'lix')}`);
+    } else if (
+      result.stats.fleschKincaid !== null ||
+      s.metricAvailability?.fleschKincaid?.reason !== LOCALE_UNAVAILABLE_REASON
+    ) {
+      lines.push(`  Readability: ${formatMetric(s, 'fleschKincaid', ' grade level')}`);
     }
     lines.push('');
   }
@@ -1239,7 +1259,10 @@ async function main() {
         if (flags.json) {
           console.log(
             JSON.stringify(
-              filterAnalysisByThreshold(mergeChunkedForJSON(chunked), flags.threshold),
+              normalizeAnalysisForOutput(
+                filterAnalysisByThreshold(mergeChunkedForJSON(chunked), flags.threshold),
+                { locale: opts.locale },
+              ),
               null,
               2,
             ),
@@ -1253,7 +1276,9 @@ async function main() {
       } else {
         const result = analyze(analysisText, analysisOpts);
         if (flags.json) {
-          console.log(formatJSON(filterAnalysisByThreshold(result, flags.threshold)));
+          console.log(
+            formatJSON(filterAnalysisByThreshold(result, flags.threshold), { locale: opts.locale }),
+          );
         } else {
           console.log(formatColoredReport(filterAnalysisByThreshold(result, flags.threshold)));
         }
@@ -1270,12 +1295,12 @@ async function main() {
         if (flags.json) {
           console.log(
             JSON.stringify(
-              {
+              normalizeJsonValue({
                 score: chunked.document.score,
                 locale: opts.locale,
                 chunks: chunked.chunks,
                 aggregate: chunked.aggregate,
-              },
+              }),
               null,
               2,
             ),
@@ -1287,7 +1312,7 @@ async function main() {
       } else {
         const s = score(analysisText, analysisOpts);
         if (flags.json) {
-          console.log(JSON.stringify({ score: s }));
+          console.log(JSON.stringify(normalizeJsonValue({ score: s })));
         } else {
           console.log(scoreBadge(s));
         }
@@ -1314,11 +1339,14 @@ async function main() {
         if (flags.json) {
           console.log(
             JSON.stringify(
-              {
-                ...filterSuggestionsByThreshold(result, flags.threshold),
-                chunks: chunked.chunks,
-                aggregate: chunked.aggregate,
-              },
+              normalizeAnalysisForOutput(
+                {
+                  ...filterSuggestionsByThreshold(result, flags.threshold),
+                  chunks: chunked.chunks,
+                  aggregate: chunked.aggregate,
+                },
+                { locale: opts.locale },
+              ),
               null,
               2,
             ),
@@ -1333,7 +1361,15 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else if (flags.json) {
-        console.log(JSON.stringify(filterSuggestionsByThreshold(result, flags.threshold), null, 2));
+        console.log(
+          JSON.stringify(
+            normalizeAnalysisForOutput(filterSuggestionsByThreshold(result, flags.threshold), {
+              locale: opts.locale,
+            }),
+            null,
+            2,
+          ),
+        );
       } else {
         console.log(formatSuggestions(filterSuggestionsByThreshold(result, flags.threshold)));
         if (flags.autofix && result.autofix) {
@@ -1381,11 +1417,14 @@ async function main() {
         if (flags.json) {
           console.log(
             JSON.stringify(
-              {
-                ...filterSuggestionsByThreshold(result, flags.threshold),
-                chunks: chunked.chunks,
-                aggregate: chunked.aggregate,
-              },
+              normalizeAnalysisForOutput(
+                {
+                  ...filterSuggestionsByThreshold(result, flags.threshold),
+                  chunks: chunked.chunks,
+                  aggregate: chunked.aggregate,
+                },
+                { locale: opts.locale },
+              ),
               null,
               2,
             ),
@@ -1397,7 +1436,15 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else if (flags.json) {
-        console.log(JSON.stringify(filterSuggestionsByThreshold(result, flags.threshold), null, 2));
+        console.log(
+          JSON.stringify(
+            normalizeAnalysisForOutput(filterSuggestionsByThreshold(result, flags.threshold), {
+              locale: opts.locale,
+            }),
+            null,
+            2,
+          ),
+        );
       } else {
         console.log(
           formatGroupedSuggestions(filterSuggestionsByThreshold(result, flags.threshold)),
@@ -1413,9 +1460,11 @@ async function main() {
       const localeProfile = loadLocale(opts.locale);
       const stats = computeStats(statsText, localeProfile);
       if (flags.json) {
-        console.log(JSON.stringify(stats, null, 2));
+        console.log(
+          JSON.stringify(normalizeStatsForOutput(stats, { locale: opts.locale }), null, 2),
+        );
       } else {
-        console.log(formatStatsReport(stats));
+        console.log(formatStatsReport(stats, { locale: opts.locale }));
       }
       break;
     }
@@ -1434,7 +1483,7 @@ async function main() {
         process.exit(1);
       }
       if (flags.json) {
-        console.log(JSON.stringify(result, null, 2));
+        console.log(JSON.stringify(normalizeJsonValue(result), null, 2));
       } else {
         console.log(formatComparisonReport(result));
       }
@@ -1491,7 +1540,7 @@ async function main() {
         : scanResult;
 
       if (flags.json) {
-        console.log(JSON.stringify(outputPayload, null, 2));
+        console.log(JSON.stringify(normalizeJsonValue(outputPayload), null, 2));
       } else {
         console.log(formatScanReport(scanResult, scanOptions.failAbove, baselineComparison));
       }

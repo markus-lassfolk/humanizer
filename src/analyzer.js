@@ -19,6 +19,11 @@ const { computeStats, computeUniformityScore, tokenize } = require('./stats');
 const { stripCodeSnippets } = require('./preprocess');
 const { loadLocale } = require('./locales');
 const { DEFAULT_SCORING_KNOBS, mergeScoringKnobs } = require('./locales/scoring-defaults');
+const {
+  normalizeAnalysisForOutput,
+  normalizeStatsForOutput,
+  formatMetric,
+} = require('./metric-normalizer');
 const { roundDisplayCount } = require('./utils');
 
 // ─── Category Labels ────────────────────────────────────
@@ -418,20 +423,22 @@ function formatReport(result) {
 
   // Stats section
   if (result.stats) {
-    const s = result.stats;
+    const s = normalizeStatsForOutput(result.stats);
     lines.push('── Text Statistics ─────────────────────────────────');
     lines.push(`  Sentences: ${s.sentenceCount}  |  Paragraphs: ${s.paragraphCount}`);
-    lines.push(`  Avg sentence length: ${s.avgSentenceLength} words (σ ${s.sentenceLengthStdDev})`);
-    lines.push(`  Burstiness: ${s.burstiness} ${burstinessLabel(s.burstiness)}`);
     lines.push(
-      `  Vocabulary diversity (TTR): ${s.typeTokenRatio} ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
+      `  Avg sentence length: ${formatMetric(s, 'avgSentenceLength', ' words')} (σ ${formatMetric(s, 'sentenceLengthStdDev')})`,
     );
-    lines.push(`  Function word ratio: ${s.functionWordRatio}`);
-    lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
-    if (s.lix !== null) {
-      lines.push(`  Readability (LIX): ${s.lix}`);
+    lines.push(`  Burstiness: ${formatMetric(s, 'burstiness')} ${burstinessLabel(s.burstiness)}`);
+    lines.push(
+      `  Vocabulary diversity (TTR): ${formatMetric(s, 'typeTokenRatio')} ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
+    );
+    lines.push(`  Function word ratio: ${formatMetric(s, 'functionWordRatio')}`);
+    lines.push(`  Trigram repetition: ${formatMetric(s, 'trigramRepetition')}`);
+    if (result.stats.lix !== null) {
+      lines.push(`  Readability (LIX): ${formatMetric(s, 'lix')}`);
     } else {
-      lines.push(`  Readability (FK grade): ${s.fleschKincaid}`);
+      lines.push(`  Readability (FK grade): ${formatMetric(s, 'fleschKincaid')}`);
     }
     lines.push('');
   }
@@ -505,39 +512,43 @@ function formatMarkdown(result) {
   lines.push('');
 
   if (result.stats) {
-    const s = result.stats;
+    const s = normalizeStatsForOutput(result.stats);
     lines.push('## Text statistics');
     lines.push('');
     lines.push('| Metric | Value | Assessment |');
     lines.push('|--------|-------|------------|');
     lines.push(
-      `| Avg sentence length | ${s.avgSentenceLength} words | ${s.avgSentenceLength > 25 ? 'Long' : s.avgSentenceLength < 12 ? 'Short' : 'Normal'} |`,
+      `| Avg sentence length | ${formatMetric(s, 'avgSentenceLength', ' words')} | ${s.avgSentenceLength === null ? 'Unavailable' : s.avgSentenceLength > 25 ? 'Long' : s.avgSentenceLength < 12 ? 'Short' : 'Normal'} |`,
     );
     lines.push(
-      `| Sentence variation | σ ${s.sentenceLengthStdDev} | ${s.sentenceLengthStdDev > 8 ? 'High (human-like)' : s.sentenceLengthStdDev < 4 ? 'Low (AI-like)' : 'Moderate'} |`,
-    );
-    lines.push(`| Burstiness | ${s.burstiness} | ${burstinessLabel(s.burstiness)} |`);
-    lines.push(
-      `| Vocabulary diversity | ${s.typeTokenRatio} | ${ttrLabel(s.typeTokenRatio, s.wordCount)} |`,
+      `| Sentence variation | σ ${formatMetric(s, 'sentenceLengthStdDev')} | ${s.sentenceLengthStdDev === null ? 'Unavailable' : s.sentenceLengthStdDev > 8 ? 'High (human-like)' : s.sentenceLengthStdDev < 4 ? 'Low (AI-like)' : 'Moderate'} |`,
     );
     lines.push(
-      `| Trigram repetition | ${s.trigramRepetition} | ${s.trigramRepetition > 0.1 ? 'High (AI-like)' : 'Normal'} |`,
+      `| Burstiness | ${formatMetric(s, 'burstiness')} | ${burstinessLabel(s.burstiness)} |`,
     );
-    if (s.lix !== null) {
+    lines.push(
+      `| Vocabulary diversity | ${formatMetric(s, 'typeTokenRatio')} | ${ttrLabel(s.typeTokenRatio, s.wordCount)} |`,
+    );
+    lines.push(
+      `| Trigram repetition | ${formatMetric(s, 'trigramRepetition')} | ${s.trigramRepetition !== null && s.trigramRepetition > 0.1 ? 'High (AI-like)' : s.trigramRepetition === null ? 'Unavailable' : 'Normal'} |`,
+    );
+    if (result.stats.lix !== null) {
       const lixLabel =
-        s.lix > 60
-          ? 'Very hard'
-          : s.lix > 50
-            ? 'Hard'
-            : s.lix > 40
-              ? 'Medium'
-              : s.lix > 30
-                ? 'Easy'
-                : 'Very easy';
-      lines.push(`| Readability | LIX ${s.lix} | ${lixLabel} |`);
+        s.lix === null
+          ? 'Unavailable'
+          : s.lix > 60
+            ? 'Very hard'
+            : s.lix > 50
+              ? 'Hard'
+              : s.lix > 40
+                ? 'Medium'
+                : s.lix > 30
+                  ? 'Easy'
+                  : 'Very easy';
+      lines.push(`| Readability | LIX ${formatMetric(s, 'lix')} | ${lixLabel} |`);
     } else {
       lines.push(
-        `| Readability | FK grade ${s.fleschKincaid} | ${s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`,
+        `| Readability | FK grade ${formatMetric(s, 'fleschKincaid')} | ${s.fleschKincaid === null ? 'Unavailable' : s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`,
       );
     }
     lines.push('');
@@ -569,8 +580,8 @@ function formatMarkdown(result) {
 /**
  * Format analysis as JSON.
  */
-function formatJSON(result) {
-  return JSON.stringify(result, null, 2);
+function formatJSON(result, options = {}) {
+  return JSON.stringify(normalizeAnalysisForOutput(result, options), null, 2);
 }
 
 // ─── Label Helpers ───────────────────────────────────────
@@ -583,6 +594,7 @@ function scoreLabel(s) {
 }
 
 function burstinessLabel(b) {
+  if (b === null || b === undefined) return '';
   if (b >= 0.7) return '(high — human-like)';
   if (b >= 0.45) return '(moderate)';
   if (b >= 0.25) return '(low — somewhat uniform)';
@@ -590,6 +602,7 @@ function burstinessLabel(b) {
 }
 
 function ttrLabel(ttr, wc) {
+  if (ttr === null || ttr === undefined) return '';
   if (wc < 100) return '(too short to assess)';
   if (ttr >= 0.6) return '(high — diverse vocabulary)';
   if (ttr >= 0.45) return '(moderate)';
