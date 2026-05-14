@@ -65,6 +65,11 @@ function analyze(text, opts = {}) {
     return emptyResult();
   }
 
+  // Normalize to NFC so that canonically equivalent Unicode forms (e.g. NFD
+  // decomposed diacritics from some editors/OS integrations) are treated
+  // identically to their NFC equivalents by all downstream detectors.
+  text = text.normalize('NFC');
+
   // Validate locale for all string inputs to keep configuration errors consistent.
   const localeProfile = loadLocale(locale);
   const scoringKnobs = mergeScoringKnobs(localeProfile);
