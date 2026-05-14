@@ -56,20 +56,22 @@ function applyOutsideCodeSnippets(text, transform, opts = {}) {
   if (typeof transform !== 'function') return text;
 
   const { fenced = true, inline = true } = opts;
-  let pattern = INLINE_CODE_SPANS;
+  if (!fenced && !inline) return transform(text);
+
+  let pattern;
   if (fenced && inline) {
     pattern = ALL_CODE_SNIPPETS;
   } else if (fenced) {
     pattern = FENCED_CODE_BLOCKS;
+  } else {
+    pattern = INLINE_CODE_SPANS;
   }
-
-  if (!fenced && !inline) return transform(text);
 
   let result = '';
   let lastIndex = 0;
 
   for (const match of text.matchAll(pattern)) {
-    const start = match.index ?? 0;
+    const start = match.index;
     const snippet = match[0];
     result += transform(text.slice(lastIndex, start));
     result += snippet;
