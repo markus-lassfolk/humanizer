@@ -417,8 +417,10 @@ function formatReport(result) {
     lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
     if (s.lix !== null) {
       lines.push(`  Readability (LIX): ${s.lix}`);
-    } else {
+    } else if (s.fleschKincaid !== null) {
       lines.push(`  Readability (FK grade): ${s.fleschKincaid}`);
+    } else {
+      lines.push(`  Readability: unavailable (input too short)`);
     }
     lines.push('');
   }
@@ -522,10 +524,12 @@ function formatMarkdown(result) {
                 ? 'Easy'
                 : 'Very easy';
       lines.push(`| Readability | LIX ${s.lix} | ${lixLabel} |`);
-    } else {
+    } else if (s.fleschKincaid !== null) {
       lines.push(
         `| Readability | FK grade ${s.fleschKincaid} | ${s.fleschKincaid > 12 ? 'Academic' : s.fleschKincaid > 8 ? 'Standard' : 'Easy'} |`,
       );
+    } else {
+      lines.push(`| Readability | unavailable | input too short |`);
     }
     lines.push('');
   }

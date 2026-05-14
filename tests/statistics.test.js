@@ -10,6 +10,7 @@ import {
   splitSentences,
   tokenize,
   estimateSyllables,
+  safeFinite,
 } from '../src/stats.js';
 
 // ─── Tokenize ────────────────────────────────────────────
@@ -180,7 +181,7 @@ describe('computeStats', () => {
     const stats = computeStats('');
     expect(stats.wordCount).toBe(0);
     expect(stats.sentenceCount).toBe(0);
-    expect(stats.fleschKincaid).toBe(0);
+    expect(stats.fleschKincaid).toBeNull();
   });
 
   it('handles null input', () => {
@@ -257,8 +258,9 @@ describe('computeStats', () => {
   it('computes Flesch-Kincaid grade level', () => {
     const text = 'The cat sat on the mat. The dog ate the bone. The bird flew away.';
     const stats = computeStats(text);
-    expect(stats.fleschKincaid).toBeDefined();
+    expect(stats.fleschKincaid).not.toBeNull();
     expect(typeof stats.fleschKincaid).toBe('number');
+    expect(Number.isFinite(stats.fleschKincaid)).toBe(true);
   });
 
   // Function word ratio
@@ -300,5 +302,74 @@ describe('computeUniformityScore', () => {
     const score = computeUniformityScore(stats);
     expect(score).toBeGreaterThanOrEqual(0);
     expect(score).toBeLessThanOrEqual(100);
+  });
+});
+
+// ─── safeFinite ──────────────────────────────────────────
+
+describe('safeFinite', () => {
+  it('returns finite numbers unchanged', () => {
+    expect(safeFinite(0)).toBe(0);
+    expect(safeFinite(1.5)).toBe(1.5);
+    expect(safeFinite(-3.4)).toBe(-3.4);
+  });
+
+  it('returns null for NaN', () => {
+    expect(safeFinite(NaN)).toBeNull();
+  });
+
+  it('returns null for Infinity', () => {
+    expect(safeFinite(Infinity)).toBeNull();
+    expect(safeFinite(-Infinity)).toBeNull();
+  });
+
+  it('returns null for null input', () => {
+    expect(safeFinite(null)).toBeNull();
+  });
+});
+
+// ─── Non-finite metric guards ────────────────────────────
+
+describe('computeStats — non-finite metric guards', () => {
+  const edgeCases = [
+    ['empty string', ''],
+    ['null', null],
+    ['single word', 'hello'],
+    ['single character', 'x'],
+    ['numbers only', '12345'],
+    ['punctuation only', '...!!!'],
+    ['one sentence', 'Hello world.'],
+    ['two words no period', 'hello world'],
+  ];
+
+  for (const [label, input] of edgeCases) {
+    it(`produces no NaN or undefined numeric metrics for: ${label}`, () => {
+      const stats = computeStats(input);
+      for (const [key, val] of Object.entries(stats)) {
+        if (Array.isArray(val)) continue;
+        if (val === null) continue;
+        expect(
+          typeof val === 'number' && !Number.isFinite(val),
+          `${key} should not be non-finite (got ${val})`,
+        ).toBe(false);
+        expect(val, `${key} should not be undefined`).not.toBeUndefined();
+      }
+    });
+  }
+
+  it('returns null fleschKincaid for empty input', () => {
+    expect(computeStats('').fleschKincaid).toBeNull();
+    expect(computeStats(null).fleschKincaid).toBeNull();
+  });
+
+  it('returns null lix for empty input', () => {
+    expect(computeStats('').lix).toBeNull();
+    expect(computeStats(null).lix).toBeNull();
+  });
+
+  it('returns a finite fleschKincaid for multi-sentence text', () => {
+    const stats = computeStats('The cat sat. The dog ran away quickly.');
+    expect(stats.fleschKincaid).not.toBeNull();
+    expect(Number.isFinite(stats.fleschKincaid)).toBe(true);
   });
 });

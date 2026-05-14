@@ -643,6 +643,8 @@ function formatStatsReport(stats) {
     lines.push(`    LIX:              ${stats.lix}`);
   } else if (stats.fleschKincaid !== null) {
     lines.push(`    Flesch-Kincaid:   ${stats.fleschKincaid} grade level`);
+  } else {
+    lines.push(`    Readability:      ${color.dim('unavailable (input too short)')}`);
   }
   lines.push(
     `    Function words:   ${stats.functionWordRatio} (${(stats.functionWordRatio * 100).toFixed(1)}%)`,
@@ -858,6 +860,8 @@ function formatColoredReport(result) {
       lines.push(`  Readability: LIX ${s.lix}`);
     } else if (s.fleschKincaid !== null) {
       lines.push(`  Readability: ${s.fleschKincaid} grade level`);
+    } else {
+      lines.push(`  Readability: ${color.dim('unavailable (input too short)')}`);
     }
     lines.push('');
   }

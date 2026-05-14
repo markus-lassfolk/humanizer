@@ -234,7 +234,7 @@ function computeStats(text, localeProfile) {
     fleschKincaid =
       sentenceCount > 0
         ? round(0.39 * (wordCount / sentenceCount) + 11.8 * (syllableCount / wordCount) - 15.59)
-        : 0;
+        : null;
   }
 
   return {
@@ -242,18 +242,19 @@ function computeStats(text, localeProfile) {
     uniqueWordCount: uniqueWords.size,
     sentenceCount,
     paragraphCount,
-    avgWordLength: round(avgWordLength),
-    avgSentenceLength: round(avgSentenceLength),
-    sentenceLengthStdDev: round(sentenceLengthStdDev),
-    sentenceLengthVariation: round(sentenceLengthVariation),
-    burstiness: round(burstiness),
-    typeTokenRatio: round(typeTokenRatio),
-    functionWordRatio: round(functionWordRatio),
-    trigramRepetition: round(trigramRepetition),
-    avgParagraphLength: round(avgParagraphLength),
-    // Readability: one of these will be null depending on locale
-    fleschKincaid,
-    lix,
+    avgWordLength: safeFinite(round(avgWordLength)),
+    avgSentenceLength: safeFinite(round(avgSentenceLength)),
+    sentenceLengthStdDev: safeFinite(round(sentenceLengthStdDev)),
+    sentenceLengthVariation: safeFinite(round(sentenceLengthVariation)),
+    burstiness: safeFinite(round(burstiness)),
+    typeTokenRatio: safeFinite(round(typeTokenRatio)),
+    functionWordRatio: safeFinite(round(functionWordRatio)),
+    trigramRepetition: safeFinite(round(trigramRepetition)),
+    avgParagraphLength: safeFinite(round(avgParagraphLength)),
+    // Readability: one of these will be null depending on locale; null signals
+    // unavailable (e.g. input too short to compute a meaningful score).
+    fleschKincaid: safeFinite(fleschKincaid),
+    lix: safeFinite(lix),
     sentenceLengths,
   };
 }
@@ -362,7 +363,7 @@ function emptyStats() {
     functionWordRatio: 0,
     trigramRepetition: 0,
     avgParagraphLength: 0,
-    fleschKincaid: 0,
+    fleschKincaid: null,
     lix: null,
     sentenceLengths: [],
   };
@@ -370,6 +371,19 @@ function emptyStats() {
 
 function round(n) {
   return Math.round(n * 1000) / 1000;
+}
+
+/**
+ * Return null for any non-finite number (NaN, Infinity, -Infinity), otherwise
+ * return the value unchanged. Prevents invalid sentinel values from leaking
+ * into report output or JSON payloads.
+ *
+ * @param {number|null} n
+ * @returns {number|null}
+ */
+function safeFinite(n) {
+  if (n === null) return null;
+  return Number.isFinite(n) ? n : null;
 }
 
 // ─── Exports ─────────────────────────────────────────────
@@ -382,4 +396,5 @@ module.exports = {
   tokenize,
   estimateSyllables,
   protectAbbreviations,
+  safeFinite,
 };
