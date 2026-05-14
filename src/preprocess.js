@@ -262,8 +262,18 @@ function maskRanges(text, ranges) {
  * @param {boolean} opts.inline  Mask inline backtick code spans (default true)
  * @returns {string}
  */
-function stripCodeSnippets(text, opts = {}) {
-  if (!text || typeof text !== 'string') return '';
+/**
+ * Ranges covering fenced / indented code blocks and inline backtick spans
+ * (same boundaries as {@link stripCodeSnippets}).
+ *
+ * @param {string} text
+ * @param {object} [opts]
+ * @param {boolean} [opts.fenced=true]
+ * @param {boolean} [opts.inline=true]
+ * @returns {Array<{ start: number, end: number }>}
+ */
+function collectCodeSnippetRanges(text, opts = {}) {
+  if (!text || typeof text !== 'string') return [];
 
   const { fenced = true, inline = true } = opts;
   const ranges = [];
@@ -290,7 +300,57 @@ function stripCodeSnippets(text, opts = {}) {
     addInlineCodeRanges(text, ranges);
   }
 
-  return maskRanges(text, mergeRanges(ranges));
+  return mergeRanges(ranges);
+}
+
+function stripCodeSnippets(text, opts = {}) {
+  if (!text || typeof text !== 'string') return '';
+  return maskRanges(text, collectCodeSnippetRanges(text, opts));
+}
+
+/**
+ * Internal helper to apply a transform only outside specified ranges, then
+ * restore those ranges byte-for-byte using placeholder tokens.
+ *
+ * @param {string} text
+ * @param {Array<{ start: number, end: number }>} ranges
+ * @param {(unprotectedText: string) => string} transform
+ * @returns {string}
+ */
+function applyTransformWithProtectedRanges(text, ranges, transform) {
+  if (!text || typeof text !== 'string') return transform(text || '');
+  if (ranges.length === 0) return transform(text);
+
+  const placeholders = new Map();
+  let protectedText = '';
+  let cursor = 0;
+
+  for (const { start, end } of ranges) {
+    const index = placeholders.size;
+    const token = `\uE000HUMANIZER_PROTECTED_${index}\uE001`;
+    protectedText += text.slice(cursor, start);
+    protectedText += token;
+    placeholders.set(String(index), text.slice(start, end));
+    cursor = end;
+  }
+  protectedText += text.slice(cursor);
+
+  return transform(protectedText).replace(PROTECTED_TOKEN, (token, index) =>
+    placeholders.has(index) ? placeholders.get(index) : token,
+  );
+}
+
+/**
+ * Apply a transform only outside fenced / inline code spans, then restore
+ * those spans byte-for-byte. Unlike {@link transformMarkdownProse}, this does
+ * not mask tables, blockquotes, MDX, or frontmatter — only literal code regions.
+ *
+ * @param {string} text
+ * @param {(unprotectedText: string) => string} transform
+ * @returns {string}
+ */
+function transformOutsideCodeSnippets(text, transform) {
+  return applyTransformWithProtectedRanges(text, collectCodeSnippetRanges(text), transform);
 }
 
 /**
@@ -323,26 +383,7 @@ function stripMarkdownProtectedRegions(text, opts = {}) {
  * @returns {string}
  */
 function transformMarkdownProse(text, transform) {
-  if (!text || typeof text !== 'string') return transform(text || '');
-
-  const ranges = protectedRanges(text);
-  const placeholders = new Map();
-  let protectedText = '';
-  let cursor = 0;
-
-  for (const { start, end } of ranges) {
-    const index = placeholders.size;
-    const token = `\uE000HUMANIZER_PROTECTED_${index}\uE001`;
-    protectedText += text.slice(cursor, start);
-    protectedText += token;
-    placeholders.set(String(index), text.slice(start, end));
-    cursor = end;
-  }
-  protectedText += text.slice(cursor);
-
-  return transform(protectedText).replace(PROTECTED_TOKEN, (token, index) =>
-    placeholders.has(index) ? placeholders.get(index) : token,
-  );
+  return applyTransformWithProtectedRanges(text, protectedRanges(text), transform);
 }
 
 /**
@@ -406,4 +447,5 @@ module.exports = {
   stripBlockquotes,
   stripMarkdownProtectedRegions,
   transformMarkdownProse,
+  transformOutsideCodeSnippets,
 };

@@ -16,7 +16,7 @@
 
 const { analyze } = require('./analyzer');
 const { loadLocale } = require('./locales');
-const { transformMarkdownProse } = require('./preprocess');
+const { transformOutsideCodeSnippets } = require('./preprocess');
 const { roundDisplayCount } = require('./utils');
 
 const HIDDEN_UNICODE_CHARS = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/;
@@ -33,7 +33,7 @@ const NON_BREAKING_SPACES_GLOBAL = /(?:\u00A0|\u202F)/g;
  * @param {string} text        — Input text
  * @param {object} [opts]      — Options
  * @param {string} [opts.locale='en'] — Locale code
- * @param {boolean} [opts.ignoreCode=false] — Enable markdown protection during fixes
+ * @param {boolean} [opts.ignoreCode=false] — When true, skip fixes inside fenced/inline code only
  * @returns {{ text: string, fixes: string[] }}
  */
 function autoFix(text, opts = {}) {
@@ -148,7 +148,7 @@ function autoFix(text, opts = {}) {
   };
 
   const result = ignoreCode
-    ? transformMarkdownProse(normalized, applyFixes)
+    ? transformOutsideCodeSnippets(normalized, applyFixes)
     : applyFixes(normalized);
 
   return { text: result.trim(), fixes };

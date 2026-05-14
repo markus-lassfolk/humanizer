@@ -6,6 +6,7 @@ import {
   stripBlockquotes,
   stripMarkdownProtectedRegions,
   transformMarkdownProse,
+  transformOutsideCodeSnippets,
 } from '../src/preprocess.js';
 
 describe('stripCodeSnippets', () => {
@@ -271,5 +272,29 @@ describe('transformMarkdownProse', () => {
     expect(output).toContain('to ship, update prose.');
     expect(output).not.toContain('HUMANIZER_PROTECTED');
     expect(output).not.toContain('\uE000');
+  });
+});
+
+describe('transformOutsideCodeSnippets', () => {
+  it('applies transforms in Markdown tables but preserves fenced and inline code spans', () => {
+    const input = [
+      '| Col | Text |',
+      '| --- | --- |',
+      '| a | In order to deploy, go ahead. |',
+      '',
+      '```md',
+      'In order to stay, use this line.',
+      '```',
+      '',
+      'Literal `in order to` phrase.',
+    ].join('\n');
+
+    const output = transformOutsideCodeSnippets(input, (text) =>
+      text.replace(/\bin order to\b/gi, 'to'),
+    );
+
+    expect(output).toContain('| a | to deploy, go ahead. |');
+    expect(output).toContain('In order to stay, use this line.');
+    expect(output).toContain('Literal `in order to` phrase.');
   });
 });
