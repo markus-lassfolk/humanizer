@@ -24,6 +24,10 @@ describe('Pattern registry', () => {
     expect(contentPatterns.every((p) => p.category === 'content')).toBe(true);
   });
 
+  it('registry returns empty list for unknown category', () => {
+    expect(registry.byCategory('vocabulary')).toEqual([]);
+  });
+
   it('registry lists all patterns', () => {
     const list = registry.list();
     expect(Array.isArray(list)).toBe(true);

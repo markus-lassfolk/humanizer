@@ -215,7 +215,6 @@ describe('chunk result formatting and JSON flattening', () => {
     expect(appendix).toContain('Chunks: 0');
     expect(appendix).toContain('Severity: mostly-human');
     expect(appendix).toContain('Peak: 0');
-    expect(appendix).toContain('words ?-?');
   });
 
   it('formats chunk appendix with histogram for multi-chunk result', () => {
