@@ -252,12 +252,12 @@ describe('report output — no NaN or undefined for short/edge inputs', () => {
     });
   }
 
-  it('analyze --json null stats for empty text', () => {
+  it('analyze returns null stats for empty text', () => {
     const result = analyze('');
     expect(result.stats).toBeNull();
   });
 
-  it('analyze --json stats.fleschKincaid is null when input has no sentences', () => {
+  it('analyze stats.fleschKincaid is null or finite when input has no sentences', () => {
     // Punctuation-only text tokenizes to zero words → stats is null in analyze()
     const result = analyze('...');
     // Either stats is null (no words) or FK is null / a finite number
