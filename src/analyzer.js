@@ -557,7 +557,15 @@ function formatMarkdown(result) {
  * Format analysis as JSON.
  */
 function formatJSON(result) {
-  return JSON.stringify(result, null, 2);
+  return JSON.stringify(
+    result,
+    (_key, value) => {
+      if (value === undefined) return null;
+      if (typeof value === 'number' && !Number.isFinite(value)) return null;
+      return value;
+    },
+    2,
+  );
 }
 
 // ─── Label Helpers ───────────────────────────────────────

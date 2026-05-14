@@ -1178,7 +1178,7 @@ async function main() {
       process.exit(1);
     }
 
-    if (!text.trim()) {
+    if (!text.trim() && !(command === 'analyze' && flags.json)) {
       console.error(color.red('Error: Empty input.'));
       process.exit(1);
     }
@@ -1199,11 +1199,7 @@ async function main() {
         const chunked = analyzeChunked(text, opts);
         if (flags.json) {
           console.log(
-            JSON.stringify(
-              filterAnalysisByThreshold(mergeChunkedForJSON(chunked), flags.threshold),
-              null,
-              2,
-            ),
+            formatJSON(filterAnalysisByThreshold(mergeChunkedForJSON(chunked), flags.threshold)),
           );
         } else {
           console.log(

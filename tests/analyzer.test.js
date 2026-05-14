@@ -280,6 +280,30 @@ describe('formatting', () => {
     expect(parsed).toHaveProperty('score');
   });
 
+  it('formatJSON normalizes undefined and non-finite numbers to null', () => {
+    const json = formatJSON({
+      score: Number.NaN,
+      stats: {
+        burstiness: Number.POSITIVE_INFINITY,
+        variation: Number.NEGATIVE_INFINITY,
+        optional: undefined,
+      },
+      samples: [1, Number.NaN, undefined],
+      missing: undefined,
+    });
+
+    expect(JSON.parse(json)).toStrictEqual({
+      score: null,
+      stats: {
+        burstiness: null,
+        variation: null,
+        optional: null,
+      },
+      samples: [1, null, null],
+      missing: null,
+    });
+  });
+
   it('formatMarkdown produces markdown', () => {
     const result = analyze('This is a testament to great things.');
     const md = formatMarkdown(result);
