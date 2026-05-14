@@ -38,11 +38,22 @@ MCP use:
 }
 ```
 
-Unknown locale codes fail fast instead of silently falling back:
+Invalid locale codes are rejected immediately with a clear error instead of being silently accepted or falling back to a default.
+
+CLI error examples:
 
 ```text
-Unknown locale "da". Supported locales: en, sv
+Error: Invalid locale "da" from --locale. Supported locales: en, sv.
+Error: Invalid locale "da" from HUMANIZER_LOCALE. Supported locales: en, sv.
 ```
+
+Locale resolution and validation rules:
+
+- `--locale <code>` takes precedence over `HUMANIZER_LOCALE`.
+- When `--locale` is given, `HUMANIZER_LOCALE` is ignored and not validated.
+- When `HUMANIZER_LOCALE` is set without `--locale`, it is validated and rejected if invalid.
+- `--help` bypasses locale validation entirely.
+- The default locale is `en` when neither flag nor env var is set.
 
 ## Agent skill bundles
 
