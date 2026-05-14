@@ -39,4 +39,12 @@ module.exports = {
   readability: 'lix',
 
   autofixes: AUTOFIXES_SV,
+
+  ui: {
+    tier1Prefix: 'AI-typiskt ord nivå 1',
+    tier2Prefix: 'AI-typiskt ord nivå 2',
+    tier3Prefix: 'AI-typiskt ord nivå 3 (hög densitet)',
+    empiricalPrefix: 'Empirisk AI-signal (corpus log-odds)',
+    vocabSuggestion: 'Byt till ett enklare och mer konkret alternativ.',
+  },
 };

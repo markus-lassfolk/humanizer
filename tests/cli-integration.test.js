@@ -174,6 +174,26 @@ describe('CLI Integration Tests', () => {
 
       expect(result.output).toContain('Score');
     });
+
+    it('does not rewrite fenced or inline markdown code in --autofix output', async () => {
+      const markdown = [
+        '# Runbook',
+        '',
+        'In order to deploy, update the docs.',
+        '',
+        '```md',
+        'In order to deploy, update the config.',
+        '```',
+        '',
+        'Use `in order to` only as a literal phrase.',
+      ].join('\n');
+
+      const result = await runCLI(['humanize', '--autofix'], { stdin: markdown });
+      expect(result.code).toBe(0);
+      expect(result.output).toContain('To deploy, update the docs.');
+      expect(result.output).toContain('In order to deploy, update the config.');
+      expect(result.output).toContain('`in order to`');
+    });
   });
 
   describe('stats command', () => {
@@ -248,6 +268,15 @@ describe('CLI Integration Tests', () => {
 
       const result = await runCLI(['analyze', testFile, '--locale', 'sv']);
       expect(result.output).toContain('Score');
+    });
+
+    it('suggest --locale sv outputs Swedish suggestion text, not English', async () => {
+      const testFile = path.join(__dirname, 'fixtures', 'sv-ai-sample-1.txt');
+      expect(fs.existsSync(testFile), `missing fixture: ${testFile}`).toBe(true);
+
+      const result = await runCLI(['suggest', testFile, '--locale', 'sv']);
+      expect(result.output).not.toContain('Use a simpler, more specific alternative.');
+      expect(result.output).toContain('Byt till ett enklare och mer konkret alternativ.');
     });
   });
 });
