@@ -14,11 +14,12 @@ const INLINE_CODE_SPANS = /`[^`\n]+`/g;
 // YAML frontmatter: optional \r\n line endings, must start at document start
 const FRONTMATTER_RE = /^---\r?\n[\s\S]*?\n---(?:\r?\n|$)/;
 
-// MDX import/export lines
-const MDX_IMPORT_EXPORT_RE = /^(?:import|export)\s+.+$/gm;
+// MDX import/export lines — uses \b and [^\n]+ to avoid polynomial backtracking
+const MDX_IMPORT_EXPORT_RE = /^(?:import|export)\b[^\n]+$/gm;
 
-// JSX/MDX component tags starting with uppercase (self-closing and opening)
-// Matches single-line tags only to avoid catastrophic backtracking.
+// JSX/MDX component tags starting with uppercase (self-closing and opening).
+// Only single-line tags are matched. Attribute values containing literal >
+// (rare in practice) will not be fully covered; use HTML entities instead.
 const MDX_SELF_CLOSING_TAG_RE = /<[A-Z][a-zA-Z0-9.]*(?:\s[^>]*)?\s*\/>/g;
 const MDX_OPEN_TAG_RE = /<[A-Z][a-zA-Z0-9.]*(?:\s[^>]*)?\s*>/g;
 
