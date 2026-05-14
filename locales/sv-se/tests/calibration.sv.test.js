@@ -24,7 +24,7 @@ describe('Swedish AI sample calibration', () => {
     expect(score(text, svOpts)).toBeGreaterThanOrEqual(55);
   });
 
-  it('short Swedish LLM opener has strong pattern score (composite is length-sensitive)', () => {
+  it('short Swedish LLM opener has strong pattern score', () => {
     const text =
       'Bra fråga! Låt oss dyka ner i hur vi kan möjliggöra en mer resilient organisation genom synergier mellan avdelningarna.';
     const r = analyze(text, svOpts);
@@ -56,5 +56,25 @@ describe('Swedish autoFix', () => {
   it('nyttja → använder in running text', () => {
     const { text } = autoFix('Vi ska nyttja det nya systemet i produktion.', svOpts);
     expect(text).toContain('använda');
+  });
+});
+
+describe('Short Swedish AI text handling', () => {
+  it('single-sentence Swedish AI opener surfaces pattern-7 findings', () => {
+    const text = 'I dagens digitala landskap är det avgörande att skapa en robust lösning.';
+    const r = analyze(text, svOpts);
+    expect(r.findings.some((f) => f.patternId === 7)).toBe(true);
+    expect(r.patternScore).toBeGreaterThanOrEqual(50);
+  });
+
+  it('sv-short-ai-1.txt: composite score ≥50 (short text uses pattern score directly)', () => {
+    const text = loadFixture('sv-short-ai-1.txt');
+    expect(score(text, svOpts)).toBeGreaterThanOrEqual(50);
+  });
+
+  it('sv-short-ai-1.txt: reliability is marked low due to length', () => {
+    const text = loadFixture('sv-short-ai-1.txt');
+    const r = analyze(text, svOpts);
+    expect(r.reliability.level).toBe('low');
   });
 });

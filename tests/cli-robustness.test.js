@@ -56,6 +56,7 @@ describe('CLI robustness validation', () => {
     expect(helpRun.status).toBe(0);
     expect(helpRun.stdout).toContain('Usage:');
     expect(helpRun.stderr).toBe('');
+
     const envRun = runCli(['score', '--json'], {
       input: 'This is a testament to robust solutions.',
       env: { HUMANIZER_LOCALE: 'not-a-locale' },
@@ -73,16 +74,6 @@ describe('CLI robustness validation', () => {
     expect(cliHelpRun.status).toBe(0);
     expect(cliHelpRun.stdout).toContain('Usage:');
     expect(cliHelpRun.stderr).toBe('');
-  });
-
-  it('lets CLI locale override a valid locale env var', () => {
-    const run = runCli(['score', '--json', '--locale', 'en'], {
-      input: 'This is a testament to robust solutions.',
-      env: { HUMANIZER_LOCALE: 'sv' },
-    });
-
-    expect(run.status).toBe(0);
-    expect(JSON.parse(run.stdout)).toHaveProperty('score');
   });
 
   it('lets CLI locale override env locale validation', () => {

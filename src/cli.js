@@ -198,10 +198,11 @@ function resolveLocaleForCommand(cliLocale) {
 function validateEnvLocaleIfUsed(cliLocale) {
   if (cliLocale !== null) return;
   const envLocale = process.env.HUMANIZER_LOCALE;
-  if (envLocale && envLocale !== 'en') {
+  if (envLocale) {
     validateLocale(envLocale, 'HUMANIZER_LOCALE');
   }
 }
+
 function validateArgs() {
   for (let i = 1; i < args.length; i++) {
     const arg = args[i];
