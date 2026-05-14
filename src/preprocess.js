@@ -137,9 +137,10 @@ function protectedRanges(text, opts = {}) {
     const newlineIndex = text.indexOf('\n', lineStart);
     const nextLineStart = newlineIndex === -1 ? text.length : newlineIndex + 1;
     const lineWithNewline = text.slice(lineStart, nextLineStart);
-    const line = newlineIndex === -1 ? lineWithNewline : lineWithNewline.slice(0, -1);
+    const lineBeforeTrim = newlineIndex === -1 ? lineWithNewline : lineWithNewline.slice(0, -1);
+    const line = lineBeforeTrim.endsWith('\r') ? lineBeforeTrim.slice(0, -1) : lineBeforeTrim;
     const lineEnd = offset + lineWithNewline.length;
-    const contentEnd = line.endsWith('\r')
+    const contentEnd = lineBeforeTrim.endsWith('\r')
       ? lineEnd - (lineWithNewline.endsWith('\n') ? 2 : 1)
       : lineEnd - (lineWithNewline.endsWith('\n') ? 1 : 0);
 
