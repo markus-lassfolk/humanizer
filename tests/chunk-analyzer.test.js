@@ -192,14 +192,14 @@ describe('chunk-analyzer internals', () => {
     expect(top[1].patternId).toBe(1); // 5*3 = 15
   });
 
-  it('medianSorted calculates median correctly', () => {
+  it('medianSorted returns a 0 sentinel for empty input and medians otherwise', () => {
     expect(medianSorted([])).toBe(0);
     expect(medianSorted([1, 2, 3, 4, 5])).toBe(3);
     expect(medianSorted([1, 2, 3, 4])).toBe(3); // Rounds average
     expect(medianSorted([10])).toBe(10);
   });
 
-  it('percentileSorted calculates percentiles correctly', () => {
+  it('percentileSorted returns a 0 sentinel for empty input and computes percentiles', () => {
     expect(percentileSorted([], 0.5)).toBe(0);
     const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     expect(percentileSorted(data, 0.5)).toBe(5); // Uses decimal 0-1

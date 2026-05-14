@@ -40,6 +40,9 @@ describe('Pattern registry', () => {
     const categories = registry.categories();
     expect(Array.isArray(categories)).toBe(true);
     expect(categories.length).toBeGreaterThan(0);
+    expect(categories).toEqual(
+      expect.arrayContaining(['content', 'language', 'style', 'communication', 'filler']),
+    );
     expect(categories).not.toContain('vocabulary');
   });
 });
