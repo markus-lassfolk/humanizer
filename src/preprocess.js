@@ -56,8 +56,12 @@ function applyOutsideCodeSnippets(text, transform, opts = {}) {
   if (typeof transform !== 'function') return text;
 
   const { fenced = true, inline = true } = opts;
-  const pattern =
-    fenced && inline ? ALL_CODE_SNIPPETS : fenced ? FENCED_CODE_BLOCKS : INLINE_CODE_SPANS;
+  let pattern = INLINE_CODE_SPANS;
+  if (fenced && inline) {
+    pattern = ALL_CODE_SNIPPETS;
+  } else if (fenced) {
+    pattern = FENCED_CODE_BLOCKS;
+  }
 
   if (!fenced && !inline) return transform(text);
 

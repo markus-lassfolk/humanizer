@@ -179,7 +179,7 @@ function humanize(text, opts = {}) {
     verbose = true,
     strict = false,
     withLm = false,
-    autofixIgnoreCode = ignoreCode,
+    autofixIgnoreCode = false,
   } = opts;
 
   const analysis = analyze(text, {
