@@ -142,14 +142,8 @@ function protectedRanges(text, opts = {}) {
     const contentEnd = line.endsWith('\r')
       ? lineEnd - (lineWithNewline.endsWith('\n') ? 2 : 1)
       : lineEnd - (lineWithNewline.endsWith('\n') ? 1 : 0);
-    const trimmed = line.trim();
 
-    if (
-      frontmatter &&
-      !frontmatterDone &&
-      lineNumber === 0 &&
-      (trimmed === '---' || trimmed === '...')
-    ) {
+    if (frontmatter && !frontmatterDone && lineNumber === 0 && (line === '---' || line === '...')) {
       frontmatterOpen = true;
       frontmatterStart = offset;
       offset = lineEnd;
@@ -159,7 +153,7 @@ function protectedRanges(text, opts = {}) {
     }
 
     if (frontmatterOpen) {
-      if (trimmed === '---' || trimmed === '...') {
+      if (line === '---' || line === '...') {
         addRange(ranges, frontmatterStart, contentEnd);
         frontmatterOpen = false;
         frontmatterDone = true;

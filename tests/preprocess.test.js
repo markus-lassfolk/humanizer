@@ -46,6 +46,15 @@ describe('stripMarkdownProtectedRegions', () => {
     expect(masked).toContain('---');
     expect(masked).toContain('Real prose uses robust solutions');
   });
+
+  it('treats indented opening delimiter as prose not frontmatter', () => {
+    const input = ['   ---', 'title: Test', '---', '', 'Real prose here.'].join('\n');
+    const masked = stripMarkdownProtectedRegions(input);
+
+    expect(masked).toContain('---');
+    expect(masked).toContain('Real prose here.');
+  });
+
   it('masks frontmatter, tables, MDX, and blockquotes while preserving prose', () => {
     const input = [
       '---',
