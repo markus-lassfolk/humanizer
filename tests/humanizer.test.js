@@ -129,6 +129,25 @@ describe('autoFix', () => {
     expect(first.text).toContain('Nu');
     expect(first.text).not.toContain('dagsläget');
   });
+  it('applies generated English prescriptive autofixes', () => {
+    const { text, fixes } = autoFix('We met subsequent to the review.', { locale: 'en' });
+    expect(text).toBe('We met after the review.');
+    expect(fixes).toContain('"subsequent to" → "after"');
+  });
+
+  it('does not apply unsafe noun-to-verb English prescriptive autofixes', () => {
+    const { text, fixes } = autoFix('Need clarification before implementation.', { locale: 'en' });
+    expect(text).toBe('Need clarification before implementation.');
+    expect(text).not.toContain('Need clarify');
+    expect(fixes).not.toContain('"clarification" → "clarify"');
+    expect(fixes).not.toContain('"implementation" → "implement"');
+  });
+
+  it('does not apply context-sensitive sunset autofixes to ordinary nouns', () => {
+    const { text, fixes } = autoFix('The sunset over the bay was orange.', { locale: 'en' });
+    expect(text).toBe('The sunset over the bay was orange.');
+    expect(fixes).not.toContain('"sunset" → "retire"');
+  });
 });
 
 // ─── humanize ────────────────────────────────────────────
@@ -245,10 +264,20 @@ describe('buildGuidance', () => {
     const tipText = 'Consider rewriting from scratch.';
 
     const suppressedByCalibratedScore = buildGuidance({ score: 20, rawScore: 72, findings: [] });
-    expect(suppressedByCalibratedScore.some((tip) => tip.includes(tipText))).toBe(true);
+    expect(
+      suppressedByCalibratedScore.some((item) => {
+        const text = typeof item === 'string' ? item : item.text;
+        return text.includes(tipText);
+      }),
+    ).toBe(true);
 
     const lowRawScore = buildGuidance({ score: 90, rawScore: 30, findings: [] });
-    expect(lowRawScore.some((tip) => tip.includes(tipText))).toBe(false);
+    expect(
+      lowRawScore.some((item) => {
+        const text = typeof item === 'string' ? item : item.text;
+        return text.includes(tipText);
+      }),
+    ).toBe(false);
   });
 });
 
