@@ -37,7 +37,7 @@ const NON_BREAKING_SPACES_GLOBAL = /(?:\u00A0|\u202F)/g;
 function autoFix(text, opts = {}) {
   const { locale = 'en' } = opts;
   const localeProfile = loadLocale(locale);
-  let result = text;
+  let result = typeof text === 'string' ? text.normalize('NFC') : text;
   const fixes = [];
 
   // Curly quotes → straight quotes
@@ -382,7 +382,9 @@ function buildGuidance(analysis, locale = 'en') {
   }
   if (ids.has(29)) {
     tips.push({
-      text: 'Remove hidden unicode characters (zero-width, soft hyphen, NBSP). They can break readability and look like detector-gaming obfuscation.',
+      text: sv
+        ? 'Ta bort dolda Unicode-tecken (nollbredd, mjukt bindestreck, hårt blanksteg). De kan störa läsbarheten och likna försök att lura detektorer.'
+        : 'Remove hidden unicode characters (zero-width, soft hyphen, NBSP). They can break readability and look like detector-gaming obfuscation.',
       patternIds: [29],
     });
   }

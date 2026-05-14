@@ -31,7 +31,12 @@ const { wordCount } = require('./patterns');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
 const { scanPath, compareScanResults, compareFiles, normalizeExtensions } = require('./workflows');
-const { stripCodeSnippets, stripFrontmatter, stripMdxComponents, stripBlockquotes } = require('./preprocess');
+const {
+  stripCodeSnippets,
+  stripFrontmatter,
+  stripMdxComponents,
+  stripBlockquotes,
+} = require('./preprocess');
 const { roundDisplayCount } = require('./utils');
 
 // ─── Tiny Color Helper (no chalk dependency) ─────────────
@@ -202,7 +207,7 @@ function resolveLocaleForCommand(cliLocale) {
 function validateEnvLocaleIfUsed(cliLocale) {
   if (cliLocale !== null) return;
   const envLocale = process.env.HUMANIZER_LOCALE;
-  if (envLocale && envLocale !== 'en') {
+  if (envLocale) {
     validateLocale(envLocale, 'HUMANIZER_LOCALE');
   }
 }
@@ -439,12 +444,10 @@ function resolveScanOptions() {
     typeof scanConfig.ignoreCode === 'boolean' ? scanConfig.ignoreCode : null;
   const configIgnoreFrontmatter =
     typeof scanConfig.ignoreFrontmatter === 'boolean' ? scanConfig.ignoreFrontmatter : null;
-  const configIgnoreMdx =
-    typeof scanConfig.ignoreMdx === 'boolean' ? scanConfig.ignoreMdx : null;
+  const configIgnoreMdx = typeof scanConfig.ignoreMdx === 'boolean' ? scanConfig.ignoreMdx : null;
   const configIgnoreBlockquotes =
     typeof scanConfig.ignoreBlockquotes === 'boolean' ? scanConfig.ignoreBlockquotes : null;
-  const configProseOnly =
-    typeof scanConfig.proseOnly === 'boolean' ? scanConfig.proseOnly : null;
+  const configProseOnly = typeof scanConfig.proseOnly === 'boolean' ? scanConfig.proseOnly : null;
   const configFailOnRegression =
     typeof scanConfig.failOnRegression === 'boolean' ? scanConfig.failOnRegression : null;
   const configBaseline =
@@ -476,17 +479,11 @@ function resolveScanOptions() {
       : (configIncludeDefaultIgnore ?? true);
   const ignoreCode = flags.ignoreCode !== null ? flags.ignoreCode : (configIgnoreCode ?? false);
   const ignoreFrontmatter =
-    flags.ignoreFrontmatter !== null
-      ? flags.ignoreFrontmatter
-      : (configIgnoreFrontmatter ?? false);
-  const ignoreMdx =
-    flags.ignoreMdx !== null ? flags.ignoreMdx : (configIgnoreMdx ?? false);
+    flags.ignoreFrontmatter !== null ? flags.ignoreFrontmatter : (configIgnoreFrontmatter ?? false);
+  const ignoreMdx = flags.ignoreMdx !== null ? flags.ignoreMdx : (configIgnoreMdx ?? false);
   const ignoreBlockquotes =
-    flags.ignoreBlockquotes !== null
-      ? flags.ignoreBlockquotes
-      : (configIgnoreBlockquotes ?? false);
-  const proseOnly =
-    flags.proseOnly !== null ? flags.proseOnly : (configProseOnly ?? false);
+    flags.ignoreBlockquotes !== null ? flags.ignoreBlockquotes : (configIgnoreBlockquotes ?? false);
+  const proseOnly = flags.proseOnly !== null ? flags.proseOnly : (configProseOnly ?? false);
 
   if (failOnRegression && !baseline) {
     throw new Error(

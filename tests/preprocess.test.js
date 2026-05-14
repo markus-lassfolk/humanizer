@@ -73,11 +73,7 @@ describe('stripFrontmatter', () => {
 
 describe('stripMdxComponents', () => {
   it('masks MDX import lines and preserves line count', () => {
-    const input = [
-      'import Widget from "./Widget";',
-      '',
-      'Normal prose here.',
-    ].join('\n');
+    const input = ['import Widget from "./Widget";', '', 'Normal prose here.'].join('\n');
 
     const output = stripMdxComponents(input);
 
@@ -127,7 +123,7 @@ describe('stripBlockquotes', () => {
     const input = [
       'Maja wrote:',
       '',
-      '> In today\'s rapidly evolving digital landscape, we leverage innovative solutions.',
+      "> In today's rapidly evolving digital landscape, we leverage innovative solutions.",
       '',
       'My note: this quote is from a vendor deck, not our wording.',
     ].join('\n');
