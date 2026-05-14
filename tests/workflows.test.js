@@ -2,7 +2,8 @@
  * workflows.test.js — Tests for scan/compare workflows.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import { createRequire } from 'module';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -16,6 +17,8 @@ import {
   compareTexts,
   compareFiles,
 } from '../src/workflows.js';
+
+const require = createRequire(import.meta.url);
 
 describe('normalizeExtensions', () => {
   it('normalizes bare extensions with dots', () => {
@@ -269,39 +272,57 @@ describe('scanPath', () => {
     expect(enScan.files[0].score).toBeLessThan(svScan.files[0].score);
   });
 
-  it('isolates analyze failures and reports them per file', () => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
-    const badFile = path.join(tmp, 'bad.md');
-    const goodFile = path.join(tmp, 'good.md');
+  it('throws when scan locale is unknown before any file is analyzed', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-locale-'));
     try {
-      fs.writeFileSync(badFile, 'TRIGGER_ANALYZE_ERROR');
       fs.writeFileSync(
-        goodFile,
+        path.join(tmp, 'a.md'),
+        'The team shipped the fix on Friday and monitored logs overnight.',
+      );
+      expect(() =>
+        scanPath(tmp, { exts: ['md'], minWords: 1, locale: 'invalid-locale-for-testing' }),
+      ).toThrow(/Unknown locale/);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it('isolates unexpected per-file analyze errors and continues', () => {
+    const analyzer = require('../src/analyzer.js');
+    const orig = analyzer.analyze.bind(analyzer);
+    const spy = vi.spyOn(analyzer, 'analyze').mockImplementation((text, opts) => {
+      if (typeof text === 'string' && text.includes('__SCAN_THROW__')) {
+        throw new Error('simulated per-file analyze failure');
+      }
+      return orig(text, opts);
+    });
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-perfile-'));
+    try {
+      fs.writeFileSync(
+        path.join(tmp, 'bad.md'),
+        ['__SCAN_THROW__', 'The team shipped the fix on Friday and monitored logs overnight.'].join(
+          ' ',
+        ),
+      );
+      fs.writeFileSync(
+        path.join(tmp, 'good.md'),
         'The team shipped the fix on Friday and monitored logs overnight.',
       );
 
-      const result = scanPath(tmp, {
-        exts: ['md'],
-        minWords: 1,
-        locale: 'invalid-locale-for-testing',
-      });
+      const result = scanPath(tmp, { exts: ['md'], minWords: 1, locale: 'en' });
 
-      expect(result.summary.scannedFiles).toBe(0);
-      expect(result.summary.failedFiles).toBe(2);
-      expect(result.files).toEqual([]);
+      expect(result.files).toHaveLength(1);
+      expect(result.files[0].file.endsWith('good.md')).toBe(true);
       expect(result.skipped).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            file: badFile,
-            reason: expect.stringContaining('analyze_error:'),
-          }),
-          expect.objectContaining({
-            file: goodFile,
+            file: path.join(tmp, 'bad.md'),
             reason: expect.stringContaining('analyze_error:'),
           }),
         ]),
       );
     } finally {
+      spy.mockRestore();
       fs.rmSync(tmp, { recursive: true, force: true });
     }
   });

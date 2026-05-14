@@ -43,6 +43,23 @@ describe('autoFix', () => {
     expect(text).toBe("It's a fine day.");
   });
 
+  it('normalizes NFD input to NFC in autoFix and records the normalization fix', () => {
+    const nfc = 'café';
+    const nfd = 'cafe\u0301';
+    expect(nfd.normalize('NFC')).toBe(nfc);
+    const { text, fixes } = autoFix(nfd, { locale: 'en' });
+    expect(text).toBe(nfc);
+    expect(fixes).toContain('Normalized Unicode to NFC (composed form)');
+  });
+
+  it('normalizes NFD Swedish input to NFC in autoFix (canonically equivalent to NFC)', () => {
+    const nfc = 'Det \u00E4r en s\u00F6ml\u00F6s l\u00F6sning.';
+    const nfd = nfc.normalize('NFD');
+    const { text, fixes } = autoFix(nfd, { locale: 'sv' });
+    expect(text).toBe(nfc);
+    expect(fixes).toContain('Normalized Unicode to NFC (composed form)');
+  });
+
   it('replaces "in order to" with "to"', () => {
     const { text } = autoFix('In order to succeed, we must work hard.');
     expect(text).toMatch(/to succeed/i);

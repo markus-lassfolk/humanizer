@@ -110,9 +110,9 @@ describe('unicode and special characters', () => {
   // NFD decomposed diacritics (å, ä, ö as combining sequences) must produce
   // the same score and pattern matches as their NFC equivalents.
   it('NFD Swedish text scores same as NFC equivalent', () => {
-    // NFC: sömlös, NFD: so\u0308mlo\u0308s
     const nfc = 'Det \u00E4r en s\u00F6ml\u00F6s l\u00F6sning.';
-    const nfd = 'Det a\u0308r en so\u0308mlo\u0308s lo\u0308sning.';
+    const nfd = nfc.normalize('NFD');
+    expect(nfd.normalize('NFC')).toBe(nfc);
     const resultNfc = analyze(nfc, { locale: 'sv' });
     const resultNfd = analyze(nfd, { locale: 'sv' });
     expect(resultNfd.score).toBe(resultNfc.score);
@@ -120,18 +120,16 @@ describe('unicode and special characters', () => {
   });
 
   it('NFD Swedish text with å, ä, ö matches same pattern IDs as NFC', () => {
-    // NFC forms of avgörande and föränderliga, including words with å (jämföra, välja)
-    const nfc = 'Det är avgörande att föränderliga lösningar fungerar. Jämföra och välja.';
-    // NFD: decomposed ä → a\u0308, ö → o\u0308, å → a\u030A
-    const nfd =
-      'Det a\u0308r avgo\u0308rande att fo\u0308ra\u0308nderliga lo\u0308sningar fungerar. Ja\u030Amfo\u0308ra och va\u0308lja.';
+    // Include "på" so NFD contains decomposed å (a + combining ring above), not only ä/ö.
+    const nfc = 'Det är avgörande att föränderliga lösningar fungerar. Jämföra och välja på mötet.';
+    const nfd = nfc.normalize('NFD');
+    expect(nfd.normalize('NFC')).toBe(nfc);
     const resultNfc = analyze(nfc, { locale: 'sv' });
     const resultNfd = analyze(nfd, { locale: 'sv' });
     const nfcIds = resultNfc.findings.map((f) => f.patternId).sort();
     const nfdIds = resultNfd.findings.map((f) => f.patternId).sort();
     expect(nfdIds).toEqual(nfcIds);
-    // Verify the test actually contains decomposed å (a\u030A)
-    expect(nfd).toContain('a\u030A');
+    expect(nfd).toContain('\u030A');
   });
 });
 
