@@ -126,7 +126,13 @@ function normalizeWordEntry(entry) {
  * Scan text for words from a tier list. Returns matches with word-specific suggestions.
  * Supports weighted entries (matchWeight) for empirical calibration.
  */
-function scanWordList(text, wordList, suggestionPrefix, confidence = 'high') {
+function scanWordList(
+  text,
+  wordList,
+  suggestionPrefix,
+  confidence = 'high',
+  suggestionSuffix = 'Use a simpler, more specific alternative.',
+) {
   const results = [];
   for (const raw of wordList) {
     const { word, weight } = normalizeWordEntry(raw);
@@ -135,7 +141,7 @@ function scanWordList(text, wordList, suggestionPrefix, confidence = 'high') {
     const matches = findMatches(
       text,
       regex,
-      `${suggestionPrefix}: "${word}". Use a simpler, more specific alternative.`,
+      `${suggestionPrefix}: "${word}". ${suggestionSuffix}`,
       confidence,
     );
     for (const m of matches) {
@@ -430,28 +436,33 @@ const patterns = [
       const tier3 = profile ? profile.tier3 : TIER_3;
       const phrases = profile ? profile.phrases : AI_PHRASES;
 
+      // Use locale-specific UI strings if provided; fall back to English defaults.
+      const ui = (profile && profile.ui) || {};
+      const tier1Prefix = ui.tier1Prefix || 'Tier 1 AI word';
+      const tier2Prefix = ui.tier2Prefix || 'Tier 2 AI word';
+      const tier3Prefix = ui.tier3Prefix || 'Tier 3 AI word (high density)';
+      const empiricalPrefix =
+        ui.empiricalPrefix ||
+        'Empirical AI signal (corpus log-odds — npm run corpus:refresh to rebuild)';
+      const vocabSuggestion = ui.vocabSuggestion || 'Use a simpler, more specific alternative.';
+
       const results = [];
       const words = wordCount(text);
 
       // Tier 1: always flag
-      results.push(...scanWordList(text, tier1, 'Tier 1 AI word', 'high'));
+      results.push(...scanWordList(text, tier1, tier1Prefix, 'high', vocabSuggestion));
 
       // Empirical n-grams from bundled sv-frequencies.json (Swedish); excludes
       // stopwords and curated tier keys. Refresh: npm run corpus:logodds
       const empiricalExtra = profile && profile.empiricalExtra ? profile.empiricalExtra : [];
       if (empiricalExtra.length > 0) {
         results.push(
-          ...scanWordList(
-            text,
-            empiricalExtra,
-            'Empirical AI signal (corpus log-odds — npm run corpus:refresh to rebuild)',
-            'medium',
-          ),
+          ...scanWordList(text, empiricalExtra, empiricalPrefix, 'medium', vocabSuggestion),
         );
       }
 
       // Tier 2: flag if 2+ tier-2 words appear
-      const tier2Matches = scanWordList(text, tier2, 'Tier 2 AI word', 'medium');
+      const tier2Matches = scanWordList(text, tier2, tier2Prefix, 'medium', vocabSuggestion);
       if (tier2Matches.length >= 2) {
         results.push(...tier2Matches);
       }
@@ -465,7 +476,7 @@ const patterns = [
         }, 0);
         const density = tier3Count / words;
         if (density > 0.03) {
-          results.push(...scanWordList(text, tier3, 'Tier 3 AI word (high density)', 'low'));
+          results.push(...scanWordList(text, tier3, tier3Prefix, 'low', vocabSuggestion));
         }
       }
 
