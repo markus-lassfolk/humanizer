@@ -152,12 +152,16 @@ function preserveReplacementCase(match, replacement) {
  * @param {string} text    — Input text
  * @param {object} opts    — Options:
  *   - autofix {boolean}   Apply safe auto-fixes
- *   - verbose {boolean}   Show all matches
- *   - includeStats {boolean}  Include statistical suggestions
- *   - ignoreCode {boolean}  Ignore fenced/inline code snippets during analysis
- *   - locale {string}     Locale code: 'en' (default) or 'sv'
- *   - strict {boolean}    Enable pattern 35 (inclusive-language hints)
- *   - withLm {boolean}    Add n-gram LM uniformity boost
+ *   - verbose {boolean}          Show all matches
+ *   - includeStats {boolean}     Include statistical suggestions
+ *   - ignoreCode {boolean}       Ignore fenced/inline code snippets during analysis
+ *   - ignoreFrontmatter {boolean} Ignore YAML frontmatter during analysis
+ *   - ignoreMdx {boolean}        Ignore MDX import/export lines and JSX component tags
+ *   - ignoreBlockquotes {boolean} Ignore Markdown blockquote lines (> …)
+ *   - proseOnly {boolean}        Shorthand for ignoreFrontmatter + ignoreMdx + ignoreBlockquotes
+ *   - locale {string}            Locale code: 'en' (default) or 'sv'
+ *   - strict {boolean}           Enable pattern 35 (inclusive-language hints)
+ *   - withLm {boolean}           Add n-gram LM uniformity boost
  * @returns {object}       — Suggestions report
  */
 function humanize(text, opts = {}) {
@@ -165,6 +169,10 @@ function humanize(text, opts = {}) {
     autofix = false,
     includeStats = true,
     ignoreCode = false,
+    ignoreFrontmatter = false,
+    ignoreMdx = false,
+    ignoreBlockquotes = false,
+    proseOnly = false,
     locale = 'en',
     verbose = true,
     strict = false,
@@ -175,6 +183,10 @@ function humanize(text, opts = {}) {
     verbose,
     includeStats,
     ignoreCode,
+    ignoreFrontmatter,
+    ignoreMdx,
+    ignoreBlockquotes,
+    proseOnly,
     locale,
     strict,
     withLm,

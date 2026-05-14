@@ -114,6 +114,10 @@ function scanPath(targetPath, opts = {}) {
     ignoreDirs = null,
     includeDefaultIgnore = true,
     ignoreCode = false,
+    ignoreFrontmatter = false,
+    ignoreMdx = false,
+    ignoreBlockquotes = false,
+    proseOnly = false,
     locale = 'en',
   } = opts;
 
@@ -138,7 +142,16 @@ function scanPath(targetPath, opts = {}) {
       continue;
     }
 
-    const result = analyze(text, { includeStats, verbose: false, ignoreCode, locale });
+    const result = analyze(text, {
+      includeStats,
+      verbose: false,
+      ignoreCode,
+      ignoreFrontmatter,
+      ignoreMdx,
+      ignoreBlockquotes,
+      proseOnly,
+      locale,
+    });
 
     for (const finding of result.findings) {
       const existing = patternHotspotMap.get(finding.patternId) || {
