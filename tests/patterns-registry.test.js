@@ -25,7 +25,7 @@ describe('Pattern registry', () => {
   });
 
   it('registry returns empty list for unknown category', () => {
-    expect(registry.byCategory('vocabulary')).toEqual([]);
+    expect(registry.byCategory('nonexistent-category')).toEqual([]);
   });
 
   it('registry lists all patterns', () => {
