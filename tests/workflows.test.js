@@ -220,7 +220,10 @@ describe('scanPath', () => {
   it('does not treat literal replacement characters as binary content', () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
 
-    fs.writeFileSync(path.join(tmp, 'replacement.md'), 'Literal replacement char: � in prose text.');
+    fs.writeFileSync(
+      path.join(tmp, 'replacement.md'),
+      'Literal replacement char: � in prose text.',
+    );
 
     const result = scanPath(tmp, { exts: ['md'], minWords: 1 });
 
