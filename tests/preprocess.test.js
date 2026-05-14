@@ -55,6 +55,19 @@ describe('stripMarkdownProtectedRegions', () => {
     expect(masked).toContain('Real prose here.');
   });
 
+  it('ends pseudo-frontmatter when an MDX component line appears before a closing delimiter', () => {
+    const input = [
+      '---',
+      '<Widget description="Comprehensive seamless transformation" />',
+      '',
+      'Author note: comprehensive work continues.',
+    ].join('\n');
+    const masked = stripMarkdownProtectedRegions(input);
+
+    expect(masked).not.toContain('Comprehensive seamless transformation');
+    expect(masked).toContain('Author note: comprehensive work continues.');
+  });
+
   it('masks frontmatter, tables, MDX, and blockquotes while preserving prose', () => {
     const input = [
       '---',

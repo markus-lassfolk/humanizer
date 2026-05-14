@@ -168,6 +168,7 @@ function protectedRanges(text, opts = {}) {
       if (
         isFenceLine(line) ||
         isMdxEsmLine(line) ||
+        isMdxComponentLine(line) ||
         isMarkdownTableSeparator(line) ||
         isMarkdownTableRow(line) ||
         isBlockquoteLine(line)
