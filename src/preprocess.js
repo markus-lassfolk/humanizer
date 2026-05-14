@@ -28,7 +28,26 @@ function fenceMarker(line) {
 
 function isMdxEsmLine(line) {
   const trimmed = line.trimStart();
-  return trimmed.startsWith('import ') || trimmed.startsWith('export ');
+  if (trimmed.startsWith('import ')) {
+    return (
+      trimmed.includes(' from ') || trimmed.startsWith("import '") || trimmed.startsWith('import "')
+    );
+  }
+
+  if (!trimmed.startsWith('export ')) return false;
+  return (
+    trimmed.startsWith('export const ') ||
+    trimmed.startsWith('export let ') ||
+    trimmed.startsWith('export var ') ||
+    trimmed.startsWith('export function ') ||
+    trimmed.startsWith('export async function ') ||
+    trimmed.startsWith('export class ') ||
+    trimmed.startsWith('export default ') ||
+    trimmed.startsWith('export type ') ||
+    trimmed.startsWith('export interface ') ||
+    trimmed.startsWith('export {') ||
+    trimmed.startsWith('export *')
+  );
 }
 
 function isMdxComponentLine(line) {

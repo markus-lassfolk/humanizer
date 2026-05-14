@@ -2,7 +2,14 @@
  * locales/en/index.js — English locale profile (default).
  */
 
-const { TIER_1, TIER_2, TIER_3, AI_PHRASES, FUNCTION_WORDS } = require('./vocabulary');
+const {
+  TIER_1,
+  TIER_2,
+  TIER_3,
+  AI_PHRASES,
+  FUNCTION_WORDS,
+  AUTOFIXES_EN,
+} = require('./vocabulary');
 const { PATTERN_PACKS_EN } = require('./pattern-packs');
 const { SCORING_KNOBS_EN } = require('../scoring-defaults');
 
@@ -41,7 +48,7 @@ module.exports = {
 
   readability: 'flesch-kincaid',
 
-  autofixes: [],
+  autofixes: AUTOFIXES_EN,
 
   empiricalExtra: [],
 
