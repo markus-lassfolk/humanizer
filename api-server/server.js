@@ -37,6 +37,8 @@ const PORT = process.env.PORT || 3000;
 const pkg = loadPackageMetadata();
 const PKG_VERSION = typeof pkg.version === 'string' ? pkg.version : '0.0.0';
 
+const POST_ROUTES = new Set(['/api/score', '/api/analyze', '/api/humanize', '/api/stats']);
+
 function parseMaxBodyBytes(rawValue, fallback = 1_000_000) {
   if (rawValue == null || rawValue === '') {
     return fallback;
@@ -133,6 +135,13 @@ function isSupportedLocale(locale) {
   return typeof locale === 'string' && SUPPORTED_LOCALES.includes(locale);
 }
 
+function validateTextInput(body) {
+  if (!body || typeof body.text !== 'string' || body.text.trim().length === 0) {
+    return { ok: false, error: 'text must be a non-empty string' };
+  }
+  return { ok: true, text: body.text };
+}
+
 /** Auto-chunk when word count ≥ 2× windowWords (600 with defaults), unless body.chunked overrides. */
 function shouldRunChunked(body, text) {
   const ignoreCode = body.ignoreCode === true;
@@ -185,10 +194,17 @@ async function handleRequest(req, res) {
     if (req.method === 'POST') {
       const body = await parseBody(req);
 
-      if (!body.text) {
-        sendJson(res, { error: 'Missing required field: text' }, 400);
+      if (!POST_ROUTES.has(route)) {
+        sendJson(res, { error: 'Not found' }, 404);
         return;
       }
+
+      const textValidation = validateTextInput(body);
+      if (!textValidation.ok) {
+        sendJson(res, { error: textValidation.error }, 400);
+        return;
+      }
+      const { text } = textValidation;
 
       // Optional locale field: 'en' (default) or 'sv'
       const locale = body.locale || 'en';
@@ -206,7 +222,7 @@ async function handleRequest(req, res) {
       switch (route) {
         case '/api/score': {
           const opts = { locale, ignoreCode: body.ignoreCode === true };
-          const s = score(body.text, opts);
+          const s = score(text, opts);
           const badge = s <= 19 ? '🟢' : s <= 44 ? '🟡' : s <= 69 ? '🟠' : '🔴';
           const interpretation =
             s <= 19
@@ -217,8 +233,8 @@ async function handleRequest(req, res) {
                   ? 'Moderately AI-influenced'
                   : 'Heavily AI-generated';
           const payload = { score: s, badge, interpretation, locale };
-          if (shouldRunChunked(body, body.text)) {
-            const chunked = analyzeChunked(body.text, opts);
+          if (shouldRunChunked(body, text)) {
+            const chunked = analyzeChunked(text, opts);
             payload.chunks = chunked.chunks;
             payload.aggregate = chunked.aggregate;
           }
@@ -233,24 +249,24 @@ async function handleRequest(req, res) {
             locale,
             ignoreCode: body.ignoreCode === true,
           };
-          if (shouldRunChunked(body, body.text)) {
-            const chunked = analyzeChunked(body.text, opts);
+          if (shouldRunChunked(body, text)) {
+            const chunked = analyzeChunked(text, opts);
             sendJson(res, mergeChunkedForJSON(chunked));
           } else {
-            sendJson(res, analyze(body.text, opts));
+            sendJson(res, analyze(text, opts));
           }
           return;
         }
 
         case '/api/humanize': {
-          const suggestions = humanize(body.text, {
+          const suggestions = humanize(text, {
             autofix: body.autofix || false,
             locale,
             ignoreCode: body.ignoreCode === true,
           });
           const chunkOpts = { locale, ignoreCode: body.ignoreCode === true };
-          if (shouldRunChunked(body, body.text)) {
-            const chunked = analyzeChunked(body.text, chunkOpts);
+          if (shouldRunChunked(body, text)) {
+            const chunked = analyzeChunked(text, chunkOpts);
             sendJson(res, { ...suggestions, chunks: chunked.chunks, aggregate: chunked.aggregate });
           } else {
             sendJson(res, suggestions);
@@ -260,14 +276,10 @@ async function handleRequest(req, res) {
 
         case '/api/stats': {
           const localeProfile = loadLocale(locale);
-          const stats = computeStats(body.text, localeProfile);
+          const stats = computeStats(text, localeProfile);
           sendJson(res, stats);
           return;
         }
-
-        default:
-          sendJson(res, { error: 'Not found' }, 404);
-          return;
       }
     }
 

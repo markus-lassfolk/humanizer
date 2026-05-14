@@ -196,6 +196,8 @@ function humanize(text, opts = {}) {
       column: m.column,
       suggestion: m.suggestion,
       confidence: m.confidence || 'high',
+      matchWeight: m.matchWeight ?? 1,
+      findingMatchCount: finding.matchCount,
     }));
 
     if (finding.weight >= 4) critical.push(...suggestions);
@@ -213,7 +215,7 @@ function humanize(text, opts = {}) {
   }
 
   // Build guidance (pattern-based + statistical)
-  const guidance = buildGuidance(analysis, locale);
+  const guidanceItems = buildGuidance(analysis, locale);
   const styleTips = includeStats && analysis.stats ? buildStyleTips(analysis.stats, locale) : [];
 
   return {
@@ -229,7 +231,8 @@ function humanize(text, opts = {}) {
     important,
     minor,
     autofix: autofix ? { text: fixedText, fixes: appliedFixes } : null,
-    guidance,
+    guidance: guidanceItems.map((item) => (typeof item === 'string' ? item : item.text)),
+    guidanceItems,
     styleTips,
   };
 }
@@ -238,6 +241,7 @@ function humanize(text, opts = {}) {
  * Build pattern-based guidance.
  * @param {object} analysis  — Analysis result
  * @param {string} [locale='en'] — Locale code
+ * @returns {Array<{text: string, patternIds: number[]}>} — Guidance items with associated pattern IDs
  */
 function buildGuidance(analysis, locale = 'en') {
   const tips = [];
@@ -245,116 +249,132 @@ function buildGuidance(analysis, locale = 'en') {
   const sv = locale === 'sv';
 
   if (ids.has(1) || ids.has(4)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Ersätt svulstig och reklamspråkig text med konkreta fakta. Vad hände? Ange datum, siffror, namn.'
         : 'Replace inflated/promotional language with concrete facts. What specifically happened? Give dates, numbers, names.',
-    );
+      patternIds: [1, 4],
+    });
   }
   if (ids.has(3)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Ta bort -ing-fraser på slutet av meningar. Om poängen är viktig nog att nämna, ge den en egen mening.'
         : 'Cut trailing -ing phrases. If the point matters enough to mention, give it its own sentence.',
-    );
+      patternIds: [3],
+    });
   }
   if (ids.has(5)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Namnge dina källor. "Experter säger" betyder ingenting — vem sa det, när och var?'
         : 'Name your sources. "Experts say" means nothing — who said it, when, and where?',
-    );
+      patternIds: [5],
+    });
   }
   if (ids.has(6)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Ersätt schablonmässiga "trots utmaningar"-avsnitt med specifika problem och konkreta resultat.'
         : 'Replace formulaic "despite challenges" sections with specific problems and concrete outcomes.',
-    );
+      patternIds: [6],
+    });
   }
   if (ids.has(7)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Byt ut AI-typiska ord mot enklare alternativ. "Sömlös" → (specificera). "Banbrytande" → (vad är det konkret?). "Nyttja" → "använda".'
         : 'Swap AI vocabulary for plainer words. "Delve" → "look at". "Tapestry" → (be specific). "Showcase" → "show".',
-    );
+      patternIds: [7],
+    });
   }
   if (ids.has(8)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Använd "är" och "har" fritt. "Fungerar som" och "stoltserar med" är onödigt krångliga.'
         : 'Use "is" and "has" freely. "Serves as" and "boasts" are needlessly fancy.',
-    );
+      patternIds: [8],
+    });
   }
   if (ids.has(9)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Ta bort "inte bara X, utan även Y"-konstruktioner. Säg bara vad saken är.'
         : 'Drop "not just X, it\'s Y" frames. Just say what the thing is.',
-    );
+      patternIds: [9],
+    });
   }
   if (ids.has(10)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Bryt upp trepartsuppräkningar. Du behöver inte alltid tre av allt.'
         : "Break up triads. You don't always need three of everything.",
-    );
+      patternIds: [10],
+    });
   }
   if (ids.has(13)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Minska tankstrecken. Använd kommatecken, punkter eller parenteser för variation.'
         : 'Ease up on em dashes. Use commas, periods, or parentheses for variety.',
-    );
+      patternIds: [13],
+    });
   }
   if (ids.has(14) || ids.has(15)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Ta bort mekanisk fet-formatering och listliknande rubriker i löptext. Låt prosan göra jobbet.'
         : 'Strip mechanical bold formatting and inline-header lists. Let prose do the work.',
-    );
+      patternIds: [14, 15],
+    });
   }
   if (ids.has(17)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Ta bort emojis från professionell text. De signalerar chattbot-output.'
         : 'Remove emojis from professional text. They signal chatbot output.',
-    );
+      patternIds: [17],
+    });
   }
   if (ids.has(19) || ids.has(21)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Ta bort chattbot-utfyllnad ("Hoppas det hjälper!", "Bra fråga!"). Leverera bara innehållet.'
         : 'Remove chatbot filler ("I hope this helps!", "Great question!"). Just deliver the content.',
-    );
+      patternIds: [19, 21],
+    });
   }
   if (ids.has(20)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Ta bort friskrivningar om kunskapsavstängningsdatum. Forskar du eller låter du bli påståendet.'
         : 'Delete knowledge-cutoff disclaimers. Either research it or leave it out.',
-    );
+      patternIds: [20],
+    });
   }
   if (ids.has(22) || ids.has(23)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Skär ned på utfyllnad och mjukisformuleringar. "I syfte att" → "för att". En kvalificering per påstående räcker.'
         : 'Trim filler and hedging. "In order to" → "to". One qualifier per claim is enough.',
-    );
+      patternIds: [22, 23],
+    });
   }
   if (ids.has(24)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Klipp bort generiska avslutningar. Avsluta med ett konkret faktum istället för "framtiden ser ljus ut".'
         : 'Cut generic conclusions. End with a specific fact instead of "the future looks bright".',
-    );
+      patternIds: [24],
+    });
   }
   if (ids.has(29)) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Ta bort dolda Unicode-tecken (nollbredd, mjukt bindestreck, hårt blanksteg). De kan störa läsbarheten och likna försök att lura detektorer.'
         : 'Remove hidden unicode characters (zero-width, soft hyphen, NBSP). They can break readability and look like detector-gaming obfuscation.',
-    );
+      patternIds: [29],
+    });
   }
 
   const guidanceSeverityScore =
@@ -363,11 +383,12 @@ function buildGuidance(analysis, locale = 'en') {
       : analysis.score;
 
   if (guidanceSeverityScore >= 50) {
-    tips.push(
-      sv
+    tips.push({
+      text: sv
         ? 'Överväg att skriva om från grunden. När AI-mönster är så täta räcker det inte att lappa enskilda fraser — själva strukturen behöver omarbetas.'
         : "Consider rewriting from scratch. When AI patterns are this dense, patching individual phrases isn't enough — the structure itself needs rethinking.",
-    );
+      patternIds: [],
+    });
   }
 
   return tips;
@@ -541,7 +562,8 @@ function formatSuggestions(result) {
   if (result.guidance.length > 0) {
     lines.push('── GUIDANCE ────────────────────────────────────────');
     for (const tip of result.guidance) {
-      lines.push(`  • ${tip}`);
+      const tipText = typeof tip === 'string' ? tip : tip.text;
+      lines.push(`  • ${tipText}`);
     }
     lines.push('');
   }

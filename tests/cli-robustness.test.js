@@ -49,7 +49,13 @@ describe('CLI robustness validation', () => {
     }
   });
 
-  it('rejects invalid locale from env and CLI flag', () => {
+  it('does not validate env locale for help flows, but rejects it for locale-using commands', () => {
+    const helpRun = runCli(['--help'], {
+      env: { HUMANIZER_LOCALE: 'not-a-locale' },
+    });
+    expect(helpRun.status).toBe(0);
+    expect(helpRun.stdout).toContain('Usage:');
+    expect(helpRun.stderr).toBe('');
     const envRun = runCli(['score', '--json'], {
       input: 'This is a testament to robust solutions.',
       env: { HUMANIZER_LOCALE: 'not-a-locale' },
@@ -62,12 +68,27 @@ describe('CLI robustness validation', () => {
     });
     expect(cliRun.status).toBe(1);
     expect(cliRun.stderr).toContain('Invalid locale "not-a-locale" from --locale');
+
+    const cliHelpRun = runCli(['--help', '--locale', 'not-a-locale']);
+    expect(cliHelpRun.status).toBe(0);
+    expect(cliHelpRun.stdout).toContain('Usage:');
+    expect(cliHelpRun.stderr).toBe('');
   });
 
   it('lets CLI locale override a valid locale env var', () => {
     const run = runCli(['score', '--json', '--locale', 'en'], {
       input: 'This is a testament to robust solutions.',
       env: { HUMANIZER_LOCALE: 'sv' },
+    });
+
+    expect(run.status).toBe(0);
+    expect(JSON.parse(run.stdout)).toHaveProperty('score');
+  });
+
+  it('lets CLI locale override env locale validation', () => {
+    const run = runCli(['score', '--json', '--locale', 'en'], {
+      input: 'This is a testament to robust solutions.',
+      env: { HUMANIZER_LOCALE: 'not-a-locale' },
     });
 
     expect(run.status).toBe(0);
@@ -151,6 +172,12 @@ describe('CLI threshold filtering', () => {
     const json = JSON.parse(jsonRun.stdout);
     expect(json.findings.length).toBeGreaterThan(0);
     expect(json.findings.every((finding) => finding.weight >= 5)).toBe(true);
+    expect(json.totalMatches).toBe(
+      json.findings.reduce((sum, finding) => sum + finding.matchCount, 0),
+    );
+    expect(json.categories.language.matches).toBe(json.totalMatches);
+    expect(json.summary).toContain('Filtered to');
+    expect(json.unfilteredTotalMatches).toBeGreaterThan(json.totalMatches);
 
     const reportRun = runCli(['report', '--threshold', '5'], { input: text });
     expect(reportRun.status).toBe(0);
@@ -168,5 +195,31 @@ describe('CLI threshold filtering', () => {
     ];
     expect(allSuggestions.length).toBeGreaterThan(0);
     expect(allSuggestions.every((item) => item.weight >= 5)).toBe(true);
+    const uniqueFindingCounts = new Map(
+      allSuggestions.map((item) => [item.patternId, item.findingMatchCount]),
+    );
+    expect(suggestions.totalIssues).toBe(
+      [...uniqueFindingCounts.values()].reduce((sum, count) => sum + count, 0),
+    );
+    expect(suggestions.unfilteredTotalIssues).toBeGreaterThan(suggestions.totalIssues);
+    expect(suggestions.guidance.join('\n')).toContain('AI vocabulary');
+    expect(suggestions.guidance.join('\n')).not.toContain('promotional');
+  });
+
+  it('counts thresholded suggestions by full finding match count when matches are truncated', () => {
+    const text = Array.from({ length: 8 }, () => 'This is a robust solution.').join(' ');
+
+    const suggestRun = runCli(['suggest', '--json', '--threshold', '5'], { input: text });
+    expect(suggestRun.status).toBe(0);
+    const suggestions = JSON.parse(suggestRun.stdout);
+    const allSuggestions = [
+      ...suggestions.critical,
+      ...suggestions.important,
+      ...suggestions.minor,
+    ];
+
+    expect(allSuggestions.length).toBe(5);
+    expect(suggestions.totalIssues).toBe(8);
+    expect(suggestions.unfilteredTotalIssues).toBe(8);
   });
 });

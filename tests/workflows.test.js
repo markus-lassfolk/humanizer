@@ -257,14 +257,23 @@ describe('compareTexts and compareFiles', () => {
     fs.writeFileSync(existing, 'Existing comparison text.');
 
     expect(() => compareFiles(missingBefore, existing)).toThrow(
-      new RegExp(`before file not found: ${missingBefore}`),
+      expect.objectContaining({
+        message: expect.stringContaining(`before file not found: ${missingBefore}`),
+      }),
     );
     expect(() => compareFiles(existing, missingAfter)).toThrow(
-      new RegExp(`after file not found: ${missingAfter}`),
+      expect.objectContaining({
+        message: expect.stringContaining(`after file not found: ${missingAfter}`),
+      }),
     );
-    expect(() => compareFiles(missingBefore, missingAfter)).toThrow(
-      new RegExp(`before file not found: ${missingBefore}.*after file not found: ${missingAfter}`),
-    );
+
+    try {
+      compareFiles(missingBefore, missingAfter);
+      throw new Error('Expected compareFiles to throw for two missing files.');
+    } catch (err) {
+      expect(err.message).toContain(`before file not found: ${missingBefore}`);
+      expect(err.message).toContain(`after file not found: ${missingAfter}`);
+    }
   });
 });
 

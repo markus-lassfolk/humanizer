@@ -97,67 +97,67 @@ the above-mentioned		phrase_flag	2	cut throat-clearing		bulk
 said entity		phrase_flag	2	cut throat-clearing		bulk
 said individual		phrase_flag	2	cut throat-clearing		bulk
 said organization		phrase_flag	2	cut throat-clearing		bulk
-implementation	implement	autofix				bulk nominal
-utilization	use	autofix				bulk nominal
-facilitation	help	autofix				bulk nominal
-optimization	improve	autofix				bulk nominal
-modification	change	autofix				bulk nominal
-notification	tell	autofix				bulk nominal
-documentation	document	autofix				bulk nominal
-verification	check	autofix				bulk nominal
-authorization	allow	autofix				bulk nominal
-clarification	clarify	autofix				bulk nominal
-coordination	coordinate	autofix				bulk nominal
-investigation	study	autofix				bulk nominal
-consideration	consider	autofix				bulk nominal
-determination	decide	autofix				bulk nominal
-evaluation	assess	autofix				bulk nominal
-continuation	continue	autofix				bulk nominal
-termination	end	autofix				bulk nominal
-initiation	start	autofix				bulk nominal
-completion	finish	autofix				bulk nominal
-submission	submit	autofix				bulk nominal
-cancellation	cancel	autofix				bulk nominal
-registration	register	autofix				bulk nominal
-compilation	compile	autofix				bulk nominal
-aggregation	combine	autofix				bulk nominal
-integration	integrate	autofix				bulk nominal
-migration	move	autofix				bulk nominal
-configuration	set up	autofix				bulk nominal
-calibration	calibrate	autofix				bulk nominal
-orchestration	coordinate	autofix				bulk nominal
-operationalization	implement	autofix				bulk nominal
-materialization	happen	autofix				bulk nominal
-conceptualization	concept	autofix				bulk nominal
-contextualization	context	autofix				bulk nominal
-prioritization	prioritize	autofix				bulk nominal
-rationalization	explain	autofix				bulk nominal
-standardization	standardize	autofix				bulk nominal
-synchronization	sync	autofix				bulk nominal
-monetization	earn	autofix				bulk nominal
-productization	product	autofix				bulk nominal
-marketization	market	autofix				bulk nominal
-incentivization	motivate	autofix				bulk nominal
-systematization	organize	autofix				bulk nominal
-characterization	describe	autofix				bulk nominal
-summarization	summarize	autofix				bulk nominal
-visualization	show	autofix				bulk nominal
-generalization	generalize	autofix				bulk nominal
-specialization	specialize	autofix				bulk nominal
-stabilization	stabilize	autofix				bulk nominal
-normalization	normalize	autofix				bulk nominal
-minimization	reduce	autofix				bulk nominal
-maximization	increase	autofix				bulk nominal
-modernization	update	autofix				bulk nominal
-digitization	digitize	autofix				bulk nominal
-computerization	automate	autofix				bulk nominal
-industrialization	scale	autofix				bulk nominal
-commercialization	sell	autofix				bulk nominal
-institutionalization	establish	autofix				bulk nominal
-functionalization	add function	autofix				bulk nominal
-vectorization	vectorize	autofix				bulk nominal
-containerization	containerize	autofix				bulk nominal
-virtualization	virtualize	autofix				bulk nominal
+implementation		phrase_flag	2	implement		bulk nominal
+utilization		phrase_flag	2	use		bulk nominal
+facilitation		phrase_flag	2	help		bulk nominal
+optimization		phrase_flag	2	improve		bulk nominal
+modification		phrase_flag	2	change		bulk nominal
+notification		phrase_flag	2	tell		bulk nominal
+documentation		phrase_flag	2	document		bulk nominal
+verification		phrase_flag	2	check		bulk nominal
+authorization		phrase_flag	2	allow		bulk nominal
+clarification		phrase_flag	2	clarify		bulk nominal
+coordination		phrase_flag	2	coordinate		bulk nominal
+investigation		phrase_flag	2	study		bulk nominal
+consideration		phrase_flag	2	consider		bulk nominal
+determination		phrase_flag	2	decide		bulk nominal
+evaluation		phrase_flag	2	assess		bulk nominal
+continuation		phrase_flag	2	continue		bulk nominal
+termination		phrase_flag	2	end		bulk nominal
+initiation		phrase_flag	2	start		bulk nominal
+completion		phrase_flag	2	finish		bulk nominal
+submission		phrase_flag	2	submit		bulk nominal
+cancellation		phrase_flag	2	cancel		bulk nominal
+registration		phrase_flag	2	register		bulk nominal
+compilation		phrase_flag	2	compile		bulk nominal
+aggregation		phrase_flag	2	combine		bulk nominal
+integration		phrase_flag	2	integrate		bulk nominal
+migration		phrase_flag	2	move		bulk nominal
+configuration		phrase_flag	2	set up		bulk nominal
+calibration		phrase_flag	2	calibrate		bulk nominal
+orchestration		phrase_flag	2	coordinate		bulk nominal
+operationalization		phrase_flag	2	implement		bulk nominal
+materialization		phrase_flag	2	happen		bulk nominal
+conceptualization		phrase_flag	2	concept		bulk nominal
+contextualization		phrase_flag	2	context		bulk nominal
+prioritization		phrase_flag	2	prioritize		bulk nominal
+rationalization		phrase_flag	2	explain		bulk nominal
+standardization		phrase_flag	2	standardize		bulk nominal
+synchronization		phrase_flag	2	sync		bulk nominal
+monetization		phrase_flag	2	earn		bulk nominal
+productization		phrase_flag	2	product		bulk nominal
+marketization		phrase_flag	2	market		bulk nominal
+incentivization		phrase_flag	2	motivate		bulk nominal
+systematization		phrase_flag	2	organize		bulk nominal
+characterization		phrase_flag	2	describe		bulk nominal
+summarization		phrase_flag	2	summarize		bulk nominal
+visualization		phrase_flag	2	show		bulk nominal
+generalization		phrase_flag	2	generalize		bulk nominal
+specialization		phrase_flag	2	specialize		bulk nominal
+stabilization		phrase_flag	2	stabilize		bulk nominal
+normalization		phrase_flag	2	normalize		bulk nominal
+minimization		phrase_flag	2	reduce		bulk nominal
+maximization		phrase_flag	2	increase		bulk nominal
+modernization		phrase_flag	2	update		bulk nominal
+digitization		phrase_flag	2	digitize		bulk nominal
+computerization		phrase_flag	2	automate		bulk nominal
+industrialization		phrase_flag	2	scale		bulk nominal
+commercialization		phrase_flag	2	sell		bulk nominal
+institutionalization		phrase_flag	2	establish		bulk nominal
+functionalization		phrase_flag	2	add function		bulk nominal
+vectorization		phrase_flag	2	vectorize		bulk nominal
+containerization		phrase_flag	2	containerize		bulk nominal
+virtualization		phrase_flag	2	virtualize		bulk nominal
 containerized	packaged	autofix				bulk nominal
 virtualized	virtual	autofix				bulk nominal
 externalize	move out	autofix				bulk nominal
@@ -179,9 +179,9 @@ reimagining	rethinking	autofix				bulk nominal
 reimagined	rethought	autofix				bulk nominal
 replatform	move	autofix				bulk nominal
 replatforming	moving	autofix				bulk nominal
-sunset	retire	autofix				bulk nominal
-sunsetting	retiring	autofix				bulk nominal
-sunsetted	retired	autofix				bulk nominal
+sunset		phrase_flag	2	retire		bulk nominal
+sunsetting		phrase_flag	2	retiring		bulk nominal
+sunsetted		phrase_flag	2	retired		bulk nominal
 actionize	act	autofix				bulk nominal
 actionizing	acting	autofix				bulk nominal
 actionized	acted	autofix				bulk nominal

@@ -9,7 +9,7 @@ From a local checkout:
 ```bash
 git clone https://github.com/markus-lassfolk/humanizer.git
 cd humanizer
-npm install
+npm ci
 npm install -g .
 ```
 

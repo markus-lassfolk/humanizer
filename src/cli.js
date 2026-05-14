@@ -190,11 +190,24 @@ function validateLocale(locale, source) {
   return locale;
 }
 
+function resolveLocaleForCommand(cliLocale) {
+  if (cliLocale !== null) return validateLocale(cliLocale, '--locale');
+  return process.env.HUMANIZER_LOCALE || 'en';
+}
+
+function validateEnvLocaleIfUsed(cliLocale) {
+  if (cliLocale !== null) return;
+  const envLocale = process.env.HUMANIZER_LOCALE;
+  if (envLocale && envLocale !== 'en') {
+    validateLocale(envLocale, 'HUMANIZER_LOCALE');
+  }
+}
 function validateArgs() {
   for (let i = 1; i < args.length; i++) {
     const arg = args[i];
     if (VALUE_FLAGS.has(arg)) {
-      if (!args[i + 1] || args[i + 1].startsWith('-')) {
+      const nextArg = args[i + 1];
+      if (!nextArg || nextArg.startsWith('-')) {
         failOption(`${arg} requires ${VALUE_FLAGS.get(arg)}.`);
       }
       i += 1;
@@ -229,7 +242,7 @@ const flags = {
   ignoreDirs: null,
   includeDefaultIgnore: null,
   ignoreCode: null,
-  locale: process.env.HUMANIZER_LOCALE || 'en',
+  locale: 'en',
   strict: args.includes('--strict'),
   withLm: args.includes('--with-lm'),
   chunked: args.includes('--no-chunked') ? false : args.includes('--chunked') ? true : null,
@@ -297,10 +310,8 @@ if (args.includes('--ignore-code')) {
 }
 
 const localeValue = optionValue('--locale');
-if (localeValue !== null) {
-  flags.locale = validateLocale(localeValue, '--locale');
-} else {
-  flags.locale = validateLocale(flags.locale, 'HUMANIZER_LOCALE');
+if (!flags.help) {
+  flags.locale = resolveLocaleForCommand(localeValue);
 }
 
 // ─── Scan Config Resolution ──────────────────────────────
@@ -640,26 +651,117 @@ function formatStatsReport(stats) {
   return lines.join('\n');
 }
 
+function summaryWithFilteredFindings(result, findings) {
+  if (findings.length === 0) {
+    return `Score: ${result.score}/100. No findings meet the active threshold filter.`;
+  }
+
+  const totalMatches = findings.reduce((sum, finding) => sum + finding.matchCount, 0);
+  const displayMatches = roundDisplayCount(totalMatches);
+  const matchWord = displayMatches === 1 ? 'match' : 'matches';
+  const patternTypeWord = findings.length === 1 ? 'pattern type' : 'pattern types';
+  const topPatterns = [...findings]
+    .sort((a, b) => b.matchCount * b.weight - a.matchCount * a.weight)
+    .slice(0, 3)
+    .map((finding) => finding.patternName)
+    .join(', ');
+  const topIssueText = topPatterns ? ` Top issues: ${topPatterns}.` : '';
+  return `Score: ${result.score}/100. Filtered to ${displayMatches} ${matchWord} across ${findings.length} ${patternTypeWord} in ${result.wordCount} words.${topIssueText}`;
+}
+
 function filterAnalysisByThreshold(result, threshold) {
   if (threshold === null) return result;
-  const filteredFindings = result.findings.filter((finding) => finding.weight >= threshold);
+  const findings = result.findings.filter((finding) => finding.weight >= threshold);
+  const categories = {};
+
+  for (const [cat, data] of Object.entries(result.categories || {})) {
+    categories[cat] = {
+      ...data,
+      matches: 0,
+      weightedScore: 0,
+      patternsDetected: [],
+    };
+  }
+
+  for (const finding of findings) {
+    const existing = categories[finding.category] || {
+      label: finding.category,
+      matches: 0,
+      weightedScore: 0,
+      patternsDetected: [],
+    };
+    existing.matches += finding.matchCount;
+    existing.weightedScore += finding.matchCount * finding.weight;
+    existing.patternsDetected.push(finding.patternName);
+    categories[finding.category] = existing;
+  }
+
   return {
     ...result,
-    findings: filteredFindings,
+    unfilteredTotalMatches: result.totalMatches,
+    unfilteredFindingsCount: result.findings.length,
+    threshold,
+    totalMatches: findings.reduce((sum, finding) => sum + finding.matchCount, 0),
+    categories,
+    findings,
+    summary: summaryWithFilteredFindings(result, findings),
   };
+}
+
+function filterGuidanceBySuggestions(guidance, keptSuggestions) {
+  if (!Array.isArray(guidance) || guidance.length === 0) return guidance;
+  const keptPatternIds = new Set(keptSuggestions.map((item) => item.patternId));
+
+  return guidance.filter((tip) => {
+    if (typeof tip === 'string') {
+      return true;
+    }
+    if (tip && typeof tip === 'object' && tip.patternIds && Array.isArray(tip.patternIds)) {
+      if (tip.patternIds.length === 0) return true;
+      return tip.patternIds.some((id) => keptPatternIds.has(id));
+    }
+    return true;
+  });
+}
+
+function countKeptSuggestionIssues(keptSuggestions) {
+  const findingCounts = new Map();
+  let fallbackTotal = 0;
+
+  for (const item of keptSuggestions) {
+    if (
+      Number.isFinite(item.findingMatchCount) &&
+      item.patternId !== null &&
+      item.patternId !== undefined
+    ) {
+      findingCounts.set(item.patternId, item.findingMatchCount);
+    } else {
+      fallbackTotal += item.matchWeight ?? 1;
+    }
+  }
+
+  return [...findingCounts.values()].reduce((sum, count) => sum + count, fallbackTotal);
 }
 
 function filterSuggestionsByThreshold(result, threshold) {
   if (threshold === null) return result;
   const keep = (items) => items.filter((item) => item.weight >= threshold);
-  const filteredCritical = keep(result.critical);
-  const filteredImportant = keep(result.important);
-  const filteredMinor = keep(result.minor);
+  const critical = keep(result.critical);
+  const important = keep(result.important);
+  const minor = keep(result.minor);
+  const keptSuggestions = [...critical, ...important, ...minor];
+  const guidanceItems = result.guidanceItems || result.guidance;
+  const filteredGuidanceItems = filterGuidanceBySuggestions(guidanceItems, keptSuggestions);
   return {
     ...result,
-    critical: filteredCritical,
-    important: filteredImportant,
-    minor: filteredMinor,
+    unfilteredTotalIssues: result.totalIssues,
+    threshold,
+    totalIssues: countKeptSuggestionIssues(keptSuggestions),
+    critical,
+    important,
+    minor,
+    guidance: filteredGuidanceItems.map((item) => (typeof item === 'string' ? item : item.text)),
+    guidanceItems: filteredGuidanceItems,
   };
 }
 
@@ -860,7 +962,8 @@ function formatGroupedSuggestions(result) {
   if (result.guidance.length > 0) {
     lines.push(color.cyan(color.bold('  ━━ GUIDANCE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')));
     for (const tip of result.guidance) {
-      lines.push(`  ${color.cyan('•')} ${tip}`);
+      const tipText = typeof tip === 'string' ? tip : tip.text;
+      lines.push(`  ${color.cyan('•')} ${tipText}`);
     }
     lines.push('');
   }
@@ -1060,6 +1163,10 @@ async function main() {
   }
 
   const textCommands = new Set(['analyze', 'score', 'humanize', 'report', 'suggest', 'stats']);
+  const localeUsingCommands = new Set([...textCommands, 'compare', 'scan']);
+  if (localeUsingCommands.has(command)) {
+    validateEnvLocaleIfUsed(localeValue);
+  }
 
   let text = null;
   if (textCommands.has(command)) {
