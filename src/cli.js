@@ -1258,6 +1258,7 @@ async function main() {
         autofix: flags.autofix,
         verbose: flags.verbose,
         ignoreCode: opts.ignoreCode,
+        autofixIgnoreCode: flags.autofix ? true : opts.ignoreCode,
         locale: opts.locale,
         strict: opts.strict,
         withLm: opts.withLm,

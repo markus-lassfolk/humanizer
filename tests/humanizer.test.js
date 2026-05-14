@@ -49,6 +49,25 @@ describe('autoFix', () => {
     expect(text).not.toContain('In order to');
   });
 
+  it('preserves fenced and inline code when ignoreCode is enabled', () => {
+    const input = [
+      '# Runbook',
+      '',
+      'In order to deploy, update the docs.',
+      '',
+      '```md',
+      'In order to deploy, update the config.',
+      '```',
+      '',
+      'Use `in order to` only as a quoted phrase.',
+    ].join('\n');
+
+    const { text } = autoFix(input, { ignoreCode: true });
+    expect(text).toContain('To deploy, update the docs.');
+    expect(text).toContain('In order to deploy, update the config.');
+    expect(text).toContain('`in order to`');
+  });
+
   it('replaces "due to the fact that" with "because"', () => {
     const { text } = autoFix('We stopped due to the fact that it was raining.');
     expect(text).toContain('because');
@@ -185,6 +204,13 @@ describe('humanize', () => {
     expect(result.autofix).not.toBeNull();
     expect(result.autofix.text).not.toContain('In order to');
     expect(result.autofix.fixes.length).toBeGreaterThan(0);
+  });
+
+  it('preserves code snippets in humanize autofix when autofixIgnoreCode is enabled', () => {
+    const text = ['Inline `in order to` stays.', '', '```md', 'In order to deploy, update config.', '```'].join('\n');
+    const result = humanize(text, { autofix: true, autofixIgnoreCode: true });
+    expect(result.autofix.text).toContain('`in order to`');
+    expect(result.autofix.text).toContain('In order to deploy, update config.');
   });
 
   it('returns null autofix when not requested', () => {
