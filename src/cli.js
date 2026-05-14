@@ -210,7 +210,7 @@ function resolveLocaleForCommand(cliLocale) {
 function validateEnvLocaleIfUsed(cliLocale) {
   if (cliLocale !== null) return;
   const envLocale = process.env.HUMANIZER_LOCALE;
-  if (envLocale && envLocale !== 'en') {
+  if (envLocale) {
     validateLocale(envLocale, 'HUMANIZER_LOCALE');
   }
 }
