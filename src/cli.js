@@ -1311,7 +1311,7 @@ async function main() {
       process.exit(1);
     }
 
-    if (!text.trim()) {
+    if (!text.trim() && !(command === 'analyze' && flags.json)) {
       console.error(color.red('Error: Empty input.'));
       process.exit(1);
     }
@@ -1344,14 +1344,9 @@ async function main() {
         });
         if (flags.json) {
           console.log(
-            JSON.stringify(
-              normalizeAnalysisForOutput(
-                filterAnalysisByThreshold(mergeChunkedForJSON(chunked), flags.threshold),
-                { locale: opts.locale },
-              ),
-              null,
-              2,
-            ),
+            formatJSON(filterAnalysisByThreshold(mergeChunkedForJSON(chunked), flags.threshold), {
+              locale: opts.locale,
+            }),
           );
         } else {
           console.log(

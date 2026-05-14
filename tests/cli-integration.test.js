@@ -123,11 +123,44 @@ describe('CLI Integration Tests', () => {
     it('outputs stable JSON for very short input', async () => {
       const result = await runCLI(['analyze', '--json'], { stdin: 'Hej.' });
       expect(result.code).toBe(0);
+      expect(result.output).not.toMatch(/\bNaN\b|\bundefined\b|\bInfinity\b/);
       const parsed = JSON.parse(result.output);
-      expect(parsed).toHaveProperty('stats');
+      expect(parsed).toEqual(
+        expect.objectContaining({
+          score: expect.any(Number),
+          patternScore: expect.any(Number),
+          uniformityScore: expect.any(Number),
+          reliability: expect.any(Object),
+          totalMatches: expect.any(Number),
+          stats: expect.any(Object),
+          categories: expect.any(Object),
+          findings: expect.any(Array),
+          summary: expect.any(String),
+        }),
+      );
       expect(parsed.stats).toHaveProperty('metricAvailability');
       expect(parsed.stats).toHaveProperty('burstiness', null);
-      expect(result.output).not.toMatch(/\bNaN\b|\bundefined\b|\bInfinity\b/);
+    });
+
+    it('returns JSON (not error text) for empty stdin with --json', async () => {
+      const result = await runCLI(['analyze', '--json'], {
+        stdin: '\n',
+      });
+
+      expect(result.code).toBe(0);
+      expect(() => JSON.parse(result.output)).not.toThrow();
+      expect(result.output).not.toContain('Error: Empty input.');
+
+      const parsed = JSON.parse(result.output);
+      expect(parsed).toEqual(
+        expect.objectContaining({
+          score: 0,
+          totalMatches: 0,
+          stats: null,
+          findings: [],
+          summary: 'No text provided.',
+        }),
+      );
     });
   });
 

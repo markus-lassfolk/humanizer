@@ -70,6 +70,8 @@ humanizer humanize --autofix -f draft.md
 humanizer stats essay.txt
 ```
 
+For `analyze --json`, output remains schema-stable in edge cases: non-finite numeric values are normalized to `null`, and empty stdin returns a JSON payload (for example `score: 0` with `stats: null`) instead of plain-text errors.
+
 ## Locale selection
 
 English is the default runtime locale.

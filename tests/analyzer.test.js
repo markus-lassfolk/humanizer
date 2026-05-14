@@ -319,6 +319,20 @@ describe('formatting', () => {
     expect(parsed).toHaveProperty('score');
   });
 
+  it('formatJSON normalizes undefined and non-finite numbers to null', () => {
+    const json = formatJSON({
+      score: Number.NaN,
+      samples: [1, Number.NaN, undefined],
+      missing: undefined,
+    });
+
+    expect(JSON.parse(json)).toStrictEqual({
+      score: null,
+      samples: [1, null, null],
+      missing: null,
+    });
+  });
+
   it('formatMarkdown produces markdown', () => {
     const result = analyze('This is a testament to great things.');
     const md = formatMarkdown(result);
