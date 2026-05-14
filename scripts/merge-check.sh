@@ -133,20 +133,28 @@ check_pr_state() {
 check_review_threads() {
   local unresolved cursor has_next all_threads page_data
   all_threads="[]"
-  cursor="null"
+  cursor=""
   has_next="true"
 
   while [[ "$has_next" == "true" ]]; do
-    page_data=$(gh api graphql \
-      -f owner="$OWNER" \
-      -f repo="$REPO" \
-      -F pr="$PR_NUMBER" \
-      -f cursor="$cursor" \
-      -f query='query($owner:String!, $repo:String!, $pr:Int!, $cursor:String) { repository(owner:$owner, name:$repo) { pullRequest(number:$pr) { reviewThreads(first:100, after:$cursor) { nodes { isResolved } pageInfo { hasNextPage endCursor } } } } }')
-    
+    if [[ -z "$cursor" ]]; then
+      page_data=$(gh api graphql \
+        -f owner="$OWNER" \
+        -f repo="$REPO" \
+        -F pr="$PR_NUMBER" \
+        -f query='query($owner:String!, $repo:String!, $pr:Int!) { repository(owner:$owner, name:$repo) { pullRequest(number:$pr) { reviewThreads(first:100) { nodes { isResolved } pageInfo { hasNextPage endCursor } } } } }')
+    else
+      page_data=$(gh api graphql \
+        -f owner="$OWNER" \
+        -f repo="$REPO" \
+        -F pr="$PR_NUMBER" \
+        -f cursor="$cursor" \
+        -f query='query($owner:String!, $repo:String!, $pr:Int!, $cursor:String!) { repository(owner:$owner, name:$repo) { pullRequest(number:$pr) { reviewThreads(first:100, after: $cursor) { nodes { isResolved } pageInfo { hasNextPage endCursor } } } } }')
+    fi
+
     all_threads=$(jq -n --argjson all "$all_threads" --argjson page "$page_data" '$all + $page.data.repository.pullRequest.reviewThreads.nodes')
     has_next=$(jq -r '.data.repository.pullRequest.reviewThreads.pageInfo.hasNextPage' <<<"$page_data")
-    cursor=$(jq -r '.data.repository.pullRequest.reviewThreads.pageInfo.endCursor' <<<"$page_data")
+    cursor=$(jq -r '.data.repository.pullRequest.reviewThreads.pageInfo.endCursor // empty' <<<"$page_data")
   done
 
   unresolved=$(jq '[.[] | select(.isResolved == false)] | length' <<<"$all_threads")
