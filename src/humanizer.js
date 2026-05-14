@@ -169,6 +169,8 @@ function preserveReplacementCase(match, replacement) {
  *   - withLm {boolean}    Add n-gram LM uniformity boost
  *   - autofixPreserveCode {boolean} Preserve fenced/inline code during autofix
  *   - autofixIgnoreCode {boolean} Backward-compatible alias for autofixPreserveCode
+ * @param {boolean} [opts.autofixPreserveCode=false]
+ * @param {boolean} [opts.autofixIgnoreCode=false]
  * @returns {object}       — Suggestions report
  */
 function humanize(text, opts = {}) {

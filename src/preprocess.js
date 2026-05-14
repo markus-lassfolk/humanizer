@@ -52,7 +52,7 @@ function stripCodeSnippets(text, opts = {}) {
  * @returns {string}
  */
 function applyOutsideCodeSnippets(text, transform, opts = {}) {
-  if (!text || typeof text !== 'string') return '';
+  if (text === null || text === undefined || typeof text !== 'string') return '';
   if (typeof transform !== 'function') return text;
 
   const { fenced = true, inline = true } = opts;
