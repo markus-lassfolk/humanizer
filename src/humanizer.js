@@ -381,7 +381,9 @@ function buildGuidance(analysis, locale = 'en') {
   }
   if (ids.has(29)) {
     tips.push({
-      text: 'Remove hidden unicode characters (zero-width, soft hyphen, NBSP). They can break readability and look like detector-gaming obfuscation.',
+      text: sv
+        ? 'Ta bort dolda Unicode-tecken (nollbredd, mjukt bindestreck, hårt blanksteg). De kan störa läsbarheten och likna försök att lura detektorer.'
+        : 'Remove hidden unicode characters (zero-width, soft hyphen, NBSP). They can break readability and look like detector-gaming obfuscation.',
       patternIds: [29],
     });
   }
