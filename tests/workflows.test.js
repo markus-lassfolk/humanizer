@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
+import { createRequire } from 'module';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -16,6 +17,8 @@ import {
   compareTexts,
   compareFiles,
 } from '../src/workflows.js';
+
+const require = createRequire(import.meta.url);
 
 describe('normalizeExtensions', () => {
   it('normalizes bare extensions with dots', () => {
