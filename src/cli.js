@@ -44,7 +44,13 @@ const {
   normalizeExtensions,
   isMarkdownLikePath,
 } = require('./workflows');
-const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
+const {
+  stripCodeSnippets,
+  stripMarkdownProtectedRegions,
+  stripFrontmatter,
+  stripMdxComponents,
+  stripBlockquotes,
+} = require('./preprocess');
 const { roundDisplayCount } = require('./utils');
 const MAX_DISPLAYED_SKIPPED_FILES = 8;
 
@@ -163,6 +169,10 @@ const BOOLEAN_FLAGS = new Set([
   '--fail-on-regression',
   '--no-default-ignore',
   '--ignore-code',
+  '--ignore-frontmatter',
+  '--ignore-mdx',
+  '--ignore-blockquotes',
+  '--prose-only',
   '--strict',
   '--with-lm',
   '--chunked',
@@ -263,6 +273,10 @@ const flags = {
   ignoreDirs: null,
   includeDefaultIgnore: null,
   ignoreCode: null,
+  ignoreFrontmatter: null,
+  ignoreMdx: null,
+  ignoreBlockquotes: null,
+  proseOnly: null,
   locale: 'en',
   strict: args.includes('--strict'),
   withLm: args.includes('--with-lm'),
@@ -328,6 +342,22 @@ if (args.includes('--no-default-ignore')) {
 
 if (args.includes('--ignore-code')) {
   flags.ignoreCode = true;
+}
+
+if (args.includes('--ignore-frontmatter')) {
+  flags.ignoreFrontmatter = true;
+}
+
+if (args.includes('--ignore-mdx')) {
+  flags.ignoreMdx = true;
+}
+
+if (args.includes('--ignore-blockquotes')) {
+  flags.ignoreBlockquotes = true;
+}
+
+if (args.includes('--prose-only')) {
+  flags.proseOnly = true;
 }
 
 const localeValue = optionValue('--locale');
@@ -433,6 +463,12 @@ function resolveScanOptions() {
     typeof scanConfig.includeDefaultIgnore === 'boolean' ? scanConfig.includeDefaultIgnore : null;
   const configIgnoreCode =
     typeof scanConfig.ignoreCode === 'boolean' ? scanConfig.ignoreCode : null;
+  const configIgnoreFrontmatter =
+    typeof scanConfig.ignoreFrontmatter === 'boolean' ? scanConfig.ignoreFrontmatter : null;
+  const configIgnoreMdx = typeof scanConfig.ignoreMdx === 'boolean' ? scanConfig.ignoreMdx : null;
+  const configIgnoreBlockquotes =
+    typeof scanConfig.ignoreBlockquotes === 'boolean' ? scanConfig.ignoreBlockquotes : null;
+  const configProseOnly = typeof scanConfig.proseOnly === 'boolean' ? scanConfig.proseOnly : null;
   const configFailOnRegression =
     typeof scanConfig.failOnRegression === 'boolean' ? scanConfig.failOnRegression : null;
   const configBaseline =
@@ -465,6 +501,12 @@ function resolveScanOptions() {
   const scanIncludesMarkdown = includesMarkdownExtensions(extensions);
   const ignoreCode =
     flags.ignoreCode !== null ? flags.ignoreCode : (configIgnoreCode ?? scanIncludesMarkdown);
+  const ignoreFrontmatter =
+    flags.ignoreFrontmatter !== null ? flags.ignoreFrontmatter : (configIgnoreFrontmatter ?? false);
+  const ignoreMdx = flags.ignoreMdx !== null ? flags.ignoreMdx : (configIgnoreMdx ?? false);
+  const ignoreBlockquotes =
+    flags.ignoreBlockquotes !== null ? flags.ignoreBlockquotes : (configIgnoreBlockquotes ?? false);
+  const proseOnly = flags.proseOnly !== null ? flags.proseOnly : (configProseOnly ?? false);
 
   if (failOnRegression && !baseline) {
     throw new Error(
@@ -482,6 +524,10 @@ function resolveScanOptions() {
     ignoreDirs,
     includeDefaultIgnore,
     ignoreCode,
+    ignoreFrontmatter,
+    ignoreMdx,
+    ignoreBlockquotes,
+    proseOnly,
   };
 }
 
@@ -525,6 +571,10 @@ ${color.bold('Options:')}
   --ignore-dirs <list>    Extra dirs to ignore when scanning (comma-separated)
   --no-default-ignore     Disable built-in ignores (.git,node_modules,dist,...)
   --ignore-code           Ignore fenced/inline code snippets during analysis
+  --ignore-frontmatter    Ignore YAML frontmatter (--- … ---) during analysis
+  --ignore-mdx            Ignore MDX import/export lines and JSX component tags
+  --ignore-blockquotes    Ignore Markdown blockquote lines (> …) during analysis
+  --prose-only            Shorthand for --ignore-frontmatter --ignore-mdx --ignore-blockquotes
   --locale <code>         Language locale: en (default) or sv. Also HUMANIZER_LOCALE env.
   --strict                English: enable inclusive-language hints (pattern 35)
   --with-lm               Add n-gram LM uniformity boost (see locale extension docs)
@@ -543,6 +593,9 @@ ${color.bold('Examples:')}
   ${color.gray('# Analyze docs while ignoring code examples')}
   humanizer analyze docs/guide.md --ignore-code
 
+  ${color.gray('# Analyze MDX docs ignoring frontmatter, imports, and component props')}
+  humanizer analyze docs/guide.mdx --prose-only
+
   ${color.gray('# Full markdown report')}
   humanizer report article.txt > report.md
 
@@ -560,6 +613,9 @@ ${color.bold('Examples:')}
 
   ${color.gray('# Scan docs but ignore fenced/inline code snippets')}
   humanizer scan docs --ext md --ignore-code
+
+  ${color.gray('# Scan MDX docs ignoring frontmatter, imports, and quoted text')}
+  humanizer scan docs --ext mdx --prose-only
 
   ${color.gray('# Scan a large codebase with config defaults')}
   humanizer scan . --config .humanizer.json --ignore-dirs vendor,generated
@@ -798,7 +854,7 @@ function filterSuggestionsByThreshold(result, threshold) {
   };
 }
 
-/** Auto-chunk when word count ≥ minDocWordsForChunking (after optional ignore-code masking). */
+/** Auto-chunk when word count ≥ minDocWordsForChunking (after optional preprocessing). */
 function shouldUseChunkedAnalysis(text, cliFlags, resolvedIgnoreCode = null) {
   const ignoreCode =
     typeof resolvedIgnoreCode === 'boolean'
@@ -809,7 +865,11 @@ function shouldUseChunkedAnalysis(text, cliFlags, resolvedIgnoreCode = null) {
     cliFlags.file && isMarkdownLikePath(cliFlags.file)
       ? stripMarkdownProtectedRegions
       : stripCodeSnippets;
-  const prepared = ignoreCode ? preprocessFn(text) : text;
+  let prepared = ignoreCode ? preprocessFn(text) : text;
+  const proseOnly = cliFlags.proseOnly === true;
+  if (cliFlags.ignoreFrontmatter === true || proseOnly) prepared = stripFrontmatter(prepared);
+  if (cliFlags.ignoreMdx === true || proseOnly) prepared = stripMdxComponents(prepared);
+  if (cliFlags.ignoreBlockquotes === true || proseOnly) prepared = stripBlockquotes(prepared);
   const w = wordCount(prepared.trim());
   if (cliFlags.chunked === true) return true;
   if (cliFlags.chunked === false) return false;
@@ -1262,6 +1322,10 @@ async function main() {
     verbose: flags.verbose,
     patternsToCheck: flags.patterns,
     ignoreCode: flags.ignoreCode === true || (flags.ignoreCode === null && isMarkdownInput),
+    ignoreFrontmatter: flags.ignoreFrontmatter === true,
+    ignoreMdx: flags.ignoreMdx === true,
+    ignoreBlockquotes: flags.ignoreBlockquotes === true,
+    proseOnly: flags.proseOnly === true,
     locale: flags.locale,
     strict: flags.strict,
     withLm: flags.withLm,
@@ -1350,6 +1414,10 @@ async function main() {
         autofixPreserveCode: flags.autofix,
         analysisText,
         analysisIgnoreCode: analysisOpts.ignoreCode,
+        ignoreFrontmatter: opts.ignoreFrontmatter,
+        ignoreMdx: opts.ignoreMdx,
+        ignoreBlockquotes: opts.ignoreBlockquotes,
+        proseOnly: opts.proseOnly,
         locale: opts.locale,
         strict: opts.strict,
         withLm: opts.withLm,
@@ -1428,6 +1496,10 @@ async function main() {
         ignoreCode: opts.ignoreCode,
         analysisText,
         analysisIgnoreCode: analysisOpts.ignoreCode,
+        ignoreFrontmatter: opts.ignoreFrontmatter,
+        ignoreMdx: opts.ignoreMdx,
+        ignoreBlockquotes: opts.ignoreBlockquotes,
+        proseOnly: opts.proseOnly,
         locale: opts.locale,
         strict: opts.strict,
         withLm: opts.withLm,
@@ -1478,7 +1550,10 @@ async function main() {
 
     case 'stats': {
       const preprocessFn = isMarkdownInput ? stripMarkdownProtectedRegions : stripCodeSnippets;
-      const statsText = opts.ignoreCode ? preprocessFn(text) : text;
+      let statsText = opts.ignoreCode ? preprocessFn(text) : text;
+      if (opts.ignoreFrontmatter || opts.proseOnly) statsText = stripFrontmatter(statsText);
+      if (opts.ignoreMdx || opts.proseOnly) statsText = stripMdxComponents(statsText);
+      if (opts.ignoreBlockquotes || opts.proseOnly) statsText = stripBlockquotes(statsText);
       const { loadLocale } = require('./locales');
       const localeProfile = loadLocale(opts.locale);
       const stats = computeStats(statsText, localeProfile);
@@ -1530,6 +1605,10 @@ async function main() {
         ignoreDirs: scanOptions.ignoreDirs,
         includeDefaultIgnore: scanOptions.includeDefaultIgnore,
         ignoreCode: scanOptions.ignoreCode,
+        ignoreFrontmatter: scanOptions.ignoreFrontmatter,
+        ignoreMdx: scanOptions.ignoreMdx,
+        ignoreBlockquotes: scanOptions.ignoreBlockquotes,
+        proseOnly: scanOptions.proseOnly,
         locale: opts.locale,
       });
 

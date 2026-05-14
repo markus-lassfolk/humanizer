@@ -183,6 +183,10 @@ function preserveReplacementCase(match, replacement) {
  *   - analysisIgnoreCode {boolean} Whether analysisText still needs code stripping
  *   - autofixPreserveCode {boolean} When autofix is on, skip fixes inside fenced/inline Markdown code
  *   - autofixIgnoreCode {boolean}   Alias intent for autofix code preservation (legacy)
+ *   - ignoreFrontmatter {boolean} Ignore YAML frontmatter during analysis
+ *   - ignoreMdx {boolean}        Ignore MDX import/export lines and JSX component tags
+ *   - ignoreBlockquotes {boolean} Ignore Markdown blockquote lines (> …)
+ *   - proseOnly {boolean}        Shorthand for ignoreFrontmatter + ignoreMdx + ignoreBlockquotes
  *   - locale {string}     Locale code: 'en' (default) or 'sv'
  *   - strict {boolean}    Enable pattern 35 (inclusive-language hints)
  *   - withLm {boolean}    Add n-gram LM uniformity boost
@@ -197,6 +201,10 @@ function humanize(text, opts = {}) {
     analysisIgnoreCode = ignoreCode,
     autofixPreserveCode = false,
     autofixIgnoreCode = false,
+    ignoreFrontmatter = false,
+    ignoreMdx = false,
+    ignoreBlockquotes = false,
+    proseOnly = false,
     locale = 'en',
     verbose = true,
     strict = false,
@@ -207,6 +215,10 @@ function humanize(text, opts = {}) {
     verbose,
     includeStats,
     ignoreCode: analysisIgnoreCode,
+    ignoreFrontmatter,
+    ignoreMdx,
+    ignoreBlockquotes,
+    proseOnly,
     locale,
     strict,
     withLm,

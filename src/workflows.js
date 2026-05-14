@@ -9,7 +9,13 @@
 const fs = require('fs');
 const path = require('path');
 const { analyze } = require('./analyzer');
-const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
+const {
+  stripCodeSnippets,
+  stripMarkdownProtectedRegions,
+  stripFrontmatter,
+  stripMdxComponents,
+  stripBlockquotes,
+} = require('./preprocess');
 
 const DEFAULT_SCAN_EXTENSIONS = ['.md', '.mdx', '.txt', '.rst', '.adoc'];
 const READ_ERROR_PREFIX = 'read_error:';
@@ -117,6 +123,17 @@ function preprocessForScan(text, file, ignoreCode) {
   return isMarkdownLikePath(file) ? stripMarkdownProtectedRegions(text) : stripCodeSnippets(text);
 }
 
+/** Same prose-masking chain as {@link analyze}, for minWords after code preprocessing. */
+function applyScanProseMasking(text, opts) {
+  const { ignoreFrontmatter, ignoreMdx, ignoreBlockquotes, proseOnly } = opts;
+  if (!text || typeof text !== 'string') return '';
+  let t = text.normalize('NFC');
+  if (ignoreFrontmatter || proseOnly) t = stripFrontmatter(t);
+  if (ignoreMdx || proseOnly) t = stripMdxComponents(t);
+  if (ignoreBlockquotes || proseOnly) t = stripBlockquotes(t);
+  return t;
+}
+
 function hasDisallowedControlCharacters(text) {
   for (let i = 0; i < text.length; i += 1) {
     const code = text.charCodeAt(i);
@@ -137,6 +154,10 @@ function scanPath(targetPath, opts = {}) {
     ignoreDirs = null,
     includeDefaultIgnore = true,
     ignoreCode = false,
+    ignoreFrontmatter = false,
+    ignoreMdx = false,
+    ignoreBlockquotes = false,
+    proseOnly = false,
     locale = 'en',
   } = opts;
 
@@ -162,7 +183,13 @@ function scanPath(targetPath, opts = {}) {
     }
 
     const wordText = preprocessForScan(text, file, ignoreCode);
-    const words = countWords(wordText);
+    const proseGatedText = applyScanProseMasking(wordText, {
+      ignoreFrontmatter,
+      ignoreMdx,
+      ignoreBlockquotes,
+      proseOnly,
+    });
+    const words = countWords(proseGatedText);
     if (words < minWords) {
       skipped.push({ file, reason: `${TOO_SHORT_PREFIX} ${words} words` });
       continue;
@@ -170,7 +197,16 @@ function scanPath(targetPath, opts = {}) {
 
     let result;
     try {
-      result = analyze(wordText, { includeStats, verbose: false, ignoreCode: false, locale });
+      result = analyze(wordText, {
+        includeStats,
+        verbose: false,
+        ignoreCode: false,
+        ignoreFrontmatter,
+        ignoreMdx,
+        ignoreBlockquotes,
+        proseOnly,
+        locale,
+      });
     } catch (err) {
       skipped.push({ file, reason: `${ANALYZE_ERROR_PREFIX} ${err.message}` });
       continue;

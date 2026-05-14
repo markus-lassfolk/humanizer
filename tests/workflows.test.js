@@ -162,6 +162,31 @@ describe('scanPath', () => {
     expect(result.files[0].file.endsWith('notes.md')).toBe(true);
   });
 
+  it('applies prose-only masking to minWords before counting', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
+    try {
+      const body = 'One two.';
+      const padded = [
+        '---',
+        'title: Comprehensive seamless transformation overview for stakeholders',
+        'keywords: robust, innovative, leverage, landscape, digital, evolving',
+        '---',
+        '',
+        body,
+      ].join('\n');
+      fs.writeFileSync(path.join(tmp, 'thin-body.md'), padded);
+
+      const withoutProseOnly = scanPath(tmp, { exts: ['md'], minWords: 5, proseOnly: false });
+      const withProseOnly = scanPath(tmp, { exts: ['md'], minWords: 5, proseOnly: true });
+
+      expect(withoutProseOnly.summary.scannedFiles).toBe(1);
+      expect(withProseOnly.summary.scannedFiles).toBe(0);
+      expect(withProseOnly.skipped.some((s) => s.reason.startsWith('too_short:'))).toBe(true);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
   it('can ignore code snippets during scan', () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'humanizer-scan-'));
 

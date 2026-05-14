@@ -16,7 +16,12 @@
 
 const { patterns, wordCount } = require('./patterns');
 const { computeStats, computeUniformityScore, tokenize } = require('./stats');
-const { stripCodeSnippets } = require('./preprocess');
+const {
+  stripCodeSnippets,
+  stripFrontmatter,
+  stripMdxComponents,
+  stripBlockquotes,
+} = require('./preprocess');
 const { loadLocale } = require('./locales');
 const { DEFAULT_SCORING_KNOBS, mergeScoringKnobs } = require('./locales/scoring-defaults');
 const {
@@ -46,14 +51,18 @@ const RELIABILITY_RECOMMENDED_WORDS = 150;
  *
  * @param {string} text  — The text to analyze
  * @param {object} opts  — Options:
- *   - verbose {boolean}     Show all matches (not just top 5 per pattern)
- *   - patternsToCheck {number[]}  Only run specific pattern IDs
- *   - includeStats {boolean}  Include full text statistics (default: true)
- *   - ignoreCode {boolean}  Ignore fenced/inline code snippets before analysis
- *   - locale {string}       Locale code: 'en' (default) or 'sv'
- *   - strict {boolean}      Enable strict-mode inclusive-language hints (default: false)
- *   - withLm {boolean}      Apply optional n-gram uniformity boost (default: false)
- *   - config {object}       Custom config overrides
+ *   - verbose {boolean}          Show all matches (not just top 5 per pattern)
+ *   - patternsToCheck {number[]} Only run specific pattern IDs
+ *   - includeStats {boolean}     Include full text statistics (default: true)
+ *   - ignoreCode {boolean}       Ignore fenced/inline code snippets before analysis
+ *   - ignoreFrontmatter {boolean} Ignore YAML frontmatter before analysis
+ *   - ignoreMdx {boolean}        Ignore MDX import/export lines and JSX component tags
+ *   - ignoreBlockquotes {boolean} Ignore Markdown blockquote lines (> …)
+ *   - proseOnly {boolean}        Shorthand for ignoreFrontmatter + ignoreMdx + ignoreBlockquotes
+ *   - locale {string}            Locale code: 'en' (default) or 'sv'
+ *   - strict {boolean}           Enable strict-mode inclusive-language hints (default: false)
+ *   - withLm {boolean}           Apply optional n-gram uniformity boost (default: false)
+ *   - config {object}            Custom config overrides
  * @returns {object}     — Full analysis result
  */
 function analyze(text, opts = {}) {
@@ -62,6 +71,10 @@ function analyze(text, opts = {}) {
     patternsToCheck = null,
     includeStats = true,
     ignoreCode = false,
+    ignoreFrontmatter = false,
+    ignoreMdx = false,
+    ignoreBlockquotes = false,
+    proseOnly = false,
     locale = 'en',
     strict = false,
     withLm = false,
@@ -80,9 +93,13 @@ function analyze(text, opts = {}) {
   const localeProfile = loadLocale(locale);
   const scoringKnobs = mergeScoringKnobs(localeProfile);
 
-  const preparedText = ignoreCode ? stripCodeSnippets(text) : text;
-  const normalizedText = preparedText.normalize('NFC');
-  const trimmed = normalizedText.trim();
+  let preparedText = text.normalize('NFC');
+  if (ignoreCode) preparedText = stripCodeSnippets(preparedText);
+  if (ignoreFrontmatter || proseOnly) preparedText = stripFrontmatter(preparedText);
+  if (ignoreMdx || proseOnly) preparedText = stripMdxComponents(preparedText);
+  if (ignoreBlockquotes || proseOnly) preparedText = stripBlockquotes(preparedText);
+
+  const trimmed = preparedText.trim();
   if (trimmed.length === 0) return emptyResult();
 
   // Keep whitespace-based count for calibrated scoring thresholds.
