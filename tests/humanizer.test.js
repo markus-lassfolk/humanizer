@@ -49,6 +49,25 @@ describe('autoFix', () => {
     expect(text).not.toContain('In order to');
   });
 
+  it('preserves fenced and inline code when ignoreCode is enabled', () => {
+    const input = [
+      '# Runbook',
+      '',
+      'In order to deploy, update the docs.',
+      '',
+      '```md',
+      'In order to deploy, update the config.',
+      '```',
+      '',
+      'Use `in order to` only as a quoted phrase.',
+    ].join('\n');
+
+    const { text } = autoFix(input, { ignoreCode: true });
+    expect(text).toContain('To deploy, update the docs.');
+    expect(text).toContain('In order to deploy, update the config.');
+    expect(text).toContain('`in order to`');
+  });
+
   it('replaces "due to the fact that" with "because"', () => {
     const { text } = autoFix('We stopped due to the fact that it was raining.');
     expect(text).toContain('because');
@@ -119,6 +138,30 @@ describe('autoFix', () => {
     expect(text).not.toContain('I dagsläget');
   });
 
+  it('preserves fenced Markdown code blocks during autofix', () => {
+    const input = [
+      '# Runbook',
+      '',
+      'In order to deploy, update the config.',
+      '',
+      '```md',
+      'In order to deploy, update the config.',
+      '```',
+    ].join('\n');
+
+    const { text } = autoFix(input, { ignoreCode: true });
+
+    expect(text).toContain('to deploy, update the config.');
+    expect(text).toContain('```md\nIn order to deploy, update the config.\n```');
+  });
+
+  it('preserves inline code during autofix', () => {
+    const input = 'In order to run it, type `in order to deploy` in the shell.';
+    const { text } = autoFix(input, { ignoreCode: true });
+
+    expect(text).toBe('To run it, type `in order to deploy` in the shell.');
+  });
+
   it('locale prescriptive autofixes are applied on repeated autoFix calls', () => {
     // Verifies that module-level regex lastIndex state doesn't cause misses across calls.
     const input = 'I dagsläget saknar vi en tydlig strategi.';
@@ -185,6 +228,19 @@ describe('humanize', () => {
     expect(result.autofix).not.toBeNull();
     expect(result.autofix.text).not.toContain('In order to');
     expect(result.autofix.fixes.length).toBeGreaterThan(0);
+  });
+
+  it('preserves code snippets in humanize autofix when autofixPreserveCode is enabled', () => {
+    const text = [
+      'Inline `in order to` stays.',
+      '',
+      '```md',
+      'In order to deploy, update config.',
+      '```',
+    ].join('\n');
+    const result = humanize(text, { autofix: true, autofixPreserveCode: true });
+    expect(result.autofix.text).toContain('`in order to`');
+    expect(result.autofix.text).toContain('In order to deploy, update config.');
   });
 
   it('returns null autofix when not requested', () => {

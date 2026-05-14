@@ -9,8 +9,12 @@
 const fs = require('fs');
 const path = require('path');
 const { analyze } = require('./analyzer');
+const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
 
-const DEFAULT_SCAN_EXTENSIONS = ['.md', '.txt', '.rst', '.adoc'];
+const DEFAULT_SCAN_EXTENSIONS = ['.md', '.mdx', '.txt', '.rst', '.adoc'];
+const READ_ERROR_PREFIX = 'read_error:';
+const ANALYZE_ERROR_PREFIX = 'analyze_error:';
+const TOO_SHORT_PREFIX = 'too_short:';
 const DEFAULT_IGNORE_DIRS = new Set([
   '.git',
   'node_modules',
@@ -103,6 +107,25 @@ function countWords(text) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
+function isMarkdownLikePath(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  return ext === '.md' || ext === '.mdx' || ext === '.mdoc';
+}
+
+function preprocessForScan(text, file, ignoreCode) {
+  if (!ignoreCode) return text;
+  return isMarkdownLikePath(file) ? stripMarkdownProtectedRegions(text) : stripCodeSnippets(text);
+}
+
+function hasDisallowedControlCharacters(text) {
+  for (let i = 0; i < text.length; i += 1) {
+    const code = text.charCodeAt(i);
+    if (code === 9 || code === 10 || code === 13) continue;
+    if (code < 32) return true;
+  }
+  return false;
+}
+
 /**
  * Scan file or directory and return per-file scores.
  */
@@ -121,6 +144,7 @@ function scanPath(targetPath, opts = {}) {
 
   const results = [];
   const skipped = [];
+  const errors = [];
   const patternHotspotMap = new Map();
 
   for (const file of files) {
@@ -128,17 +152,29 @@ function scanPath(targetPath, opts = {}) {
     try {
       text = fs.readFileSync(file, 'utf-8');
     } catch (err) {
-      skipped.push({ file, reason: `read_error: ${err.message}` });
+      errors.push({ file, reason: `${READ_ERROR_PREFIX} ${err.message}` });
       continue;
     }
 
-    const words = countWords(text);
+    if (hasDisallowedControlCharacters(text)) {
+      errors.push({ file, reason: 'non_text_or_binary_content' });
+      continue;
+    }
+
+    const wordText = preprocessForScan(text, file, ignoreCode);
+    const words = countWords(wordText);
     if (words < minWords) {
-      skipped.push({ file, reason: `too_short: ${words} words` });
+      skipped.push({ file, reason: `${TOO_SHORT_PREFIX} ${words} words` });
       continue;
     }
 
-    const result = analyze(text, { includeStats, verbose: false, ignoreCode, locale });
+    let result;
+    try {
+      result = analyze(wordText, { includeStats, verbose: false, ignoreCode: false, locale });
+    } catch (err) {
+      skipped.push({ file, reason: `${ANALYZE_ERROR_PREFIX} ${err.message}` });
+      continue;
+    }
 
     for (const finding of result.findings) {
       const existing = patternHotspotMap.get(finding.patternId) || {
@@ -182,9 +218,16 @@ function scanPath(targetPath, opts = {}) {
       a.patternId - b.patternId,
   );
 
+  const analyzeFailuresInSkipped = skipped.filter((item) =>
+    item.reason.startsWith(ANALYZE_ERROR_PREFIX),
+  ).length;
+  const tooShortFiles = skipped.filter((item) => item.reason.startsWith(TOO_SHORT_PREFIX)).length;
+
   const summary = {
     scannedFiles: results.length,
     skippedFiles: skipped.length,
+    failedFiles: errors.length + analyzeFailuresInSkipped,
+    tooShortFiles,
     averageScore: results.length
       ? Math.round((results.reduce((sum, r) => sum + r.score, 0) / results.length) * 100) / 100
       : 0,
@@ -199,6 +242,7 @@ function scanPath(targetPath, opts = {}) {
     files: results,
     patternHotspots,
     skipped,
+    errors,
   };
 }
 
@@ -452,6 +496,7 @@ module.exports = {
   normalizeExtensions,
   normalizeIgnoreDirs,
   collectTextFiles,
+  isMarkdownLikePath,
   scanPath,
   compareScanResults,
   compareTexts,

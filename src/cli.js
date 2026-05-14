@@ -30,9 +30,23 @@ const {
 const { wordCount } = require('./patterns');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
-const { scanPath, compareScanResults, compareFiles, normalizeExtensions } = require('./workflows');
-const { stripCodeSnippets } = require('./preprocess');
+const {
+  normalizeJsonValue,
+  normalizeStatsForOutput,
+  normalizeAnalysisForOutput,
+  formatMetric,
+  LOCALE_UNAVAILABLE_REASON,
+} = require('./metric-normalizer');
+const {
+  scanPath,
+  compareScanResults,
+  compareFiles,
+  normalizeExtensions,
+  isMarkdownLikePath,
+} = require('./workflows');
+const { stripCodeSnippets, stripMarkdownProtectedRegions } = require('./preprocess');
 const { roundDisplayCount } = require('./utils');
+const MAX_DISPLAYED_SKIPPED_FILES = 8;
 
 // ─── Tiny Color Helper (no chalk dependency) ─────────────
 
@@ -93,6 +107,12 @@ function scoreLabel(s) {
 
 function roundSigned(value) {
   return Number.isFinite(value) ? Math.round(value) : 0;
+}
+
+function includesMarkdownExtensions(exts) {
+  if (!Array.isArray(exts) || exts.length === 0) return false;
+  const normalized = normalizeExtensions(exts);
+  return normalized.some((ext) => ext === '.md' || ext === '.mdx' || ext === '.mdoc');
 }
 
 /**
@@ -442,7 +462,9 @@ function resolveScanOptions() {
     flags.includeDefaultIgnore !== null
       ? flags.includeDefaultIgnore
       : (configIncludeDefaultIgnore ?? true);
-  const ignoreCode = flags.ignoreCode !== null ? flags.ignoreCode : (configIgnoreCode ?? false);
+  const scanIncludesMarkdown = includesMarkdownExtensions(extensions);
+  const ignoreCode =
+    flags.ignoreCode !== null ? flags.ignoreCode : (configIgnoreCode ?? scanIncludesMarkdown);
 
   if (failOnRegression && !baseline) {
     throw new Error(
@@ -607,7 +629,8 @@ function readInput() {
  * @param {object} stats - Stats object from computeStats()
  * @returns {string} Formatted report
  */
-function formatStatsReport(stats) {
+function formatStatsReport(stats, options = {}) {
+  stats = normalizeStatsForOutput(stats, options);
   const lines = [];
 
   lines.push('');
@@ -618,36 +641,43 @@ function formatStatsReport(stats) {
 
   lines.push(color.bold('  ── Sentences ──────────────────────────────────'));
   lines.push(`    Count:            ${stats.sentenceCount}`);
-  lines.push(`    Avg length:       ${stats.avgSentenceLength} words`);
-  lines.push(`    Std deviation:    ${stats.sentenceLengthStdDev}`);
-  lines.push(`    Burstiness:       ${stats.burstiness}  ${burstLabel(stats.burstiness)}`);
+  lines.push(`    Avg length:       ${formatMetric(stats, 'avgSentenceLength', ' words')}`);
+  lines.push(`    Std deviation:    ${formatMetric(stats, 'sentenceLengthStdDev')}`);
+  lines.push(
+    `    Burstiness:       ${formatMetric(stats, 'burstiness')}  ${burstLabel(stats.burstiness)}`,
+  );
   lines.push('');
 
   lines.push(color.bold('  ── Vocabulary ─────────────────────────────────'));
   lines.push(`    Total words:      ${stats.wordCount}`);
   lines.push(`    Unique words:     ${stats.uniqueWordCount}`);
   lines.push(
-    `    Type-token ratio: ${stats.typeTokenRatio}  ${ttrLabel(stats.typeTokenRatio, stats.wordCount)}`,
+    `    Type-token ratio: ${formatMetric(stats, 'typeTokenRatio')}  ${ttrLabel(stats.typeTokenRatio, stats.wordCount)}`,
   );
-  lines.push(`    Avg word length:  ${stats.avgWordLength}`);
+  lines.push(`    Avg word length:  ${formatMetric(stats, 'avgWordLength')}`);
   lines.push('');
 
   lines.push(color.bold('  ── Structure ──────────────────────────────────'));
   lines.push(`    Paragraphs:       ${stats.paragraphCount}`);
-  lines.push(`    Avg para length:  ${stats.avgParagraphLength} words`);
-  lines.push(`    Trigram repeat:   ${stats.trigramRepetition}`);
+  lines.push(`    Avg para length:  ${formatMetric(stats, 'avgParagraphLength', ' words')}`);
+  lines.push(`    Trigram repeat:   ${formatMetric(stats, 'trigramRepetition')}`);
   lines.push('');
 
   lines.push(color.bold('  ── Readability ────────────────────────────────'));
-  if (stats.lix !== null) {
-    lines.push(`    LIX:              ${stats.lix}`);
-  } else if (stats.fleschKincaid !== null) {
-    lines.push(`    Flesch-Kincaid:   ${stats.fleschKincaid} grade level`);
+  if (stats.lix !== null || stats.metricAvailability?.lix?.reason !== LOCALE_UNAVAILABLE_REASON) {
+    lines.push(`    LIX:              ${formatMetric(stats, 'lix')}`);
+  } else if (
+    stats.fleschKincaid !== null ||
+    stats.metricAvailability?.fleschKincaid?.reason !== LOCALE_UNAVAILABLE_REASON
+  ) {
+    lines.push(`    Flesch-Kincaid:   ${formatMetric(stats, 'fleschKincaid', ' grade level')}`);
   } else {
     lines.push(`    Readability:      ${color.dim('unavailable (input too short)')}`);
   }
+  const functionWordPercent =
+    stats.functionWordRatio === null ? '' : ` (${(stats.functionWordRatio * 100).toFixed(1)}%)`;
   lines.push(
-    `    Function words:   ${stats.functionWordRatio} (${(stats.functionWordRatio * 100).toFixed(1)}%)`,
+    `    Function words:   ${formatMetric(stats, 'functionWordRatio')}${functionWordPercent}`,
   );
   lines.push('');
 
@@ -769,9 +799,17 @@ function filterSuggestionsByThreshold(result, threshold) {
 }
 
 /** Auto-chunk when word count ≥ minDocWordsForChunking (after optional ignore-code masking). */
-function shouldUseChunkedAnalysis(text, cliFlags) {
-  const ignoreCode = cliFlags.ignoreCode === true;
-  const prepared = ignoreCode ? stripCodeSnippets(text) : text;
+function shouldUseChunkedAnalysis(text, cliFlags, resolvedIgnoreCode = null) {
+  const ignoreCode =
+    typeof resolvedIgnoreCode === 'boolean'
+      ? resolvedIgnoreCode
+      : cliFlags.ignoreCode === true ||
+        (cliFlags.ignoreCode === null && cliFlags.file && isMarkdownLikePath(cliFlags.file));
+  const preprocessFn =
+    cliFlags.file && isMarkdownLikePath(cliFlags.file)
+      ? stripMarkdownProtectedRegions
+      : stripCodeSnippets;
+  const prepared = ignoreCode ? preprocessFn(text) : text;
   const w = wordCount(prepared.trim());
   if (cliFlags.chunked === true) return true;
   if (cliFlags.chunked === false) return false;
@@ -785,6 +823,7 @@ function shouldUseChunkedAnalysis(text, cliFlags) {
  * @returns {string}
  */
 function burstLabel(b) {
+  if (b === null || b === undefined) return '';
   if (b >= 0.7) return color.green('(high — human-like)');
   if (b >= 0.45) return color.yellow('(moderate)');
   if (b >= 0.25) return color.yellow('(low — somewhat uniform)');
@@ -799,6 +838,7 @@ function burstLabel(b) {
  * @returns {string}
  */
 function ttrLabel(ttr, wc) {
+  if (ttr === null || ttr === undefined) return '';
   if (wc < 100) return color.gray('(too short to assess)');
   if (ttr >= 0.6) return color.green('(high — diverse)');
   if (ttr >= 0.45) return color.yellow('(moderate)');
@@ -849,17 +889,20 @@ function formatColoredReport(result) {
 
   // Statistics
   if (result.stats) {
-    const s = result.stats;
+    const s = normalizeStatsForOutput(result.stats);
     lines.push(color.bold('  ── Statistics ──────────────────────────────────'));
-    lines.push(`  Burstiness: ${s.burstiness}  ${burstLabel(s.burstiness)}`);
+    lines.push(`  Burstiness: ${formatMetric(s, 'burstiness')}  ${burstLabel(s.burstiness)}`);
     lines.push(
-      `  Type-token ratio: ${s.typeTokenRatio}  ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
+      `  Type-token ratio: ${formatMetric(s, 'typeTokenRatio')}  ${ttrLabel(s.typeTokenRatio, s.wordCount)}`,
     );
-    lines.push(`  Trigram repetition: ${s.trigramRepetition}`);
-    if (s.lix !== null) {
-      lines.push(`  Readability: LIX ${s.lix}`);
-    } else if (s.fleschKincaid !== null) {
-      lines.push(`  Readability: ${s.fleschKincaid} grade level`);
+    lines.push(`  Trigram repetition: ${formatMetric(s, 'trigramRepetition')}`);
+    if (s.lix !== null || s.metricAvailability?.lix?.reason !== LOCALE_UNAVAILABLE_REASON) {
+      lines.push(`  Readability: LIX ${formatMetric(s, 'lix')}`);
+    } else if (
+      s.fleschKincaid !== null ||
+      s.metricAvailability?.fleschKincaid?.reason !== LOCALE_UNAVAILABLE_REASON
+    ) {
+      lines.push(`  Readability: ${formatMetric(s, 'fleschKincaid', ' grade level')}`);
     } else {
       lines.push(`  Readability: ${color.dim('unavailable (input too short)')}`);
     }
@@ -1078,8 +1121,13 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
   lines.push('');
   lines.push(`  Target: ${scanResult.targetPath}`);
   lines.push(
-    `  Files scanned: ${scanResult.summary.scannedFiles}  |  Skipped: ${scanResult.summary.skippedFiles}`,
+    `  Files scanned: ${scanResult.summary.scannedFiles}  |  Skipped: ${scanResult.summary.skippedFiles}  |  Failed: ${scanResult.summary.failedFiles || 0}`,
   );
+  if (typeof scanResult.summary.failedFiles === 'number') {
+    lines.push(
+      `  Failed files: ${scanResult.summary.failedFiles}  |  Too short: ${scanResult.summary.tooShortFiles ?? 0}`,
+    );
+  }
   lines.push(
     `  Avg score: ${scanResult.summary.averageScore}  |  Max: ${scanResult.summary.maxScore}  |  Min: ${scanResult.summary.minScore}`,
   );
@@ -1087,6 +1135,18 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
     lines.push(`  Unique patterns: ${scanResult.summary.uniquePatterns}`);
   }
   lines.push('');
+
+  if (scanResult.skipped.length > 0) {
+    lines.push(
+      color.gray(
+        `  ${scanResult.skipped.length} files skipped (too short, unreadable, or failed to analyze).`,
+      ),
+    );
+    for (const item of scanResult.skipped.slice(0, MAX_DISPLAYED_SKIPPED_FILES)) {
+      lines.push(color.gray(`    - ${item.file}: ${item.reason}`));
+    }
+    lines.push('');
+  }
 
   if (files.length === 0) {
     lines.push(color.yellow('  No files matched the scan criteria.'));
@@ -1146,10 +1206,19 @@ function formatScanReport(scanResult, failAbove = null, baselineComparison = nul
     lines.push('');
   }
 
+  if (scanResult.errors && scanResult.errors.length > 0) {
+    lines.push(color.yellow(color.bold('  File errors:')));
+    for (const item of scanResult.errors.slice(0, 10)) {
+      lines.push(`  ${color.yellow('!')} ${item.file} ${color.dim(`(${item.reason})`)}`);
+    }
+    if (scanResult.errors.length > 10) {
+      lines.push(color.dim(`  ... and ${scanResult.errors.length - 10} more`));
+    }
+    lines.push('');
+  }
+
   if (scanResult.skipped.length > 0) {
-    lines.push(
-      color.gray(`  ${scanResult.skipped.length} files skipped (too short or unreadable).`),
-    );
+    lines.push(color.gray(`  ${scanResult.skipped.length} files skipped (too short).`));
     lines.push('');
   }
 
@@ -1188,23 +1257,34 @@ async function main() {
     }
   }
 
+  const isMarkdownInput = Boolean(flags.file && isMarkdownLikePath(flags.file));
   const opts = {
     verbose: flags.verbose,
     patternsToCheck: flags.patterns,
-    ignoreCode: flags.ignoreCode === true,
+    ignoreCode: flags.ignoreCode === true || (flags.ignoreCode === null && isMarkdownInput),
     locale: flags.locale,
     strict: flags.strict,
     withLm: flags.withLm,
   };
 
+  const analysisText =
+    opts.ignoreCode && isMarkdownInput ? stripMarkdownProtectedRegions(text) : text;
+  const analysisOpts = isMarkdownInput ? { ...opts, ignoreCode: false } : opts;
+
   switch (command) {
     case 'analyze': {
-      if (shouldUseChunkedAnalysis(text, flags)) {
-        const chunked = analyzeChunked(text, opts);
+      if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
+        const chunked = analyzeChunked(text, {
+          ...opts,
+          isMarkdown: flags.file && isMarkdownLikePath(flags.file),
+        });
         if (flags.json) {
           console.log(
             JSON.stringify(
-              filterAnalysisByThreshold(mergeChunkedForJSON(chunked), flags.threshold),
+              normalizeAnalysisForOutput(
+                filterAnalysisByThreshold(mergeChunkedForJSON(chunked), flags.threshold),
+                { locale: opts.locale },
+              ),
               null,
               2,
             ),
@@ -1216,9 +1296,11 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else {
-        const result = analyze(text, opts);
+        const result = analyze(analysisText, analysisOpts);
         if (flags.json) {
-          console.log(formatJSON(filterAnalysisByThreshold(result, flags.threshold)));
+          console.log(
+            formatJSON(filterAnalysisByThreshold(result, flags.threshold), { locale: opts.locale }),
+          );
         } else {
           console.log(formatColoredReport(filterAnalysisByThreshold(result, flags.threshold)));
         }
@@ -1227,17 +1309,20 @@ async function main() {
     }
 
     case 'score': {
-      if (shouldUseChunkedAnalysis(text, flags)) {
-        const chunked = analyzeChunked(text, opts);
+      if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
+        const chunked = analyzeChunked(text, {
+          ...opts,
+          isMarkdown: flags.file && isMarkdownLikePath(flags.file),
+        });
         if (flags.json) {
           console.log(
             JSON.stringify(
-              {
+              normalizeJsonValue({
                 score: chunked.document.score,
                 locale: opts.locale,
                 chunks: chunked.chunks,
                 aggregate: chunked.aggregate,
-              },
+              }),
               null,
               2,
             ),
@@ -1247,9 +1332,9 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else {
-        const s = score(text, opts);
+        const s = score(analysisText, analysisOpts);
         if (flags.json) {
-          console.log(JSON.stringify({ score: s }));
+          console.log(JSON.stringify(normalizeJsonValue({ score: s })));
         } else {
           console.log(scoreBadge(s));
         }
@@ -1262,20 +1347,29 @@ async function main() {
         autofix: flags.autofix,
         verbose: flags.verbose,
         ignoreCode: opts.ignoreCode,
+        autofixPreserveCode: flags.autofix,
+        analysisText,
+        analysisIgnoreCode: analysisOpts.ignoreCode,
         locale: opts.locale,
         strict: opts.strict,
         withLm: opts.withLm,
       });
-      if (shouldUseChunkedAnalysis(text, flags)) {
-        const chunked = analyzeChunked(text, opts);
+      if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
+        const chunked = analyzeChunked(text, {
+          ...opts,
+          isMarkdown: flags.file && isMarkdownLikePath(flags.file),
+        });
         if (flags.json) {
           console.log(
             JSON.stringify(
-              {
-                ...filterSuggestionsByThreshold(result, flags.threshold),
-                chunks: chunked.chunks,
-                aggregate: chunked.aggregate,
-              },
+              normalizeAnalysisForOutput(
+                {
+                  ...filterSuggestionsByThreshold(result, flags.threshold),
+                  chunks: chunked.chunks,
+                  aggregate: chunked.aggregate,
+                },
+                { locale: opts.locale },
+              ),
               null,
               2,
             ),
@@ -1290,7 +1384,15 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else if (flags.json) {
-        console.log(JSON.stringify(filterSuggestionsByThreshold(result, flags.threshold), null, 2));
+        console.log(
+          JSON.stringify(
+            normalizeAnalysisForOutput(filterSuggestionsByThreshold(result, flags.threshold), {
+              locale: opts.locale,
+            }),
+            null,
+            2,
+          ),
+        );
       } else {
         console.log(formatSuggestions(filterSuggestionsByThreshold(result, flags.threshold)));
         if (flags.autofix && result.autofix) {
@@ -1303,14 +1405,18 @@ async function main() {
     }
 
     case 'report': {
-      if (shouldUseChunkedAnalysis(text, flags)) {
-        const chunked = analyzeChunked(text, { ...opts, verbose: true });
+      if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
+        const chunked = analyzeChunked(text, {
+          ...opts,
+          verbose: true,
+          isMarkdown: flags.file && isMarkdownLikePath(flags.file),
+        });
         console.log(formatMarkdown(filterAnalysisByThreshold(chunked.document, flags.threshold)));
         console.log('\n### Chunk distribution\n');
         const appendix = formatChunkedTextAppendix(chunked).replace(/^\n/, '').trimEnd();
         console.log(`\n\`\`\`\n${appendix}\n\`\`\`\n`);
       } else {
-        const result = analyze(text, { ...opts, verbose: true });
+        const result = analyze(analysisText, { ...analysisOpts, verbose: true });
         console.log(formatMarkdown(filterAnalysisByThreshold(result, flags.threshold)));
       }
       break;
@@ -1320,20 +1426,28 @@ async function main() {
       const result = humanize(text, {
         verbose: flags.verbose,
         ignoreCode: opts.ignoreCode,
+        analysisText,
+        analysisIgnoreCode: analysisOpts.ignoreCode,
         locale: opts.locale,
         strict: opts.strict,
         withLm: opts.withLm,
       });
-      if (shouldUseChunkedAnalysis(text, flags)) {
-        const chunked = analyzeChunked(text, opts);
+      if (shouldUseChunkedAnalysis(text, flags, opts.ignoreCode)) {
+        const chunked = analyzeChunked(text, {
+          ...opts,
+          isMarkdown: flags.file && isMarkdownLikePath(flags.file),
+        });
         if (flags.json) {
           console.log(
             JSON.stringify(
-              {
-                ...filterSuggestionsByThreshold(result, flags.threshold),
-                chunks: chunked.chunks,
-                aggregate: chunked.aggregate,
-              },
+              normalizeAnalysisForOutput(
+                {
+                  ...filterSuggestionsByThreshold(result, flags.threshold),
+                  chunks: chunked.chunks,
+                  aggregate: chunked.aggregate,
+                },
+                { locale: opts.locale },
+              ),
               null,
               2,
             ),
@@ -1345,7 +1459,15 @@ async function main() {
           console.log(formatChunkedTextAppendix(chunked));
         }
       } else if (flags.json) {
-        console.log(JSON.stringify(filterSuggestionsByThreshold(result, flags.threshold), null, 2));
+        console.log(
+          JSON.stringify(
+            normalizeAnalysisForOutput(filterSuggestionsByThreshold(result, flags.threshold), {
+              locale: opts.locale,
+            }),
+            null,
+            2,
+          ),
+        );
       } else {
         console.log(
           formatGroupedSuggestions(filterSuggestionsByThreshold(result, flags.threshold)),
@@ -1355,14 +1477,17 @@ async function main() {
     }
 
     case 'stats': {
-      const statsText = opts.ignoreCode ? stripCodeSnippets(text) : text;
+      const preprocessFn = isMarkdownInput ? stripMarkdownProtectedRegions : stripCodeSnippets;
+      const statsText = opts.ignoreCode ? preprocessFn(text) : text;
       const { loadLocale } = require('./locales');
       const localeProfile = loadLocale(opts.locale);
       const stats = computeStats(statsText, localeProfile);
       if (flags.json) {
-        console.log(JSON.stringify(stats, null, 2));
+        console.log(
+          JSON.stringify(normalizeStatsForOutput(stats, { locale: opts.locale }), null, 2),
+        );
       } else {
-        console.log(formatStatsReport(stats));
+        console.log(formatStatsReport(stats, { locale: opts.locale }));
       }
       break;
     }
@@ -1381,7 +1506,7 @@ async function main() {
         process.exit(1);
       }
       if (flags.json) {
-        console.log(JSON.stringify(result, null, 2));
+        console.log(JSON.stringify(normalizeJsonValue(result), null, 2));
       } else {
         console.log(formatComparisonReport(result));
       }
@@ -1438,7 +1563,7 @@ async function main() {
         : scanResult;
 
       if (flags.json) {
-        console.log(JSON.stringify(outputPayload, null, 2));
+        console.log(JSON.stringify(normalizeJsonValue(outputPayload), null, 2));
       } else {
         console.log(formatScanReport(scanResult, scanOptions.failAbove, baselineComparison));
       }
@@ -1455,6 +1580,10 @@ async function main() {
         baselineComparison.summary.regressions > 0
       ) {
         exitCode = exitCode || 3;
+      }
+
+      if (scanResult.summary.failedFiles > 0) {
+        exitCode = exitCode || 4;
       }
 
       if (exitCode !== 0) {

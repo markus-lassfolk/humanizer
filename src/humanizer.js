@@ -16,6 +16,7 @@
 
 const { analyze } = require('./analyzer');
 const { loadLocale } = require('./locales');
+const { transformMarkdownProse } = require('./preprocess');
 const { roundDisplayCount } = require('./utils');
 
 const HIDDEN_UNICODE_CHARS = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/;
@@ -32,32 +33,21 @@ const NON_BREAKING_SPACES_GLOBAL = /(?:\u00A0|\u202F)/g;
  * @param {string} text        — Input text
  * @param {object} [opts]      — Options
  * @param {string} [opts.locale='en'] — Locale code
+ * @param {boolean} [opts.ignoreCode=false] — Enable markdown protection during fixes
  * @returns {{ text: string, fixes: string[] }}
  */
 function autoFix(text, opts = {}) {
-  const { locale = 'en' } = opts;
+  const { locale = 'en', ignoreCode = false } = opts;
+  if (text === null || text === undefined || typeof text !== 'string') {
+    return { text, fixes: [] };
+  }
+
   const localeProfile = loadLocale(locale);
-  let result = typeof text === 'string' ? text.normalize('NFC') : text;
   const fixes = [];
-
-  // Curly quotes → straight quotes
-  if (/[\u201C\u201D]/.test(result)) {
-    result = result.replace(/[\u201C\u201D]/g, '"');
-    fixes.push('Replaced curly double quotes with straight quotes');
-  }
-  if (/[\u2018\u2019]/.test(result)) {
-    result = result.replace(/[\u2018\u2019]/g, "'");
-    fixes.push('Replaced curly single quotes with straight quotes');
-  }
-
-  // Hidden obfuscation chars → remove/normalize
-  if (HIDDEN_UNICODE_CHARS.test(result)) {
-    result = result.replace(HIDDEN_UNICODE_CHARS_GLOBAL, '');
-    fixes.push('Removed hidden unicode characters (zero-width/soft hyphen)');
-  }
-  if (NON_BREAKING_SPACES.test(result)) {
-    result = result.replace(NON_BREAKING_SPACES_GLOBAL, ' ');
-    fixes.push('Normalized non-breaking spaces to regular spaces');
+  const originalText = text;
+  const normalized = text.normalize('NFC');
+  if (normalized !== originalText) {
+    fixes.push('Normalized Unicode to NFC (composed form)');
   }
 
   // Filler phrase replacements (unambiguous)
@@ -84,23 +74,6 @@ function autoFix(text, opts = {}) {
     { from: /\butilization\b/gi, to: 'use', label: '"utilization" → "use"' },
   ];
 
-  for (const { from, to, label } of safeFills) {
-    if (from.test(result)) {
-      result = result.replace(from, (match) => preserveReplacementCase(match, to));
-      fixes.push(label);
-    }
-  }
-
-  // Locale-specific autofixes (e.g. Swedish mechanical replacements)
-  if (localeProfile.autofixes && localeProfile.autofixes.length > 0) {
-    for (const { pattern, replacement, label } of localeProfile.autofixes) {
-      if (pattern.test(result)) {
-        result = result.replace(pattern, (match) => preserveReplacementCase(match, replacement));
-        fixes.push(label);
-      }
-    }
-  }
-
   // Chatbot artifact removal (start/end of text)
   const chatbotStart = [
     /^(Here is|Here's) (a |an |the )?(comprehensive |brief |quick )?(overview|summary|breakdown|list|guide|explanation|look)[^.]*\.\s*/i,
@@ -108,26 +81,77 @@ function autoFix(text, opts = {}) {
     /^(Great|Excellent|Good|Wonderful|Fantastic) question!\s*/i,
     /^(That's|That is) a (great|excellent|good|wonderful|fantastic) (question|point)!\s*/i,
   ];
-  for (const regex of chatbotStart) {
-    if (regex.test(result)) {
-      result = result.replace(regex, '');
-      fixes.push('Removed chatbot opening artifact');
-    }
-  }
 
   const chatbotEnd = [
     /\s*(I hope this helps|Let me know if you('d| would) like|Feel free to|Don't hesitate to|Is there anything else)[^.]*[.!]\s*$/i,
     /\s*Happy to help[.!]?\s*$/i,
   ];
-  for (const regex of chatbotEnd) {
-    if (regex.test(result)) {
-      result = result.replace(regex, '');
-      fixes.push('Removed chatbot closing artifact');
-    }
-  }
 
-  result = result.trim();
-  return { text: result, fixes };
+  const applyFixes = (input) => {
+    let next = input;
+
+    // Curly quotes → straight quotes
+    if (/[\u201C\u201D]/.test(next)) {
+      next = next.replace(/[\u201C\u201D]/g, '"');
+      fixes.push('Replaced curly double quotes with straight quotes');
+    }
+    if (/[\u2018\u2019]/.test(next)) {
+      next = next.replace(/[\u2018\u2019]/g, "'");
+      fixes.push('Replaced curly single quotes with straight quotes');
+    }
+
+    // Hidden obfuscation chars → remove/normalize
+    if (HIDDEN_UNICODE_CHARS.test(next)) {
+      next = next.replace(HIDDEN_UNICODE_CHARS_GLOBAL, '');
+      fixes.push('Removed hidden unicode characters (zero-width/soft hyphen)');
+    }
+    if (NON_BREAKING_SPACES.test(next)) {
+      next = next.replace(NON_BREAKING_SPACES_GLOBAL, ' ');
+      fixes.push('Normalized non-breaking spaces to regular spaces');
+    }
+
+    // Filler phrase replacements
+    for (const { from, to, label } of safeFills) {
+      if (from.test(next)) {
+        next = next.replace(from, (match) => preserveReplacementCase(match, to));
+        fixes.push(label);
+      }
+    }
+
+    // Locale-specific autofixes (e.g. Swedish mechanical replacements)
+    if (localeProfile.autofixes && localeProfile.autofixes.length > 0) {
+      for (const { pattern, replacement, label } of localeProfile.autofixes) {
+        if (pattern.test(next)) {
+          next = next.replace(pattern, (match) => preserveReplacementCase(match, replacement));
+          fixes.push(label);
+        }
+      }
+    }
+
+    // Chatbot artifact removal (start of text)
+    for (const regex of chatbotStart) {
+      if (regex.test(next)) {
+        next = next.replace(regex, '');
+        fixes.push('Removed chatbot opening artifact');
+      }
+    }
+
+    // Chatbot artifact removal (end of text)
+    for (const regex of chatbotEnd) {
+      if (regex.test(next)) {
+        next = next.replace(regex, '');
+        fixes.push('Removed chatbot closing artifact');
+      }
+    }
+
+    return next;
+  };
+
+  const result = ignoreCode
+    ? transformMarkdownProse(normalized, applyFixes)
+    : applyFixes(normalized);
+
+  return { text: result.trim(), fixes };
 }
 
 function preserveReplacementCase(match, replacement) {
@@ -155,6 +179,10 @@ function preserveReplacementCase(match, replacement) {
  *   - verbose {boolean}   Show all matches
  *   - includeStats {boolean}  Include statistical suggestions
  *   - ignoreCode {boolean}  Ignore fenced/inline code snippets during analysis
+ *   - analysisText {string} Preprocessed text to use for analysis only
+ *   - analysisIgnoreCode {boolean} Whether analysisText still needs code stripping
+ *   - autofixPreserveCode {boolean} When autofix is on, skip fixes inside fenced/inline Markdown code
+ *   - autofixIgnoreCode {boolean}   Alias intent for autofix code preservation (legacy)
  *   - locale {string}     Locale code: 'en' (default) or 'sv'
  *   - strict {boolean}    Enable pattern 35 (inclusive-language hints)
  *   - withLm {boolean}    Add n-gram LM uniformity boost
@@ -165,16 +193,20 @@ function humanize(text, opts = {}) {
     autofix = false,
     includeStats = true,
     ignoreCode = false,
+    analysisText = null,
+    analysisIgnoreCode = ignoreCode,
+    autofixPreserveCode = false,
+    autofixIgnoreCode = false,
     locale = 'en',
     verbose = true,
     strict = false,
     withLm = false,
   } = opts;
 
-  const analysis = analyze(text, {
+  const analysis = analyze(analysisText ?? text, {
     verbose,
     includeStats,
-    ignoreCode,
+    ignoreCode: analysisIgnoreCode,
     locale,
     strict,
     withLm,
@@ -209,7 +241,8 @@ function humanize(text, opts = {}) {
   let fixedText = null;
   let appliedFixes = [];
   if (autofix) {
-    const result = autoFix(text, { locale });
+    const preserveCodeInAutofix = ignoreCode || autofixPreserveCode || autofixIgnoreCode;
+    const result = autoFix(text, { locale, ignoreCode: preserveCodeInAutofix });
     fixedText = result.text;
     appliedFixes = result.fixes;
   }
