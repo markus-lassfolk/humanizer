@@ -1,7 +1,7 @@
 /**
  * patterns.js — AI writing pattern detection engine.
  *
- * 29 pattern detectors organized into 5 categories, with a registry
+ * 31 pattern detectors organized into 5 categories, with a registry
  * that supports dynamic add/remove and custom word lists.
  *
  * Architecture:
@@ -317,6 +317,56 @@ function phrasesByCategory(phrases, ...categories) {
 }
 
 // ─── Language-agnostic pattern literals ──────────────────
+
+const PRODUCT_POSITIONING_FOG = [
+  {
+    regex:
+      /\b(?:drive|drives|driving|drove|driven) (?:meaningful |measurable |strategic )?(?:engagement|adoption|growth|impact|outcomes|value)\b/gi,
+    suggestion: 'Name the metric, baseline, and behavior that changed.',
+  },
+  {
+    regex:
+      /\bunlock(?:s|ed|ing)? (?:new |meaningful |strategic )?(?:value|growth|opportunities|potential|efficiency)\b/gi,
+    suggestion: 'Say what became possible, for whom, and how you measured it.',
+  },
+  {
+    regex: /\benhanc(?:e|es|ed|ing) (?:the )?(?:user|customer|product) experience\b/gi,
+    suggestion: 'Replace with the specific user friction removed.',
+  },
+  {
+    regex: /\b(?:seamless|frictionless|intuitive) (?:user |customer |product )?experience\b/gi,
+    suggestion: 'Describe the exact task that got easier.',
+  },
+  {
+    regex: /\bactionable insights\b/gi,
+    suggestion: 'Name the decision this insight changes.',
+  },
+  {
+    regex: /\balign(?:s|ed|ing)? (?:cross-functional )?(?:stakeholders|teams)\b/gi,
+    suggestion: 'Name the decision, owner, or tradeoff that was aligned.',
+  },
+  {
+    regex: /\b(?:move|moves|moved|moving) the needle\b/gi,
+    suggestion: 'Replace with the metric and expected delta.',
+  },
+  {
+    regex: /\bsingle source of truth\b/gi,
+    suggestion: 'State which system is authoritative and what conflict it resolves.',
+  },
+  {
+    regex: /\bcustomer-centric\b/gi,
+    suggestion: 'Name the customer segment and their actual need.',
+  },
+  {
+    regex: /\bdelight(?:s|ed|ing)? (?:users|customers)\b/gi,
+    suggestion: 'Replace delight with an observable user behavior.',
+  },
+  {
+    regex:
+      /\boptimi[zs](?:e|es|ed|ing) (?:critical |key |core )?(?:workflows|processes|operations)\b/gi,
+    suggestion: 'Say which workflow changed and what got faster, cheaper, or safer.',
+  },
+];
 
 const HIDDEN_UNICODE_CHARS = /(?:\u200B|\u200C|\u200D|\u2060|\uFEFF|\u00AD)/g;
 const NON_BREAKING_SPACES = /(?:\u00A0|\u202F)/g;
@@ -1085,6 +1135,27 @@ const patterns = [
       }
 
       return results;
+    },
+  },
+
+  {
+    id: 30,
+    name: 'Product positioning fog',
+    category: 'content',
+    description:
+      'Vague PM or marketing claims like "drive engagement" and "unlock value" without a user, metric, or concrete behavior.',
+    weight: 4,
+    detect(text) {
+      const results = [];
+      for (const { regex, suggestion } of PRODUCT_POSITIONING_FOG) {
+        results.push(...findMatches(text, regex, suggestion, 'medium'));
+      }
+
+      // One business cliche can be harmless. Clusters are the AI-slop tell.
+      if (results.length < 2) return [];
+
+      const confidence = results.length >= 3 ? 'high' : 'medium';
+      return results.map((result) => ({ ...result, confidence }));
     },
   },
 

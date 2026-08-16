@@ -35,7 +35,7 @@ Humanizer currently ships two runtime analyzer locales:
 
 | Runtime locale | Language | Status                  | What it includes                                                                                                                              |
 | -------------- | -------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `en`           | English  | Default / stable        | 29 detectors, English vocabulary tiers, phrase packs, function words, Flesch-Kincaid readability                                              |
+| `en`           | English  | Default / stable        | 30 detectors, English vocabulary tiers, phrase packs, function words, Flesch-Kincaid readability                                              |
 | `sv`           | Swedish  | Stable, explicit opt-in | Swedish vocabulary tiers, Swedish pattern packs, Svarta listan/Klarspråk autofixes, Swedish abbreviations, LIX readability, empirical n-grams |
 
 Agent skill bundles are packaged by BCP-47-style folder:
@@ -172,7 +172,7 @@ const suggestions = humanize(text, {
 
 Humanizer blends pattern detection with statistical text analysis:
 
-- **Pattern score** — 29 detectors for AI-ish content, language, style, communication, and filler patterns.
+- **Pattern score** — 30 detectors for AI-ish content, language, style, communication, and filler patterns.
 - **Vocabulary tiers** — per-locale words and phrases weighted by severity.
 - **Uniformity score** — burstiness, type-token ratio, sentence length variation, trigram repetition, and readability.
 - **Composite score** — pattern score weighted at 70% plus uniformity score weighted at 30%.
