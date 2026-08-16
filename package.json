@@ -1,7 +1,7 @@
 {
   "name": "humanizer",
   "version": "2.6.0",
-  "description": "OpenClaw AI Humanizer - detect and remove AI writing patterns. Scans text for 29 common signs of AI-generated writing with statistical analysis (burstiness, TTR, readability) and provides actionable suggestions to make it sound natural and human.",
+  "description": "OpenClaw AI Humanizer - detect and remove AI writing patterns. Scans text for 30 common signs of AI-generated writing with statistical analysis (burstiness, TTR, readability) and provides actionable suggestions to make it sound natural and human.",
   "main": "src/analyzer.js",
   "bin": {
     "humanizer": "src/cli.js"
@@ -10,10 +10,10 @@
     "start": "node src/cli.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint src/ tests/ locales/",
-    "lint:fix": "eslint src/ tests/ locales/ --fix",
-    "format": "prettier --write 'src/**/*.js' 'tests/**/*.js' 'locales/**/*.js'",
-    "format:check": "prettier --check 'src/**/*.js' 'tests/**/*.js' 'locales/**/*.js'",
+    "lint": "eslint src/ tests/ locales/ mcp-server/",
+    "lint:fix": "eslint src/ tests/ locales/ mcp-server/ --fix",
+    "format": "prettier --write 'src/**/*.js' 'tests/**/*.js' 'locales/**/*.js' 'mcp-server/**/*.js'",
+    "format:check": "prettier --check 'src/**/*.js' 'tests/**/*.js' 'locales/**/*.js' 'mcp-server/**/*.js'",
     "check:lint": "npm run lint",
     "check:format": "npm run format:check",
     "check:locale": "npm run locale:prescriptive -- --check && npm run validate:sv-tiers && npm run locale:prescriptive-en -- --check && npm run validate:en-tiers",

@@ -421,6 +421,11 @@ function buildGuidance(analysis, locale = 'en') {
       patternIds: [29],
     });
   }
+  if (ids.has(30)) {
+    tips.push(
+      'Replace product-positioning fog with a user, a metric, and the behavior that changed. "Drive engagement" is a claim; clicks, retention, or task completion are evidence.',
+    );
+  }
 
   const guidanceSeverityScore =
     typeof analysis.rawScore === 'number' && Number.isFinite(analysis.rawScore)
