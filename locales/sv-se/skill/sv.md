@@ -28,10 +28,24 @@ When rewriting Swedish AI text:
 ## Before/after example (Swedish)
 
 **Before (AI-sounding Swedish):**
-> I dagens snabbt föränderliga digitala landskap är det viktigt att notera att organisationer behöver fördjupa sig i de mångfacetterade utmaningarna som sömlös integration medför. Banbrytande lösningar möjliggör för företag att navigera komplexiteten på ett holistiskt sätt.
+> I dagens snabbt föränderliga digitala landskap är det viktigt att notera att organisationer behöver fördjupa sig i de mångfacetterade utmaningarna som sömlös integration medför. Banbrytande lösningar möjliggör för företag att navigera komplexiteten på ett holistiskt sätt. Enligt en Gartner-rapport från 2024 spricker tre av fyra projekt på tid, oftast för att kraven ändras under projektet.
 
 **After (natural Swedish):**
-> Integration av nya system tar tid och kostar pengar. Tre av fyra projekt i vår bransch spricker på tid, enligt en Gartner-rapport från 2024. Vanligaste orsaken är att kraven ändras under projektet, inte att tekniken inte fungerar.
+> Enligt en Gartner-rapport från 2024 spricker tre av fyra projekt på tid, oftast för att kraven ändras under projektet.
+
+## Fidelitetsläge (teknisk text, säkerhet, juridik, underlag med källor)
+
+Använd när läsaren ska agera på textens exakta påståendestyrka (rapporter, rådgivning, incidentbeskrivningar, PR-text). Se fidelity mode i [SKILL.md](../../../SKILL.md). På svenska:
+
+- **Behåll ord som styr påståendets styrka**: uttryckligen, ovillkorligen, därför, redan, just, enbart, samtliga, aldrig. Mjuka inte upp och skärp inte.
+- **Behåll bedömningsspråk**: sannolikt, troligen, möjligen, osannolikt, "medelhög säkerhet", bedömer, kan. Uppgradera inte "sannolikt" till ett faktapåstående och lägg inte till förbehåll.
+- **Behåll källhänvisningar** ([E#], "enligt X") kopplade till rätt påstående.
+- **Behåll identifierare, siffror och datum** exakt (CVE, teknik-ID, IP, hashar, domäner, versioner, procent, belopp, ISO-datum).
+- **Lägg inte till en aktör** som källan inte nämner.
+- **Ingen personlighet eller åsikter.** Hoppa över rådet om personlighet.
+- Ta bara bort fluff: utfyllnad, betydelseuppblåsning, säljspråk, upptakter, avslutsrader, "inte X utan Y"-ramar.
+- Analysera med `--profile security-prose`.
+- **Avsluta varje omskrivning med en faktadiff mot källan**: `node src/cli.js diff källa.md omskrivning.md` (exit 1 vid skillnad). Åtgärda tills diffen är tom, eller ange varje kvarvarande skillnad och varför.
 
 ## CLI (Swedish)
 

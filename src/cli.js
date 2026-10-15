@@ -28,6 +28,8 @@ const {
   DEFAULTS: CHUNK_DEFAULTS,
 } = require('./chunk-analyzer');
 const { wordCount } = require('./patterns');
+const { factDiff } = require('./fact-diff');
+const { PROFILES } = require('./profiles');
 const { humanize, formatSuggestions } = require('./humanizer');
 const { computeStats } = require('./stats');
 const {
@@ -146,6 +148,7 @@ const VALUE_FLAGS = new Map([
   ['-f', 'path'],
   ['--file', 'path'],
   ['--patterns', 'comma-separated pattern IDs'],
+  ['--profile', 'profile name (security-prose)'],
   ['--threshold', 'non-negative integer'],
   ['--config', 'path'],
   ['--before', 'path'],
@@ -309,6 +312,10 @@ if (patternsValue !== null) {
   flags.patterns = parsePatternIds(patternsValue);
 }
 
+flags.profile = optionValue('--profile');
+if (flags.profile && !PROFILES[flags.profile]) {
+  failOption(`Unknown profile "${flags.profile}". Available: ${Object.keys(PROFILES).join(', ')}`);
+}
 flags.threshold = parseNonNegativeIntegerOption('--threshold');
 flags.config = optionValue('--config');
 flags.before = optionValue('--before');
@@ -552,6 +559,7 @@ ${color.bold('Commands:')}
   ${color.cyan('stats')}        Show statistical text analysis only
   ${color.cyan('scan')}         Scan many files in a directory and rank by AI score
   ${color.cyan('compare')}      Compare before/after drafts and show score delta
+  ${color.cyan('diff')}         diff <source> <rewrite>: facts, citations, estimative words lost/invented
 
 ${color.bold('Options:')}
   -f, --file <path>       Read text from file (otherwise reads stdin)
@@ -559,6 +567,7 @@ ${color.bold('Options:')}
   --verbose, -v           Show all matches (not just top 5 per pattern)
   --autofix               Apply safe mechanical fixes (humanize only)
   --patterns <ids>        Only check specific pattern IDs (comma-separated)
+  --profile <name>        Detector profile (security-prose: skip dash/bold/triad/hedge/quote noise)
   --threshold <n>         Only include findings/suggestions with weight >= threshold
   --before <path>         Before file for compare command
   --after <path>          After file for compare command
@@ -626,6 +635,7 @@ ${color.bold('Examples:')}
 
   ${color.gray('# Compare two drafts')}
   humanizer compare --before draft-v1.md --after draft-v2.md
+  humanizer diff source.md rewrite.md     # facts lost/invented (exit 1 if any)
 
   ${color.gray('# Long document: overlapping windows (auto ≥600 words, or --chunked)')}
   humanizer analyze -f long-article.md
@@ -1316,6 +1326,7 @@ async function main() {
   const opts = {
     verbose: flags.verbose,
     patternsToCheck: flags.patterns,
+    profile: flags.profile,
     ignoreCode: flags.ignoreCode === true || (flags.ignoreCode === null && isMarkdownInput),
     ignoreFrontmatter: flags.ignoreFrontmatter === true,
     ignoreMdx: flags.ignoreMdx === true,
@@ -1554,6 +1565,35 @@ async function main() {
       } else {
         console.log(formatStatsReport(stats, { locale: opts.locale }));
       }
+      break;
+    }
+
+    case 'diff': {
+      const [srcPath, outPath] = args.slice(1).filter((a, i, all) => {
+        const prev = all[i - 1];
+        return !a.startsWith('-') && !(prev && VALUE_FLAGS.has(prev));
+      });
+      if (!srcPath || !outPath) {
+        console.error(color.red('Error: diff requires <source> <rewrite>.'));
+        process.exit(1);
+      }
+      let result;
+      try {
+        result = factDiff(fs.readFileSync(srcPath, 'utf8'), fs.readFileSync(outPath, 'utf8'));
+      } catch (err) {
+        console.error(color.red(`Error: ${err.message}`));
+        process.exit(1);
+      }
+      if (flags.json) {
+        console.log(JSON.stringify(result, null, 2));
+      } else if (result.ok) {
+        console.log('No facts lost or invented.');
+      } else {
+        for (const [k, v] of Object.entries(result)) {
+          if (Array.isArray(v) && v.length) console.log(`${k}: ${v.join(', ')}`);
+        }
+      }
+      process.exit(result.ok ? 0 : 1);
       break;
     }
 

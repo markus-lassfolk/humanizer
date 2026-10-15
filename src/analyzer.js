@@ -23,6 +23,7 @@ const {
   stripBlockquotes,
 } = require('./preprocess');
 const { loadLocale } = require('./locales');
+const { disabledPatternIds } = require('./profiles');
 const { DEFAULT_SCORING_KNOBS, mergeScoringKnobs } = require('./locales/scoring-defaults');
 const {
   normalizeAnalysisForOutput,
@@ -61,6 +62,7 @@ const RELIABILITY_RECOMMENDED_WORDS = 150;
  *   - proseOnly {boolean}        Shorthand for ignoreFrontmatter + ignoreMdx + ignoreBlockquotes
  *   - locale {string}            Locale code: 'en' (default) or 'sv'
  *   - strict {boolean}           Enable strict-mode inclusive-language hints (default: false)
+ *   - profile {string}           Named detector profile, e.g. 'security-prose'
  *   - withLm {boolean}           Apply optional n-gram uniformity boost (default: false)
  *   - config {object}            Custom config overrides
  * @returns {object}     — Full analysis result
@@ -78,6 +80,7 @@ function analyze(text, opts = {}) {
     locale = 'en',
     strict = false,
     withLm = false,
+    profile = null,
   } = opts;
 
   if (text === null || text === undefined || typeof text !== 'string') {
@@ -123,9 +126,10 @@ function analyze(text, opts = {}) {
     categoryScores[cat] = { matches: 0, weightedScore: 0, patterns: [] };
   }
 
-  const activePatterns = patternsToCheck
-    ? patterns.filter((p) => patternsToCheck.includes(p.id))
-    : patterns;
+  const profileOff = disabledPatternIds(profile);
+  const activePatterns = (
+    patternsToCheck ? patterns.filter((p) => patternsToCheck.includes(p.id)) : patterns
+  ).filter((p) => !profileOff.has(p.id));
 
   // detectOpts is passed to every pattern; only pattern 7 uses localeProfile.
   const detectOpts = { localeProfile, strict };
