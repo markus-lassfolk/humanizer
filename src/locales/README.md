@@ -15,6 +15,8 @@ Each supported language uses the **same file names** under its own folder. Optio
 | **`sv/pattern-packs.js`**          | Swedish `patternPacks` (English baseline + Swedish rows)                     |
 | **`sv/empirical-filter.js`**       | Gates for corpus n-grams / Pattern 7 extras                                  |
 | **`sv/index.js`**                  | Swedish profile (`loadLocale('sv')`)                                         |
+| **`nb/*`, `da/*`**                 | Norwegian / Danish profiles; packs built with `nordic-packs.js`              |
+| **`nordic-packs.js`**              | Shared builder: pattern packs, weights, empirical extras for nb/da          |
 | **`generated/sv-prescriptive.js`** | Built from TSV (prescriptive phrases + autofixes)                            |
 
 ## Shims (same names, all languages)

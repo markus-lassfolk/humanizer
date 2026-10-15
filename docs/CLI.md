@@ -210,7 +210,7 @@ Example for a one-sentence input:
 --ignore-dirs <list>    Extra dirs to ignore, comma-separated
 --no-default-ignore     Disable built-in ignores
 --ignore-code           Ignore fenced and inline code snippets
---locale <code>         en (default) or sv
+--locale <code>         en (default), sv, nb or da
 --config <file>         Load scan defaults from JSON
 --help, -h              Show help
 ```

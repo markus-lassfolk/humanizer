@@ -1,0 +1,226 @@
+{
+  "udtaler at": {
+    "ai": 9,
+    "human": 0,
+    "aiDocs": 9,
+    "zscore": 3.999,
+    "weight": 1.8
+  },
+  "anbefales": {
+    "ai": 9,
+    "human": 0,
+    "aiDocs": 9,
+    "zscore": 3.995,
+    "weight": 1.799
+  },
+  "en god idé": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 8,
+    "zscore": 3.914,
+    "weight": 1.783
+  },
+  "god idé at": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 8,
+    "zscore": 3.914,
+    "weight": 1.783
+  },
+  "afgørende at": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 8,
+    "zscore": 3.911,
+    "weight": 1.782
+  },
+  "god idé": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 8,
+    "zscore": 3.911,
+    "weight": 1.782
+  },
+  "idé at": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 8,
+    "zscore": 3.911,
+    "weight": 1.782
+  },
+  "investere i": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 7,
+    "zscore": 3.811,
+    "weight": 1.762
+  },
+  "i god tid": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 3.699,
+    "weight": 1.74
+  },
+  "det anbefales": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 6,
+    "zscore": 3.695,
+    "weight": 1.739
+  },
+  "god tid": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 3.695,
+    "weight": 1.739
+  },
+  "regelmæssige": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 6,
+    "zscore": 3.691,
+    "weight": 1.738
+  },
+  "automatisering": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 3.691,
+    "weight": 1.738
+  },
+  "det anbefales at": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.562,
+    "weight": 1.712
+  },
+  "ministeren udtaler at": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.562,
+    "weight": 1.712
+  },
+  "ledere er det": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 3.562,
+    "weight": 1.712
+  },
+  "samtidig har vi": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.562,
+    "weight": 1.712
+  },
+  "i det kommende": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.562,
+    "weight": 1.712
+  },
+  "ser frem til": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.562,
+    "weight": 1.712
+  },
+  "frem til at": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.562,
+    "weight": 1.712
+  },
+  "anbefales at": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.558,
+    "weight": 1.712
+  },
+  "bør også": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.558,
+    "weight": 1.712
+  },
+  "overvej også": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.558,
+    "weight": 1.712
+  },
+  "ministeren udtaler": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.558,
+    "weight": 1.712
+  },
+  "ledere er": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 3.558,
+    "weight": 1.712
+  },
+  "for ledere": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.558,
+    "weight": 1.712
+  },
+  "det kommende": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.558,
+    "weight": 1.712
+  },
+  "ser frem": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.558,
+    "weight": 1.712
+  },
+  "vi bør": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.558,
+    "weight": 1.712
+  },
+  "multifaktorgodkendelse": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 3.554,
+    "weight": 1.711
+  },
+  "overvej": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.554,
+    "weight": 1.711
+  },
+  "søvn": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 3.554,
+    "weight": 1.711
+  }
+}
