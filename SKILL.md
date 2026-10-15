@@ -47,7 +47,7 @@ When given text to humanize:
 4. Rewrite problematic sections with natural alternatives
 5. Preserve the core meaning
 6. Match the intended tone (formal, casual, technical)
-7. Add actual personality — sterile text is just as obvious as slop
+7. Add actual personality — sterile text is just as obvious as slop (**skip this in fidelity mode**, below)
 
 ## Quick reference: the 29 patterns
 
@@ -83,6 +83,32 @@ When given text to humanize:
 | 28 | Acknowledgment loops | Communication | "You're asking about X...", restating questions |
 | 29 | Invisible unicode obfuscation | Style | Zero-width chars, soft hyphens, dense NBSPs to evade detectors |
 
+## Structural tells (detectors 36–38)
+
+Beyond the 29 patterns above, the analyzer flags three structural tells:
+
+| # | Pattern | What to watch for |
+|---|---------|-------------------|
+| 36 | Not-X-but-Y reframe | "isn't about X; it's Y", and the cross-sentence form `are not "X". They are Y` |
+| 37 | Staged run-up | "Here's the thing:", "The result?", "The bottom line:" |
+| 38 | One-line closer | A 2–7 word final paragraph that restates the point |
+
+Fix by stating the claim directly. Delete the run-up. Cut the closer unless it carries a fact.
+
+## Fidelity mode (technical, security, legal, evidence-bound text)
+
+Use this mode when the source is a report, advisory, PR description, incident write-up, or anything where a reader will act on exact claim strength. Humanizing must not change what the text asserts. In this mode:
+
+- **Keep words that set claim strength**: overwhelmingly, explicitly, unconditionally, therefore, already, precisely, only, all, never. Do not soften or strengthen.
+- **Keep estimative language** as written: likely, unlikely, almost certainly, "moderate confidence", assess, may, could. Do not upgrade "likely" to "is", or add hedges the source lacks.
+- **Keep source attribution** ("according to X", [E#] citations) attached to the claim it supports.
+- **Keep identifiers, numbers and dates** exactly: CVE and technique IDs, IPs, hashes, domains, versions, percentages, amounts, ISO dates.
+- **Do not add an actor** the source does not name (no new attacker, vendor, team or "we").
+- **Do not add personality or opinions.** Ignore the "Add personality" advice and step 7. Plain and exact beats lively.
+- Strip only slop: filler, significance inflation, promotional wording, run-ups, closers, reframes.
+- Use `--profile security-prose` when analyzing, so em dashes, bold, triads, hedging and curly quotes are not counted as tells.
+- **End every rewrite with a fact diff against the source**: run `node src/cli.js diff source.md rewrite.md` (exit 1 on any difference), or list by hand what was lost or invented across identifiers, numbers, dates, citations and estimative/strength words. Fix the rewrite until the diff is empty, or state each remaining difference and why.
+
 ## Statistical signals
 
 Beyond pattern matching, check for these AI statistical tells:
@@ -102,7 +128,7 @@ Beyond pattern matching, check for these AI statistical tells:
 - Name your sources or drop the claim
 - End with something specific, not "the future looks bright"
 
-### Add personality
+### Add personality (not in fidelity mode)
 - Have opinions. React to facts, don't just report them
 - Vary sentence rhythm. Short. Then longer ones that meander.
 - Acknowledge complexity and mixed feelings
@@ -135,6 +161,12 @@ node src/cli.js stats essay.txt
 # Humanization suggestions with auto-fixes
 node src/cli.js humanize --autofix -f article.txt
 
+# Fidelity check: identifiers, numbers, dates, [E#] citations, estimative words lost/invented
+node src/cli.js diff source.md rewrite.md
+
+# Technical/security prose: skip detectors that are normal there
+node src/cli.js analyze --profile security-prose -f draft.md
+
 # JSON output for programmatic use
 node src/cli.js analyze --json < input.txt
 ```
@@ -159,3 +191,4 @@ The key rules to internalize:
 5. Rewrite problematic sections
 6. Verify the result sounds natural when read aloud
 7. Present the humanized version with a brief change summary
+8. In fidelity mode, finish with the fact diff against the source (`diff` command)

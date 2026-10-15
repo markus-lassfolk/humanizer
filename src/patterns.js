@@ -1088,6 +1088,79 @@ const patterns = [
     },
   },
 
+  // ── STRUCTURAL TELLS (36-38) ────────────────────────────
+
+  {
+    id: 36,
+    name: 'Not-X-but-Y reframe',
+    category: 'language',
+    description:
+      'Denies a framing, then supplies the \'real\' one: "isn\'t about X; it\'s Y" or the cross-sentence form `are not "X". They are Y`.',
+    weight: 3,
+    detect(text) {
+      const suggestion = 'State the claim directly. Drop the denied framing.';
+      return [
+        /\b(?:isn['’]t|is not|aren['’]t|are not|wasn['’]t|was not) (?:about|just|merely|simply|a|an)\b[^.!?]{0,60}[.;,—–]\s*(?:it['’]s|it is|they['’]re|they are|it was)\b/gi,
+        /\b(?:is|are) not ["“'‘][^"”'’]{1,60}["”'’][.;]\s*(?:it|they|this)\b/gi,
+      ].flatMap((re) => findMatches(text, re, suggestion, 'high'));
+    },
+  },
+
+  {
+    id: 37,
+    name: 'Staged run-up',
+    category: 'style',
+    description:
+      "Announces a point before making it: 'Here's the thing:', 'The result?', 'The bottom line:'.",
+    weight: 2,
+    detect(text) {
+      return findMatches(
+        text,
+        /\b(?:here['’]s (?:the thing|why|what)|the (?:result|answer|catch|kicker|takeaway)\?|the bottom line:|what does (?:this|that) mean\?)/gi,
+        'Delete the run-up and state the point.',
+        'high',
+      );
+    },
+  },
+
+  {
+    id: 38,
+    name: 'One-line closer',
+    category: 'style',
+    description:
+      'A short final paragraph that restates the point after a longer one ("That changes everything.").',
+    weight: 2,
+    detect(text) {
+      const paras = text.split(/\n\s*\n/);
+      if (paras.length < 2) return [];
+      const cur = paras[paras.length - 1].trim();
+      const prev = paras[paras.length - 2].trim();
+      const words = cur.split(/\s+/).length;
+      // shortcut: only the final paragraph is checked; mid-document closers are not flagged.
+      if (
+        words < 2 ||
+        words > 7 ||
+        !/[.!]$/.test(cur) ||
+        /^[#>\-*|\d`]/.test(cur) ||
+        /[`\d:/@]/.test(cur) ||
+        prev.split(/\s+/).length < 25
+      ) {
+        return [];
+      }
+      const index = text.lastIndexOf(cur);
+      return [
+        {
+          match: cur,
+          index,
+          line: text.slice(0, index).split('\n').length,
+          column: 1,
+          suggestion: 'Cut the closer unless it adds a fact the paragraph lacks.',
+          confidence: 'medium',
+        },
+      ];
+    },
+  },
+
   {
     id: 35,
     name: 'Inclusive-language hints (strict mode)',

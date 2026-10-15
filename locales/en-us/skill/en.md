@@ -18,10 +18,12 @@ Same CLI locale code as `en-en` (`en`); this copy lives under the **en-us** fold
 ## Before/after example
 
 **Before (AI-sounding):**
-> Great question! Here is an overview of sustainable energy. Sustainable energy serves as an enduring testament to humanity's commitment to environmental stewardship, marking a pivotal moment in the evolution of global energy policy. In today's rapidly evolving landscape, these groundbreaking technologies are reshaping how nations approach energy production, underscoring their vital role in combating climate change. The future looks bright. I hope this helps!
+> Great question! Here is an overview of sustainable energy. Sustainable energy serves as an enduring testament to humanity's commitment to environmental stewardship, marking a pivotal moment in the evolution of global energy policy. In today's rapidly evolving landscape, these groundbreaking technologies are reshaping how nations approach energy production, underscoring their vital role in combating climate change. Per IRENA, solar panel costs fell 90% between 2010 and 2023, and Germany now gets 46% of its electricity from renewables. The future looks bright. I hope this helps!
 
 **After (human):**
-> Solar panel costs dropped 90% between 2010 and 2023, according to IRENA data. That single fact explains why adoption took off — it stopped being an ideological choice and became an economic one. Germany gets 46% of its electricity from renewables now. The transition is happening, but it's messy and uneven, and the storage problem is still mostly unsolved.
+> According to IRENA, solar panel costs fell 90% between 2010 and 2023. Germany now gets 46% of its electricity from renewables.
+
+The "after" adds no fact the "before" lacks. Every number and the source (IRENA) come from the input; the rewrite only removes filler. For technical or evidence-bound text, see the fidelity mode in [SKILL.md](../../../SKILL.md).
 
 ## CLI (English / default)
 
