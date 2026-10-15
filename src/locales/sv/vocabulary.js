@@ -173,6 +173,14 @@ const TIER_2_SV_RAW = [
   'navigerar',
   'navigerade',
   'möjliggöra',
+  'på grund av',
+  'beslutsfattande',
+  'därutöver',
+  'i allmänhet',
+  'i princip',
+  'säkerställer',
+  'avseende',
+  'ekosystem',
   'möjliggör',
   'möjliggjort',
   'stärka',
@@ -463,9 +471,44 @@ const TIER_3_SV_RAW = [
   'imponerande',
 ];
 
-const TIER_1_SV = applyWeights(TIER_1_SV_RAW);
-const TIER_2_SV = applyWeights(TIER_2_SV_RAW);
-const TIER_3_SV = applyWeights(TIER_3_SV_RAW);
+// Plain Swedish professional prose, measured on public human texts (CERT-SE, MCF, IMY, PTS,
+// Försvarsmakten; see locales/nordic/README.md). Each fired in >=3 of 111 human texts, so it
+// is not an AI signal on its own. Report: locales/nordic/reports/baseline-sv.md.
+const HUMAN_COMMON_SV = new Set([
+  'stärka',
+  'stärker',
+  'stärkt',
+  'främja',
+  'verktyg',
+  'vidare',
+  'lösningar',
+  'resurser',
+  'genomföra',
+  'genomför',
+  'genomfört',
+  'därför',
+  'dock',
+  'dessutom',
+  'utmaningar',
+  'insatser',
+  'samverkan',
+  'säkerställa',
+  'vidta',
+  'icke',
+  'möjligheter',
+  'förutsättningar',
+  'möjliggöra',
+  'avseende',
+  'med anledning av',
+  'samtidigt som',
+  'i praktiken',
+  'genom att',
+]);
+const notCommon = (w) => !HUMAN_COMMON_SV.has(String(w).toLowerCase());
+
+const TIER_1_SV = applyWeights(TIER_1_SV_RAW.filter(notCommon));
+const TIER_2_SV = applyWeights(TIER_2_SV_RAW.filter(notCommon));
+const TIER_3_SV = applyWeights(TIER_3_SV_RAW.filter(notCommon));
 
 // ─── AI Phrases (Swedish) ────────────────────────────────
 // Hand-tuned sentence scaffolds + loan-translation clichés; prescriptive Svarta/Klarspråk follow.
@@ -725,7 +768,11 @@ const AI_PHRASES_SV_HAND = [
   },
 ];
 
-const AI_PHRASES_SV = [...AI_PHRASES_SV_HAND, ...AI_PHRASES_SV_PRESCRIPTIVE];
+const phraseText = (p) =>
+  typeof p === 'string' ? p : p.pattern ? p.pattern.source : p.phrase || p.word || '';
+const AI_PHRASES_SV = [...AI_PHRASES_SV_HAND, ...AI_PHRASES_SV_PRESCRIPTIVE].filter(
+  (p) => !HUMAN_COMMON_SV.has(phraseText(p).replace(/\\b/g, '').toLowerCase()),
+);
 
 // ─── Function Words (Swedish) ────────────────────────────
 
@@ -892,7 +939,9 @@ const { buildStopSet, shouldScoreEmpiricalExtra } = require('./empirical-filter'
 
 const SW_STOP_FOR_EMPIRICAL = buildStopSet(FUNCTION_WORDS_SV);
 const TIER_KEYS_LOWER = new Set(
-  [...TIER_1_SV_RAW, ...TIER_2_SV_RAW, ...TIER_3_SV_RAW].map((s) => String(s).toLowerCase()),
+  [...TIER_1_SV_RAW, ...TIER_2_SV_RAW, ...TIER_3_SV_RAW, ...HUMAN_COMMON_SV].map((s) =>
+    String(s).toLowerCase(),
+  ),
 );
 
 const EMPIRICAL_EXTRA_MAX = 100;

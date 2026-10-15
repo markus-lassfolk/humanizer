@@ -159,7 +159,6 @@ const SV_PATTERN_PACKS = {
       [
         /\bfungerar som\b/gi,
         /\bagerar som\b/gi,
-        /\butgör (en|ett)\b/gi,
         /\btjänar som\b/gi,
         /\bframstår som\b/gi,
         /\b(står|stod) som\b/gi,
@@ -208,7 +207,7 @@ const SV_PATTERN_PACKS = {
 
   11: [
     ...PATTERN_PACKS_EN[11],
-    ['företag', 'organisation', 'verksamhet', 'bolag', 'koncern', 'aktör', 'entitet'],
+    ['företag', 'bolag', 'koncern', 'entitet'],
     ['stad', 'metropol', 'ort', 'kommun', 'tätort', 'centralort'],
     ['land', 'nation', 'stat', 'rike'],
     ['problem', 'utmaning', 'hinder', 'svårighet', 'frågeställning', 'dilemma'],

@@ -18,6 +18,9 @@ const { SCORING_KNOBS_SV } = require('../scoring-defaults');
 module.exports = {
   code: 'sv',
 
+  // Swedish typography uses ” and ’ as ordinary quotes (Pattern 18 would be noise).
+  nativeCurlyQuotes: true,
+
   // Locale-specific scoring knobs merged over DEFAULT_SCORING_KNOBS.
   scoring: SCORING_KNOBS_SV,
 

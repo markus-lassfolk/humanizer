@@ -871,7 +871,9 @@ const patterns = [
     description:
       'ChatGPT uses Unicode curly quotes (\u201C\u201D\u2018\u2019) instead of straight quotes.',
     weight: 1,
-    detect(text) {
+    detect(text, opts = {}) {
+      // Nordic typography uses \u201D and \u2019 as ordinary quotes.
+      if (opts.localeProfile && opts.localeProfile.nativeCurlyQuotes) return [];
       return findMatches(
         text,
         /[\u201C\u201D\u2018\u2019]/g,
