@@ -11,3 +11,12 @@ Regenerate:
 node locales/nordic/scripts/build-wordlist.mjs nb <humanDir> <aiDir> locales/nb-no/references/nb-frequencies.json
 node locales/nordic/scripts/baseline-report.mjs nb <humanDir>
 ```
+
+## Pre-2022 human baseline and multi-model samples (2026-10)
+
+- **Human side:** Leipzig Corpora Collection news sets from 2013–2021 (CC licence), 8-sentence pseudo-documents. Sentences are shuffled, so only n-gram statistics are meaningful. Texts after 2021 are excluded on purpose so the baseline holds no machine-generated prose; texts much older than ~2010 are excluded to avoid archaic style.
+- **Model side:** 40 neutral everyday topics × 2 prompt forms from seven models through the Lassfolk APIM gateway (`locales/nordic/scripts/gen-model-samples.mjs`). Document frequency counts distinct topics, so one prompt topic cannot create an n-gram.
+- **Held-out check** (models gpt-6-sol and cohere, every 5th topic held out): human text scores a median of 3–5; held-out model text now reaches a median of 5–36 (p90 up to 55), versus p90 5–45 with the earlier list.
+- `nb-human-frequency-ranks.json` holds the top 10000 unigram ranks (`build-ranks.mjs`). `npm run validate:nordic-tiers` fails if a Tier 1 word ranks within the top 5000 human words.
+- Rebuild: `node locales/nordic/scripts/build-wordlist.mjs nb <humanDir> <aiDir> locales/nb-no/references/nb-frequencies.json`. Evaluate: `eval-separation.mjs`.
+- No Norwegian or Danish humanizer projects were found on GitHub or the web (Swedish ones exist).

@@ -12,8 +12,8 @@ Humanizer separates **runtime analyzer locales** from **agent skill bundles**.
 | `en` | English | Yes | Stable | Uses English vocabulary tiers, phrase packs, function words, and Flesch-Kincaid readability. |
 | `sv` | Swedish | No | Stable | Uses Swedish vocabulary tiers, Swedish pattern packs, Swedish abbreviations, LIX readability, empirical n-grams, and Svarta listan/Klarspråk autofixes. |
 
-| `nb` | Norwegian (bokmål) | No | Beta | Nordic-calque vocabulary tiers, nb pattern packs, LIX readability, empirical n-grams from a NSM/NRK/Datatilsynet/Nkom human baseline. Nynorsk is not covered. |
-| `da` | Danish | No | Beta | Same layout as `nb`, baseline from CFCS/DR/Datatilsynet/Digst/FE. |
+| `nb` | Norwegian (bokmål) | No | Beta | Nordic-calque vocabulary tiers, nb pattern packs, LIX readability, empirical n-grams (pre-2022 Leipzig news baseline vs seven models), klarspråk autofixes. Nynorsk is not covered. |
+| `da` | Danish | No | Beta | Same layout as `nb`, pre-2022 Leipzig news baseline. |
 
 Use `en` unless you explicitly know the text is Swedish, Norwegian or Danish. Finnish is out of scope for now: see [`locales/nordic/FINNISH-DESIGN-NOTE.md`](../locales/nordic/FINNISH-DESIGN-NOTE.md).
 

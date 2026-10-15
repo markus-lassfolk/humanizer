@@ -315,6 +315,15 @@ const fix = (pattern, replacement) => ({
   label: `${replacement || '(fjern)'}`,
 });
 const AUTOFIXES_NB = [
+  // Klarspråk (Språkrådet): plain verbs and connectives instead of byråkratspråk.
+  fix(/\bbenytter\b/gi, 'bruker'),
+  fix(/\bbenyttet\b/gi, 'brukt'),
+  fix(/\banvender\b/gi, 'bruker'),
+  fix(/\banvendt\b/gi, 'brukt'),
+  fix(/\bforetar\b/gi, 'gjør'),
+  fix(/\bforetatt\b/gi, 'gjort'),
+  fix(/\biverksetter\b/gi, 'setter i gang'),
+  fix(/\bpå bakgrunn av\b/gi, 'på grunn av'),
   fix(/\bdykke ned i\b/gi, 'se på'),
   fix(/\bdykke dypt inn i\b/gi, 'gå gjennom'),
   fix(/\bbanebrytende\b/gi, 'ny'),
