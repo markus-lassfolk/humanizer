@@ -1,149 +1,2277 @@
 {
-  "etaten": {
+  "husk også": {
+    "ai": 16,
+    "human": 5,
+    "aiDocs": 11,
+    "zscore": 10.073,
+    "weight": 2.5
+  },
+  "god planlegging": {
+    "ai": 17,
+    "human": 4,
+    "aiDocs": 5,
+    "zscore": 9.875,
+    "weight": 2.5
+  },
+  "regelmessige": {
+    "ai": 14,
+    "human": 5,
+    "aiDocs": 6,
+    "zscore": 9.652,
+    "weight": 2.5
+  },
+  "tålmodighet og": {
+    "ai": 13,
+    "human": 5,
+    "aiDocs": 7,
+    "zscore": 9.408,
+    "weight": 2.5
+  },
+  "buffer": {
+    "ai": 14,
+    "human": 3,
+    "aiDocs": 6,
+    "zscore": 8.875,
+    "weight": 2.5
+  },
+  "mer bærekraftig": {
+    "ai": 11,
+    "human": 4,
+    "aiDocs": 6,
+    "zscore": 8.632,
+    "weight": 2.5
+  },
+  "konsentrasjon og": {
+    "ai": 11,
+    "human": 4,
+    "aiDocs": 6,
+    "zscore": 8.632,
+    "weight": 2.5
+  },
+  "balanse mellom": {
+    "ai": 12,
+    "human": 3,
+    "aiDocs": 7,
+    "zscore": 8.49,
+    "weight": 2.5
+  },
+  "fremst om": {
+    "ai": 9,
+    "human": 8,
+    "aiDocs": 6,
+    "zscore": 8.414,
+    "weight": 2.5
+  },
+  "og fremst om": {
+    "ai": 9,
+    "human": 8,
+    "aiDocs": 6,
+    "zscore": 8.407,
+    "weight": 2.5
+  },
+  "tilpass": {
+    "ai": 10,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 8.362,
+    "weight": 2.5
+  },
+  "uforutsette utgifter": {
+    "ai": 10,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 8.357,
+    "weight": 2.5
+  },
+  "sørg for at": {
+    "ai": 10,
+    "human": 4,
+    "aiDocs": 8,
+    "zscore": 8.351,
+    "weight": 2.5
+  },
+  "digitale verktøy": {
+    "ai": 9,
+    "human": 4,
+    "aiDocs": 5,
+    "zscore": 8.053,
+    "weight": 2.5
+  },
+  "en balanse": {
+    "ai": 8,
+    "human": 5,
+    "aiDocs": 6,
+    "zscore": 7.851,
+    "weight": 2.5
+  },
+  "selv små": {
+    "ai": 8,
+    "human": 5,
+    "aiDocs": 7,
+    "zscore": 7.851,
+    "weight": 2.5
+  },
+  "passord og": {
+    "ai": 9,
+    "human": 3,
+    "aiDocs": 5,
+    "zscore": 7.772,
+    "weight": 2.5
+  },
+  "begynn": {
+    "ai": 10,
+    "human": 2,
+    "aiDocs": 5,
+    "zscore": 7.53,
+    "weight": 2.5
+  },
+  "plattformer som": {
+    "ai": 10,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 7.526,
+    "weight": 2.5
+  },
+  "nødvendighet": {
+    "ai": 7,
+    "human": 6,
+    "aiDocs": 5,
+    "zscore": 7.478,
+    "weight": 2.496
+  },
+  "søker på": {
+    "ai": 7,
+    "human": 7,
+    "aiDocs": 3,
+    "zscore": 7.477,
+    "weight": 2.495
+  },
+  "og husk": {
+    "ai": 7,
+    "human": 7,
+    "aiDocs": 4,
+    "zscore": 7.477,
+    "weight": 2.495
+  },
+  "sjekk også": {
+    "ai": 8,
+    "human": 3,
+    "aiDocs": 5,
+    "zscore": 7.477,
+    "weight": 2.495
+  },
+  "helt normalt": {
+    "ai": 7,
+    "human": 6,
+    "aiDocs": 4,
+    "zscore": 7.472,
+    "weight": 2.494
+  },
+  "små endringer": {
+    "ai": 7,
+    "human": 5,
+    "aiDocs": 4,
+    "zscore": 7.43,
+    "weight": 2.486
+  },
+  "handler først": {
+    "ai": 7,
+    "human": 5,
+    "aiDocs": 5,
+    "zscore": 7.43,
+    "weight": 2.486
+  },
+  "kan hjelpe deg": {
+    "ai": 7,
+    "human": 5,
+    "aiDocs": 6,
+    "zscore": 7.425,
+    "weight": 2.485
+  },
+  "handler først og": {
+    "ai": 7,
+    "human": 5,
+    "aiDocs": 5,
+    "zscore": 7.425,
+    "weight": 2.485
+  },
+  "bruk en": {
+    "ai": 7,
+    "human": 9,
+    "aiDocs": 4,
+    "zscore": 7.421,
+    "weight": 2.484
+  },
+  "husk også å": {
+    "ai": 9,
+    "human": 2,
+    "aiDocs": 8,
+    "zscore": 7.306,
+    "weight": 2.461
+  },
+  "fremst om å": {
+    "ai": 9,
+    "human": 2,
+    "aiDocs": 6,
+    "zscore": 7.306,
+    "weight": 2.461
+  },
+  "avslutt": {
+    "ai": 7,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 7.147,
+    "weight": 2.429
+  },
+  "vurder": {
+    "ai": 7,
+    "human": 3,
+    "aiDocs": 5,
+    "zscore": 7.147,
+    "weight": 2.429
+  },
+  "målet er ikke": {
+    "ai": 7,
+    "human": 3,
+    "aiDocs": 6,
+    "zscore": 7.137,
+    "weight": 2.427
+  },
+  "er som regel": {
+    "ai": 7,
+    "human": 14,
+    "aiDocs": 6,
+    "zscore": 7.112,
+    "weight": 2.422
+  },
+  "mange opplever at": {
+    "ai": 8,
+    "human": 2,
+    "aiDocs": 5,
+    "zscore": 7.063,
+    "weight": 2.413
+  },
+  "eller bruke": {
+    "ai": 6,
+    "human": 5,
+    "aiDocs": 6,
+    "zscore": 6.953,
+    "weight": 2.391
+  },
+  "apper og": {
+    "ai": 6,
+    "human": 5,
+    "aiDocs": 4,
+    "zscore": 6.953,
+    "weight": 2.391
+  },
+  "dagslys": {
+    "ai": 6,
+    "human": 7,
+    "aiDocs": 5,
+    "zscore": 6.944,
+    "weight": 2.389
+  },
+  "forbedrer": {
+    "ai": 6,
+    "human": 4,
+    "aiDocs": 4,
+    "zscore": 6.901,
+    "weight": 2.38
+  },
+  "datasikkerhet": {
+    "ai": 6,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 6.901,
+    "weight": 2.38
+  },
+  "korte turer": {
+    "ai": 6,
+    "human": 4,
+    "aiDocs": 4,
+    "zscore": 6.896,
+    "weight": 2.379
+  },
+  "som hovedregel": {
+    "ai": 6,
+    "human": 4,
+    "aiDocs": 4,
+    "zscore": 6.896,
+    "weight": 2.379
+  },
+  "kan derfor være": {
+    "ai": 6,
+    "human": 4,
+    "aiDocs": 5,
+    "zscore": 6.891,
+    "weight": 2.378
+  },
+  "være smart å": {
+    "ai": 6,
+    "human": 4,
+    "aiDocs": 5,
+    "zscore": 6.891,
+    "weight": 2.378
+  },
+  "en sentral del": {
+    "ai": 6,
+    "human": 9,
+    "aiDocs": 6,
+    "zscore": 6.834,
+    "weight": 2.367
+  },
+  "verktøy og": {
+    "ai": 7,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 6.791,
+    "weight": 2.358
+  },
+  "dine behov": {
+    "ai": 7,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 6.791,
+    "weight": 2.358
+  },
+  "er helt normalt": {
+    "ai": 7,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 6.787,
+    "weight": 2.357
+  },
+  "sentral del": {
+    "ai": 6,
+    "human": 10,
+    "aiDocs": 6,
+    "zscore": 6.776,
+    "weight": 2.355
+  },
+  "engasjement og": {
+    "ai": 6,
+    "human": 10,
+    "aiDocs": 3,
+    "zscore": 6.776,
+    "weight": 2.355
+  },
+  "sentral del av": {
+    "ai": 6,
+    "human": 10,
+    "aiDocs": 6,
+    "zscore": 6.769,
+    "weight": 2.354
+  },
+  "å skille mellom": {
+    "ai": 6,
+    "human": 10,
+    "aiDocs": 3,
+    "zscore": 6.769,
+    "weight": 2.354
+  },
+  "meldinger som": {
+    "ai": 6,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 6.758,
+    "weight": 2.352
+  },
+  "du drar": {
+    "ai": 6,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 6.758,
+    "weight": 2.352
+  },
+  "drikke som": {
+    "ai": 6,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 6.758,
+    "weight": 2.352
+  },
+  "før du går": {
+    "ai": 6,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 6.753,
+    "weight": 2.351
+  },
+  "og husk at": {
+    "ai": 6,
+    "human": 3,
+    "aiDocs": 4,
+    "zscore": 6.753,
+    "weight": 2.351
+  },
+  "gode vaner": {
+    "ai": 9,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 6.496,
+    "weight": 2.299
+  },
+  "et realistisk": {
+    "ai": 6,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 6.472,
+    "weight": 2.294
+  },
+  "uten å bruke": {
+    "ai": 5,
+    "human": 5,
+    "aiDocs": 4,
+    "zscore": 6.398,
+    "weight": 2.28
+  },
+  "engasjerende": {
+    "ai": 5,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 6.395,
+    "weight": 2.279
+  },
+  "utforsker": {
+    "ai": 5,
+    "human": 4,
+    "aiDocs": 4,
+    "zscore": 6.395,
+    "weight": 2.279
+  },
+  "er nyttig": {
+    "ai": 5,
+    "human": 4,
+    "aiDocs": 5,
+    "zscore": 6.39,
+    "weight": 2.278
+  },
+  "tips er": {
+    "ai": 5,
+    "human": 6,
+    "aiDocs": 4,
+    "zscore": 6.376,
+    "weight": 2.275
+  },
+  "pauser og": {
+    "ai": 8,
+    "human": 1,
+    "aiDocs": 5,
+    "zscore": 6.319,
+    "weight": 2.264
+  },
+  "beskytte deg": {
+    "ai": 8,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 6.319,
+    "weight": 2.264
+  },
+  "men krever": {
+    "ai": 8,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 6.319,
+    "weight": 2.264
+  },
+  "hjernens": {
+    "ai": 5,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 6.313,
+    "weight": 2.263
+  },
+  "nøye og": {
+    "ai": 5,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 6.308,
+    "weight": 2.262
+  },
+  "lurt å sjekke": {
+    "ai": 5,
+    "human": 3,
+    "aiDocs": 4,
+    "zscore": 6.303,
+    "weight": 2.261
+  },
+  "i en stadig": {
+    "ai": 5,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 6.303,
+    "weight": 2.261
+  },
+  "tips er å": {
+    "ai": 5,
+    "human": 3,
+    "aiDocs": 4,
+    "zscore": 6.303,
+    "weight": 2.261
+  },
+  "lettere å holde": {
+    "ai": 5,
+    "human": 3,
+    "aiDocs": 4,
+    "zscore": 6.303,
+    "weight": 2.261
+  },
+  "spesielt hvis": {
+    "ai": 5,
+    "human": 8,
+    "aiDocs": 5,
+    "zscore": 6.26,
+    "weight": 2.252
+  },
+  "smake på": {
+    "ai": 5,
+    "human": 8,
+    "aiDocs": 3,
+    "zscore": 6.26,
+    "weight": 2.252
+  },
+  "deretter kan": {
+    "ai": 5,
+    "human": 8,
+    "aiDocs": 4,
+    "zscore": 6.26,
+    "weight": 2.252
+  },
+  "øve på": {
+    "ai": 5,
+    "human": 8,
+    "aiDocs": 4,
+    "zscore": 6.26,
+    "weight": 2.252
+  },
+  "problemløsning": {
+    "ai": 7,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 6.12,
+    "weight": 2.224
+  },
+  "https": {
+    "ai": 7,
+    "human": 1,
+    "aiDocs": 5,
+    "zscore": 6.12,
+    "weight": 2.224
+  },
+  "sjekk om": {
+    "ai": 7,
+    "human": 1,
+    "aiDocs": 5,
+    "zscore": 6.116,
+    "weight": 2.223
+  },
+  "en buffer": {
+    "ai": 7,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 6.116,
+    "weight": 2.223
+  },
+  "en balanse mellom": {
+    "ai": 7,
+    "human": 1,
+    "aiDocs": 5,
+    "zscore": 6.113,
+    "weight": 2.223
+  },
+  "du søker på": {
+    "ai": 7,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 6.113,
+    "weight": 2.223
+  },
+  "på lokale": {
+    "ai": 5,
+    "human": 10,
+    "aiDocs": 4,
+    "zscore": 6.107,
+    "weight": 2.221
+  },
+  "sentral rolle": {
+    "ai": 5,
+    "human": 10,
+    "aiDocs": 4,
+    "zscore": 6.107,
+    "weight": 2.221
+  },
+  "pandemien": {
+    "ai": 5,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 6.1,
+    "weight": 2.22
+  },
+  "autentiske": {
+    "ai": 5,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 6.1,
+    "weight": 2.22
+  },
+  "en dypere": {
+    "ai": 5,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 6.096,
+    "weight": 2.219
+  },
+  "være krevende": {
+    "ai": 5,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 6.096,
+    "weight": 2.219
+  },
+  "fordeler og ulemper": {
+    "ai": 5,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 6.092,
+    "weight": 2.218
+  },
+  "kan ha stor": {
+    "ai": 5,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 6.092,
+    "weight": 2.218
+  },
+  "et godt tips": {
+    "ai": 5,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 6.092,
+    "weight": 2.218
+  },
+  "du er usikker": {
+    "ai": 5,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 6.092,
+    "weight": 2.218
+  },
+  "kan være nyttig": {
+    "ai": 5,
+    "human": 2,
+    "aiDocs": 5,
+    "zscore": 6.092,
+    "weight": 2.218
+  },
+  "kombinerer": {
+    "ai": 6,
+    "human": 20,
+    "aiDocs": 5,
+    "zscore": 6.033,
+    "weight": 2.207
+  },
+  "betyr at du": {
+    "ai": 5,
+    "human": 11,
+    "aiDocs": 4,
+    "zscore": 6.019,
+    "weight": 2.204
+  },
+  "og privatliv": {
+    "ai": 6,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.881,
+    "weight": 2.176
+  },
+  "bærekraftig fremtid": {
+    "ai": 6,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.881,
+    "weight": 2.176
+  },
+  "tenk gjennom": {
+    "ai": 6,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.881,
+    "weight": 2.176
+  },
+  "gjøre en stor": {
+    "ai": 6,
+    "human": 1,
+    "aiDocs": 6,
+    "zscore": 5.878,
+    "weight": 2.176
+  },
+  "før du drar": {
+    "ai": 6,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.878,
+    "weight": 2.176
+  },
+  "og drikke som": {
+    "ai": 6,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.878,
+    "weight": 2.176
+  },
+  "du setter": {
+    "ai": 5,
+    "human": 13,
+    "aiDocs": 5,
+    "zscore": 5.858,
+    "weight": 2.172
+  },
+  "digitalisert": {
+    "ai": 4,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.797,
+    "weight": 2.159
+  },
+  "mer fleksibel": {
+    "ai": 4,
+    "human": 4,
+    "aiDocs": 4,
+    "zscore": 5.792,
+    "weight": 2.158
+  },
+  "aldri for": {
+    "ai": 4,
+    "human": 4,
+    "aiDocs": 4,
+    "zscore": 5.792,
+    "weight": 2.158
+  },
+  "ta gode": {
+    "ai": 4,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.792,
+    "weight": 2.158
+  },
+  "kommunikasjon er": {
+    "ai": 4,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.792,
+    "weight": 2.158
+  },
+  "man lærer": {
+    "ai": 4,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.792,
+    "weight": 2.158
+  },
+  "mange velger å": {
+    "ai": 4,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.787,
+    "weight": 2.157
+  },
+  "å øve på": {
+    "ai": 4,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.787,
+    "weight": 2.157
+  },
+  "en enkel måte": {
+    "ai": 4,
+    "human": 4,
+    "aiDocs": 4,
+    "zscore": 5.787,
+    "weight": 2.157
+  },
+  "til personlig": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "vær forberedt": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "og reduserer": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "redusere utslipp": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "og møbler": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "dette hjelper": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "grunn om": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 4,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "krevende men": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 4,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "mer digital": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 4,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "og svakheter": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "en roligere": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "godt råd": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 4,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "små grep": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.77,
+    "weight": 2.154
+  },
+  "vær forberedt på": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.766,
+    "weight": 2.153
+  },
+  "grunnlaget for en": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.766,
+    "weight": 2.153
+  },
+  "det være smart": {
+    "ai": 4,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.766,
+    "weight": 2.153
+  },
+  "liten pause": {
+    "ai": 4,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 5.759,
+    "weight": 2.152
+  },
+  "tenke langsiktig": {
+    "ai": 4,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 5.759,
+    "weight": 2.152
+  },
+  "sentral rolle i": {
+    "ai": 4,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 5.754,
+    "weight": 2.151
+  },
+  "mange år fremover": {
+    "ai": 4,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 5.754,
+    "weight": 2.151
+  },
+  "før du legger": {
+    "ai": 4,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 5.754,
+    "weight": 2.151
+  },
+  "en liten pause": {
+    "ai": 4,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 5.754,
+    "weight": 2.151
+  },
+  "et sted med": {
+    "ai": 4,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 5.754,
+    "weight": 2.151
+  },
+  "viktig både": {
+    "ai": 4,
+    "human": 6,
+    "aiDocs": 3,
+    "zscore": 5.697,
+    "weight": 2.139
+  },
+  "spennende men": {
+    "ai": 4,
+    "human": 6,
+    "aiDocs": 4,
+    "zscore": 5.697,
+    "weight": 2.139
+  },
+  "utfordringene er": {
+    "ai": 4,
+    "human": 6,
+    "aiDocs": 3,
+    "zscore": 5.697,
+    "weight": 2.139
+  },
+  "enkel måte": {
+    "ai": 4,
+    "human": 6,
+    "aiDocs": 4,
+    "zscore": 5.697,
+    "weight": 2.139
+  },
+  "og mental": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "for suksess": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "studier viser": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "og tilby": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "viktigste verktøy": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "lommeboken og": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "sparer tid": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "de brukes": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "digitale plattformer": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "jobb skole": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "nysgjerrighet og": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.64,
+    "weight": 2.128
+  },
+  "handler i bunn": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 5.636,
+    "weight": 2.127
+  },
+  "og grunn om": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 5.636,
+    "weight": 2.127
+  },
+  "styrker og svakheter": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.636,
+    "weight": 2.127
+  },
+  "deretter kan du": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.636,
+    "weight": 2.127
+  },
+  "enkel måte å": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 5.636,
+    "weight": 2.127
+  },
+  "å uttrykke seg": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.636,
+    "weight": 2.127
+  },
+  "tillegg kan du": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 5.636,
+    "weight": 2.127
+  },
+  "husk å sjekke": {
+    "ai": 4,
+    "human": 2,
+    "aiDocs": 4,
+    "zscore": 5.636,
+    "weight": 2.127
+  },
+  "gir større": {
+    "ai": 4,
+    "human": 7,
+    "aiDocs": 3,
+    "zscore": 5.619,
+    "weight": 2.124
+  },
+  "følger en": {
+    "ai": 4,
+    "human": 7,
+    "aiDocs": 3,
+    "zscore": 5.619,
+    "weight": 2.124
+  },
+  "at du vet": {
+    "ai": 4,
+    "human": 7,
+    "aiDocs": 4,
+    "zscore": 5.613,
+    "weight": 2.123
+  },
+  "brukervennlige": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.606,
+    "weight": 2.121
+  },
+  "respekter": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.606,
+    "weight": 2.121
+  },
+  "slutt handler": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 5,
+    "zscore": 5.602,
+    "weight": 2.12
+  },
+  "du vurdere": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.602,
+    "weight": 2.12
+  },
+  "slutt kan": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.602,
+    "weight": 2.12
+  },
+  "digital hverdag": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 5,
+    "zscore": 5.602,
+    "weight": 2.12
+  },
+  "handler derfor": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.602,
+    "weight": 2.12
+  },
+  "krever god": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.602,
+    "weight": 2.12
+  },
+  "redusere risikoen for": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.599,
+    "weight": 2.12
+  },
+  "til slutt handler": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 5,
+    "zscore": 5.599,
+    "weight": 2.12
+  },
+  "kan hver enkelt": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.599,
+    "weight": 2.12
+  },
+  "til slutt kan": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.599,
+    "weight": 2.12
+  },
+  "godt tips er": {
+    "ai": 5,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.599,
+    "weight": 2.12
+  },
+  "være fullt": {
+    "ai": 4,
+    "human": 8,
+    "aiDocs": 3,
+    "zscore": 5.532,
+    "weight": 2.106
+  },
+  "en sentral rolle": {
+    "ai": 4,
+    "human": 8,
+    "aiDocs": 3,
+    "zscore": 5.527,
+    "weight": 2.105
+  },
+  "om mer enn": {
+    "ai": 4,
+    "human": 8,
+    "aiDocs": 3,
+    "zscore": 5.527,
+    "weight": 2.105
+  },
+  "ta gjerne": {
+    "ai": 4,
+    "human": 9,
+    "aiDocs": 3,
+    "zscore": 5.441,
+    "weight": 2.088
+  },
+  "tofaktorautentisering": {
+    "ai": 20,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 5.294,
+    "weight": 2.059
+  },
+  "holdbarhet": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.264,
+    "weight": 2.053
+  },
+  "samarbeidsevner": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.264,
+    "weight": 2.053
+  },
+  "nøkkelen er": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.261,
+    "weight": 2.052
+  },
+  "er nyttige": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.261,
+    "weight": 2.052
+  },
+  "fokuser på": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.261,
+    "weight": 2.052
+  },
+  "deg trygg": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.261,
+    "weight": 2.052
+  },
+  "og sørg": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.261,
+    "weight": 2.052
+  },
+  "være komplisert": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.261,
+    "weight": 2.052
+  },
+  "og tålmodighet": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.261,
+    "weight": 2.052
+  },
+  "først bør": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.261,
+    "weight": 2.052
+  },
+  "voksne kan": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.261,
+    "weight": 2.052
+  },
+  "hold deg til": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 3,
+    "zscore": 5.257,
+    "weight": 2.051
+  },
+  "god planlegging og": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.257,
+    "weight": 2.051
+  },
+  "derfor ikke bare": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.257,
+    "weight": 2.051
+  },
+  "og sørg for": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.257,
+    "weight": 2.051
+  },
+  "lommeboken og miljøet": {
+    "ai": 4,
+    "human": 1,
+    "aiDocs": 4,
+    "zscore": 5.257,
+    "weight": 2.051
+  },
+  "uklare": {
+    "ai": 4,
+    "human": 12,
+    "aiDocs": 3,
+    "zscore": 5.171,
+    "weight": 2.034
+  },
+  "enkelhet": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.112,
+    "weight": 2.022
+  },
+  "for hjernen": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.108,
+    "weight": 2.022
+  },
+  "høre til": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.108,
+    "weight": 2.022
+  },
+  "tillegg gir": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.108,
+    "weight": 2.022
+  },
+  "verden gjennom": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.108,
+    "weight": 2.022
+  },
+  "et nyttig": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.108,
+    "weight": 2.022
+  },
+  "øker sjansen": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.108,
+    "weight": 2.022
+  },
+  "med søppel": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.108,
+    "weight": 2.022
+  },
+  "jevnlig og": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.108,
+    "weight": 2.022
+  },
+  "krevende prosess": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.108,
+    "weight": 2.022
+  },
+  "til å forme": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "i tillegg gir": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "en stor rolle": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "er å velge": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "det er normalt": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "plan for hva": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "øker sjansen for": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "et godt råd": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "å tenke langsiktig": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "har blitt stadig": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "er å starte": {
+    "ai": 3,
+    "human": 3,
+    "aiDocs": 3,
+    "zscore": 5.104,
+    "weight": 2.021
+  },
+  "et konkret": {
+    "ai": 4,
+    "human": 13,
+    "aiDocs": 4,
+    "zscore": 5.075,
+    "weight": 2.015
+  },
+  "klokere": {
+    "ai": 3,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.07,
+    "weight": 2.014
+  },
+  "som vann": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.069,
+    "weight": 2.014
+  },
+  "nyttig i": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.069,
+    "weight": 2.014
+  },
+  "tillegg bidrar": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.069,
+    "weight": 2.014
+  },
+  "gode beslutninger": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.069,
+    "weight": 2.014
+  },
+  "holde kontakten": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.069,
+    "weight": 2.014
+  },
+  "viktigste du": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.069,
+    "weight": 2.014
+  },
+  "ofte kalt": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.069,
+    "weight": 2.014
+  },
+  "nyttig verktøy": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.069,
+    "weight": 2.014
+  },
+  "ofte den": {
+    "ai": 3,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "og langsiktig": {
+    "ai": 3,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "tenkning og": {
+    "ai": 3,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "finne en balanse": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "mulig ut av": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "er en reise": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "å redusere utslipp": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "i tillegg bidrar": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "å holde kontakten": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "mange deler av": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "er å tenke": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "det viktigste du": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "et nyttig verktøy": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "på jobb eller": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "og hvor stor": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "viktig rolle som": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "i norske hjem": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "råd er å": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "små endringer i": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "er en spennende": {
+    "ai": 3,
+    "human": 2,
+    "aiDocs": 3,
+    "zscore": 5.065,
+    "weight": 2.013
+  },
+  "å være forberedt": {
+    "ai": 3,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.061,
+    "weight": 2.012
+  },
+  "en avgjørende rolle": {
+    "ai": 3,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.061,
+    "weight": 2.012
+  },
+  "før du setter": {
+    "ai": 3,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.061,
+    "weight": 2.012
+  },
+  "noe som styrker": {
+    "ai": 3,
+    "human": 4,
+    "aiDocs": 3,
+    "zscore": 5.061,
+    "weight": 2.012
+  },
+  "kondisjon": {
+    "ai": 3,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 4.991,
+    "weight": 1.998
+  },
+  "som sparer": {
+    "ai": 3,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 4.986,
+    "weight": 1.997
+  },
+  "for ekstra": {
+    "ai": 3,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 4.986,
+    "weight": 1.997
+  },
+  "også vurdere": {
+    "ai": 3,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 4.986,
+    "weight": 1.997
+  },
+  "avgjørende rolle": {
+    "ai": 3,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 4.986,
+    "weight": 1.997
+  },
+  "veiledning og": {
+    "ai": 3,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 4.986,
+    "weight": 1.997
+  },
+  "hverdagen med": {
+    "ai": 3,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 4.986,
+    "weight": 1.997
+  },
+  "hverdagen enklere": {
+    "ai": 3,
+    "human": 5,
+    "aiDocs": 3,
+    "zscore": 4.986,
+    "weight": 1.997
+  },
+  "undervurderer": {
+    "ai": 3,
+    "human": 6,
+    "aiDocs": 3,
+    "zscore": 4.895,
+    "weight": 1.979
+  },
+  "nyttig å": {
+    "ai": 3,
+    "human": 6,
+    "aiDocs": 3,
+    "zscore": 4.89,
+    "weight": 1.978
+  },
+  "ofte til": {
+    "ai": 3,
+    "human": 6,
+    "aiDocs": 3,
+    "zscore": 4.89,
+    "weight": 1.978
+  },
+  "billigere og": {
+    "ai": 3,
+    "human": 6,
+    "aiDocs": 3,
+    "zscore": 4.89,
+    "weight": 1.978
+  },
+  "man velge": {
+    "ai": 3,
+    "human": 6,
+    "aiDocs": 3,
+    "zscore": 4.89,
+    "weight": 1.978
+  },
+  "et godt valg": {
+    "ai": 3,
+    "human": 6,
+    "aiDocs": 3,
+    "zscore": 4.885,
+    "weight": 1.977
+  },
+  "presisjon": {
+    "ai": 3,
+    "human": 7,
+    "aiDocs": 3,
+    "zscore": 4.792,
+    "weight": 1.958
+  },
+  "med faste": {
+    "ai": 3,
+    "human": 7,
+    "aiDocs": 3,
+    "zscore": 4.787,
+    "weight": 1.957
+  },
+  "god søvn": {
+    "ai": 9,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 4.69,
+    "weight": 1.938
+  },
+  "i hverdagen kan": {
     "ai": 9,
     "human": 0,
     "aiDocs": 4,
-    "zscore": 3.448,
-    "weight": 1.69
+    "zscore": 4.688,
+    "weight": 1.938
   },
-  "likevel er": {
+  "dette inkluderer": {
+    "ai": 3,
+    "human": 8,
+    "aiDocs": 3,
+    "zscore": 4.682,
+    "weight": 1.936
+  },
+  "fungerer best": {
+    "ai": 3,
+    "human": 8,
+    "aiDocs": 3,
+    "zscore": 4.682,
+    "weight": 1.936
+  },
+  "og tilgang": {
+    "ai": 3,
+    "human": 8,
+    "aiDocs": 3,
+    "zscore": 4.682,
+    "weight": 1.936
+  },
+  "tillegg kan det": {
+    "ai": 3,
+    "human": 8,
+    "aiDocs": 3,
+    "zscore": 4.677,
+    "weight": 1.935
+  },
+  "tommelfingerregel": {
     "ai": 8,
-    "human": 0,
-    "aiDocs": 8,
-    "zscore": 3.365,
-    "weight": 1.673
-  },
-  "strategi": {
-    "ai": 8,
-    "human": 0,
-    "aiDocs": 7,
-    "zscore": 3.362,
-    "weight": 1.672
-  },
-  "for ledere": {
-    "ai": 7,
-    "human": 0,
-    "aiDocs": 6,
-    "zscore": 3.267,
-    "weight": 1.653
-  },
-  "dem som trenger": {
-    "ai": 6,
     "human": 0,
     "aiDocs": 5,
-    "zscore": 3.156,
-    "weight": 1.631
+    "zscore": 4.602,
+    "weight": 1.92
   },
-  "flerfaktorautentisering": {
+  "største fordelene": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 6,
+    "zscore": 4.6,
+    "weight": 1.92
+  },
+  "vær skeptisk": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.6,
+    "weight": 1.92
+  },
+  "start gjerne": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.6,
+    "weight": 1.92
+  },
+  "de største fordelene": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 6,
+    "zscore": 4.598,
+    "weight": 1.92
+  },
+  "mange opplever også": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.598,
+    "weight": 1.92
+  },
+  "gjøre stor forskjell": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 6,
+    "zscore": 4.598,
+    "weight": 1.92
+  },
+  "før du handler": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 4.598,
+    "weight": 1.92
+  },
+  "skylagring": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 4.5,
+    "weight": 1.9
+  },
+  "forberedelse og": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 4.498,
+    "weight": 1.9
+  },
+  "sterke passord": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.498,
+    "weight": 1.9
+  },
+  "tommelfingerregel er": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 4.498,
+    "weight": 1.9
+  },
+  "begynn med": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.498,
+    "weight": 1.9
+  },
+  "realistisk budsjett": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.498,
+    "weight": 1.9
+  },
+  "viktig fordel": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.498,
+    "weight": 1.9
+  },
+  "en mer bærekraftig": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.495,
+    "weight": 1.899
+  },
+  "vær skeptisk til": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.495,
+    "weight": 1.899
+  },
+  "en viktig fordel": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.495,
+    "weight": 1.899
+  },
+  "dine egne": {
+    "ai": 3,
+    "human": 10,
+    "aiDocs": 3,
+    "zscore": 4.476,
+    "weight": 1.895
+  },
+  "oppdater": {
     "ai": 6,
     "human": 0,
     "aiDocs": 4,
-    "zscore": 3.151,
-    "weight": 1.63
+    "zscore": 4.381,
+    "weight": 1.876
   },
-  "bærekraft": {
+  "ta pauser": {
     "ai": 6,
     "human": 0,
     "aiDocs": 5,
-    "zscore": 3.151,
-    "weight": 1.63
+    "zscore": 4.379,
+    "weight": 1.876
   },
-  "selskapets": {
+  "redusere stress": {
     "ai": 6,
     "human": 0,
     "aiDocs": 3,
-    "zscore": 3.151,
-    "weight": 1.63
+    "zscore": 4.379,
+    "weight": 1.876
   },
-  "til slutt er": {
+  "velg et": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 4.379,
+    "weight": 1.876
+  },
+  "deg grundig": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.379,
+    "weight": 1.876
+  },
+  "deretter bør": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.379,
+    "weight": 1.876
+  },
+  "mange handler": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 6,
+    "zscore": 4.379,
+    "weight": 1.876
+  },
+  "eksempel gjennom": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.379,
+    "weight": 1.876
+  },
+  "og velg": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.379,
+    "weight": 1.876
+  },
+  "du bruke": {
+    "ai": 3,
+    "human": 11,
+    "aiDocs": 3,
+    "zscore": 4.376,
+    "weight": 1.875
+  },
+  "arbeidsgiver og": {
+    "ai": 3,
+    "human": 11,
+    "aiDocs": 3,
+    "zscore": 4.376,
+    "weight": 1.875
+  },
+  "er noen viktige": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 6,
+    "zscore": 4.376,
+    "weight": 1.875
+  },
+  "med god planlegging": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.376,
+    "weight": 1.875
+  },
+  "for eksempel gjennom": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.376,
+    "weight": 1.875
+  },
+  "fordelen med": {
+    "ai": 3,
+    "human": 12,
+    "aiDocs": 3,
+    "zscore": 4.28,
+    "weight": 1.856
+  },
+  "kan små": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 4.237,
+    "weight": 1.847
+  },
+  "riktig forberedelse": {
     "ai": 5,
     "human": 0,
     "aiDocs": 5,
-    "zscore": 3.023,
-    "weight": 1.605
+    "zscore": 4.237,
+    "weight": 1.847
   },
-  "likevel er det": {
+  "at mat": {
     "ai": 5,
     "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.023,
-    "weight": 1.605
+    "aiDocs": 3,
+    "zscore": 4.237,
+    "weight": 1.847
   },
-  "samtidig må vi": {
-    "ai": 5,
-    "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.023,
-    "weight": 1.605
-  },
-  "bør virksomheten": {
-    "ai": 5,
-    "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.02,
-    "weight": 1.604
-  },
-  "husk at": {
-    "ai": 5,
-    "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.02,
-    "weight": 1.604
-  },
-  "slutt er": {
-    "ai": 5,
-    "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.02,
-    "weight": 1.604
-  },
-  "kunder og": {
-    "ai": 5,
-    "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.02,
-    "weight": 1.604
-  },
-  "og samarbeidspartnere": {
-    "ai": 5,
-    "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.02,
-    "weight": 1.604
-  },
-  "starte med": {
-    "ai": 5,
-    "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.02,
-    "weight": 1.604
-  },
-  "vi takker": {
-    "ai": 5,
-    "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.02,
-    "weight": 1.604
-  },
-  "heldigvis": {
-    "ai": 5,
-    "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.017,
-    "weight": 1.603
-  },
-  "samarbeidspartnere": {
-    "ai": 5,
-    "human": 0,
-    "aiDocs": 5,
-    "zscore": 3.017,
-    "weight": 1.603
-  },
-  "etatens": {
+  "og korte": {
     "ai": 5,
     "human": 0,
     "aiDocs": 4,
-    "zscore": 3.017,
-    "weight": 1.603
+    "zscore": 4.237,
+    "weight": 1.847
+  },
+  "og nettsider": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 4.237,
+    "weight": 1.847
+  },
+  "om teknologi": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.237,
+    "weight": 1.847
+  },
+  "slutt bør": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 4.237,
+    "weight": 1.847
+  },
+  "https www": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 4.237,
+    "weight": 1.847
+  },
+  "med riktig forberedelse": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 4.235,
+    "weight": 1.847
+  },
+  "må derfor være": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.235,
+    "weight": 1.847
+  },
+  "nøkkelen til suksess": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 4.235,
+    "weight": 1.847
+  },
+  "deretter bør du": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 4.235,
+    "weight": 1.847
+  },
+  "et realistisk budsjett": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.235,
+    "weight": 1.847
+  },
+  "største fordelene med": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.235,
+    "weight": 1.847
+  },
+  "for mange handler": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 4.235,
+    "weight": 1.847
+  },
+  "effektiv måte å": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 4.235,
+    "weight": 1.847
+  },
+  "til slutt bør": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 4.235,
+    "weight": 1.847
   }
 }

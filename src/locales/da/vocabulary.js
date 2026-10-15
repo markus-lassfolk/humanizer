@@ -306,6 +306,18 @@ const ABBREVIATIONS_DA = [
 
 const fix = (pattern, replacement) => ({ pattern, replacement, label: replacement });
 const AUTOFIXES_DA = [
+  // Klarsprog (Dansk Sprognævn): plain verbs and connectives instead of kancellisprog.
+  fix(/\bbenytter\b/gi, 'bruger'),
+  fix(/\bbenyttet\b/gi, 'brugt'),
+  fix(/\banvender\b/gi, 'bruger'),
+  fix(/\banvendt\b/gi, 'brugt'),
+  fix(/\berholder\b/gi, 'får'),
+  fix(/\berholdt\b/gi, 'fået'),
+  fix(/\bforetager\b/gi, 'gør'),
+  fix(/\bforetaget\b/gi, 'gjort'),
+  fix(/\biværksætter\b/gi, 'sætter i gang'),
+  fix(/\bydermere\b/gi, 'desuden'),
+  fix(/\bpå baggrund af\b/gi, 'på grund af'),
   fix(/\bdykke ned i\b/gi, 'se på'),
   fix(/\bdykke dybt ned i\b/gi, 'gennemgå'),
   fix(/\bbanebrydende\b/gi, 'ny'),

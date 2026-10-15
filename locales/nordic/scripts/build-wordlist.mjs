@@ -34,6 +34,9 @@ const MAX_HUMAN_DOC_RATE = 0.005;
 const { functionWords } = require(path.join(root, `src/locales/${lang}/index.js`));
 const stop = buildStopSet(functionWords);
 
+// A text may start with a <<topic:ID>> line; df then counts distinct topics, not texts, so an
+// n-gram that only one prompt topic produces never reaches MIN_AI_DOCS.
+const groupOf = new Map();
 const readTexts = (dir) =>
   fs
     .readdirSync(dir)
@@ -44,7 +47,13 @@ const readTexts = (dir) =>
         .replace(/^https?:\/\/\S+\n\n/, '')
         .split(/\n=====\n/)
         .map((t) => t.trim())
-        .filter(Boolean),
+        .filter(Boolean)
+        .map((t, i) => {
+          const m = t.match(/^<<topic:([^>]+)>>\n/);
+          const text = m ? t.slice(m[0].length) : t;
+          groupOf.set(text, m ? m[1] : `${f}#${i}`);
+          return text;
+        }),
     );
 
 function grams(text, n) {
@@ -62,9 +71,13 @@ function count(texts, n) {
     const g = grams(t, n);
     total += g.length;
     for (const k of g) tf.set(k, (tf.get(k) || 0) + 1);
-    for (const k of new Set(g)) df.set(k, (df.get(k) || 0) + 1);
+    const grp = groupOf.get(t) ?? t;
+    for (const k of new Set(g)) {
+      if (!df.has(k)) df.set(k, new Set());
+      df.get(k).add(grp);
+    }
   }
-  return { tf, df, total };
+  return { tf, df: new Map([...df].map(([k, v]) => [k, v.size])), total };
 }
 
 const human = readTexts(humanDir);
