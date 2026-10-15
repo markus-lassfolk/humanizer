@@ -12,7 +12,10 @@ Humanizer separates **runtime analyzer locales** from **agent skill bundles**.
 | `en` | English | Yes | Stable | Uses English vocabulary tiers, phrase packs, function words, and Flesch-Kincaid readability. |
 | `sv` | Swedish | No | Stable | Uses Swedish vocabulary tiers, Swedish pattern packs, Swedish abbreviations, LIX readability, empirical n-grams, and Svarta listan/Klarspråk autofixes. |
 
-Use `en` unless you explicitly know the text is Swedish.
+| `nb` | Norwegian (bokmål) | No | Beta | Nordic-calque vocabulary tiers, nb pattern packs, LIX readability, empirical n-grams from a NSM/NRK/Datatilsynet/Nkom human baseline. Nynorsk is not covered. |
+| `da` | Danish | No | Beta | Same layout as `nb`, baseline from CFCS/DR/Datatilsynet/Digst/FE. |
+
+Use `en` unless you explicitly know the text is Swedish, Norwegian or Danish. Finnish is out of scope for now: see [`locales/nordic/FINNISH-DESIGN-NOTE.md`](../locales/nordic/FINNISH-DESIGN-NOTE.md).
 
 ```bash
 humanizer analyze -f english.md
@@ -43,8 +46,8 @@ Invalid locale codes are rejected immediately with a clear error instead of bein
 CLI error examples:
 
 ```text
-Error: Invalid locale "da" from --locale. Supported locales: en, sv.
-Error: Invalid locale "da" from HUMANIZER_LOCALE. Supported locales: en, sv.
+Error: Invalid locale "fi" from --locale. Supported locales: en, sv, nb, da.
+Error: Invalid locale "fi" from HUMANIZER_LOCALE. Supported locales: en, sv, nb, da.
 ```
 
 Locale resolution and validation rules:
@@ -62,6 +65,9 @@ Locale resolution and validation rules:
 | `locales/en-en/` | `en` | International English skill guidance and vocabulary references. |
 | `locales/en-us/` | `en` | US English packaging/guidance. The runtime analyzer is still `en`. |
 | `locales/sv-se/` | `sv` | Swedish skill guidance, references, tests, corpus scripts, and empirical artifacts. |
+| `locales/nb-no/` | `nb` | Norwegian skill guidance and `nb-frequencies.json`. |
+| `locales/da-dk/` | `da` | Danish skill guidance and `da-frequencies.json`. |
+| `locales/nordic/` | n/a | Shared corpus-fetch, baseline-report and word-list scripts; baseline reports; Finnish design note. |
 | `locales/generic/` | n/a | Shared pattern catalogue and style references. |
 
 The folder name can be BCP-47-style (`sv-se`), while the runtime locale can be shorter (`sv`). This lets packaging distinguish dialect or market-specific guidance without forcing separate analyzer implementations before they exist.

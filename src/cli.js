@@ -584,7 +584,7 @@ ${color.bold('Options:')}
   --ignore-mdx            Ignore MDX import/export lines and JSX component tags
   --ignore-blockquotes    Ignore Markdown blockquote lines (> …) during analysis
   --prose-only            Shorthand for --ignore-frontmatter --ignore-mdx --ignore-blockquotes
-  --locale <code>         Language locale: en (default) or sv. Also HUMANIZER_LOCALE env.
+  --locale <code>         Language locale: en (default), sv, nb or da. Also HUMANIZER_LOCALE env.
   --strict                English: enable inclusive-language hints (pattern 35)
   --with-lm               Add n-gram LM uniformity boost (see locale extension docs)
   --chunked               Overlapping-window scores (peak/median/low + severity); auto for long docs

@@ -1,0 +1,149 @@
+{
+  "etaten": {
+    "ai": 9,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 3.448,
+    "weight": 1.69
+  },
+  "likevel er": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 8,
+    "zscore": 3.365,
+    "weight": 1.673
+  },
+  "strategi": {
+    "ai": 8,
+    "human": 0,
+    "aiDocs": 7,
+    "zscore": 3.362,
+    "weight": 1.672
+  },
+  "for ledere": {
+    "ai": 7,
+    "human": 0,
+    "aiDocs": 6,
+    "zscore": 3.267,
+    "weight": 1.653
+  },
+  "dem som trenger": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.156,
+    "weight": 1.631
+  },
+  "flerfaktorautentisering": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 3.151,
+    "weight": 1.63
+  },
+  "bærekraft": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.151,
+    "weight": 1.63
+  },
+  "selskapets": {
+    "ai": 6,
+    "human": 0,
+    "aiDocs": 3,
+    "zscore": 3.151,
+    "weight": 1.63
+  },
+  "til slutt er": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.023,
+    "weight": 1.605
+  },
+  "likevel er det": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.023,
+    "weight": 1.605
+  },
+  "samtidig må vi": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.023,
+    "weight": 1.605
+  },
+  "bør virksomheten": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.02,
+    "weight": 1.604
+  },
+  "husk at": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.02,
+    "weight": 1.604
+  },
+  "slutt er": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.02,
+    "weight": 1.604
+  },
+  "kunder og": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.02,
+    "weight": 1.604
+  },
+  "og samarbeidspartnere": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.02,
+    "weight": 1.604
+  },
+  "starte med": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.02,
+    "weight": 1.604
+  },
+  "vi takker": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.02,
+    "weight": 1.604
+  },
+  "heldigvis": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.017,
+    "weight": 1.603
+  },
+  "samarbeidspartnere": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 5,
+    "zscore": 3.017,
+    "weight": 1.603
+  },
+  "etatens": {
+    "ai": 5,
+    "human": 0,
+    "aiDocs": 4,
+    "zscore": 3.017,
+    "weight": 1.603
+  }
+}
